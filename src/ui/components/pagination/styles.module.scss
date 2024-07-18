@@ -1,0 +1,11 @@
+.btn {
+  @apply cursor-pointer border-none outline-none rounded-xl px-3 py-1;
+}
+
+.arrow {
+  @apply px-3 rounded-xl border-none;
+}
+
+.pagination {
+  @apply flex gap-2;
+}

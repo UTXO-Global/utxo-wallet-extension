@@ -1,0 +1,23 @@
+.settings {
+  @apply w-full grid grid-cols-2 grid-rows-2 gap-3;
+}
+
+.wrapper {
+  @apply h-full w-full p-4 standard:pb-0 flex flex-col justify-between;
+}
+
+.card {
+  @apply cursor-pointer bg-grey-300 h-36 rounded-xl hover:bg-text hover:text-bg transition-colors flex items-center justify-center flex-col gap-4 px-3;
+
+  >div {
+    @apply text-base text-center font-medium;
+  }
+}
+
+.version {
+  @apply text-primary text-center standard:hidden text-xs mt-6;
+
+  span {
+    @apply font-medium;
+  }
+}

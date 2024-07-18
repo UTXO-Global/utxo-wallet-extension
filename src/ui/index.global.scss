@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("../assets/fonts/satoshi/Satoshi-Variable.woff2") format("woff2"),
+    url("../assets/fonts/satoshi/Satoshi-Variable.woff") format("woff"),
+    url("../assets/fonts/satoshi/Satoshi-Variable.ttf") format("truetype");
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("../assets/fonts/satoshi/Satoshi-Regular.woff2") format("woff2"),
+    url("../assets/fonts/satoshi/Satoshi-Regular.woff") format("woff"),
+    url("../assets/fonts/satoshi/Satoshi-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("../assets/fonts/satoshi/Satoshi-Medium.woff2") format("woff2"),
+    url("../assets/fonts/satoshi/Satoshi-Medium.woff") format("woff"),
+    url("../assets/fonts/satoshi/Satoshi-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("../assets/fonts/satoshi/Satoshi-Bold.woff2") format("woff2"),
+    url("../assets/fonts/satoshi/Satoshi-Bold.woff") format("woff"),
+    url("../assets/fonts/satoshi/Satoshi-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+
+* {
+  @apply m-0 p-0 outline-none;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  @apply mx-auto bg-light-100 text-primary standard:max-w-2xl standard:py-6 min-w-[350px] min-h-[600px];
+
+  font-family: "Satoshi", sans-serif;
+  font-size: 16px
+}
+
+body.lock {
+  @apply overflow-hidden;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.form {
+  @apply w-full flex flex-col gap-6 px-6;
+}
+
+.form-title {
+  @apply p-0 mx-auto text-[24px] leading-[28px] font-medium text-primary;
+}
+
+.form-field {
+  @apply w-full flex flex-col gap-1;
+
+  .input {
+    @apply text-sm;
+  }
+}
+
+.btn {
+  @apply px-7 py-3 text-base rounded-lg font-medium cursor-pointer text-center;
+
+  &:disabled {
+    @apply cursor-not-allowed bg-[#D1D1D1] border-[#D1D1D1] text-[#787575];
+  }
+}
+
+.primary {
+  @apply text-light-100 hover:enabled:bg-[#141414] transition-colors bg-primary leading-tight border border-primary;
+}
+
+.secondary {
+  @apply border border-primary bg-transparent text-primary leading-tight;
+}
+
+.input {
+  @apply border border-transparent hover:border-[#EBECEC] focus:border-[#ABA8A1] p-4 text-base text-primary bg-[#F5F5F5] rounded-lg;
+}
+
+.react-loading {
+  display: flex;
+}
+
+.app {
+  @apply h-full min-h-screen flex w-full standard:rounded-2xl overflow-x-hidden standard:min-h-max standard:pb-6 max-standard:max-w-[355px];
+
+  .main-route {
+    @apply w-full flex justify-center;
+  }
+
+  .toast {
+    @apply bg-black text-text text-sm border border-green-600 rounded-2xl;
+
+    &.success {
+      @apply border-green-600;
+    }
+
+    &.error {
+      @apply border-red-600;
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0.15rem;
+  height: 0.15rem;
+  border-radius: 100%;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary;
+  width: 0.15rem !important;
+  border-radius: 100px;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+.profile-card {
+  // height: 52rem;
+  position: relative;
+  perspective: 150rem;
+  -moz-perspective: 150rem;
+
+  &-face {
+    @apply bg-input-bg;
+    transition: all 0.8s ease;
+    position: absolute;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  &-back {
+    transform: rotateY(180deg);
+  }
+
+  &:hover {
+    & .profile-card-front {
+      transform: rotateY(-180deg);
+    }
+
+    & .profile-card-back {
+      transform: rotateY(0);
+    }
+  }
+}
+
+.inscription-card {
+  @apply w-[318px] h-[318px];
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.group:hover .group-hover-block {
+  display: block;
+}
+
+.group:hover .group-hover-hidden {
+  display: none;
+}
+
+.description-2-lines {
+  overflow: hidden;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

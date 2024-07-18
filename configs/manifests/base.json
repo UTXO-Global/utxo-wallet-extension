@@ -1,0 +1,48 @@
+{
+  "short_name": "UTXO Global Wallet",
+  "author": "UTXO Global Wallet",
+  "manifest_version": 3,
+  "name": "UTXO Global Wallet",
+  "description": "",
+  "icons": {
+    "48": "/icon-48.png",
+    "128": "/icon.png"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open the popup",
+    "default_icon": {
+      "48": "/icon-48.png",
+      "128": "/icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pageProvider.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}

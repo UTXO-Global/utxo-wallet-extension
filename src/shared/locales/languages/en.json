@@ -1,0 +1,325 @@
+{
+  "wallet_page": {
+    "transactions": "Transactions",
+    "no_transactions": "No transations",
+    "no_inscriptions": "You currently don't have any inscriptions",
+    "receive": "Receive",
+    "send": "Send",
+    "nft": "NFT",
+    "amount_in_transactions": "Cardinal balance",
+    "amount_in_inscriptions": "Ordinal balance",
+    "swap": "Swap",
+    "buy": "Buy",
+    "your_balance": "Your Balance"
+  },
+  "settings": {
+    "language": "Language",
+    "logout": "Logout",
+    "connected_sites": "Connected Sites",
+    "expand_view": "Expand View",
+    "security_settings": "Security Settings",
+    "address_type": "Address Type",
+    "network": "Network",
+    "wallet": "Wallet"
+  },
+  "components": {
+    "layout": {
+      "create_new_wallet": "Create New Wallet",
+      "send": "Send",
+      "connected_sites": "Connected Sites",
+      "change_language": "Change Language",
+      "switch_account": "Switch Account",
+      "change_address_type": "Change Address Type",
+      "create_new_account": "Create New Account",
+      "change_password": "Change Password",
+      "switch_wallet": "Switch Wallet",
+      "transaction_info": "Transaction Info",
+      "settings": "Settings",
+      "show_mnemonic": "Show Mnemonic",
+      "show_private_key": "Show Private Key (WIF)",
+      "restore_from_mnemonic": "Restore From Mnemonic",
+      "restore_from_private_key": "Restore From Private Key",
+      "security": "Security",
+      "lock": "Lock",
+      "discover": "Discover",
+      "inscriptions": "Inscriptions",
+      "network": "Select Network",
+      "address_type": "Address Type",
+      "about_account": "About Account",
+      "about_wallet": "About Wallet",
+      "explorer": "Explore",
+      "restore_wallet": "Restore Wallet",
+      "receive": "Receive"
+    },
+    "check_password": {
+      "incorrect_password_error": "Incorrect password",
+      "password": "Password",
+      "continue": "Continue",
+      "enter_password": "Enter Password"
+    },
+    "password_input": {
+      "should_be_more_than_1_symbol": "Should be more than 1 symbol"
+    },
+    "rename": {
+      "enter_new_name": "Enter new name",
+      "minimum_length": "Miniumum length is 1",
+      "maximum_length": "Maximum length is 16",
+      "name_is_required": "Name is required",
+      "save": "Save",
+      "rename": "Rename"
+    },
+    "card": {
+      "close": "Close",
+      "root_account": "Root account"
+    },
+    "inscription_card": {
+      "modal_title": "Inscription",
+      "id": "Id",
+      "address": "Address",
+      "outputValue": "Output value",
+      "content": "Content",
+      "contentLength": "Content length",
+      "contentType": "Content type",
+      "timeStamp": "Timestamp",
+      "genesisHeight": "Genesis height",
+      "genesisFee": "Genesis fee",
+      "genesisTransaction": "Genesis transaction",
+      "location": "Location",
+      "output": "Output",
+      "offset": "Offset",
+      "preview": "Preview"
+    },
+    "token_card": {
+      "transferable_balance": "Transferable balance",
+      "balance": "Balance",
+      "create_transfer": "Mint transfer",
+      "send": "Send",
+      "no_transfers": "No transfers"
+    }
+  },
+  "change_password": {
+    "old_password": "Old password",
+    "new_password": "New password",
+    "confirm_password": "Confirm password",
+    "change_password": "Change password"
+  },
+  "connected_sites": {
+    "no_sites_message": "You haven't connected any sites yet"
+  },
+  "create_password": {
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "create_password": "Create Password",
+    "sub_title": "Enter A Password To Protect Your Wallet!"
+  },
+  "login": {
+    "password": "Password",
+    "login": "Login",
+    "welcome_back": "Welcome back"
+  },
+  "new_account": {
+    "max_length_error": "Maximum name length is 16",
+    "name_taken_error": "Name for this account is already taken",
+    "account_created_message": "Created new account",
+    "enter_name_label": "Enter the name:",
+    "address_type": "Address Type",
+    "create_new_account": "Create an account"
+  },
+  "new_wallet": {
+    "new_mnemonic_label": "New mnemonic",
+    "restore_mnemonic_label": "Restore mnemonic",
+    "restore_ordinals_label": "Restore ordinals mnemonic",
+    "restore_from_private_key_label": "Restore from private key",
+    "restore_from_label": "Restore from",
+    "continue": "Continue",
+    "new_mnemonic": {
+      "error_phrase_blank": "Mnemonic phrase blank",
+      "warning": "If you lose these words, you will never be able to recover your lost account",
+      "i_saved_this_phrase": "I saved this phrase",
+      "copy": "Copy"
+    },
+    "restore_mnemonic": {
+      "incomplete_phrase_error": "Please insert all the words",
+      "invalid_words_error": "Words are invalid",
+      "show_root_acc": "Use legacy derivation"
+    },
+    "restore_private": {
+      "private_key": "Private key",
+      "recover": "Recover",
+      "invalid_private_key_error": "Invalid private key"
+    },
+    "create_wallet": "Create Wallet",
+    "restore_an_existing_wallet": "Restore An Existing Wallet"
+  },
+  "receive": {
+    "click_to_copy": "Click to copy",
+    "copy_address": "Copy address"
+  },
+  "send": {
+    "confirm_send": {
+      "to_addrses": "To address",
+      "from_address": "From address",
+      "amount": "Amount",
+      "fee": "Fee",
+      "included": "included",
+      "not_included": "not included",
+      "confirm": "Confirm",
+      "inscription_id": "Inscription Id"
+    },
+    "create_send": {
+      "minimum_amount_error": "Minimum amount is 0.0001 BTC",
+      "address_error": "Insert receiver's address",
+      "not_enough_money_error": "There's not enough money in your account",
+      "not_enough_fee_error": "Increase the fee",
+      "fee_is_text_error": "Fee should be integer",
+      "default_error": "Error has occurred",
+      "address": "Address",
+      "send_to": "Send To",
+      "amount": "Amount",
+      "amount_to_send": "Amount to send",
+      "enter_amount": "Enter amount",
+      "max_amount": "Max",
+      "fee_label": "Fee:",
+      "include_fee_in_the_amount_label": "Include fee in the amount",
+      "save_address": "Save address",
+      "continue": "Continue",
+      "fee_input": {
+        "fast": "Fast",
+        "slow": "Slow",
+        "custom": "Custom"
+      },
+      "address_input": {
+        "address_book": "Address book",
+        "address_placeholder": "Address"
+      },
+      "address_book": {
+        "address_book": "Address book",
+        "no_addresses": "No addresses here"
+      }
+    },
+    "finalle_send": {
+      "success": "Success",
+      "transaction_completed": "Transaction Completed!",
+      "explorer": "Explorer",
+      "back": "Back",
+      "rebroadcast_transaction": "Rebroadcast transaction",
+      "successfully_rebroadcasted": "Successfully rebroadcasted transaction"
+    }
+  },
+  "switch_account": {
+    "name_already_taken_error": "This name is already taken",
+    "copy_address": "Copy address",
+    "rename_account": "Rename account",
+    "export_private_key": "Export private key",
+    "detail_account": "Detail account",
+    "show_pk": {
+      "copy": "Copy"
+    }
+  },
+  "switch_wallet": {
+    "rename_wallet": "Rename wallet",
+    "show_mnemonic_private_key": "Show mnemonic private key",
+    "last_wallet_error": "You cannot delete your last wallet",
+    "remove_wallet": "Remove wallet",
+    "are_you_sure": "Are you sure you want to delete?",
+    "yes": "Yes",
+    "no": "No",
+    "copy": "Copy"
+  },
+  "about_account": {
+    "address_type": "Address Type",
+    "export_private_key": "Export Private Key"
+  },
+  "about_wallet": {
+    "recovery_phrase": "View Recovery Phrase",
+    "delete": "Delete",
+    "your_recovery_phrase": "Your Recovery Phrase",
+    "sub_title_recovery_phrase": "Write down these words in the right order and keep them stored safely",
+    "view_recovery_phrase": "View the Recovery Phrase Make sure no one is looking your screen"
+  },
+  "transaction_info": {
+    "txid": "TxId",
+    "confirmations_label": "Confirmations:",
+    "fee_label": "Fee:",
+    "value_label": "Value:",
+    "open_in_explorer": "Open in explorer",
+    "copied": "Copied",
+    "inputs": "Inputs",
+    "outputs": "Outputs",
+    "details": "Details"
+  },
+  "hooks": {
+    "transaction": {
+      "insufficient_balance_0": "Insufficient balance. Non-Inscription balance",
+      "insufficient_balance_1": "BTC is lower than",
+      "insufficient_balance_2": "BTC"
+    },
+    "wallet": {
+      "last_wallet_error": "You cannot delete your last wallet"
+    }
+  },
+  "advanced": {
+    "root_acc_warning": "Use legacy derivation",
+    "blank": "Nothing here for your wallet type"
+  },
+  "inscription_details": {
+    "content_length": "Content length",
+    "status.block_height": "Block height",
+    "content_type": "Content type",
+    "genesis": "Genesis",
+    "preview": "Preview",
+    "content": "Content",
+    "offset": "Offset",
+    "owner": "Owner",
+    "value": "Value",
+    "outpoint": "Outpoint",
+    "inscription_id": "Inscription id",
+    "status.block_time": "Timestamp",
+    "title": "Inscription",
+    "inscription_number": "Inscription number"
+  },
+  "inscriptions": {
+    "inscription_not_found": "Could not find inscription",
+    "tokens_not_found": "Could not find tokens",
+    "inscription_search_placeholder": "Number/Inscription id",
+    "token_search_placeholder": "Token name",
+    "mint_token_modal_title": "Mint transfer token",
+    "send_token_modal_title": "Send token",
+    "amount_to_mint": "Amount to mint",
+    "amount_is_text_error": "Amount should be integer",
+    "amount_cannot_be_fractional": "Amount cannot be fractional",
+    "amount_exceeds_balance": "Amount exceeds balance",
+    "transfer_inscribed": "Transfer inscribed successfully",
+    "failed_inscribe_transfer": "Failed to inscribe transfer",
+    "choose_transfer": "Choose transfers to send",
+    "total_amount": "Total amount",
+    "0_selected_inscriptions_error": "0 selected inscriptions",
+    "success_send_transfer": "Successfully sended transfer(s)",
+    "failed_send_transfer": "Failed to send transfer(s)"
+  },
+  "provider": {
+    "sign_tx": "Sign transaction",
+    "sign_message": "Sign message",
+    "you_are_signing": "You are signing",
+    "resolve": "Resolve",
+    "reject": "Reject",
+    "sign_request": "Sign request",
+    "send": "Send",
+    "sign": "Sign",
+    "create_transaction": "Create transaction",
+    "connecting": "Connecting",
+    "connect": "Connect",
+    "access_required": "Access required",
+    "to_address": "To address",
+    "connecting_account": "Connecting account",
+    "warning": "Warning",
+    "anyone_can_pay_warning": "This input has SIGHASH_SINGLE | ANYONECANPAY flag"
+  },
+  "export_private_key": {
+    "wif_private_key": "WIF Private Key:"
+  },
+  "explore": {
+    "feature": "Feature",
+    "recommended": "Recommended"
+  }
+}

@@ -1,0 +1,50 @@
+import i18n from "@/shared/locales/i18n";
+import { useAppState } from "@/ui/states/appState";
+import s from "./styles.module.scss";
+import cn from "classnames";
+import Analytics from "@/ui/utils/gtm";
+
+const Language = () => {
+  const { updateAppState } = useAppState((v) => ({
+    updateAppState: v.updateAppState,
+  }));
+
+  const changeLanguage = async (lng: string) => {
+    await i18n.changeLanguage(lng);
+    await updateAppState({ language: lng });
+    window.location.reload();
+  };
+
+  const newLanguage = (lng: string) => {
+    return async () => {
+      // NOTE: [GA] - Settings
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      await Analytics.fireEvent("st_language", {
+        action: "click",
+        label: lng,
+      });
+      await changeLanguage(lng);
+    };
+  };
+
+  return (
+    <div className={s.languages}>
+      <div className="flex w-10/12 justify-evenly gap-4">
+        <button
+          className={cn(s.langBtn, "btn primary")}
+          onClick={newLanguage("en")}
+        >
+          English
+        </button>
+        <button
+          className={cn(s.langBtn, "btn primary")}
+          onClick={newLanguage("ch")}
+        >
+          中國人
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Language;

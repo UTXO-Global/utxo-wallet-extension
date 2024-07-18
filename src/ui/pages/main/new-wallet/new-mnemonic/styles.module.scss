@@ -1,0 +1,25 @@
+.stepTitle {
+  @apply flex justify-between w-1/2;
+}
+
+.active {
+  @apply text-primary font-medium;
+}
+
+
+.savePhrase,
+.saveToClipboard {
+  @apply flex items-center w-full justify-center cursor-pointer select-none;
+}
+
+.continueWrapper {
+  @apply w-full flex justify-center pt-4 pb-2;
+}
+
+.savePhraseWrapper {
+  @apply flex flex-col gap-7 mt-6;
+}
+
+.savePhrase {
+  @apply flex items-center gap-4;
+}

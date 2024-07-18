@@ -1,0 +1,7 @@
+.form {
+  @apply w-full flex flex-col gap-8 mx-6;
+
+  .formTitle {
+    @apply text-center text-lg;
+  }
+}

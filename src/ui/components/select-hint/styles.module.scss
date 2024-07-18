@@ -1,0 +1,23 @@
+.input {
+  &Box {
+    @apply relative w-full cursor-default overflow-hidden text-left focus:outline-none sm:text-sm;
+  }
+
+  @apply bg-[#F5F5F5] rounded flex justify-center w-full p-2 text-primary text-base leading-[140%];
+
+  &.error {
+    @apply border-red-600;
+  }
+}
+
+.options {
+  &Box {
+    @apply absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#EBECEC] py-0.5 text-base shadow-lg outline-none sm:text-sm z-10;
+  }
+
+  @apply relative cursor-default select-none p-2 text-primary;
+
+  &Active {
+    @apply bg-[#F5F5F5] text-primary;
+  }
+}
