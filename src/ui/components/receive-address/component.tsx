@@ -7,10 +7,10 @@ import {
 import { FC, useMemo } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import toast from "react-hot-toast";
-import { QrCodeIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { isBitcoinNetwork } from "@/shared/networks";
 import Analytics from "@/ui/utils/gtm";
 import { useNavigate } from "react-router-dom";
+import { IcnCopy, IcnQr } from "../icons";
 
 interface Props {
   active: boolean;
@@ -66,15 +66,19 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
                   toast.success(t("transaction_info.copied"));
                 }}
               >
-                <DocumentDuplicateIcon className="w-4 h-4 text-[#ABA8A1]" />
+                <IcnCopy className="w-4 h-4 stroke-[#ABA8A1]" />
               </div>
               <div
                 className="w-[40px] h-[40px] rounded-full cursor-pointer bg-[#EBECEC] flex justify-center items-center"
                 onClick={() => {
-                  _navigate(`/pages/receive/${z.address}`, "pf_receive", "receive");
+                  _navigate(
+                    `/pages/receive/${z.address}`,
+                    "pf_receive",
+                    "receive"
+                  );
                 }}
               >
-                <QrCodeIcon className="w-4 h-4 text-[#ABA8A1]" />
+                <IcnQr className="w-4 h-4 fill-[#ABA8A1]" />
               </div>
             </div>
           </div>

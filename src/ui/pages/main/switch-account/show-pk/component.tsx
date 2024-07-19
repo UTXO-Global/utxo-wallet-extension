@@ -8,13 +8,11 @@ import {
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  ChevronDownIcon,
-  DocumentDuplicateIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import cn from "classnames";
 import { NETWORK_ICON } from "@/shared/networks";
+import { IcnCopy } from "@/ui/components/icons";
 
 const ShowPk = () => {
   const [unlocked, setUnlocked] = useState(false);
@@ -107,7 +105,7 @@ const ShowPk = () => {
                             toast.success(t("transaction_info.copied"));
                           }}
                         >
-                          <DocumentDuplicateIcon className="w-4 h-4 text-[#ABA8A1]" />
+                          <IcnCopy className="w-4 h-4 text-[#ABA8A1]" />
                         </div>
                       </div>
                       {selectedAddress === z.address && !isShow ? (

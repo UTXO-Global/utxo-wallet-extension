@@ -4,7 +4,8 @@ import { useGetCurrentAccount } from "@/ui/states/walletState";
 import { FC } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import toast from "react-hot-toast";
-import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import { IcnCopy } from "@/ui/components/icons";
+
 
 interface Props {
   active: boolean;
@@ -38,7 +39,7 @@ const CopyAddress: FC<Props> = ({ active, onClose }) => {
                 toast.success(t("transaction_info.copied"));
               }}
             >
-              <DocumentDuplicateIcon className="w-4 h-4 text-[#ABA8A1]" />
+              <IcnCopy className="w-4 h-4 stroke-[#ABA8A1]" />
             </div>
           </div>
         ))}
