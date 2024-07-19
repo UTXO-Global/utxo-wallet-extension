@@ -146,7 +146,7 @@ export default function PagesLayout() {
         title: t("components.layout.network"),
       },
       {
-        route: "/pages/explorer",
+        route: "/pages/explore",
         title: t("components.layout.explorer"),
       },
     ],
@@ -251,7 +251,7 @@ export default function PagesLayout() {
         <div
           className={s.header}
           style={{
-            ...(currentRoute.pathname === "/pages/explorer"
+            ...(currentRoute.pathname === "/pages/explore"
               ? { width: "350px" }
               : {}),
           }}
@@ -318,7 +318,7 @@ export default function PagesLayout() {
       <div
         className={cn(s.contentDiv)}
         style={{
-          ...(currentRoute.pathname === "/pages/explorer"
+          ...(currentRoute.pathname === "/pages/explore"
             ? { width: "350px" }
             : {}),
         }}

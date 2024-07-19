@@ -41,10 +41,10 @@ const BottomPanel = () => {
       />
     },*/
     {
-      path: "/pages/explorer",
+      path: "/pages/explore",
       icon: <IcnGlobal
         className={cn(`w-6 h-6 transition-all stroke-[#ABA8A1] group-hover:stroke-primary`, {
-          "!stroke-primary": currentRoute.pathname === "/pages/explorer",
+          "!stroke-primary": currentRoute.pathname === "/pages/explore",
         })}
       />
     }

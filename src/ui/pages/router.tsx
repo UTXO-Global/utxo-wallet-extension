@@ -37,7 +37,7 @@ import CreateTx from "./provider/create-tx/component";
 import SignLNInvoice from "./provider/sign-ln-invoice";
 import SignMessage from "./provider/sign-message";
 import SignPsbt from "./provider/sign-psbt";
-import Explorer from "./main/explore";
+import Explore from "./main/explore";
 import RestoreType from "./main/new-wallet/restore-type";
 
 export const guestRouter = createHashRouter([
@@ -88,7 +88,7 @@ export const authenticatedRouter = createHashRouter([
       { path: "security", element: <Security /> },
       { path: "inscription-details", element: <InscriptionDetails /> },
       { path: "inscriptions", element: <Inscriptions /> },
-      { path: "explorer", element: <Explorer /> },
+      { path: "explore", element: <Explore /> },
     ],
   },
   {
