@@ -2,7 +2,6 @@ import { useWalletState } from "@/ui/states/walletState";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronRightIcon,
-  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { t } from "i18next";
@@ -10,6 +9,7 @@ import { useState } from "react";
 import Rename from "@/ui/components/rename";
 import { useDeleteWallet } from "@/ui/hooks/wallet";
 import Modal from "@/ui/components/modal";
+import { IcnPencil } from "@/ui/components/icons/IcnPencil";
 
 const WalletDetail = () => {
   const [renameId, setRenameId] = useState<number | undefined>(undefined);
@@ -45,7 +45,7 @@ const WalletDetail = () => {
     <div className="w-full h-full p-4">
       <div className="flex justify-start gap-2 items-center">
         <h4 className="text-center fon-bold text-lg">{wallet.name}</h4>
-        <PencilSquareIcon
+        <IcnPencil
           className="w-5 cursor-pointer"
           onClick={() => setRenameId(Number(walletId))}
         />

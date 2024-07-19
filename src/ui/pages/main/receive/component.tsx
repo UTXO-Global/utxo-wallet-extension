@@ -1,47 +1,52 @@
+import { NETWORK_ICON } from "@/shared/networks";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import QRCode from "qr-code-styling";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-
-const qrCode = new QRCode({
-  width: 183,
-  height: 183,
-  type: "svg",
-  margin: 3,
-  image: "/icon.ico",
-  dotsOptions: {
-    type: "classy-rounded",
-    gradient: {
-      type: "linear",
-      rotation: 45,
-      colorStops: [
-        {
-          color: "#0D0D0D",
-          offset: 0,
-        },
-        {
-          color: "#0D0D0D",
-          offset: 5,
-        },
-      ],
-    },
-  },
-  qrOptions: {
-    errorCorrectionLevel: "M",
-  },
-  backgroundOptions: {
-    color: "#ffffff00",
-  },
-  imageOptions: {
-    crossOrigin: "anonymous",
-    margin: 5,
-  },
-});
 
 const Receive = () => {
   const { address: selectedAddress } = useParams();
   const ref = useRef(null);
+  const currentNetwork = useGetCurrentNetwork();
+
+  const qrCode = useMemo(() => {
+    return new QRCode({
+      width: 183,
+      height: 183,
+      type: "svg",
+      margin: 3,
+      image: NETWORK_ICON[currentNetwork.slug],
+      dotsOptions: {
+        type: "classy-rounded",
+        gradient: {
+          type: "linear",
+          rotation: 45,
+          colorStops: [
+            {
+              color: "#0D0D0D",
+              offset: 0,
+            },
+            {
+              color: "#0D0D0D",
+              offset: 5,
+            },
+          ],
+        },
+      },
+      qrOptions: {
+        errorCorrectionLevel: "M",
+      },
+      backgroundOptions: {
+        color: "#ffffff00",
+      },
+      imageOptions: {
+        crossOrigin: "anonymous",
+        margin: 5,
+      },
+    });
+  }, [currentNetwork.slug]);
 
   useEffect(() => {
     qrCode.append(ref.current);
@@ -88,7 +93,12 @@ const Receive = () => {
         />
       </div> */}
       <div className="flex items-center flex-col gap-6 justify-center mt-[48px]">
-        <div title={t("receive.click_to_copy")} onClick={onCopy} ref={ref} className="cursor-pointer" />
+        <div
+          title={t("receive.click_to_copy")}
+          onClick={onCopy}
+          ref={ref}
+          className="cursor-pointer"
+        />
         <div className="rounded-[16px] border border-[#F5F5F5] p-4 break-all text-center text-[14px] leading-[18px] text-primary">
           {selectedAddress}
         </div>

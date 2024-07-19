@@ -8,8 +8,6 @@ import {
 import { Menu } from "@headlessui/react";
 import {
   ChevronDownIcon,
-  ChevronLeftIcon,
-  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import cn from "classnames";
 import { t } from "i18next";
@@ -18,6 +16,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import SearchInscriptions from "../search-inscriptions";
 import s from "./styles.module.scss";
 import BottomPanel from "@/ui/pages/main/wallet/bottom-panel";
+import { IcnPlusCircle } from "../icons";
 
 interface IRouteTitle {
   route: string | RegExp;
@@ -54,7 +53,7 @@ export default function PagesLayout() {
         action:
           currentWallet && currentWallet.type === "root"
             ? {
-              icon: <PlusCircleIcon className="w-8 h-8" />,
+              icon: <IcnPlusCircle className="w-8 h-8" />,
               link: "/pages/create-new-account",
             }
             : undefined,
@@ -91,7 +90,7 @@ export default function PagesLayout() {
         route: "/pages/switch-wallet",
         title: t("components.layout.switch_wallet"),
         action: {
-          icon: <PlusCircleIcon className="w-8 h-8" />,
+          icon: <IcnPlusCircle className="w-8 h-8" />,
           link: "/pages/create-new-wallet",
         },
       },
@@ -147,7 +146,7 @@ export default function PagesLayout() {
         title: t("components.layout.network"),
       },
       {
-        route: "/pages/explorer",
+        route: "/pages/explore",
         title: t("components.layout.explorer"),
       },
     ],
@@ -252,7 +251,7 @@ export default function PagesLayout() {
         <div
           className={s.header}
           style={{
-            ...(currentRoute.pathname === "/pages/explorer"
+            ...(currentRoute.pathname === "/pages/explore"
               ? { width: "350px" }
               : {}),
           }}
@@ -319,7 +318,7 @@ export default function PagesLayout() {
       <div
         className={cn(s.contentDiv)}
         style={{
-          ...(currentRoute.pathname === "/pages/explorer"
+          ...(currentRoute.pathname === "/pages/explore"
             ? { width: "350px" }
             : {}),
         }}

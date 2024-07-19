@@ -1,7 +1,8 @@
-import { GlobeAltIcon, WalletIcon } from "@heroicons/react/24/outline";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import cn from "classnames";
-import { IcnImage, IcnSwap, IcnThunder } from "@/ui/components/icons";
+import { IcnImage, IcnSwap, IcnThunder, IcnWallet, IcnGlobal } from "@/ui/components/icons";
 
 const BottomPanel = () => {
   const navigate = useNavigate();
@@ -9,9 +10,9 @@ const BottomPanel = () => {
   const BottomNavs = [
     {
       path: "/home",
-      icon: <WalletIcon
-        className={cn(`w-6 h-6 transition-all text-[#ABA8A1] group-hover:text-primary`, {
-          "!text-primary": currentRoute.pathname === "/home",
+      icon: <IcnWallet
+        className={cn(`w-6 h-6 transition-all stroke-[#ABA8A1] group-hover:stroke-primary`, {
+          "!stroke-primary": currentRoute.pathname === "/home",
         })}
       />
     },
@@ -40,10 +41,10 @@ const BottomPanel = () => {
       />
     },*/
     {
-      path: "/pages/explorer",
-      icon: <GlobeAltIcon
-        className={cn(`w-6 h-6 transition-all text-[#ABA8A1] group-hover:text-primary`, {
-          "!text-primary": currentRoute.pathname === "/pages/explorer",
+      path: "/pages/explore",
+      icon: <IcnGlobal
+        className={cn(`w-6 h-6 transition-all stroke-[#ABA8A1] group-hover:stroke-primary`, {
+          "!stroke-primary": currentRoute.pathname === "/pages/explore",
         })}
       />
     }

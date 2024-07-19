@@ -1,9 +1,9 @@
 import { shortAddress } from "@/shared/utils/transactions";
-import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { useGetCurrentWallet } from "@/ui/states/walletState";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { t } from "i18next";
+import { IcnCopy } from "@/ui/components/icons";
 
 const AddressType = () => {
   const { accId } = useParams();
@@ -31,7 +31,7 @@ const AddressType = () => {
               toast.success(t("transaction_info.copied"));
             }}
           >
-            <DocumentDuplicateIcon className="w-4 h-4 text-[#ABA8A1]" />
+            <IcnCopy className="w-4 h-4 stroke-[#ABA8A1]" />
           </div>
         </div>
       ))}
