@@ -293,7 +293,7 @@ const CreateSend = () => {
 
       {loading ? (
         <div className="flex justify-center w-full">
-          <Loading />
+          <Loading color="#ODODOD" />
         </div>
       ) : (
         <button

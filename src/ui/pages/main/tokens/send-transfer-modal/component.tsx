@@ -145,7 +145,7 @@ const SendTransferModal: FC<Props> = ({
       <div className="w-full flex justify-center items-center">
         {loading ? (
           <div className="w-full flex justify-center items-center">
-            <Loading />
+            <Loading color="#ODODOD" />
           </div>
         ) : (
           <button

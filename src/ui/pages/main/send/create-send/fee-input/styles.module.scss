@@ -1,17 +1,17 @@
 .card {
-  @apply bg-dark-purple flex flex-col gap-0.5 p-3 rounded-xl justify-center w-full select-none cursor-pointer;
+  @apply bg-[#F5F5F5] flex flex-col gap-0.5 p-3 rounded-xl justify-center w-full select-none cursor-pointer;
 
   &Wrapper {
     @apply flex gap-2 w-full;
   }
 
   &Selected {
-    @apply bg-purple-3;
+    @apply bg-[#EBECEC];
   }
 }
 
 .description {
-  @apply text-gray-300 text-xs;
+  @apply text-primary text-xs;
 }
 
 .title {

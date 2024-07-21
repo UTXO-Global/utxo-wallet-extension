@@ -43,7 +43,7 @@ const NewAccount = () => {
   };
 
   if (loading) {
-    return <Loading />;
+    return <Loading color="#ODODOD" />;
   }
 
   return (

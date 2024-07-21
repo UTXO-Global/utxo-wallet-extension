@@ -48,7 +48,7 @@ const SearchField: FC<SearchFieldProps> = ({
       />
       {loading ? (
         <div className="w-8 h-8 flex align-center">
-          <Loading />
+          <Loading color="#ODODOD" />
         </div>
       ) : foundData === undefined ? (
         <MagnifyingGlassCircleIcon className="w-8 h-8" />

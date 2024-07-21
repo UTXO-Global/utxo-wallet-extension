@@ -37,7 +37,7 @@ const Layout: FC<Props> = ({
   if (!origin) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <ReactLoading type="cylon" color="#fff" />
+        <ReactLoading type="cylon" color="#ODODOD" />
       </div>
     );
   }
