@@ -27,13 +27,16 @@ const SignMessage = () => {
       resolveBtnText={t("provider.sign")}
     >
       <>
-        <KeyIcon className="w-10 h-10 text-primary" />
-        <h4 className="text-xl font-medium">{t("provider.sign_request")}</h4>
-        <div className="text-sm text-gray-400">
-          {t("provider.you_are_signing")}
-        </div>
-        <div className="p-2 bg-input-bg rounded-xl max-h-full w-full">
-          <div className="break-words whitespace-pre-wrap max-h-60 overflow-y-auto px-1 text-base">
+        <img
+          src="/sign-message.png"
+          alt="sign message"
+          className="w-[116px] mx-auto"
+        />
+        <h3 className="text-[24px] leading-[28px] font-medium text-primary text-center capitalize mt-6">
+          {t("provider.sign_request")}
+        </h3>
+        <div className="px-4 py-[20px] rounded-lg bg-[#F5F5F5] mt-10">
+          <div className="break-words whitespace-pre-wrap max-h-60 overflow-y-auto text-primary text-base">
             {message}
           </div>
         </div>

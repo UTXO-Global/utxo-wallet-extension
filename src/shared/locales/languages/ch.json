@@ -222,5 +222,24 @@
   "explore": {
     "feature": "Feature",
     "recommended": "Recommended"
+  },
+  "provider": {
+    "sign_tx": "Sign transaction",
+    "sign_message": "Sign message",
+    "you_are_signing": "You are signing",
+    "resolve": "Resolve",
+    "reject": "Reject",
+    "sign_request": "Sign request",
+    "send": "Send",
+    "sign": "Sign",
+    "create_transaction": "Create transaction",
+    "connecting": "Connecting",
+    "connect": "Connect",
+    "access_required": "Access required",
+    "to_address": "To address",
+    "connecting_account": "Connecting account",
+    "warning": "Warning",
+    "anyone_can_pay_warning": "This input has SIGHASH_SINGLE | ANYONECANPAY flag",
+    "connect_with_utxo": "Connect With UTXO"
   }
 }
