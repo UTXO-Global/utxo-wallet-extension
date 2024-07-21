@@ -61,7 +61,7 @@ const RestoreMnemonicOrdinals = () => {
     }
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading color="#ODODOD" />;
 
   return (
     <div className={s.restoreMnemonic}>

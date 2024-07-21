@@ -251,8 +251,8 @@
   "hooks": {
     "transaction": {
       "insufficient_balance_0": "Insufficient balance. Non-Inscription balance",
-      "insufficient_balance_1": "BTC is lower than",
-      "insufficient_balance_2": "BTC"
+      "insufficient_balance_1": "Token is lower than",
+      "insufficient_balance_2": "Token"
     },
     "wallet": {
       "last_wallet_error": "You cannot delete your last wallet"

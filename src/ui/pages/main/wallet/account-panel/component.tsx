@@ -183,7 +183,7 @@ const AccountPanel = () => {
                 {currentAccount?.balance === undefined ? (
                   <Loading
                     type="spin"
-                    color="#fff"
+                    color="#ODODOD"
                     width={"2rem"}
                     height={"2rem"}
                     className="react-loading pr-2"

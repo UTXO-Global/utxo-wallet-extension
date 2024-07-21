@@ -45,7 +45,7 @@ const Inscriptions = () => {
   );
 
   if (currentAccount?.inscriptionCounter === undefined && managerLoading)
-    return <Loading />;
+    return <Loading color="#ODODOD" />;
 
   return (
     <div className={s.inscriptionDiv}>

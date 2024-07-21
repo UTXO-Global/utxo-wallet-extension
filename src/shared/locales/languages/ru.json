@@ -184,8 +184,8 @@
   "hooks": {
     "transaction": {
       "insufficient_balance_0": "Недостаточный баланс. Неинскрибированный баланс",
-      "insufficient_balance_1": "BTC) ниже чем",
-      "insufficient_balance_2": "BTC"
+      "insufficient_balance_1": "Token) ниже чем",
+      "insufficient_balance_2": "Token"
     },
     "wallet": {
       "last_wallet_error": "Вы не можете удалить ваш последний кошелек"

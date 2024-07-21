@@ -249,9 +249,16 @@ class KeyringService {
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
         inputs.push(...collected)
       );
-      txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.push(transferOutput, changeOutput)
-      );
+      if (collectedSum.sub(neededCapacity).eq(BI.from(0))) {
+        txSkeleton = txSkeleton.update("outputs", (outputs) =>
+          outputs.push(transferOutput)
+        );
+      } else {
+        txSkeleton = txSkeleton.update("outputs", (outputs) =>
+          outputs.push(transferOutput, changeOutput)
+        );
+      }
+    
       txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
         cellDeps.push({
           outPoint: {
