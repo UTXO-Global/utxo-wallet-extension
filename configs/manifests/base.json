@@ -2,7 +2,7 @@
   "short_name": "UTXO Global Wallet",
   "author": "UTXO Global",
   "manifest_version": 3,
-  "name": "UTXO Global Wallet - Where UTXO Technology Meets Global Innovation",
+  "name": "UTXO Global Wallet",
   "description": "Leverage the UTXO model to manage your digital assets with a secure, scalable, and interoperable experience.",
   "icons": {
     "48": "/icon-48.png",

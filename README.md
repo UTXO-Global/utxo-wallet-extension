@@ -14,7 +14,7 @@ UTXO Global Wallet for Nervos - A New Horizon for Your Crypto Adventures!
 
 #### 🌟 Contact Us:
 - [Twitter/X](https://x.com/UTXOGlobal)
-- [Email](mailto:utxoglobal.contact@gmail.com)
+- [Email](mailto:contact@utxo.global)
 - [Substack](https://utxoglobal.substack.com)
 
 
