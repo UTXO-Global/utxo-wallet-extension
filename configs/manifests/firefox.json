@@ -6,7 +6,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "utxoglobal.contact@gmail.com",
+      "id": "contact@utxo.global",
       "strict_min_version": "113.0"
     },
     "gecko_android": {

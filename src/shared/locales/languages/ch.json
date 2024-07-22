@@ -240,6 +240,6 @@
     "connecting_account": "连接账户",
     "warning": "警告",
     "anyone_can_pay_warning": "此输入具有 SIGHASH_SINGLE | ANYONECANPAY 标志",
-    "connect_with_utxo": "连接 UTXO"
+    "connect_with_utxo": "连接 UTXO 账户"
   }
 }
