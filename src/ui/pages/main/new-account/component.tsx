@@ -52,7 +52,6 @@ const NewAccount = () => {
       onSubmit={handleSubmit(createNewAcc)}
       style={{
         paddingBottom: "24px",
-        gap: "12px",
       }}
     >
       <p

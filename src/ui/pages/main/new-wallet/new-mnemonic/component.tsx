@@ -110,11 +110,16 @@ const NewMnemonic = () => {
             ))}
           </div>
         </div>
-        <CopyBtn
-          label={t("new_wallet.new_mnemonic.copy")}
-          value={mnemonicPhrase}
-          className="mx-auto flex items-center gap-1 bg-[#EBECEC] rounded-full px-6 py-2"
-        />
+        <div
+          className="py-1 w-[80px] mx-auto flex justify-center rounded-full bg-[#F5F5F5] transition-colors hover:bg-[#EBECEC] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
+          onClick={async () => {
+            await navigator.clipboard.writeText(mnemonicPhrase);
+            toast.success(t("transaction_info.copied"));
+          }}
+        >
+          Copy
+        </div>
+
         <Checkbox
           label={t("new_wallet.new_mnemonic.i_saved_this_phrase")}
           onChange={onSwitch}

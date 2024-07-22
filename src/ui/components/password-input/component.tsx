@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { IcnEyesSlash, IcnEye } from "../icons";
 import { useState } from "react";
 import s from "./styles.module.scss";
 
@@ -51,9 +51,9 @@ const PasswordInput = <T extends FieldValues>({
           }}
         >
           {hidden ? (
-            <EyeIcon className={s.icon} />
+            <IcnEyesSlash className={s.icon} />
           ) : (
-            <EyeSlashIcon className={s.icon} />
+            <IcnEye className={s.icon} />
           )}
         </div>
       </div>

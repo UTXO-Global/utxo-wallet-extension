@@ -44,7 +44,7 @@ const WalletDetail = () => {
   return (
     <div className="w-full h-full p-4">
       <div className="flex justify-start gap-2 items-center">
-        <h4 className="text-center fon-bold text-lg">{wallet.name}</h4>
+        <h4 className="text-center font-medium text-lg">{wallet.name}</h4>
         <IcnPencil
           className="w-5 cursor-pointer"
           onClick={() => setRenameId(Number(walletId))}
@@ -54,13 +54,13 @@ const WalletDetail = () => {
       <div className="grid gap-2 content-start mt-2">
         <Link
           to={`/pages/show-mnemonic/${walletId}`}
-          className="flex justify-between items-center p-4 cursor-pointer text-base font-medium text-primary bg-grey-300 rounded-lg"
+          className="flex justify-between items-center p-4 cursor-pointer text-base text-primary bg-grey-300 rounded-lg"
         >
           <p>{t("about_wallet.recovery_phrase")}</p>
           <ChevronRightIcon className="w-4 text-[#ABA8A1]" />
         </Link>
         <div
-          className="flex justify-between items-center p-4 cursor-pointer text-base font-medium text-primary bg-grey-300 rounded-lg"
+          className="flex justify-between items-center p-4 cursor-pointer text-base text-primary bg-grey-300 rounded-lg"
           onClick={() => {
             if (wallets.length <= 1)
               toast.error(t("switch_wallet.last_wallet_error"));

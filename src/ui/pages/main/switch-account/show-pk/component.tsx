@@ -99,13 +99,13 @@ const ShowPk = () => {
                           </p>
                         </div>
                         <div
-                          className="w-[40px] h-[40px] rounded-full cursor-pointer bg-[#EBECEC] flex justify-center items-center"
+                          className="w-[40px] h-[40px] rounded-full cursor-pointer transition-colors bg-[#F5F5F5] hover:bg-[#EBECEC] flex justify-center items-center"
                           onClick={async () => {
                             await navigator.clipboard.writeText(secrets[i]);
                             toast.success(t("transaction_info.copied"));
                           }}
                         >
-                          <IcnCopy className="w-4 h-4 text-[#ABA8A1]" />
+                          <IcnCopy className="w-4 h-4 stroke-[#ABA8A1]" />
                         </div>
                       </div>
                       {selectedAddress === z.address && !isShow ? (

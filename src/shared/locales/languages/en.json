@@ -121,7 +121,7 @@
     "max_length_error": "Maximum name length is 16",
     "name_taken_error": "Name for this account is already taken",
     "account_created_message": "Created new account",
-    "enter_name_label": "Enter the name:",
+    "enter_name_label": "Enter The Name",
     "address_type": "Address Type",
     "create_new_account": "Create an account"
   },
@@ -157,8 +157,8 @@
   },
   "send": {
     "confirm_send": {
-      "to_addrses": "To address",
-      "from_address": "From address",
+      "to_addrses": "To Address",
+      "from_address": "From Address",
       "amount": "Amount",
       "fee": "Fee",
       "included": "included",
@@ -234,7 +234,7 @@
     "recovery_phrase": "View Recovery Phrase",
     "delete": "Delete",
     "your_recovery_phrase": "Your Recovery Phrase",
-    "sub_title_recovery_phrase": "Write down these words in the right order and keep them stored safely",
+    "sub_title_recovery_phrase": "Copy these words in the right order and keep them stored safely",
     "view_recovery_phrase": "View the Recovery Phrase Make sure no one is looking your screen"
   },
   "transaction_info": {

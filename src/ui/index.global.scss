@@ -97,11 +97,11 @@ input[type="number"] {
 }
 
 .primary {
-  @apply text-light-100 hover:enabled:bg-[#141414] transition-colors bg-primary leading-tight border border-primary;
+  @apply text-light-100 hover:enabled:bg-[#2C2C2C] transition-colors bg-primary leading-tight border border-primary hover:border-[#2C2C2C];
 }
 
 .secondary {
-  @apply border border-primary bg-transparent text-primary leading-tight;
+  @apply border border-primary bg-transparent text-primary leading-tight transition-colors hover:bg-primary hover:text-white;
 }
 
 .input {

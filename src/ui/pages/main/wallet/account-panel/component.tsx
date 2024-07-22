@@ -20,7 +20,8 @@ import {
 } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
-import ReceiveAddress from "@/ui/components/receive-address"
+import ReceiveAddress from "@/ui/components/receive-address";
+import { formatNumber } from "@/shared/utils";
 
 const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
@@ -163,7 +164,7 @@ const AccountPanel = () => {
                     className="underline text-[#FFA23A] cursor-pointer"
                     onClick={faucetCkb}
                   >
-                    Faucet here
+                    Faucet Here
                   </span>
                 ) : (
                   <a
@@ -172,7 +173,7 @@ const AccountPanel = () => {
                     className="underline text-[#FFA23A] cursor-pointer"
                     rel="noreferrer"
                   >
-                    Faucet here
+                    Faucet Here
                   </a>
                 )}
               </p>
@@ -189,17 +190,7 @@ const AccountPanel = () => {
                     className="react-loading pr-2"
                   />
                 ) : (
-                  (currentAccount?.balance ?? 0).toFixed(
-                    currentAccount.balance?.toFixed(0).toString().length >= 4
-                      ? currentNetwork.decimal -
-                          currentAccount.balance?.toFixed(0)?.toString()
-                            .length <
-                        0
-                        ? 0
-                        : currentNetwork.decimal -
-                          currentAccount.balance?.toFixed(0)?.toString().length
-                      : currentNetwork.decimal
-                  )
+                  formatNumber((currentAccount?.balance ?? 0) as any, 2, 8)
                 )}{" "}
                 {currentNetwork.coinSymbol}
               </div>
@@ -237,11 +228,25 @@ const AccountPanel = () => {
               {panelNavs.map((nav, i) => (
                 <div
                   key={`panel-account-nav-${i}`}
-                  className="py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]"
+                  className={cn(
+                    `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
+                    {
+                      "!cursor-not-allowed hover:!bg-grey-300":
+                        currentAccount?.balance === undefined &&
+                        nav.navPath === "/pages/create-send",
+                    }
+                  )}
                   onClick={() => {
                     if (nav.isPopup) {
-                      setIsShowReceive(true)
-                    } else _navigate(nav.navPath, nav.navName, nav.navLabel);
+                      setIsShowReceive(true);
+                    } else {
+                      if (
+                        currentAccount?.balance === undefined &&
+                        nav.navPath === "/pages/create-send"
+                      )
+                        return;
+                      _navigate(nav.navPath, nav.navName, nav.navLabel);
+                    }
                   }}
                 >
                   {nav.icon}
@@ -252,7 +257,10 @@ const AccountPanel = () => {
           </>
         )}
       </Popover>
-      <ReceiveAddress active={isShowReceive} onClose={() => setIsShowReceive(false)} />
+      <ReceiveAddress
+        active={isShowReceive}
+        onClose={() => setIsShowReceive(false)}
+      />
     </div>
   );
 };

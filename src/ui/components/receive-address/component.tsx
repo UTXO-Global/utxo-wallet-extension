@@ -60,7 +60,7 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
             </div>
             <div className="flex items-center gap-1">
               <div
-                className="w-[40px] h-[40px] rounded-full cursor-pointer bg-[#EBECEC] flex justify-center items-center"
+                className="w-[40px] h-[40px] rounded-full cursor-pointer transition-colors bg-[#F5F5F5] hover:bg-[#EBECEC] flex justify-center items-center"
                 onClick={async () => {
                   await navigator.clipboard.writeText(z.address);
                   toast.success(t("transaction_info.copied"));
@@ -69,7 +69,7 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
                 <IcnCopy className="w-4 h-4 stroke-[#ABA8A1]" />
               </div>
               <div
-                className="w-[40px] h-[40px] rounded-full cursor-pointer bg-[#EBECEC] flex justify-center items-center"
+                className="w-[40px] h-[40px] rounded-full cursor-pointer transition-colors bg-[#F5F5F5] hover:bg-[#EBECEC] flex justify-center items-center"
                 onClick={() => {
                   _navigate(
                     `/pages/receive/${z.address}`,

@@ -117,7 +117,7 @@ const ShowMnemonic = () => {
         {isShow ? (
           <div className="flex w-full justify-center mt-10 gap-2">
             <div
-              className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
+              className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] transition-colors hover:bg-[#EBECEC] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
               onClick={async () => {
                 await navigator.clipboard.writeText(phrase);
                 toast.success(t("transaction_info.copied"));
@@ -126,7 +126,7 @@ const ShowMnemonic = () => {
               Copy
             </div>
             <div
-              className="w-[80px] flex justify-center items-center py-1 rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
+              className="w-[80px] flex justify-center items-center py-1 rounded-full bg-[#F5F5F5] transition-colors hover:bg-[#EBECEC] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
               onClick={async () => {
                 setIsShow(false);
               }}

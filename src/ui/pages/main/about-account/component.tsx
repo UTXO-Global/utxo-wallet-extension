@@ -54,8 +54,8 @@ const AccountDetail = () => {
         alt=""
         className="mx-auto"
       />
-      <div className="flex justify-center gap-2 items-center mt-4 mb-10">
-        <h4 className="text-center fon-medium text-[20px] leading-[28px] text-primary p-[10px]">
+      <div className="flex justify-center gap-[10px] items-center mt-4 mb-10">
+        <h4 className="text-center font-medium text-[20px] leading-[28px] text-primary py-[10px]">
           {account.name}
         </h4>
         <IcnPencil
@@ -67,14 +67,14 @@ const AccountDetail = () => {
       <div className="grid gap-2 content-start mt-8">
         <Link
           to={`/pages/address-type/${accId}`}
-          className="flex justify-between items-center p-4 cursor-pointer text-base font-medium text-primary bg-grey-300 rounded-lg"
+          className="flex justify-between items-center p-4 cursor-pointer text-base text-primary bg-grey-300 rounded-lg"
         >
           <p>{t("about_account.address_type")}</p>
           <ChevronRightIcon className="w-4 text-[#ABA8A1]" />
         </Link>
         <Link
           to={`/pages/show-pk/${accId}`}
-          className="flex justify-between items-center p-4 cursor-pointer text-base font-medium text-primary bg-grey-300 rounded-lg"
+          className="flex justify-between items-center p-4 cursor-pointer text-base text-primary bg-grey-300 rounded-lg"
         >
           <p>{t("about_account.export_private_key")}</p>
           <ChevronRightIcon className="w-4 text-[#ABA8A1]" />
