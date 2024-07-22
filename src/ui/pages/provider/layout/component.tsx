@@ -2,7 +2,6 @@ import { useControllersState } from "@/ui/states/controllerState";
 import { t } from "i18next";
 import { FC, useEffect, useState } from "react";
 import ReactLoading from "react-loading";
-import s from "./styles.module.scss";
 
 interface Props {
   documentTitle: string;
@@ -51,18 +50,26 @@ const Layout: FC<Props> = ({
   };
 
   return (
-    <div className={s.container}>
-      <div className={s.originWrapper}>
-        <img src={iconUrl} className="w-6 h-6 rounded-xl" alt="icon" />
-        <span>{origin}</span>
+    <div className="flex flex-col justify-between px-4 w-full max-standard:min-h-screen pt-10 pb-6">
+      <div>
+        <div className="flex justify-center">
+          <div className="rounded-[100px] px-4 py-2 flex gap-2 justify-center text-base border border-primary">
+            <img src={iconUrl} className="w-6 h-6 rounded-xl" alt="icon" />
+            <span>{origin}</span>
+          </div>
+        </div>
+
+        <div className="mt-[48px]">
+          {children}
+        </div>
       </div>
-      <div className={s.content}>{children}</div>
-      <div className={s.btnContainer}>
-        <button className={resolveBtnClassName} onClick={onResolve}>
-          {resolveBtnText ?? t("provider.resolve")}
-        </button>
-        <button className={s.reject} onClick={onReject}>
+
+      <div className="grid gap-2 grid-cols-2 pt-4">
+        <button className="btn secondary" onClick={onReject}>
           {t("provider.reject")}
+        </button>
+        <button className="btn primary" onClick={onResolve}>
+          {resolveBtnText ?? t("provider.resolve")}
         </button>
       </div>
     </div>
