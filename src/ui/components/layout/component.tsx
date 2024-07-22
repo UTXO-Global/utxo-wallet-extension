@@ -53,7 +53,7 @@ export default function PagesLayout() {
         action:
           currentWallet && currentWallet.type === "root"
             ? {
-              icon: <IcnPlusCircle className="w-8 h-8" />,
+              icon: <IcnPlusCircle className="w-6 h-6" />,
               link: "/pages/create-new-account",
             }
             : undefined,
@@ -90,7 +90,7 @@ export default function PagesLayout() {
         route: "/pages/switch-wallet",
         title: t("components.layout.switch_wallet"),
         action: {
-          icon: <IcnPlusCircle className="w-8 h-8" />,
+          icon: <IcnPlusCircle className="w-6 h-6" />,
           link: "/pages/create-new-wallet",
         },
       },

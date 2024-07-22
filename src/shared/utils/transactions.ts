@@ -6,6 +6,7 @@ import * as bitcoinjs from "bitcoinjs-lib";
 import { payments as bitcoinPayments, payments } from "bitcoinjs-lib";
 import { getNetworkDataBySlug, isBitcoinNetwork } from "../networks";
 import { AddressType, NetworkSlug } from "../networks/types";
+import { formatNumber } from ".";
 
 export enum TxDirection {
   out = 0,
@@ -63,14 +64,7 @@ export const getTransactionValue = (
       break;
   }
 
-  if (typeof fixed !== "undefined") {
-    if (value < 100) {
-      return Math.abs(value).toFixed(fixed + 1);
-    }
-    return Math.abs(value).toFixed(fixed);
-  }
-
-  return Math.abs(value);
+  return formatNumber(Math.abs(value), 2, 8);
 };
 
 export const isIncomeTx = (

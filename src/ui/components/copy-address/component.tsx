@@ -33,7 +33,7 @@ const CopyAddress: FC<Props> = ({ active, onClose }) => {
               </p>
             </div>
             <div
-              className="w-[40px] h-[40px] rounded-full cursor-pointer bg-[#EBECEC] flex justify-center items-center"
+              className="w-[40px] h-[40px] rounded-full cursor-pointer transition-colors bg-[#F5F5F5] hover:bg-[#EBECEC] flex justify-center items-center"
               onClick={async () => {
                 await navigator.clipboard.writeText(z.address);
                 toast.success(t("transaction_info.copied"));

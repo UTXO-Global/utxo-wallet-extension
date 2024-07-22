@@ -81,7 +81,7 @@ const ConfirmSend = () => {
           <div className={s.container}>
             {fields.map((i) => (
               <div key={i.label} className={s.item}>
-                <div className={s.label}>{i.label}:</div>
+                <div className={s.label}>{i.label}</div>
                 <div className={s.input} style={{ whiteSpace: "pre-line" }} dangerouslySetInnerHTML={{ __html: i.value?.trim() }} />
               </div>
             ))}

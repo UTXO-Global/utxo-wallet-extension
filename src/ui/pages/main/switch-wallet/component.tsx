@@ -6,6 +6,7 @@ import { CheckIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useSwitchWallet } from "@/ui/hooks/wallet";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
+import { IcnCheck } from "@/ui/components/icons";
 
 const SwitchWallet = () => {
   const currentWallet = useGetCurrentWallet();
@@ -15,7 +16,6 @@ const SwitchWallet = () => {
   }));
   const switchWallet = useSwitchWallet();
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (wallets.findIndex((f) => f.id === currentWallet.id) > 5)
@@ -29,9 +29,10 @@ const SwitchWallet = () => {
           <div
             key={`wallet-${i}`}
             className={cn(
-              `rounded-lg bg-[#F5F5F5] px-4 py-3 flex justify-between items-center cursor-pointer`,
+              `rounded-lg hover:bg-[#F5F5F5] border-[#F5F5F5] border transition-colors px-4 py-3 flex justify-between items-center cursor-pointer`,
               {
-                "bg-[#EBECEC]": currentWallet.id === wallet.id,
+                "bg-[#EBECEC] !border-[#EBECEC] hover:!border-[#EBECEC] hover:!bg-[#EBECEC]":
+                  currentWallet.id === wallet.id,
               }
             )}
             onClick={async () => {
@@ -42,9 +43,9 @@ const SwitchWallet = () => {
             <div className="cursor-pointer">
               <p className="text-lg text-primary font-medium">{wallet.name}</p>
             </div>
-            <div className="flex gap-[10px] items-center">
+            <div className="flex items-center">
               {currentWallet.id === wallet.id ? (
-                <CheckIcon className="w-6 h-6 text-primary font-medium" />
+                <IcnCheck className="" />
               ) : null}
 
               <EllipsisVerticalIcon

@@ -16,6 +16,8 @@ import { IcnConnectSite } from "./IcnConnectSite";
 import { IcnGlobal } from "./IcnGlobal";
 import { IcnQr } from "./IcnQr";
 import { IcnPlusCircle } from "./IcnPlusCircle";
+import { IcnEyesSlash } from "./IcnEyesSlash";
+import { IcnEye } from "./IcnEye";
 
 export {
   IcnSetting,
@@ -35,5 +37,7 @@ export {
   IcnConnectSite,
   IcnGlobal,
   IcnQr,
-  IcnPlusCircle
+  IcnPlusCircle,
+  IcnEyesSlash,
+  IcnEye,
 };

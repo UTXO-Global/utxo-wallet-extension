@@ -96,7 +96,7 @@ const Explorer = () => {
                           alt={z.title}
                           className="object-cover"
                         />
-                        <div className="px-4 py-[14px] bg-[#F5F5F5] text-[12px] leading-[18px] text-primary rounded-b-[8px]">
+                        <div className="px-4 py-[14px] bg-[#F5F5F5] text-[14px] leading-[18px] text-primary rounded-b-[8px]">
                           {z.title}
                         </div>
                       </div>
