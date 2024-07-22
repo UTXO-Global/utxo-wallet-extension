@@ -116,7 +116,7 @@ const TransactionInfo = () => {
           </button>
         </>
       ) : (
-        <ReactLoading type="spin" color="#fff" />
+        <ReactLoading type="spin" color="#ODODOD" />
       )}
     </div>
   );

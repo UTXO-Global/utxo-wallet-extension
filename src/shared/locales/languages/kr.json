@@ -184,8 +184,8 @@
   "hooks": {
     "transaction": {
       "insufficient_balance_0": "잔액이 부족합니다. 비등기 잔액",
-      "insufficient_balance_1": "BTC)는 다음보다 낮습니다",
-      "insufficient_balance_2": "BTC"
+      "insufficient_balance_1": "Token)는 다음보다 낮습니다",
+      "insufficient_balance_2": "Token"
     },
     "wallet": {
       "last_wallet_error": "마지막 지갑을 삭제할 수 없습니다"

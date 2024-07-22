@@ -60,7 +60,6 @@ export function useCreateTxCallback() {
           (pre, cur) => pre + cur.value,
           0
         );
-        console.log(safeBalance, toAmount, "s");
         if (safeBalance < toAmount) {
           throw new Error(
             `${t(
@@ -108,7 +107,8 @@ export function useCreateTxCallback() {
         // the tx fee could calculated by tx size
         // TODO: this is just a simple example
         const fixedFee = 100000;
-        const neededCapacity = BI.from(toAmount).add(fixedFee);
+        const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount
+        const neededCapacity = BI.from(_toAmount).add(fixedFee);
 
         if (safeBalance.lt(neededCapacity)) {
           throw new Error(
@@ -116,11 +116,11 @@ export function useCreateTxCallback() {
               "hooks.transaction.insufficient_balance_0"
             )} (${tidoshisToAmount(safeBalance.toNumber())} ${t(
               "hooks.transaction.insufficient_balance_1"
-            )} ${tidoshisToAmount(toAmount)} ${t(
+            )} ${tidoshisToAmount(_toAmount)} ${t(
               "hooks.transaction.insufficient_balance_2"
             )}`
           );
-        } else if (BI.from(toAmount).lt(BI.from("6100000000"))) {
+        } else if (BI.from(_toAmount).lt(BI.from("6100000000"))) {
           toast.error("Must be at least 61 CKB");
           throw new Error(
             `every cell's capacity must be at least 61 CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
@@ -129,7 +129,7 @@ export function useCreateTxCallback() {
 
         const tx = await keyringController.sendCoin({
           to: toAddress,
-          amount: toAmount,
+          amount: _toAmount,
           cells,
           receiverToPayFee,
           feeRate,

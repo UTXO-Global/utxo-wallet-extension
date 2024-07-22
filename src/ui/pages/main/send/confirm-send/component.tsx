@@ -94,7 +94,7 @@ const ConfirmSend = () => {
           </button>
         </div>
       ) : (
-        <ReactLoading type="spin" color="#ffbc42" />
+        <ReactLoading type="spin" color="#ODODOD" />
       )}
     </div>
   );

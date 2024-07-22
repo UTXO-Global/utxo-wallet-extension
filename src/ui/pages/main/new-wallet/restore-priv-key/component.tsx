@@ -77,7 +77,7 @@ const RestorePrivKey = () => {
     }
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading color="#ODODOD" />;
 
   return (
     <div className="w-full h-full flex flex-col items-center gap-6 text-base p-4 pb-0">

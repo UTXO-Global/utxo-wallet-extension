@@ -114,7 +114,7 @@ const InscriptionDetails = () => {
     return current as T;
   };
 
-  if (inscription === undefined) return <Loading />;
+  if (inscription === undefined) return <Loading color="#ODODOD" />;
 
   return (
     <div className="flex flex-col justify-center items-center break-all gap-5 px-4 pb-3 rounded-xl">

@@ -32,7 +32,7 @@ const SignLNInvoice = () => {
     })();
   }, [notificationController]);
 
-  if (invoiceContent === null) return <Loading type="balls" />;
+  if (invoiceContent === null) return <Loading type="balls" color="#ODODOD" />;
 
   return (
     <Layout

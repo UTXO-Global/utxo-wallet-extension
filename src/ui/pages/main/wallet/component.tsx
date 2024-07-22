@@ -16,7 +16,7 @@ const Wallet = () => {
     trottledUpdate();
   }, [trottledUpdate]);
 
-  if (!currentAccount) return <Loading />;
+  if (!currentAccount) return <Loading color="#ODODOD" />;
 
   return (
     <div className="relative w-full top-0">

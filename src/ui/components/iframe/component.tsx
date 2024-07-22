@@ -27,7 +27,7 @@ const Iframe: FC<IframeProps> = ({ preview, size }) => {
           }
         )}
       >
-        <Loading />
+        <Loading color="#ODODOD" />
       </div>
       <iframe
         id="frame"

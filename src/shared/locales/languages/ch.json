@@ -209,8 +209,8 @@
   "hooks": {
     "transaction": {
       "insufficient_balance_0": "余额不足. 非注册余额",
-      "insufficient_balance_1": "BTC) 小于",
-      "insufficient_balance_2": "BTC"
+      "insufficient_balance_1": "Token) 小于",
+      "insufficient_balance_2": "Token"
     },
     "wallet": {
       "last_wallet_error": "你不能删除你的最后一个钱包"

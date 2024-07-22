@@ -30,7 +30,7 @@ const Home = () => {
 
   if (!currentWallet) return <Navigate to={"/pages/create-new-wallet"} />;
 
-  return <Loading />;
+  return <Loading color="#ODODOD" />;
 };
 
 export default Home;

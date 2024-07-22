@@ -39,7 +39,7 @@ const SignPsbt = () => {
     updateFields();
   }, [updateFields, fields]);
 
-  if (loading) return <Loading type="balls" />;
+  if (loading) return <Loading type="balls" color="#ODODOD" />;
 
   return (
     <Layout

@@ -79,7 +79,7 @@ const NewMnemonic = () => {
   };
 
   if (!mnemonicPhrase || loading) {
-    return <ReactLoading type="spin" color="#ffbc42" />;
+    return <ReactLoading type="spin" color="#ODODOD" />;
   }
 
   return (
