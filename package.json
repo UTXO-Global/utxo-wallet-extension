@@ -67,7 +67,7 @@
     "secp256k1": "^5.0.0",
     "swiper": "^10.0.4",
     "varuint-bitcoin": "^1.1.2",
-    "wif": "^5.0.0",
+    "wif": "^4.0.0",
     "zustand": "4.5.2"
   },
   "devDependencies": {
