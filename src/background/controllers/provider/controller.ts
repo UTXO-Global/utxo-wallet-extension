@@ -36,6 +36,16 @@ class ProviderController {
     return storageService.currentNetwork;
   };
 
+  @Reflect.metadata("APPROVAL", [
+    "switchNetwork",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_network: string) => {}
+  ])
+  switchNetwork = (network: string) => {
+    // TODO Switch network
+    return network;
+  };
+
   @Reflect.metadata("SAFE", true)
   getBalance = async ({ session: { origin } }) => {
     if (!permission.siteIsConnected(origin)) return undefined;
