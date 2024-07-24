@@ -226,6 +226,21 @@ export class UtxoGlobalProvider extends EventEmitter {
       },
     });
   };
+
+  getNetwork = async () => {
+    return this._request({
+      method: "getNetwork",
+    });
+  };
+
+  switchNetwork = async (network: string) => {
+    return this._request({
+      method: "switchNetwork",
+      params: {
+        network
+      }
+    });
+  };
 }
 
 declare global {
