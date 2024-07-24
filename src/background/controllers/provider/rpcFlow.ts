@@ -10,7 +10,7 @@ import { ethErrors } from "eth-rpc-errors";
 import providerController from "./controller";
 
 const isSignApproval = (type: string) => {
-  const SIGN_APPROVALS = ["signMessage", "signPsbt", "signAllPsbtInputs"];
+  const SIGN_APPROVALS = ["switchNetwork", "signMessage", "signPsbt", "signAllPsbtInputs"];
   return SIGN_APPROVALS.includes(type);
 };
 
@@ -22,7 +22,6 @@ const flowContext = flow
       data: { method },
     } = ctx.request;
     ctx.mapMethod = underline2Camelcase(method);
-
     if (!providerController[ctx.mapMethod]) {
       throw ethErrors.rpc.methodNotFound({
         message: `method [${method}] doesn't has corresponding handler`,

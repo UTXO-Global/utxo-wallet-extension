@@ -39,6 +39,7 @@ import SignMessage from "./provider/sign-message";
 import SignPsbt from "./provider/sign-psbt";
 import Explore from "./main/explore";
 import RestoreType from "./main/new-wallet/restore-type";
+import SwitchNetwork from "./provider/switch-network/component";
 
 export const guestRouter = createHashRouter([
   {
@@ -46,7 +47,7 @@ export const guestRouter = createHashRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "create-password", element: <CreatePassword /> },
-      
+
     ],
   },
   { path: "*", element: <Navigate to={"/account/login"} /> },
@@ -96,6 +97,7 @@ export const authenticatedRouter = createHashRouter([
     children: [
       { path: "connect", element: <Connect /> },
       { path: "signMessage", element: <SignMessage /> },
+      { path: "switchNetwork", element: <SwitchNetwork /> },
       { path: "createTx", element: <CreateTx /> },
       { path: "signPsbt", element: <SignPsbt /> },
       { path: "signLNInvoice", element: <SignLNInvoice /> },

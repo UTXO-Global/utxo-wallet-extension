@@ -12,6 +12,8 @@ import { fetchEsplora } from "@/shared/utils";
 import { Psbt } from "bitcoinjs-lib";
 import "reflect-metadata/lite";
 import { keyringService, sessionService, storageService } from "../../services";
+import { IGroupAccount, IWallet } from "@/shared/interfaces";
+import walletController from "../walletController";
 
 class ProviderController {
   connect = async () => {
@@ -38,12 +40,68 @@ class ProviderController {
 
   @Reflect.metadata("APPROVAL", [
     "switchNetwork",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_network: string) => {}
+    (_req: any) => {},
   ])
-  switchNetwork = (network: string) => {
-    // TODO Switch network
-    return network;
+  switchNetwork = async ({
+    data: {
+      params: { network },
+    },
+  }) => {
+    const currentNetwork = storageService.currentNetwork;
+    if (currentNetwork === network) return currentNetwork
+
+    const currentAccount = storageService.currentAccount;
+    if (!currentAccount) return currentNetwork;
+
+    const currentWallet = storageService.currentWallet;
+
+    const _wallets: IWallet[] = [];
+    let selectedAccount = currentAccount.id;
+    const wallets = storageService.walletState.wallets
+    
+    for (const wallet of wallets) {
+      if (wallet.id !== currentWallet.id) {
+        _wallets.push(wallet);
+        continue;
+      }
+
+      const networkGroupAccounts: IGroupAccount[] = wallet.accounts.filter(
+        (account) => network === account.network
+      );
+
+      if (!networkGroupAccounts || networkGroupAccounts.length === 0) {
+        const accounts = await walletController.createDefaultGroupAccount(network, wallet.id);
+        if (wallet.id === currentWallet.id) {
+          selectedAccount = wallet.accounts.length;
+        }
+        wallet.accounts = [...wallet.accounts, accounts].map(
+          (f, i) => ({
+            ...f,
+            id: i,
+          })
+        );
+      }else if (wallet.id === currentWallet.id) {
+        if (
+          !networkGroupAccounts.map((c) => c.id).includes(selectedAccount)
+        ) {
+          selectedAccount = networkGroupAccounts[0].id;
+        }
+      }
+
+      _wallets.push({
+        ...wallet,
+      });
+    }
+
+    await storageService.updateWalletState({
+      selectedNetwork: network,
+      selectedAccount,
+      wallets: _wallets,
+    });
+    
+    sessionService.broadcastEvent("accountsChanged", network);
+    sessionService.broadcastEvent("networkChanged", network);
+    return network
   };
 
   @Reflect.metadata("SAFE", true)
