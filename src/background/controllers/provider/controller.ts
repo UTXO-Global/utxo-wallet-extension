@@ -3,9 +3,12 @@ import permission from "@/background/services/permission";
 import type { ApiUTXO } from "@/shared/interfaces/api";
 import { SignPsbtOptions } from "@/shared/interfaces/provider";
 import {
+  btcTestnetSlug,
+  getNetworkChainSlug,
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
+  nervosTestnetSlug,
 } from "@/shared/networks";
 import { capacityOf, getCells } from "@/shared/networks/ckb/helpers";
 import { fetchEsplora } from "@/shared/utils";
@@ -14,6 +17,11 @@ import "reflect-metadata/lite";
 import { keyringService, sessionService, storageService } from "../../services";
 import { IGroupAccount, IWallet } from "@/shared/interfaces";
 import walletController from "../walletController";
+import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
+import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
+import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
+import { commons, helpers } from "@ckb-lumos/lumos";
+import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 
 class ProviderController {
   connect = async () => {
@@ -25,30 +33,9 @@ class ProviderController {
     return account;
   };
 
-  @Reflect.metadata("SAFE", true)
-  getAccounts = async () => {
-    if (storageService.currentWallet === undefined) return undefined;
-    return storageService.currentWallet.accounts[0].accounts.map(
-      (account) => account.address
-    );
-  };
-
-  @Reflect.metadata("SAFE", true)
-  getNetwork = () => {
-    return storageService.currentNetwork;
-  };
-
-  @Reflect.metadata("APPROVAL", [
-    "switchNetwork",
-    (_req: any) => {},
-  ])
-  switchNetwork = async ({
-    data: {
-      params: { network },
-    },
-  }) => {
+  _switchNetwork = async (_network: NetworkSlug) => {
     const currentNetwork = storageService.currentNetwork;
-    if (currentNetwork === network) return currentNetwork
+    if (currentNetwork === _network) return currentNetwork
 
     const currentAccount = storageService.currentAccount;
     if (!currentAccount) return currentNetwork;
@@ -66,11 +53,11 @@ class ProviderController {
       }
 
       const networkGroupAccounts: IGroupAccount[] = wallet.accounts.filter(
-        (account) => network === account.network
+        (account) => _network === account.network
       );
 
       if (!networkGroupAccounts || networkGroupAccounts.length === 0) {
-        const accounts = await walletController.createDefaultGroupAccount(network, wallet.id);
+        const accounts = await walletController.createDefaultGroupAccount(_network, wallet.id);
         if (wallet.id === currentWallet.id) {
           selectedAccount = wallet.accounts.length;
         }
@@ -94,14 +81,70 @@ class ProviderController {
     }
 
     await storageService.updateWalletState({
-      selectedNetwork: network,
+      selectedNetwork: _network,
       selectedAccount,
       wallets: _wallets,
     });
     
-    sessionService.broadcastEvent("accountsChanged", network);
-    sessionService.broadcastEvent("networkChanged", network);
-    return network
+    sessionService.broadcastEvent("accountsChanged", _network);
+    sessionService.broadcastEvent("networkChanged", _network);
+    return _network
+  };
+
+  _switchChain = async(chainSlug: ChainSlug) => {
+    const currentNetwork = storageService.currentNetwork;
+    const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(currentNetwork)
+    let network: NetworkData | undefined = undefined
+    switch(chainSlug){
+      case "btc":
+        network = isTestnet ? BTC_TESTNET4 : BTC_LIVENET;
+        break;
+      case "nervos":
+        network = isTestnet ? CKB_TESTNET : CKB_MAINNET;
+    }
+
+    if (network) {
+      await this._switchNetwork(network.slug)
+    }
+
+    return chainSlug;
+  }
+
+  @Reflect.metadata("SAFE", true)
+  getAccounts = async () => {
+    if (storageService.currentWallet === undefined) return undefined;
+    return storageService.currentWallet.accounts[0].accounts.map(
+      (account) => account.address
+    );
+  };
+
+  @Reflect.metadata("APPROVAL", [
+    "switchChain",
+    (_req: any) => {},
+  ])
+  switchChain = async ({
+    data: {
+      params: { chain },
+    },
+  }) => {
+    return await this._switchChain(chain);
+  };
+
+  @Reflect.metadata("SAFE", true)
+  getNetwork = () => {
+    return storageService.currentNetwork;
+  };
+
+  @Reflect.metadata("APPROVAL", [
+    "switchNetwork",
+    (_req: any) => {},
+  ])
+  switchNetwork = async ({
+    data: {
+      params: { network },
+    },
+  }) => {
+    return await this._switchNetwork(network);
   };
 
   @Reflect.metadata("SAFE", true)
@@ -209,6 +252,31 @@ class ProviderController {
   };
 
   @Reflect.metadata("APPROVAL", [
+    "signLNInvoice",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_req: any) => {},
+  ])
+  signLNInvoice = async ({
+    data: {
+      params: { invoice, address },
+    },
+  }) => {
+    const currentAccount = storageService.currentAccount;
+    if (!currentAccount) return;
+    const account = currentAccount.accounts.find(
+      (_account) => _account.address === address
+    );
+    if (!account) return;
+
+    return keyringService.signMessage({
+      hdPath: account.hdPath,
+      data: invoice,
+    });
+  };
+}
+
+class BTCProviderController extends ProviderController{
+  @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_req: any) => {},
@@ -240,27 +308,15 @@ class ProviderController {
       const tx = await keyringService.sendCoin(transactionData);
       const psbt = Psbt.fromHex(tx);
       return psbt.extractTransaction().toHex();
-    } else if (isCkbNetwork(networkData.network)) {
-      const cells = await getCells(
-        networkData.network,
-        account.accounts[0].address
-      );
-      const transactionData = {
-        ...data.data.params,
-        cells,
-      } as SendCoin;
-      transactionData.amount = transactionData.amount * 10 ** 8;
-      const tx = await keyringService.sendCoin(transactionData);
-      return tx;
     }
   };
 
   @Reflect.metadata("APPROVAL", [
-    "signPsbt",
+    "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_req: any) => {},
   ])
-  signPsbt = async (data: {
+  signTransaction = async (data: {
     data: {
       params: {
         psbtBase64: string;
@@ -284,29 +340,50 @@ class ProviderController {
       txId: tx.getId(),
     };
   };
+}
 
+class CKBProviderController extends ProviderController{
   @Reflect.metadata("APPROVAL", [
-    "signLNInvoice",
+    "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_req: any) => {},
   ])
-  signLNInvoice = async ({
-    data: {
-      params: { invoice, address },
-    },
-  }) => {
-    const currentAccount = storageService.currentAccount;
-    if (!currentAccount) return;
-    const account = currentAccount.accounts.find(
-      (_account) => _account.address === address
-    );
+  createTx = async (data: any) => {
+    const account = storageService.currentAccount;
     if (!account) return;
+    const networkData = getNetworkDataBySlug(this.getNetwork());
+    if (isCkbNetwork(networkData.network)) {
+      const cells = await getCells(
+        networkData.network,
+        account.accounts[0].address
+      );
+      const transactionData = {
+        ...data.data.params,
+        cells,
+      } as SendCoin;
+      transactionData.amount = transactionData.amount * 10 ** 8;
+      const tx = await keyringService.sendCoin(transactionData);
+      return tx;
+    }
+  };
 
-    return keyringService.signMessage({
-      hdPath: account.hdPath,
-      data: invoice,
-    });
+  @Reflect.metadata("APPROVAL", [
+    "signTransaction",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_req: any) => {},
+  ])
+  signTransaction = async (data: {
+    data: {
+      params: {
+        tx: TransactionSkeletonType;
+      };
+    };
+  }) => {
+    const account = storageService.currentAccount;
+    return keyringService.signCkbTransaction({hdPath: account.accounts[0].hdPath, tx: data.data.params.tx});
   };
 }
 
+export const ckbProviderController = new CKBProviderController();
+export const btcProviderController = new BTCProviderController();
 export default new ProviderController();

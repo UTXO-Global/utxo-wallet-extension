@@ -242,6 +242,8 @@
     "anyone_can_pay_warning": "此输入具有 SIGHASH_SINGLE | ANYONECANPAY 标志",
     "connect_with_utxo": "连接 UTXO 账户",
     "allow_switch_network": "允许该站点切换网络",
-    "switch_network": "网络交换机"
+    "switch_network": "网络交换机",
+    "allow_switch_chain": "允许本站切换外链",
+    "switch_chain": "开关链"
   }
 }

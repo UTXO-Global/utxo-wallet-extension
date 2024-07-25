@@ -316,7 +316,9 @@
     "anyone_can_pay_warning": "This input has SIGHASH_SINGLE | ANYONECANPAY flag",
     "connect_with_utxo": "Connect with UTXO Account",
     "allow_switch_network": "Allow this site to switch the network",
-    "switch_network": "Switch network"
+    "switch_network": "Switch network",
+    "allow_switch_chain": "Allow this site to switch the chain",
+    "switch_chain": "Switch chain"
   },
   "export_private_key": {
     "wif_private_key": "WIF Private Key:"

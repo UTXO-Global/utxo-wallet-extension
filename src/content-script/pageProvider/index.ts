@@ -42,6 +42,8 @@ export class UtxoGlobalProvider extends EventEmitter {
     isPermanentlyDisconnected: false,
   };
 
+  _providerReq: string;
+
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(0);
 
@@ -129,9 +131,10 @@ export class UtxoGlobalProvider extends EventEmitter {
 
     this._requestPromiseCheckVisibility();
 
+    const params = {provider: this._providerReq, ...data}
     return this._requestPromise.call(() => {
       return this._bcm
-        .request(data)
+        .request(params)
         .then((res) => {
           return res;
         })
@@ -207,16 +210,6 @@ export class UtxoGlobalProvider extends EventEmitter {
     });
   };
 
-  signPsbt = async (psbtBase64: string, options?: SignPsbtOptions) => {
-    return this._request({
-      method: "signPsbt",
-      params: {
-        psbtBase64,
-        options,
-      },
-    });
-  };
-
   signLNInvoice = async (invoice: string, address: string) => {
     return this._request({
       method: "signLNInvoice",
@@ -241,20 +234,76 @@ export class UtxoGlobalProvider extends EventEmitter {
       }
     });
   };
+
+  switchChain = async (chain: string) => {
+    return this._request({
+      method: "switchChain",
+      params: {
+        chain
+      }
+    });
+  }
+  
+}
+
+export class CKBProvider extends UtxoGlobalProvider {
+  constructor() {
+    super();
+    this._providerReq = "ckb"
+  }
+
+  signTransaction = async (tx:any) => {
+    return this._request({
+      method: "signTransaction",
+      params: {
+        tx,
+      },
+    });
+  };
+}
+
+export class BTCProvider extends UtxoGlobalProvider {
+  constructor() {
+    super();
+    this._providerReq = "btc"
+  }
+
+  signTransaction = async (psbtBase64: string, options?: SignPsbtOptions) => {
+    return this._request({
+      method: "signTransaction",
+      params: {
+        psbtBase64,
+        options,
+      },
+    });
+  };
 }
 
 declare global {
   interface Window {
-    utxoGlobal: UtxoGlobalProvider;
+    utxoGlobal: {
+      bitcoinSigner: UtxoGlobalProvider,
+      ckbSigner: UtxoGlobalProvider,
+    };
   }
 }
 
 const provider = new UtxoGlobalProvider();
+const btcProvider = new BTCProvider();
+const ckbProvider = new CKBProvider();
 
 Object.defineProperty(window, "utxoGlobal", {
-  value: new Proxy(provider, {
-    deleteProperty: () => true,
-  }),
+  value: {
+    ...new Proxy(provider, {
+      deleteProperty: () => true,
+    }),
+    bitcoinSigner: new Proxy(btcProvider, {
+      deleteProperty: () => true,
+    }),
+    ckbSigner: new Proxy(ckbProvider, {
+      deleteProperty: () => true,
+    })
+  },
   writable: false,
 });
 

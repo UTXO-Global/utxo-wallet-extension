@@ -7,22 +7,39 @@ import PromiseFlow, { underline2Camelcase } from "@/background/utils";
 import { EVENTS } from "@/shared/constant";
 import eventBus from "@/shared/eventBus";
 import { ethErrors } from "eth-rpc-errors";
-import providerController from "./controller";
+import providerController, { btcProviderController, ckbProviderController } from "./controller";
 
 const isSignApproval = (type: string) => {
-  const SIGN_APPROVALS = ["switchNetwork", "signMessage", "signPsbt", "signAllPsbtInputs"];
+  const SIGN_APPROVALS = ["switchChain", "switchNetwork", "signMessage", "signPsbt", "signAllPsbtInputs"];
   return SIGN_APPROVALS.includes(type);
 };
 
 const windowHeight = 600;
 const flow = new PromiseFlow();
 const flowContext = flow
+  .use(async(ctx, next) => {
+    const { data: { provider } } = ctx.request;
+    switch(provider) {
+      case "btc":
+        ctx.providerController = btcProviderController;
+        ctx.providerController._switchChain("btc")
+        break;
+      case "ckb":
+        ctx.providerController = ckbProviderController;
+        ctx.providerController._switchChain("nervos")
+        break;
+      default:
+        ctx.providerController = providerController
+    }
+
+    return next();
+  })
   .use(async (ctx, next) => {
     const {
       data: { method },
     } = ctx.request;
     ctx.mapMethod = underline2Camelcase(method);
-    if (!providerController[ctx.mapMethod]) {
+    if (!ctx.providerController[ctx.mapMethod]) {
       throw ethErrors.rpc.methodNotFound({
         message: `method [${method}] doesn't has corresponding handler`,
         data: ctx.request.data,
@@ -33,7 +50,7 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
-    if (!Reflect.getMetadata("SAFE", providerController, mapMethod)) {
+    if (!Reflect.getMetadata("SAFE", ctx.providerController, mapMethod)) {
       if (!storageService.appState.isUnlocked) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval({ lock: true });
@@ -50,7 +67,7 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    if (!Reflect.getMetadata("SAFE", providerController, mapMethod)) {
+    if (!Reflect.getMetadata("SAFE", ctx.providerController, mapMethod)) {
       if (!permissionService.siteIsConnected(origin)) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval(
@@ -81,7 +98,7 @@ const flowContext = flow
     // ! Disabled eslint and typescript becouse idk what options is, but if u see it please think about this 'options = {}'
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [approvalType, condition, options = {}] =
-      Reflect.getMetadata("APPROVAL", providerController, mapMethod) || [];
+      Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.request.requestedApproval = true;
@@ -105,14 +122,14 @@ const flowContext = flow
     const { approvalRes, mapMethod, request } = ctx;
     // process request
     const [approvalType] =
-      Reflect.getMetadata("APPROVAL", providerController, mapMethod) || [];
+      Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
     } = request;
     const requestDefer = Promise.resolve(
-      providerController[mapMethod]({
+      ctx.providerController[mapMethod]({
         ...request,
         approvalRes,
       })

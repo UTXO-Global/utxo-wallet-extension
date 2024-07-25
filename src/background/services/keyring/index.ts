@@ -29,6 +29,7 @@ import type {
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
+import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -123,6 +124,64 @@ class KeyringService {
         sighashTypes: v.sighashType ? [v.sighashType] : undefined,
       }))
     );
+  }
+
+  signCkbTransaction(params: { tx: any, hdPath: string}) {
+    const tx = params.tx;
+    let txSkeleton = helpers.TransactionSkeleton({});
+    if (tx.cellDeps) {
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.concat(tx.cellDeps))
+    }
+
+    if (tx.fixedEntries) {
+      txSkeleton = txSkeleton.update("fixedEntries", (fixedEntries) =>
+        fixedEntries.concat(tx.fixedEntries)
+      )
+    }
+
+    if (tx.headerDeps) {
+      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
+        headerDeps.concat(tx.headerDeps)
+      )
+    }
+
+    if (tx.inputSinces) {
+      txSkeleton = txSkeleton.update("inputSinces", (inputSinces) =>
+        inputSinces = inputSinces.concat(tx.inputSinces)
+      )
+    }
+
+    if (tx.inputs) {
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.concat(tx.inputs)
+      )
+    }
+
+    if (tx.outputs) {
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.concat(tx.outputs)
+      )
+    }
+
+    if (tx.signingEntries) {
+      txSkeleton = txSkeleton.update("signingEntries", (signingEntries) =>
+        signingEntries.concat(tx.signingEntries)
+      )
+    }
+
+    if (tx.witnesses) {
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.concat(tx.witnesses)
+      )
+    }
+    
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+
+    const Sig = keyring.signRecoverable(params.hdPath, message);
+    const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
+    return JSON.stringify(txSigned);
   }
 
   signAllPsbtInputs(psbt: Psbt) {
