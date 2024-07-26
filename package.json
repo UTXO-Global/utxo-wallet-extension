@@ -1,12 +1,12 @@
 {
   "name": "utxo-global-wallet-extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "prebuild": "node generate-version.ts",
     "dev": "bun build.ts --watch",
     "fire": "bun build.ts --watch --firefox",
-    "chrome": "bun build.ts && rollup ./dist/chrome/ui.js --file ./dist/chrome/ui.js --format cjs",
+    "chrome": "node generate-version.ts && bun build.ts && rollup ./dist/chrome/ui.js --file ./dist/chrome/ui.js --format cjs",
     "firefox": "bun build.ts --firefox",
     "both": "rm -rf dist && bun build.ts --firefox && bun build.ts",
     "release": "rm -rf dist && node generate-version.ts && bun build.ts --firefox -c && bun build.ts -c",
