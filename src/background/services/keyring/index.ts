@@ -29,7 +29,6 @@ import type {
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
-import { predefined } from "@ckb-lumos/lumos/config";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -183,55 +182,7 @@ class KeyringService {
       txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
         witnesses.push(...tx.witnesses)
       )
-    } else {
-      const fromScript = helpers.parseAddress(account.accounts[0].address, {
-        config: network.network.lumosConfig,
-      });
-      const firstIndex = txSkeleton.get("inputs").findIndex((input) =>
-          new ScriptValue(input.cellOutput.lock, { validate: false }).equals(
-            new ScriptValue(fromScript, { validate: false })
-          )
-        );
-      if (firstIndex !== -1) {
-        while (firstIndex >= txSkeleton.get("witnesses").size) {
-          txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-            witnesses.push("0x")
-          );
-        }
-        let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
-        const newWitnessArgs: WitnessArgs = {
-          /* 65-byte zeros in hex */
-          lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-        };
-        if (witness !== "0x") {
-          const witnessArgs = blockchain.WitnessArgs.unpack(
-            bytes.bytify(witness)
-          );
-          const lock = witnessArgs.lock;
-          if (
-            !!lock &&
-            !!newWitnessArgs.lock &&
-            !bytes.equal(lock, newWitnessArgs.lock)
-          ) {
-            throw new Error(
-              "Lock field in first witness is set aside for signature!"
-            );
-          }
-          const inputType = witnessArgs.inputType;
-          if (inputType) {
-            newWitnessArgs.inputType = inputType;
-          }
-          const outputType = witnessArgs.outputType;
-          if (outputType) {
-            newWitnessArgs.outputType = outputType;
-          }
-        }
-        witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
-        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-          witnesses.set(firstIndex, witness)
-        );
-      }
-    }
+    } 
     
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
