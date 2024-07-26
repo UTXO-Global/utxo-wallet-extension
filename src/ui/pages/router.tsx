@@ -36,10 +36,11 @@ import Connect from "./provider/connect";
 import CreateTx from "./provider/create-tx/component";
 import SignLNInvoice from "./provider/sign-ln-invoice";
 import SignMessage from "./provider/sign-message";
-import SignPsbt from "./provider/sign-psbt";
 import Explore from "./main/explore";
 import RestoreType from "./main/new-wallet/restore-type";
 import SwitchNetwork from "./provider/switch-network/component";
+import SwitchChain from "./provider/switch-chain/component";
+import SignTransaction from "./provider/sign-transaction";
 
 export const guestRouter = createHashRouter([
   {
@@ -98,8 +99,9 @@ export const authenticatedRouter = createHashRouter([
       { path: "connect", element: <Connect /> },
       { path: "signMessage", element: <SignMessage /> },
       { path: "switchNetwork", element: <SwitchNetwork /> },
+      { path: "switchChain", element: <SwitchChain /> },
       { path: "createTx", element: <CreateTx /> },
-      { path: "signPsbt", element: <SignPsbt /> },
+      { path: "signTransaction", element: <SignTransaction /> },
       { path: "signLNInvoice", element: <SignLNInvoice /> },
     ],
   },

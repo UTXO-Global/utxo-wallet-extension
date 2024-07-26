@@ -6,6 +6,9 @@ import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 
 export const defaultNetwork = CKB_TESTNET;
 
+export const btcTestnetSlug = ["btc_testnet", "btc_testnet_4", "btc_signet"];
+export const nervosTestnetSlug = ["nervos_testnet"]
+
 export const supportedNetworks: ChainData[] = [
   {
     name: "Nervos",

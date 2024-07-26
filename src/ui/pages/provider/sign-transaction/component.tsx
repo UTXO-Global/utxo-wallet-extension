@@ -11,7 +11,7 @@ import { t } from "i18next";
 import Loading from "react-loading";
 import Layout from "../layout";
 
-const SignPsbt = () => {
+const SignTransaction = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<IField[]>([]);
   const [modalInputIndex, setModalInputIndex] = useState<number | undefined>(
@@ -137,4 +137,4 @@ const SignPsbt = () => {
   );
 };
 
-export default SignPsbt;
+export default SignTransaction;
