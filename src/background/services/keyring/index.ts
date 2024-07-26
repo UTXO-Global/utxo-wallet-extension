@@ -179,9 +179,9 @@ class KeyringService {
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
     const message = txSkeleton.get("signingEntries").get(0)!.message;
 
-    // const Sig = keyring.signRecoverable(params.hdPath, message);
-    // const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
-    return JSON.stringify(txSkeleton);
+    const Sig = keyring.signRecoverable(params.hdPath, message);
+    const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
+    return JSON.stringify(txSigned);
   }
 
   signAllPsbtInputs(psbt: Psbt) {
