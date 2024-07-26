@@ -130,48 +130,48 @@ class KeyringService {
     const tx = params.tx;
     let txSkeleton = helpers.TransactionSkeleton({});
     if (tx.cellDeps) {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.concat(tx.cellDeps))
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.push(tx.cellDeps))
     }
 
     if (tx.fixedEntries) {
       txSkeleton = txSkeleton.update("fixedEntries", (fixedEntries) =>
-        fixedEntries.concat(tx.fixedEntries)
+        fixedEntries.push(tx.fixedEntries)
       )
     }
 
     if (tx.headerDeps) {
       txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
-        headerDeps.concat(tx.headerDeps)
+        headerDeps.push(tx.headerDeps)
       )
     }
 
     if (tx.inputSinces) {
       txSkeleton = txSkeleton.update("inputSinces", (inputSinces) =>
-        inputSinces = inputSinces.concat(tx.inputSinces)
+        inputSinces = {...inputSinces, ...tx.inputSinces}
       )
     }
 
     if (tx.inputs) {
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.concat(tx.inputs)
+        inputs.push(tx.inputs)
       )
     }
 
     if (tx.outputs) {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.concat(tx.outputs)
+        outputs.push(tx.outputs)
       )
     }
 
     if (tx.signingEntries) {
       txSkeleton = txSkeleton.update("signingEntries", (signingEntries) =>
-        signingEntries.concat(tx.signingEntries)
+        signingEntries.push(tx.signingEntries)
       )
     }
 
     if (tx.witnesses) {
       txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.concat(tx.witnesses)
+        witnesses.push(tx.witnesses)
       )
     }
     

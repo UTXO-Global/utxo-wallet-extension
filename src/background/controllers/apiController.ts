@@ -344,13 +344,26 @@ class ApiController implements IApiController {
 
   async getUtxoValues(outpoints: string[]): Promise<number[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    const result = await fetchEsplora<{ values: number[] }>({
-      path: `${networkData.esploraUrl}/prev`,
-      body: JSON.stringify({ locations: outpoints }),
-      method: "POST",
-    });
-    return result.values;
+    let values:number[] = [];
+    await Promise.all(outpoints.map(async(op:string) => {
+      const ops = op.split(":");
+      try {
+        const response = await fetch(`${networkData.esploraUrl}/tx/${ops[0]}`);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        const tx = await response.json();
+        const value = Number(tx.vout[Number(ops[1])].value);
+        values = [...values, value]
+      } catch (error) {
+          console.error(`Error fetching previous output values for ${ops[0]}:${ops[1]}`, error);
+          values = [...values, 0]
+      }
+    }))
+
+    return values;
   }
+  
 }
 
 export default new ApiController();

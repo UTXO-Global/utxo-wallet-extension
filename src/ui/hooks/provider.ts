@@ -14,8 +14,6 @@ import {
   useGetCurrentNetwork,
 } from "../states/walletState";
 import { isNotification } from "../utils";
-import { commons, helpers } from "@ckb-lumos/lumos";
-import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 
 export const useApproval = () => {
   const navigate = useNavigate();
@@ -89,11 +87,11 @@ export const useDecodePsbtInputs = () => {
     const inputLocations = psbt.txInputs.map(
       (f) => f.hash.reverse().toString("hex") + ":" + f.index
     );
+
     const inputValues = await apiController.getUtxoValues(inputLocations);
     const locationValue: LocationValue = Object.fromEntries(
       inputLocations.map((f, i) => [f, inputValues[i]])
     );
-
     psbt.txOutputs.forEach((f, i) => {
       outputFields.push({
         important:
@@ -103,54 +101,26 @@ export const useDecodePsbtInputs = () => {
         input: false,
         label: `Output #${i}`,
         value: {
-          text: `${f.address}`,
+          text: `${f.address || ""}`,
           value: `${toFixed(f.value / 10 ** 8)} ${currentNetwork.coinSymbol}`,
         },
       });
     });
 
     for (const [i, txInput] of psbt.txInputs.entries()) {
-      const outpoint =
-        txInput.hash.reverse().toString("hex") + ":" + txInput.index;
+      const outpoint = txInput.hash.reverse().toString("hex") + ":" + txInput.index;
       const isImportant = (
         approval.params.data as { options?: SignPsbtOptions }
       ).options?.toSignInputs
         ?.map((f) => f.index)
         .includes(i);
 
-      let value: IFieldValue;
-      if (psbt.data.inputs[i].sighashType === 131) {
-        const foundInscriptions = await apiController.getInscription({
-          address: "",
-          // TODO address: currentAccount.address,
-          inscriptionId: outpoint.slice(0, -2) + "i" + txInput.index,
-        });
-
-        if (foundInscriptions.length) {
-          value = {
-            anyonecanpay: true,
-            inscriptions: foundInscriptions,
-            value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
-              currentNetwork.coinSymbol
-            }`,
-          };
-        } else {
-          value = {
-            anyonecanpay: true,
-            text: `${outpoint.slice(0, -2)}`,
-            value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
-              currentNetwork.coinSymbol
-            }`,
-          };
-        }
-      } else {
-        value = {
-          text: `${outpoint.slice(0, -2)}`,
-          value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
-            currentNetwork.coinSymbol
-          }`,
-        };
-      }
+        let value: IFieldValue = {
+        text: `${outpoint.slice(0, -2)}`,
+        value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
+          currentNetwork.coinSymbol
+        }`,
+      };
 
       inputFields.push({
         important: isImportant,

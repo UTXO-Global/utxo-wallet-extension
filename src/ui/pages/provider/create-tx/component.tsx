@@ -28,12 +28,17 @@ const CreateTx = () => {
 
   const fields = [
     {
-      label: "Address",
-      value: shortAddress(psbt.to, 6),
+      label: t("send.confirm_send.to_addrses"),
+      value: shortAddress(psbt.to, 15),
     },
     {
-      label: "Amount",
-      value: `${psbt.amount} ${currentNetwork.coinSymbol}`,
+      label: t(
+        `send.confirm_send.amount`
+      ),
+      value: `
+        <span style="font-size: 16px">${psbt.amount}</span>
+        <span style="font-size: 16px; color: #A69C8C">${currentNetwork.coinSymbol}</span>
+      `
     },
     {
       label: "Fee Rate",
@@ -48,15 +53,17 @@ const CreateTx = () => {
       resolveBtnText={t("components.layout.send")}
     >
       <>
-        <KeyIcon className="w-10 h-10 text-primary" />
-        <h4 className="text-xl font-medium mb-6">
+        <h3 className="text-[24px] leading-[28px] font-medium text-primary text-center">
           Send {currentNetwork.coinSymbol}
-        </h4>
-        <div className="flex flex-col gap-4 w-full">
+        </h3>
+        <div className="flex flex-col gap-4 w-full mt-4">
           {fields.map((i) => (
             <div key={i.label}>
-              <label className="mb-2 block text-gray-300 pl-2">{i.label}</label>
-              <div className="bg-input-bg rounded-xl px-5 py-2">{i.value}</div>
+              <label className="text-base">{i.label}</label>
+              <div
+                className="bg-grey-300 p-4 rounded-lg border border-grey-200 flex items-center justify-between"
+                dangerouslySetInnerHTML={{ __html: i.value?.trim() }}
+              />
             </div>
           ))}
         </div>
