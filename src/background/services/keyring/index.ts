@@ -29,7 +29,6 @@ import type {
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
-import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -126,57 +125,68 @@ class KeyringService {
     );
   }
 
-  signCkbTransaction(params: { tx: any, hdPath: string}) {
-    const tx = params.tx;
-    let txSkeleton = helpers.TransactionSkeleton({});
-    if (tx.cellDeps) {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.push(tx.cellDeps))
+  async signCkbTransaction(params: { tx: any, hdPath: string}) {
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address) {
+      throw new Error("Error when trying to get the current account");
     }
 
-    if (tx.fixedEntries) {
-      txSkeleton = txSkeleton.update("fixedEntries", (fixedEntries) =>
-        fixedEntries.push(tx.fixedEntries)
-      )
+    if (!isCkbNetwork(network.network)) {
+      throw new Error("Error when trying to get the current account");
+    }
+
+    const tx = params.tx;
+    let txSkeleton = helpers.TransactionSkeleton();
+    
+    if (tx.cellDeps && tx.cellDeps.length > 0) {
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.push(...tx.cellDeps))
+    } else {
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+        cellDeps.push({
+          outPoint: {
+            txHash: (
+              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
+            ).SECP256K1_BLAKE160.TX_HASH,
+            index: (
+              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
+            ).SECP256K1_BLAKE160.INDEX,
+          },
+          depType: (
+            (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
+          ).SECP256K1_BLAKE160.DEP_TYPE,
+        })
+      );
     }
 
     if (tx.headerDeps) {
       txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
-        headerDeps.push(tx.headerDeps)
-      )
-    }
-
-    if (tx.inputSinces) {
-      txSkeleton = txSkeleton.update("inputSinces", (inputSinces) =>
-        inputSinces = {...inputSinces, ...tx.inputSinces}
+        headerDeps.push(...tx.headerDeps)
       )
     }
 
     if (tx.inputs) {
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.push(tx.inputs)
+        inputs.push(...tx.inputs)
       )
     }
 
     if (tx.outputs) {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.push(tx.outputs)
+        outputs.push(...tx.outputs)
       )
     }
 
-    if (tx.signingEntries) {
-      txSkeleton = txSkeleton.update("signingEntries", (signingEntries) =>
-        signingEntries.push(tx.signingEntries)
-      )
-    }
-
-    if (tx.witnesses) {
+    if (tx.witnesses && tx.witnesses.length > 0) {
       txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.push(tx.witnesses)
+        witnesses.push(...tx.witnesses)
       )
-    }
+    } 
     
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
+    
     const message = txSkeleton.get("signingEntries").get(0)!.message;
 
     const Sig = keyring.signRecoverable(params.hdPath, message);
