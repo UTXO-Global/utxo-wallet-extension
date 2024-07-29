@@ -65,10 +65,10 @@ const Layout: FC<Props> = ({
       </div>
 
       <div className="grid gap-2 grid-cols-2 pt-4">
-        <button className="btn secondary" onClick={onReject}>
+        <button className="btn secondary !px-4" onClick={onReject}>
           {t("provider.reject")}
         </button>
-        <button className="btn primary" onClick={onResolve}>
+        <button className="btn primary !px-4" onClick={onResolve}>
           {resolveBtnText ?? t("provider.resolve")}
         </button>
       </div>
