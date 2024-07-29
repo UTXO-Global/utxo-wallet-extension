@@ -180,7 +180,7 @@ const AccountPanel = () => {
             ) : null}
 
             <div className="grid gap-1 min-h-[80px]">
-              <div className="text-[32px] leading-[35.2px] text-right flex items-center justify-center">
+              <div className="text-[32px] leading-[35.2px] text-right flex flex-wrap items-center justify-center gap-1">
                 {currentAccount?.balance === undefined ? (
                   <Loading
                     type="spin"
@@ -190,9 +190,11 @@ const AccountPanel = () => {
                     className="react-loading pr-2"
                   />
                 ) : (
-                  formatNumber((currentAccount?.balance ?? 0) as any, 2, 8)
-                )}{" "}
-                {currentNetwork.coinSymbol}
+                  <span className="max-w-[310px] truncate">
+                    {formatNumber((currentAccount?.balance ?? 0) as any, 2, 8)}
+                  </span>
+                )}
+                <span>{currentNetwork.coinSymbol}</span>
               </div>
               <div className="text-center">
                 {currentAccount?.balance !== undefined
