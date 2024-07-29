@@ -376,18 +376,21 @@ const TransactionList = () => {
                             </div>
                           </div>
                         </div>
-                        <div className={s.value}>
-                          <span
-                            style={{
-                              color: isReceived ? "#09C148" : "#FF4545",
-                            }}
-                          >
-                            {isReceived ? "+ " : "- "}{" "}
+                        <div
+                          className="font-normal text-sm flex items-center gap-1"
+                          style={{
+                            color: isReceived ? "#09C148" : "#FF4545",
+                          }}
+                        >
+                          <span className="w-[80px] truncate block text-right">
+                            {isReceived ? "+" : "-"}
                             {getTransactionValue(t, t.address, 5)
                               .toString()
                               .replace(/\.?0+$/, "")}
-                          </span>{" "}
-                          {currentNetwork.coinSymbol}
+                          </span>
+                          <span className="text-primary flex-1">
+                            {`${currentNetwork.coinSymbol}`}
+                          </span>
                         </div>
                       </Link>
                     );
