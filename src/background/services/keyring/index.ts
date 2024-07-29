@@ -140,49 +140,52 @@ class KeyringService {
     const tx = params.tx;
     let txSkeleton = helpers.TransactionSkeleton();
     
-    if (tx.cellDeps && tx.cellDeps.length > 0) {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.push(...tx.cellDeps))
-    } else {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
-        cellDeps.push({
+    if (tx.cell_deps && tx.cell_deps.length > 0) {
+      tx.cell_deps?.forEach((cellDep:any) => {
+        txSkeleton = txSkeleton.update('cellDeps', (cellDeps) => cellDeps.push({
           outPoint: {
-            txHash: (
-              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-            ).SECP256K1_BLAKE160.TX_HASH,
-            index: (
-              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-            ).SECP256K1_BLAKE160.INDEX,
+              txHash: cellDep.out_point.tx_hash,
+              index: cellDep.out_point.index,
           },
-          depType: (
-            (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-          ).SECP256K1_BLAKE160.DEP_TYPE,
-        })
-      );
-    }
-
-    if (tx.headerDeps) {
-      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
-        headerDeps.push(...tx.headerDeps)
-      )
-    }
-
-    if (tx.inputs) {
-      txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.push(...tx.inputs)
-      )
-    }
-
-    if (tx.outputs) {
-      txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.push(...tx.outputs)
-      )
-    }
-
-    if (tx.witnesses && tx.witnesses.length > 0) {
-      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.push(...tx.witnesses)
-      )
+          depType: "depGroup"
+        }));
+      });
     } 
+
+    tx.inputs?.forEach((input: any) => {
+      txSkeleton = txSkeleton.update('inputs', (inputs) => inputs.push({
+        outPoint: {
+          txHash: input.previous_output.tx_hash,
+          index: input.previous_output.index,
+        },
+        data: input.output_data || "0x",
+        cellOutput: null,
+
+      }));
+  });
+
+  tx.outputs?.forEach((output: any, index: number) => {
+    txSkeleton = txSkeleton.update('outputs', (outputs) => outputs.push({
+      cellOutput: {
+        capacity: output.capacity,
+        lock: {
+          codeHash: output.lock?.code_hash,
+          hashType: output.lock?.hash_type,
+          args: output.lock?.args
+        },
+        type: output.type || null
+      },
+      data: "0x"
+    }));
+  });
+
+  tx.header_deps?.forEach((headerDep:any) => {
+      txSkeleton = txSkeleton.update('headerDeps', (headerDeps) => headerDeps.push(headerDep));
+  });
+
+  tx.witnesses?.forEach((witness:any) => {
+      txSkeleton = txSkeleton.update('witnesses', (witnesses) => witnesses.push(witness));
+  });
     
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
