@@ -125,70 +125,10 @@ class KeyringService {
     );
   }
 
-  async signCkbTransaction(params: { tx: any, hdPath: string}) {
-    const networkSlug = storageService.currentNetwork;
-    const network = getNetworkDataBySlug(networkSlug);
-    const account = storageService.currentAccount;
-    if (!account || !account.accounts[0].address) {
-      throw new Error("Error when trying to get the current account");
-    }
-
-    if (!isCkbNetwork(network.network)) {
-      throw new Error("Error when trying to get the current account");
-    }
-
-    const tx = params.tx;
-    let txSkeleton = helpers.TransactionSkeleton();
-    
-    if (tx.cellDeps && tx.cellDeps.length > 0) {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>cellDeps.push(...tx.cellDeps))
-    } else {
-      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
-        cellDeps.push({
-          outPoint: {
-            txHash: (
-              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-            ).SECP256K1_BLAKE160.TX_HASH,
-            index: (
-              (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-            ).SECP256K1_BLAKE160.INDEX,
-          },
-          depType: (
-            (network.network as NetworkConfig).lumosConfig.SCRIPTS as any
-          ).SECP256K1_BLAKE160.DEP_TYPE,
-        })
-      );
-    }
-
-    if (tx.headerDeps) {
-      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
-        headerDeps.push(...tx.headerDeps)
-      )
-    }
-
-    if (tx.inputs) {
-      txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.push(...tx.inputs)
-      )
-    }
-
-    if (tx.outputs) {
-      txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.push(...tx.outputs)
-      )
-    }
-
-    if (tx.witnesses && tx.witnesses.length > 0) {
-      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.push(...tx.witnesses)
-      )
-    } 
-    
+  async signCkbTransaction(params: { tx: helpers.TransactionSkeletonType, hdPath: string}) {
+    const txSkeleton = commons.common.prepareSigningEntries(params.tx);
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
-    txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
-    
     const message = txSkeleton.get("signingEntries").get(0)!.message;
-
     const Sig = keyring.signRecoverable(params.hdPath, message);
     const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
     return JSON.stringify(txSigned);
