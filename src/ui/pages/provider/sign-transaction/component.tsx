@@ -3,21 +3,19 @@ import { useCallback, useEffect, useState } from "react";
 import { IField } from "@/shared/interfaces/provider";
 import Modal from "@/ui/components/modal";
 import { useDecodePsbtInputs as useGetPsbtFields } from "@/ui/hooks/provider";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { KeyIcon } from "@heroicons/react/24/solid";
-import cn from "classnames";
 import { t } from "i18next";
 import Loading from "react-loading";
 import Layout from "../layout";
 import { useControllersState } from "@/ui/states/controllerState";
-import { Psbt } from "bitcoinjs-lib";
+import { callCKBRPC } from "@/shared/networks/ckb/helpers";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 
 const SignTransaction = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<IField[]>([]);
   const [modalInputIndex, setModalInputIndex] = useState<number | undefined>(undefined);
   const [rawtx, setRawTx] = useState<any>({});
+  const currentNetwork = useGetCurrentNetwork();
   const { notificationController } = useControllersState(
     (v) => ({
       apiController: v.apiController,
@@ -45,6 +43,7 @@ const SignTransaction = () => {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => {
+      console.log("currentNetwork", currentNetwork)
       const approval = await notificationController.getApproval();
       if (!!approval.params.data.psbtBase64) {
         if (fields.length === 0) {
@@ -52,7 +51,21 @@ const SignTransaction = () => {
         }
         setRawTx(fields)
       } else if (approval.params.data.tx) {
-        setRawTx(approval.params.data.tx)
+        let tx = approval.params.data.tx;
+        await Promise.all(tx.inputs.map(async (input, index) => {
+          try {
+            const txInput = await callCKBRPC(currentNetwork.network.rpc_url, "get_transaction", [input.previous_output.tx_hash]);
+            const cellOutput = txInput.transaction.outputs[Number(input.previous_output.index)];
+            tx.inputs[index] = {
+              ...tx.inputs[index],
+              cell_output: { ...cellOutput }
+            };
+          } catch (error) {
+            throw error;
+          }
+        }))
+
+        setRawTx(tx)
       }
     })();
   }, [notificationController, updateFields, fields]);

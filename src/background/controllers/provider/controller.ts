@@ -10,7 +10,7 @@ import {
   isCkbNetwork,
   nervosTestnetSlug,
 } from "@/shared/networks";
-import { capacityOf, getCells } from "@/shared/networks/ckb/helpers";
+import { callCKBRPC, capacityOf, getCells } from "@/shared/networks/ckb/helpers";
 import { fetchEsplora } from "@/shared/utils";
 import { Psbt } from "bitcoinjs-lib";
 import "reflect-metadata/lite";
@@ -22,6 +22,7 @@ import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
 import { commons, helpers } from "@ckb-lumos/lumos";
 import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
+import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 
 class ProviderController {
   connect = async () => {
@@ -373,14 +374,82 @@ class CKBProviderController extends ProviderController{
     (_req: any) => {},
   ])
   signTransaction = async (data: {
-    data: {
-      params: {
-        tx: TransactionSkeletonType;
-      };
-    };
+    data: { params: { tx: any }}
   }) => {
+
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    const networkConfig = network.network as NetworkConfig
+
+    if (!isCkbNetwork(network.network)) {
+      throw new Error("Error when trying to get the current account");
+    }
+
     const account = storageService.currentAccount;
-    return keyringService.signCkbTransaction({hdPath: account.accounts[0].hdPath, tx: data.data.params.tx});
+    if (!account || !account.accounts[0].address) {
+      throw new Error("Error when trying to get the current account");
+    }
+
+    const tx = data.data.params.tx;
+    let txSkeleton = helpers.TransactionSkeleton();
+    
+    if (tx.cell_deps && tx.cell_deps.length > 0) {
+      tx.cell_deps?.forEach((cellDep:any) => {
+        txSkeleton = txSkeleton.update('cellDeps', (cellDeps) => cellDeps.push({
+          outPoint: {
+              txHash: cellDep.out_point.tx_hash,
+              index: cellDep.out_point.index,
+          },
+          depType: cellDep.dep_type === "dep_group" ? "depGroup" : "code"
+        }));
+      });
+    }
+
+    await Promise.all(tx.inputs?.map(async (input: any) => {
+      const txInput = await callCKBRPC(networkConfig.rpc_url, "get_transaction", [input.previous_output.tx_hash])
+      const cellOutput = txInput.transaction.outputs[Number(input.previous_output.index)];
+      txSkeleton = txSkeleton.update('inputs', (inputs) => inputs.push({
+        outPoint: {
+          txHash: input.previous_output.tx_hash,
+          index: input.previous_output.index,
+        },
+        data: input.output_data || "0x",
+        cellOutput: {
+          capacity: cellOutput.capacity,
+          lock: {
+            codeHash: cellOutput.lock?.code_hash,
+            hashType: cellOutput.lock?.hash_type,
+            args: cellOutput.lock?.args
+          },
+          type: cellOutput.type
+        }, 
+      }));
+    }));
+
+    tx.outputs?.forEach((output: any, index: number) => {
+      txSkeleton = txSkeleton.update('outputs', (outputs) => outputs.push({
+        cellOutput: {
+          capacity: output.capacity,
+          lock: {
+            codeHash: output.lock?.code_hash,
+            hashType: output.lock?.hash_type,
+            args: output.lock?.args
+          },
+          type: output.type || null
+        },
+        data: "0x"
+      }));
+    });
+
+    tx.header_deps?.forEach((headerDep:any) => {
+        txSkeleton = txSkeleton.update('headerDeps', (headerDeps) => headerDeps.push(headerDep));
+    });
+
+    tx.witnesses?.forEach((witness:any) => {
+      txSkeleton = txSkeleton.update('witnesses', (witnesses) => witnesses.push(witness));
+    });
+    
+    return keyringService.signCkbTransaction({hdPath: account.accounts[0].hdPath, tx: txSkeleton});
   };
 }
 

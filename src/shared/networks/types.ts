@@ -45,6 +45,7 @@ export type NetworkData = {
   network: BitcoinNetwork | CkbNetwork;
   decimal?: number
   walletToImport?: WalletToImport[];
+  rpc?: string;
 };
 
 export type ChainData = {
