@@ -16,10 +16,14 @@ import React, {
 import { useDebounceCall } from "../hooks/debounce";
 import { useUpdateCurrentAccountBalance } from "../hooks/wallet";
 import { useControllersState } from "../states/controllerState";
-import { useGetCurrentAccount } from "../states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "../states/walletState";
 
 const useTransactionManager = (): TransactionManagerContextType | undefined => {
   const currentAccount = useGetCurrentAccount();
+  const currentNetwork = useGetCurrentNetwork();
 
   const [lastBlock, setLastBlock] = useState<number>(0);
   const { apiController } = useControllersState((v) => ({
@@ -277,19 +281,17 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     forceUpdateInscriptions,
   ]);
 
-  useEffect(() => {
-    if (!currentAccount?.id) return;
-    if (currentPrice) return;
+  const loadNativeCoinPrice = useCallback(async () => {
+    const data = await apiController.getNativeCoinPrice();
+    setCurrentPrice(data.usd);
+    await updateLastBlock();
+  },[apiController, updateLastBlock])
 
+
+  useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    (async () => {
-      const data = await apiController.getNativeCoinPrice();
-      if (data.usd) {
-        setCurrentPrice(data.usd);
-      }
-      await updateLastBlock();
-    })();
-  }, [updateLastBlock, apiController, currentAccount?.id, currentPrice]);
+    loadNativeCoinPrice()
+  }, [currentNetwork, loadNativeCoinPrice])
 
   useEffect(() => {
     if (!currentAccount?.id) return;
@@ -403,21 +405,21 @@ export const useTransactionManagerContext = () => {
       transactions: [],
       inscriptions: [],
       currentPrice: undefined,
-      loadMoreTransactions: () => { },
-      loadMoreInscriptions: () => { },
-      trottledUpdate: () => { },
+      loadMoreTransactions: () => {},
+      loadMoreInscriptions: () => {},
+      trottledUpdate: () => {},
       loading: false,
       feeRates: {
         slow: 0,
         fast: 0,
       },
-      resetTransactions: () => { },
-      setCurrentPage: () => { },
+      resetTransactions: () => {},
+      setCurrentPage: () => {},
       currentPage: 1,
       tokens: [],
-      forceUpdateInscriptions: () => { },
-      setSearchInscriptions: () => { },
-      setSearchTokens: () => { },
+      forceUpdateInscriptions: () => {},
+      setSearchInscriptions: () => {},
+      setSearchTokens: () => {},
       searchInscriptions: undefined,
       searchTokens: undefined,
     };
