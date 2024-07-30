@@ -1,5 +1,7 @@
 import { ethErrors, serializeError } from "eth-rpc-errors";
 import { EventEmitter } from "events";
+import { cccA } from "@ckb-ccc/core/advanced";
+import { ccc } from "@ckb-ccc/core";
 
 import BroadcastChannelMessage from "@/shared/utils/message/broadcastChannelMessage";
 
@@ -131,7 +133,7 @@ export class UtxoGlobalProvider extends EventEmitter {
 
     this._requestPromiseCheckVisibility();
 
-    const params = {provider: this._providerReq, ...data}
+    const params = { provider: this._providerReq, ...data };
     return this._requestPromise.call(() => {
       return this._bcm
         .request(params)
@@ -230,8 +232,8 @@ export class UtxoGlobalProvider extends EventEmitter {
     return this._request({
       method: "switchNetwork",
       params: {
-        network
-      }
+        network,
+      },
     });
   };
 
@@ -239,24 +241,24 @@ export class UtxoGlobalProvider extends EventEmitter {
     return this._request({
       method: "switchChain",
       params: {
-        chain
-      }
+        chain,
+      },
     });
-  }
-  
+  };
 }
 
 export class CKBProvider extends UtxoGlobalProvider {
   constructor() {
     super();
-    this._providerReq = "ckb"
+    this._providerReq = "ckb";
   }
 
-  signTransaction = async (tx:any) => {
+  signTransaction = async (tx: ccc.TransactionLike) => {
+    const rawTx = cccA.JsonRpcTransformers.transactionFrom(tx);
     return this._request({
       method: "signTransaction",
       params: {
-        tx,
+        tx: rawTx,
       },
     });
   };
@@ -265,7 +267,7 @@ export class CKBProvider extends UtxoGlobalProvider {
 export class BTCProvider extends UtxoGlobalProvider {
   constructor() {
     super();
-    this._providerReq = "btc"
+    this._providerReq = "btc";
   }
 
   signTransaction = async (psbtBase64: string, options?: SignPsbtOptions) => {
@@ -282,8 +284,8 @@ export class BTCProvider extends UtxoGlobalProvider {
 declare global {
   interface Window {
     utxoGlobal: {
-      bitcoinSigner: UtxoGlobalProvider,
-      ckbSigner: UtxoGlobalProvider,
+      bitcoinSigner: UtxoGlobalProvider;
+      ckbSigner: UtxoGlobalProvider;
     };
   }
 }
@@ -302,7 +304,7 @@ Object.defineProperty(window, "utxoGlobal", {
     }),
     ckbSigner: new Proxy(ckbProvider, {
       deleteProperty: () => true,
-    })
+    }),
   },
   writable: false,
 });

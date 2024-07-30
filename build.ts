@@ -90,21 +90,21 @@ function dotenvPlugin(): Plugin {
 }
 
 const fontLoader: Plugin = {
-  name: 'font-loader',
+  name: "font-loader",
   setup(build) {
-    build.onResolve({ filter: /\.(ttf|woff|woff2|eot|otf)$/ }, args => ({
+    build.onResolve({ filter: /\.(ttf|woff|woff2|eot|otf)$/ }, (args) => ({
       path: path.resolve(args.resolveDir, args.path),
-      namespace: 'file'
+      namespace: "file",
     }));
 
-    build.onLoad({ filter: /\.(ttf|woff|woff2|eot|otf)$/ }, async args => {
+    build.onLoad({ filter: /\.(ttf|woff|woff2|eot|otf)$/ }, async (args) => {
       const contents = await Bun.file(args.path).arrayBuffer();
       return {
         contents: new Uint8Array(contents),
-        loader: 'file'
+        loader: "file",
       };
     });
-  }
+  },
 };
 
 const buildOptions: BuildOptions = {
@@ -122,7 +122,7 @@ const buildOptions: BuildOptions = {
     "import.meta.url": '""',
     "process.browser": "false",
   },
-  target: ["es2016"],
+  target: ["es2020"],
   platform: "browser",
   sourcemap: Bun.argv.includes("--sourcemap") || Bun.argv.includes("-s"),
   plugins: [
