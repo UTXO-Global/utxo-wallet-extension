@@ -198,7 +198,7 @@ const AccountPanel = () => {
               </div>
               <div className="text-center">
                 {currentAccount?.balance !== undefined
-                  ? currentPrice !== undefined && (
+                  ? currentPrice !== 0 && (
                       <div className="text-[#787575] gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
                         <IcnApproximate className="w-[9px]" /> $
                         {(currentAccount.balance * currentPrice)?.toFixed(3)}
