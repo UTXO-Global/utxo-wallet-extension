@@ -10,10 +10,8 @@ import { ZERO_KEY, ZERO_PRIVKEY } from "./common";
 import { Keyring, SerializedHDPrivateKey, ToSignInput } from "./types";
 import { isTaprootInput, toXOnly } from "./utils";
 import { secp256k1 } from "@noble/curves/secp256k1";
-import { bytesConcat, bytesFrom } from "@/shared/utils/bytes";
-import { hexFrom } from "@/shared/utils/hex";
-import { numBeToBytes } from "@/shared/utils/num";
 import { messageHashCkbSecp256k1 } from ".";
+import { ccc } from "@ckb-ccc/core";
 
 const ECPair = ECPairFactory(tinysecp);
 
@@ -187,16 +185,16 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
     this.initPair();
     if (["nervos", "nervos_testnet"].includes(networkSlug)) {
       const signature = secp256k1.sign(
-        bytesFrom(messageHashCkbSecp256k1(text)),
-        bytesFrom(hexFrom(this.pair.privateKey))
+        ccc.bytesFrom(messageHashCkbSecp256k1(text)),
+        ccc.bytesFrom(ccc.hexFrom(this.pair.privateKey))
       );
       const { r, s, recovery } = signature;
 
-      return hexFrom(
-        bytesConcat(
-          numBeToBytes(r, 32),
-          numBeToBytes(s, 32),
-          numBeToBytes(recovery, 1)
+      return ccc.hexFrom(
+        ccc.bytesConcat(
+          ccc.numBeToBytes(r, 32),
+          ccc.numBeToBytes(s, 32),
+          ccc.numBeToBytes(recovery, 1)
         )
       );
     }

@@ -10,7 +10,11 @@ import {
   isCkbNetwork,
   nervosTestnetSlug,
 } from "@/shared/networks";
-import { callCKBRPC, capacityOf, getCells } from "@/shared/networks/ckb/helpers";
+import {
+  callCKBRPC,
+  capacityOf,
+  getCells,
+} from "@/shared/networks/ckb/helpers";
 import { fetchEsplora } from "@/shared/utils";
 import { Psbt } from "bitcoinjs-lib";
 import "reflect-metadata/lite";
@@ -36,7 +40,7 @@ class ProviderController {
 
   _switchNetwork = async (_network: NetworkSlug) => {
     const currentNetwork = storageService.currentNetwork;
-    if (currentNetwork === _network) return currentNetwork
+    if (currentNetwork === _network) return currentNetwork;
 
     const currentAccount = storageService.currentAccount;
     if (!currentAccount) return currentNetwork;
@@ -45,8 +49,8 @@ class ProviderController {
 
     const _wallets: IWallet[] = [];
     let selectedAccount = currentAccount.id;
-    const wallets = storageService.walletState.wallets
-    
+    const wallets = storageService.walletState.wallets;
+
     for (const wallet of wallets) {
       if (wallet.id !== currentWallet.id) {
         _wallets.push(wallet);
@@ -58,20 +62,19 @@ class ProviderController {
       );
 
       if (!networkGroupAccounts || networkGroupAccounts.length === 0) {
-        const accounts = await walletController.createDefaultGroupAccount(_network, wallet.id);
+        const accounts = await walletController.createDefaultGroupAccount(
+          _network,
+          wallet.id
+        );
         if (wallet.id === currentWallet.id) {
           selectedAccount = wallet.accounts.length;
         }
-        wallet.accounts = [...wallet.accounts, accounts].map(
-          (f, i) => ({
-            ...f,
-            id: i,
-          })
-        );
-      }else if (wallet.id === currentWallet.id) {
-        if (
-          !networkGroupAccounts.map((c) => c.id).includes(selectedAccount)
-        ) {
+        wallet.accounts = [...wallet.accounts, accounts].map((f, i) => ({
+          ...f,
+          id: i,
+        }));
+      } else if (wallet.id === currentWallet.id) {
+        if (!networkGroupAccounts.map((c) => c.id).includes(selectedAccount)) {
           selectedAccount = networkGroupAccounts[0].id;
         }
       }
@@ -86,17 +89,19 @@ class ProviderController {
       selectedAccount,
       wallets: _wallets,
     });
-    
+
     sessionService.broadcastEvent("accountsChanged", _network);
     sessionService.broadcastEvent("networkChanged", _network);
-    return _network
+    return _network;
   };
 
-  _switchChain = async(chainSlug: ChainSlug) => {
+  _switchChain = async (chainSlug: ChainSlug) => {
     const currentNetwork = storageService.currentNetwork;
-    const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(currentNetwork)
-    let network: NetworkData | undefined = undefined
-    switch(chainSlug){
+    const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(
+      currentNetwork
+    );
+    let network: NetworkData | undefined = undefined;
+    switch (chainSlug) {
       case "btc":
         network = isTestnet ? BTC_TESTNET4 : BTC_LIVENET;
         break;
@@ -105,11 +110,11 @@ class ProviderController {
     }
 
     if (network) {
-      await this._switchNetwork(network.slug)
+      await this._switchNetwork(network.slug);
     }
 
     return chainSlug;
-  }
+  };
 
   @Reflect.metadata("SAFE", true)
   getAccounts = async () => {
@@ -119,10 +124,7 @@ class ProviderController {
     );
   };
 
-  @Reflect.metadata("APPROVAL", [
-    "switchChain",
-    (_req: any) => {},
-  ])
+  @Reflect.metadata("APPROVAL", ["switchChain", (_req: any) => {}])
   switchChain = async ({
     data: {
       params: { chain },
@@ -136,10 +138,7 @@ class ProviderController {
     return storageService.currentNetwork;
   };
 
-  @Reflect.metadata("APPROVAL", [
-    "switchNetwork",
-    (_req: any) => {},
-  ])
+  @Reflect.metadata("APPROVAL", ["switchNetwork", (_req: any) => {}])
   switchNetwork = async ({
     data: {
       params: { network },
@@ -276,7 +275,7 @@ class ProviderController {
   };
 }
 
-class BTCProviderController extends ProviderController{
+class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -343,7 +342,7 @@ class BTCProviderController extends ProviderController{
   };
 }
 
-class CKBProviderController extends ProviderController{
+class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -373,13 +372,10 @@ class CKBProviderController extends ProviderController{
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_req: any) => {},
   ])
-  signTransaction = async (data: {
-    data: { params: { tx: any }}
-  }) => {
-
+  signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
-    const networkConfig = network.network as NetworkConfig
+    const networkConfig = network.network as NetworkConfig;
 
     if (!isCkbNetwork(network.network)) {
       throw new Error("Error when trying to get the current account");
@@ -392,64 +388,84 @@ class CKBProviderController extends ProviderController{
 
     const tx = data.data.params.tx;
     let txSkeleton = helpers.TransactionSkeleton();
-    
+
     if (tx.cell_deps && tx.cell_deps.length > 0) {
-      tx.cell_deps?.forEach((cellDep:any) => {
-        txSkeleton = txSkeleton.update('cellDeps', (cellDeps) => cellDeps.push({
-          outPoint: {
+      tx.cell_deps?.forEach((cellDep: any) => {
+        txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+          cellDeps.push({
+            outPoint: {
               txHash: cellDep.out_point.tx_hash,
               index: cellDep.out_point.index,
-          },
-          depType: cellDep.dep_type === "dep_group" ? "depGroup" : "code"
-        }));
+            },
+            depType: cellDep.dep_type === "dep_group" ? "depGroup" : "code",
+          })
+        );
       });
     }
 
-    await Promise.all(tx.inputs?.map(async (input: any) => {
-      const txInput = await callCKBRPC(networkConfig.rpc_url, "get_transaction", [input.previous_output.tx_hash])
-      const cellOutput = txInput.transaction.outputs[Number(input.previous_output.index)];
-      txSkeleton = txSkeleton.update('inputs', (inputs) => inputs.push({
-        outPoint: {
-          txHash: input.previous_output.tx_hash,
-          index: input.previous_output.index,
-        },
-        data: input.output_data || "0x",
-        cellOutput: {
-          capacity: cellOutput.capacity,
-          lock: {
-            codeHash: cellOutput.lock?.code_hash,
-            hashType: cellOutput.lock?.hash_type,
-            args: cellOutput.lock?.args
-          },
-          type: cellOutput.type
-        }, 
-      }));
-    }));
+    await Promise.all(
+      tx.inputs?.map(async (input: any) => {
+        const txInput = await callCKBRPC(
+          networkConfig.rpc_url,
+          "get_transaction",
+          [input.previous_output.tx_hash]
+        );
+        const cellOutput =
+          txInput.transaction.outputs[Number(input.previous_output.index)];
+        txSkeleton = txSkeleton.update("inputs", (inputs) =>
+          inputs.push({
+            outPoint: {
+              txHash: input.previous_output.tx_hash,
+              index: input.previous_output.index,
+            },
+            data: input.output_data || "0x",
+            cellOutput: {
+              capacity: cellOutput.capacity,
+              lock: {
+                codeHash: cellOutput.lock?.code_hash,
+                hashType: cellOutput.lock?.hash_type,
+                args: cellOutput.lock?.args,
+              },
+              type: cellOutput.type,
+            },
+          })
+        );
+      })
+    );
 
     tx.outputs?.forEach((output: any, index: number) => {
-      txSkeleton = txSkeleton.update('outputs', (outputs) => outputs.push({
-        cellOutput: {
-          capacity: output.capacity,
-          lock: {
-            codeHash: output.lock?.code_hash,
-            hashType: output.lock?.hash_type,
-            args: output.lock?.args
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: output.capacity,
+            lock: {
+              codeHash: output.lock?.code_hash,
+              hashType: output.lock?.hash_type,
+              args: output.lock?.args,
+            },
+            type: output.type || null,
           },
-          type: output.type || null
-        },
-        data: "0x"
-      }));
+          data: "0x",
+        })
+      );
     });
 
-    tx.header_deps?.forEach((headerDep:any) => {
-        txSkeleton = txSkeleton.update('headerDeps', (headerDeps) => headerDeps.push(headerDep));
+    tx.header_deps?.forEach((headerDep: any) => {
+      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
+        headerDeps.push(headerDep)
+      );
     });
 
-    tx.witnesses?.forEach((witness:any) => {
-      txSkeleton = txSkeleton.update('witnesses', (witnesses) => witnesses.push(witness));
+    tx.witnesses?.forEach((witness: any) => {
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.push(witness)
+      );
     });
-    
-    return keyringService.signCkbTransaction({hdPath: account.accounts[0].hdPath, tx: txSkeleton});
+
+    return await keyringService.signCkbTransaction({
+      hdPath: account.accounts[0].hdPath,
+      tx: txSkeleton,
+    });
   };
 }
 

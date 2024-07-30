@@ -125,13 +125,16 @@ class KeyringService {
     );
   }
 
-  async signCkbTransaction(params: { tx: helpers.TransactionSkeletonType, hdPath: string}) {
+  async signCkbTransaction(params: {
+    tx: helpers.TransactionSkeletonType;
+    hdPath: string;
+  }) {
     const txSkeleton = commons.common.prepareSigningEntries(params.tx);
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const Sig = keyring.signRecoverable(params.hdPath, message);
     const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
-    return JSON.stringify(txSigned);
+    return txSigned;
   }
 
   signAllPsbtInputs(psbt: Psbt) {
@@ -267,7 +270,7 @@ class KeyringService {
           outputs.push(transferOutput, changeOutput)
         );
       }
-    
+
       txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
         cellDeps.push({
           outPoint: {

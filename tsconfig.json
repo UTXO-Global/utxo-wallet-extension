@@ -1,21 +1,14 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "types": [
-      "bun-types"
-    ],
+    "types": ["bun-types"],
     "esModuleInterop": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "experimentalDecorators": true,
     "noUnusedLocals": false,
-    "noImplicitAny": true,
+    "noImplicitAny": true
   },
-  "exclude": [
-    "./src/**/*",
-    "./node_modules/**/*"
-  ],
-  "include": [
-    "./build.ts",
-  ]
+  "exclude": ["./src/**/*", "./node_modules/**/*"],
+  "include": ["./build.ts"]
 }
