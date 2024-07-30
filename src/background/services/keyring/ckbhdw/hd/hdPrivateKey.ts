@@ -2,15 +2,18 @@ import { getNetworkDataBySlug, isBitcoinNetwork } from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import * as tinysecp from "@bitcoinerlab/secp256k1";
 import { hd } from "@ckb-lumos/lumos";
-import { blake2b, PERSONAL } from "@nervosnetwork/ckb-sdk-utils";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import ECPairFactory, { ECPairInterface } from "@/packages/pair";
 import { crypto, Psbt } from "bitcoinjs-lib";
-import secp256k1 from "secp256k1";
 import { signMessage as _signMessage } from "./bip322";
 import { ZERO_KEY, ZERO_PRIVKEY } from "./common";
 import { Keyring, SerializedHDPrivateKey, ToSignInput } from "./types";
 import { isTaprootInput, toXOnly } from "./utils";
+import { secp256k1 } from "@noble/curves/secp256k1";
+import { bytesConcat, bytesFrom } from "@/shared/utils/bytes";
+import { hexFrom } from "@/shared/utils/hex";
+import { numBeToBytes } from "@/shared/utils/num";
+import { messageHashCkbSecp256k1 } from ".";
 
 const ECPair = ECPairFactory(tinysecp);
 
@@ -183,25 +186,19 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
   signMessage(_: string, text: string, networkSlug: NetworkSlug) {
     this.initPair();
     if (["nervos", "nervos_testnet"].includes(networkSlug)) {
-      // Create a new TextEncoder instance
-      const encoder = new TextEncoder();
-      // Encode the message into a Uint8Array
-      const _message = encoder.encode(text);
-      // Hash the message using blake2b
-      const messageHash = blake2b(16, null, null, PERSONAL)
-        .update(_message)
-        .digest("hex");
-
-      // Encode the string into a Uint8Array
-      const _messageHash = encoder.encode(messageHash as string);
-      const { signature } = secp256k1.ecdsaSign(
-        _messageHash,
-        this.pair.privateKey
+      const signature = secp256k1.sign(
+        bytesFrom(messageHashCkbSecp256k1(text)),
+        bytesFrom(hexFrom(this.pair.privateKey))
       );
+      const { r, s, recovery } = signature;
 
-      // Convert the signature to a hex string
-      const signatureHex = Buffer.from(signature).toString("hex");
-      return signatureHex;
+      return hexFrom(
+        bytesConcat(
+          numBeToBytes(r, 32),
+          numBeToBytes(s, 32),
+          numBeToBytes(recovery, 1)
+        )
+      );
     }
     return _signMessage(text, this.pair, networkSlug);
   }
