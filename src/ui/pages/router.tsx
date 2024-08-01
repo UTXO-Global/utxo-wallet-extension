@@ -30,7 +30,6 @@ import FinalleSend from "./main/send/finalle-send";
 import Settings from "./main/settings";
 import SwitchWallet from "./main/switch-wallet";
 import ShowMnemonic from "./main/switch-wallet/show-mnemonic";
-import TokensComponent from "./main/tokens/component";
 import TransactionInfo from "./main/transaction-info";
 import Connect from "./provider/connect";
 import CreateTx from "./provider/create-tx/component";

@@ -2,7 +2,6 @@ import { BI, Cell } from "@ckb-lumos/lumos";
 import { parseAddress } from "@ckb-lumos/lumos/helpers";
 import { CKBHasher } from "@ckb-lumos/lumos/utils";
 import { NetworkConfig } from "./offckb.config";
-import { NetworkData } from "../types";
 
 export function publicKeyToBlake160(publicKey: string): string {
   const blake160: string = new CKBHasher()
@@ -55,7 +54,7 @@ export const customizedFetch: typeof fetch = (
   });
 };
 
-export async function callCKBRPC(rpcURl:string, method: string, params: any[])  {
+export async function callCKBRPC(rpcURl: string, method: string, params: any[]) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
 
@@ -65,8 +64,8 @@ export async function callCKBRPC(rpcURl:string, method: string, params: any[])  
     "method": method,
     "params": params
   });
-  
-  const response =  await fetch(rpcURl, {
+
+  const response = await fetch(rpcURl, {
     method: "POST",
     headers: headers,
     body: body,

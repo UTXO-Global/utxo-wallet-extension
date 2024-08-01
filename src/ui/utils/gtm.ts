@@ -79,9 +79,8 @@ class Analytics {
     }
 
     try {
-      const response = await fetch(
-        `${
-          this.debug ? GA_DEBUG_ENDPOINT : GA_ENDPOINT
+      await fetch(
+        `${this.debug ? GA_DEBUG_ENDPOINT : GA_ENDPOINT
         }?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
         {
           method: "POST",

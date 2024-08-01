@@ -1,7 +1,7 @@
 import { useGetCurrentWallet, useWalletState } from "@/ui/states/walletState";
 import { useEffect } from "react";
 import s from "./styles.module.scss";
-import { CheckIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 import { useSwitchWallet } from "@/ui/hooks/wallet";
 import { useNavigate } from "react-router-dom";

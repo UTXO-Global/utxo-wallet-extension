@@ -15,7 +15,6 @@ import { useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import SearchInscriptions from "../search-inscriptions";
 import s from "./styles.module.scss";
-import BottomPanel from "@/ui/pages/main/wallet/bottom-panel";
 import { IcnPlusCircle } from "../icons";
 
 interface IRouteTitle {

@@ -15,8 +15,6 @@ import {
   IcnApproximate,
   IcnSend,
   IcnReceive,
-  IcnSwap,
-  IcnBuy,
 } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
@@ -39,66 +37,38 @@ const AccountPanel = () => {
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
       ? [
-          {
-            navPath: `/pages/receive/${currentAccount.accounts[0].address}`,
-            navName: "pf_receive",
-            navLabel: "receive",
-            icon: <IcnReceive />,
-            title: t("wallet_page.receive"),
-          },
-          {
-            navPath: "/pages/create-send",
-            navName: "pf_send",
-            navLabel: "send",
-            icon: <IcnSend />,
-            title: t("wallet_page.send"),
-          },
-          /*{
-        navPath: "/pages/swap",
-        navName: "pf_swap",
-        navLabel: "swap",
-        icon: <IcnSwap />,
-        title: t("wallet_page.swap")
-      },
-      {
-        navPath: "/pages/buy",
-        navName: "pf_buy",
-        navLabel: "buy",
-        icon: <IcnBuy />,
-        title: t("wallet_page.buy")
-      }*/
-        ]
+        {
+          navPath: `/pages/receive/${currentAccount.accounts[0].address}`,
+          navName: "pf_receive",
+          navLabel: "receive",
+          icon: <IcnReceive />,
+          title: t("wallet_page.receive"),
+        },
+        {
+          navPath: "/pages/create-send",
+          navName: "pf_send",
+          navLabel: "send",
+          icon: <IcnSend />,
+          title: t("wallet_page.send"),
+        },
+      ]
       : [
-          {
-            navPath: "/pages/receive",
-            navName: "pf_receive",
-            navLabel: "receive",
-            icon: <IcnReceive />,
-            title: t("wallet_page.receive"),
-            isPopup: true,
-          },
-          {
-            navPath: "/pages/create-send",
-            navName: "pf_send",
-            navLabel: "send",
-            icon: <IcnSend />,
-            title: t("wallet_page.send"),
-          },
-          /*{
-        navPath: "/pages/swap",
-        navName: "pf_swap",
-        navLabel: "swap",
-        icon: <IcnSwap />,
-        title: t("wallet_page.swap")
-      },
-      {
-        navPath: "/pages/buy",
-        navName: "pf_buy",
-        navLabel: "buy",
-        icon: <IcnBuy />,
-        title: t("wallet_page.buy")
-      }*/
-        ];
+        {
+          navPath: "/pages/receive",
+          navName: "pf_receive",
+          navLabel: "receive",
+          icon: <IcnReceive />,
+          title: t("wallet_page.receive"),
+          isPopup: true,
+        },
+        {
+          navPath: "/pages/create-send",
+          navName: "pf_send",
+          navLabel: "send",
+          icon: <IcnSend />,
+          title: t("wallet_page.send"),
+        },
+      ];
   }, [currentAccount.accounts, currentNetwork.network]);
 
   const _navigate = (path: string, name: string, label: string) => {
@@ -136,14 +106,14 @@ const AccountPanel = () => {
             .then((_) => {
               toast.success("Faucet success");
             })
-            .catch((e) => {});
+            .catch((e) => { });
         } else if (response.status === 422) {
           toast.error("Amount is already reached maximum limit.");
         } else {
           toast.error("Cannot faucet. Please try again");
         }
       })
-      .catch((e) => {});
+      .catch((e) => { });
   }, [currentNetwork, currentAccount]);
 
   return (
@@ -199,15 +169,15 @@ const AccountPanel = () => {
               <div className="text-center">
                 {currentAccount?.balance !== undefined
                   ? currentPrice !== 0 && currentPrice !== undefined && (
-                      <div className="text-[#787575] gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
-                        <IcnApproximate className="w-[9px]" /> $
-                        {(currentAccount.balance * currentPrice)?.toFixed(3)}
-                      </div>
-                    )
+                    <div className="text-[#787575] gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
+                      <IcnApproximate className="w-[9px]" /> $
+                      {(currentAccount.balance * currentPrice)?.toFixed(3)}
+                    </div>
+                  )
                   : undefined}
 
                 {currentAccount?.ordinalBalance !== undefined &&
-                currentNetwork.ordUrl ? (
+                  currentNetwork.ordUrl ? (
                   <div className="text-[#787575] text-lg leading-[25.2px]">
                     Ordinal Balance: {currentAccount.ordinalBalance}{" "}
                     {currentNetwork.coinSymbol}

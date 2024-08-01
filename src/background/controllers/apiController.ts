@@ -20,9 +20,9 @@ import { storageService } from "../services";
 export interface IApiController {
   getAccountBalance(address: string): Promise<
     | {
-        cardinalBalance: number;
-        ordinalBalance: number;
-      }
+      cardinalBalance: number;
+      ordinalBalance: number;
+    }
     | undefined
   >;
   getUtxos(address: string): Promise<ApiUTXO[] | undefined>;
@@ -87,7 +87,7 @@ class ApiController implements IApiController {
           });
           ordinalBalance += ordUtxos.reduce((acc, utxo) => acc + utxo.value, 0);
         }
-      } catch (error) {}
+      } catch (error) { }
 
       return {
         cardinalBalance: balance - ordinalBalance,
@@ -321,9 +321,8 @@ class ApiController implements IApiController {
   }): Promise<Inscription[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<Inscription[]>({
-      path: `${networkData.esploraUrl}/address/${address}/ords?search=${
-        inscriptionId ?? inscriptionNumber
-      }`,
+      path: `${networkData.esploraUrl}/address/${address}/ords?search=${inscriptionId ?? inscriptionNumber
+        }`,
     });
   }
 
@@ -344,26 +343,26 @@ class ApiController implements IApiController {
 
   async getUtxoValues(outpoints: string[]): Promise<number[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    let values:number[] = [];
-    await Promise.all(outpoints.map(async(op:string) => {
+    let values: number[] = [];
+    await Promise.all(outpoints.map(async (op: string) => {
       const ops = op.split(":");
       try {
         const response = await fetch(`${networkData.esploraUrl}/tx/${ops[0]}`);
         if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
+          throw new Error(`Network response was not ok: ${response.statusText}`);
         }
         const tx = await response.json();
         const value = Number(tx.vout[Number(ops[1])].value);
         values = [...values, value]
       } catch (error) {
-          console.error(`Error fetching previous output values for ${ops[0]}:${ops[1]}`, error);
-          values = [...values, 0]
+        console.error(`Error fetching previous output values for ${ops[0]}:${ops[1]}`, error);
+        values = [...values, 0]
       }
     }))
 
     return values;
   }
-  
+
 }
 
 export default new ApiController();

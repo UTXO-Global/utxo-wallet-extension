@@ -2,9 +2,9 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import Layout from "../layout";
 import { t } from "i18next";
 import { useControllersState } from "@/ui/states/controllerState";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLongRightIcon } from "@heroicons/react/24/solid";
-import { getNetworkDataBySlug, supportedNetworks } from "@/shared/networks";
+import { getNetworkDataBySlug } from "@/shared/networks";
 import { NetworkData } from "@/shared/networks/types";
 
 const SwitchNetwork = () => {

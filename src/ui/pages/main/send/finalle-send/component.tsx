@@ -1,6 +1,4 @@
 import { browserTabsCreate } from "@/shared/utils/browser";
-import { CheckIcon } from "@heroicons/react/24/solid";
-
 import { isCkbNetwork } from "@/shared/networks";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";

@@ -7,8 +7,7 @@ import Tile from "@/ui/components/tile";
 import { TileProps } from "@/ui/components/tile/component";
 import {
   ArrowsPointingOutIcon,
-  LanguageIcon,
-  GlobeAltIcon
+  LanguageIcon
 } from "@heroicons/react/24/solid";
 
 import { t } from "i18next";

@@ -13,7 +13,6 @@ interface Props {
 const Layout: FC<Props> = ({
   children,
   documentTitle,
-  resolveBtnClassName,
   resolveBtnText,
 }) => {
   const [origin, setOrigin] = useState<string>("");

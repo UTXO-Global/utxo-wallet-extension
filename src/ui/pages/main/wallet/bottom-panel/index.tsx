@@ -1,8 +1,7 @@
-import { GlobeAltIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import cn from "classnames";
-import { IcnImage, IcnSwap, IcnThunder, IcnWallet, IcnGlobal } from "@/ui/components/icons";
+import { IcnWallet, IcnGlobal } from "@/ui/components/icons";
 
 const BottomPanel = () => {
   const navigate = useNavigate();

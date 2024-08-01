@@ -285,7 +285,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     const data = await apiController.getNativeCoinPrice();
     setCurrentPrice(data.usd);
     await updateLastBlock();
-  },[apiController, updateLastBlock])
+  }, [apiController, updateLastBlock])
 
 
   useEffect(() => {
@@ -405,21 +405,21 @@ export const useTransactionManagerContext = () => {
       transactions: [],
       inscriptions: [],
       currentPrice: undefined,
-      loadMoreTransactions: () => {},
-      loadMoreInscriptions: () => {},
-      trottledUpdate: () => {},
+      loadMoreTransactions: () => { },
+      loadMoreInscriptions: () => { },
+      trottledUpdate: () => { },
       loading: false,
       feeRates: {
         slow: 0,
         fast: 0,
       },
-      resetTransactions: () => {},
-      setCurrentPage: () => {},
+      resetTransactions: () => { },
+      setCurrentPage: () => { },
       currentPage: 1,
       tokens: [],
-      forceUpdateInscriptions: () => {},
-      setSearchInscriptions: () => {},
-      setSearchTokens: () => {},
+      forceUpdateInscriptions: () => { },
+      setSearchInscriptions: () => { },
+      setSearchTokens: () => { },
       searchInscriptions: undefined,
       searchTokens: undefined,
     };

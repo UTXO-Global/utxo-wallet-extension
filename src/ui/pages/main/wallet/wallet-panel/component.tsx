@@ -5,7 +5,6 @@ import {
   useGetCurrentNetwork,
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
-import { t } from "i18next";
 import Analytics from "@/ui/utils/gtm";
 import { useState } from "react";
 import CopyAddress from "@/ui/components/copy-address";

@@ -14,7 +14,7 @@ import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 const SignTransaction = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<IField[]>([]);
-  const [cellOutput, setCellOutput] = useState<any[]>([]);
+  const [cellOutput,] = useState<any[]>([]);
   const [modalInputIndex, setModalInputIndex] = useState<number | undefined>(undefined);
   const [rawtx, setRawTx] = useState<any>({});
   const currentNetwork = useGetCurrentNetwork();
@@ -46,17 +46,13 @@ const SignTransaction = () => {
     const networkConfig = currentNetwork.network as NetworkConfig
     if (cellOutput.length <= 0) setLoading(true);
     await Promise.all(tx.inputs?.map(async (input, index) => {
-      try {
-        const txInput = await callCKBRPC(networkConfig.rpc_url, "get_transaction", [input.previous_output.tx_hash]);
-        const cellOutput = txInput.transaction.outputs[Number(input.previous_output.index)];
-        tx.inputs[index] = {
-          ...tx.inputs[index],
-          cell_output: { ...cellOutput }
-        };
-      } catch (error) {
-        throw error;
-      }
-    }))
+      const txInput = await callCKBRPC(networkConfig.rpc_url, "get_transaction", [input.previous_output.tx_hash]);
+      const cellOutput = txInput.transaction.outputs[Number(input.previous_output.index)];
+      tx.inputs[index] = {
+        ...tx.inputs[index],
+        cell_output: { ...cellOutput }
+      };
+    }));
 
     setLoading(false);
     return tx
@@ -67,13 +63,13 @@ const SignTransaction = () => {
     (async () => {
 
       const approval = await notificationController.getApproval();
-      if (!!approval.params.data.psbtBase64) {
+      if (approval.params.data.psbtBase64) {
         if (fields.length === 0) {
           await updateFields()
         }
         setRawTx(fields);
       } else if (approval.params.data.tx) {
-        let tx = await updateCellOutput(approval.params.data.tx);
+        const tx = await updateCellOutput(approval.params.data.tx);
         setRawTx(tx);
       }
     })();

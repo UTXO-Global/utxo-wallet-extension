@@ -4,7 +4,6 @@ import type { ApiUTXO } from "@/shared/interfaces/api";
 import { SignPsbtOptions } from "@/shared/interfaces/provider";
 import {
   btcTestnetSlug,
-  getNetworkChainSlug,
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
@@ -24,8 +23,6 @@ import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
-import { commons, helpers } from "@ckb-lumos/lumos";
-import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 
 class ProviderController {
@@ -124,7 +121,7 @@ class ProviderController {
     );
   };
 
-  @Reflect.metadata("APPROVAL", ["switchChain", (_req: any) => {}])
+  @Reflect.metadata("APPROVAL", ["switchChain", (_req: any) => { }])
   switchChain = async ({
     data: {
       params: { chain },
@@ -138,7 +135,7 @@ class ProviderController {
     return storageService.currentNetwork;
   };
 
-  @Reflect.metadata("APPROVAL", ["switchNetwork", (_req: any) => {}])
+  @Reflect.metadata("APPROVAL", ["switchNetwork", (_req: any) => { }])
   switchNetwork = async ({
     data: {
       params: { network },
@@ -230,7 +227,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signMessage",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   signMessage = async ({
     data: {
@@ -254,7 +251,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signLNInvoice",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   signLNInvoice = async ({
     data: {
@@ -279,7 +276,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -314,7 +311,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   signTransaction = async (data: {
     data: {
@@ -346,7 +343,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -370,7 +367,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => {},
+    (_req: any) => { },
   ])
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;

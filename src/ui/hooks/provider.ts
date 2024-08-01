@@ -115,7 +115,7 @@ export const useDecodePsbtInputs = () => {
         ?.map((f) => f.index)
         .includes(i);
 
-        let value: IFieldValue = {
+        const value: IFieldValue = {
         text: `${outpoint.slice(0, -2)}`,
         value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
           currentNetwork.coinSymbol
