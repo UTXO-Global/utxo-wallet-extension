@@ -1,5 +1,8 @@
 import { useCreateNewGroupAccount } from "@/ui/hooks/wallet";
-import { useGetCurrentNetwork, useGetCurrentWallet } from "@/ui/states/walletState";
+import {
+  useGetCurrentNetwork,
+  useGetCurrentWallet,
+} from "@/ui/states/walletState";
 import { t } from "i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +24,7 @@ const NewAccount = () => {
 
   const createNewAccount = useCreateNewGroupAccount();
   const currentWallet = useGetCurrentWallet();
-  const currentNetwork = useGetCurrentNetwork()
+  const currentNetwork = useGetCurrentNetwork();
   const [loading, setLoading] = useState<boolean>(false);
 
   const nameAlreadyExists = (name: string) => {

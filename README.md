@@ -20,7 +20,7 @@ UTXO Global Wallet for Nervos - A New Horizon for Your Crypto Adventures!
 
 #### 📥 Download Now:
 
-- Chrome Store: coming soon...
+- [Chrome Store](https://chrome.google.com/webstore/detail/lnamkkidoonpeknminiadpgjiofpdmle)
 
 #### Requirements
 

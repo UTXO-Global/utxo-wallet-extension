@@ -57,19 +57,28 @@ const ConfirmSend = () => {
     },
     {
       label: t(
-        `send.confirm_send.${location.state.inscriptionTransaction ? "inscription_id" : "amount"
+        `send.confirm_send.${
+          location.state.inscriptionTransaction ? "inscription_id" : "amount"
         }`
       ),
       value: `
         <span style="font-size: 16px">${location.state.amount}</span>
         <span style="font-size: 16px; color: #A69C8C">${currentNetwork.coinSymbol}</span>
-      `
+      `,
     },
     {
       label: t("send.confirm_send.fee"),
       value: `
-        <div style="font-size: 16px">${location.state.feeAmount / 10 ** 8} <span style="color: #787575">(${location.state.includeFeeInAmount ? t("send.confirm_send.included") : t("send.confirm_send.not_included")})</span></div>
-        <span style="font-size: 16px; color: #A69C8C">${currentNetwork.coinSymbol}</span>
+        <div style="font-size: 16px">${
+          location.state.feeAmount / 10 ** 8
+        } <span style="color: #787575">(${
+        location.state.includeFeeInAmount
+          ? t("send.confirm_send.included")
+          : t("send.confirm_send.not_included")
+      })</span></div>
+        <span style="font-size: 16px; color: #A69C8C">${
+          currentNetwork.coinSymbol
+        }</span>
       `,
     },
   ];
@@ -82,7 +91,11 @@ const ConfirmSend = () => {
             {fields.map((i) => (
               <div key={i.label} className={s.item}>
                 <div className={s.label}>{i.label}</div>
-                <div className={s.input} style={{ whiteSpace: "pre-line" }} dangerouslySetInnerHTML={{ __html: i.value?.trim() }} />
+                <div
+                  className={s.input}
+                  style={{ whiteSpace: "pre-line" }}
+                  dangerouslySetInnerHTML={{ __html: i.value?.trim() }}
+                />
               </div>
             ))}
           </div>

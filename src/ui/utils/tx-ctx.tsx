@@ -285,13 +285,12 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     const data = await apiController.getNativeCoinPrice();
     setCurrentPrice(data.usd);
     await updateLastBlock();
-  },[apiController, updateLastBlock])
-
+  }, [apiController, updateLastBlock]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadNativeCoinPrice()
-  }, [currentNetwork, loadNativeCoinPrice])
+    loadNativeCoinPrice();
+  }, [currentNetwork, loadNativeCoinPrice]);
 
   useEffect(() => {
     if (!currentAccount?.id) return;

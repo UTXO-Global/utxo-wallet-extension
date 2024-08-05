@@ -50,7 +50,11 @@ const CreatePassword = () => {
       className="w-full px-4 flex flex-col justify-center"
       onSubmit={handleSubmit(createPassword)}
     >
-      <img src="/account.png" alt="utxo global" className="w-[80px] mx-auto mb-6" />
+      <img
+        src="/account.png"
+        alt="utxo global"
+        className="w-[80px] mx-auto mb-6"
+      />
       <p className="form-title">{t("create_password.create_password")}</p>
       <p className="text-center text-[#787575] mt-2 mb-10">
         {t("create_password.sub_title")}

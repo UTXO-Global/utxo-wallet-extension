@@ -6,16 +6,13 @@ import {
   useWalletState,
 } from "@/ui/states/walletState";
 import { Menu } from "@headlessui/react";
-import {
-  ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import cn from "classnames";
 import { t } from "i18next";
 import { useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import SearchInscriptions from "../search-inscriptions";
 import s from "./styles.module.scss";
-import BottomPanel from "@/ui/pages/main/wallet/bottom-panel";
 import { IcnPlusCircle } from "../icons";
 
 interface IRouteTitle {
@@ -53,9 +50,9 @@ export default function PagesLayout() {
         action:
           currentWallet && currentWallet.type === "root"
             ? {
-              icon: <IcnPlusCircle className="w-6 h-6" />,
-              link: "/pages/create-new-account",
-            }
+                icon: <IcnPlusCircle className="w-6 h-6" />,
+                link: "/pages/create-new-account",
+              }
             : undefined,
       },
       {
@@ -208,7 +205,7 @@ export default function PagesLayout() {
             {
               name: "Inscriptions",
               link: "/pages/inscriptions",
-            }
+            },
           ],
           action: {
             icon: <SearchInscriptions />,
@@ -242,12 +239,14 @@ export default function PagesLayout() {
     <div
       className={cn(s.layout)}
       style={{
-        ...(currentRoute.pathname === "/pages/create-new-wallet" && !currentWallet
+        ...(currentRoute.pathname === "/pages/create-new-wallet" &&
+        !currentWallet
           ? { gridTemplateRows: "unset" }
           : {}),
       }}
     >
-      {currentRoute.pathname === "/pages/create-new-wallet" && !currentWallet ? null : (
+      {currentRoute.pathname === "/pages/create-new-wallet" &&
+      !currentWallet ? null : (
         <div
           className={s.header}
           style={{
@@ -265,11 +264,28 @@ export default function PagesLayout() {
                 else navigate(-1);
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.25 12.2744L19.25 12.2744" stroke="#0D0D0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="#0D0D0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.25 12.2744L19.25 12.2744"
+                  stroke="#0D0D0D"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976"
+                  stroke="#0D0D0D"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
-
             </div>
           ) : undefined}
 

@@ -1,4 +1,3 @@
-import CopyBtn from "@/ui/components/copy-btn";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
 import { useAppState } from "@/ui/states/appState";
 import { useControllersState } from "@/ui/states/controllerState";

@@ -5,16 +5,17 @@ import s from "./styles.module.scss";
 
 import Tile from "@/ui/components/tile";
 import { TileProps } from "@/ui/components/tile/component";
-import {
-  ArrowsPointingOutIcon,
-  LanguageIcon,
-  GlobeAltIcon
-} from "@heroicons/react/24/solid";
+import { ArrowsPointingOutIcon, LanguageIcon } from "@heroicons/react/24/solid";
 
 import { t } from "i18next";
 import config from "../../../../../package.json";
-import versionInfo from '../../../../../version.json';
-import { IcnArrowLeftOnRectangle, IcnConnectSite, IcnSecurity, IcnWallet } from "@/ui/components/icons";
+import versionInfo from "../../../../../version.json";
+import {
+  IcnArrowLeftOnRectangle,
+  IcnConnectSite,
+  IcnSecurity,
+  IcnWallet,
+} from "@/ui/components/icons";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -92,7 +93,11 @@ const Settings = () => {
         ))}
       </div>
       <div className={s.version}>
-        Version <span>{config.version}#{(versionInfo as any).timestamp.toString()}</span> | By{" "}
+        Version{" "}
+        <span>
+          {config.version}#{(versionInfo as any).timestamp.toString()}
+        </span>{" "}
+        | By{" "}
         <a
           href="#"
           onClick={async () => {

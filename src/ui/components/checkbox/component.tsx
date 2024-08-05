@@ -1,5 +1,4 @@
 import { FC } from "react";
-import cn from "classnames";
 
 interface Props {
   value: boolean;

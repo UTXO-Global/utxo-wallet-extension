@@ -9,7 +9,7 @@
 .card {
   @apply cursor-pointer bg-grey-300 h-36 rounded-xl hover:bg-text hover:text-bg transition-colors flex items-center justify-center flex-col gap-4 px-3;
 
-  >div {
+  > div {
     @apply text-base text-center font-medium;
   }
 }

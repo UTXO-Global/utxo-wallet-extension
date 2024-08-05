@@ -108,14 +108,15 @@ export const useDecodePsbtInputs = () => {
     });
 
     for (const [i, txInput] of psbt.txInputs.entries()) {
-      const outpoint = txInput.hash.reverse().toString("hex") + ":" + txInput.index;
+      const outpoint =
+        txInput.hash.reverse().toString("hex") + ":" + txInput.index;
       const isImportant = (
         approval.params.data as { options?: SignPsbtOptions }
       ).options?.toSignInputs
         ?.map((f) => f.index)
         .includes(i);
 
-        let value: IFieldValue = {
+      const value: IFieldValue = {
         text: `${outpoint.slice(0, -2)}`,
         value: `${toFixed(locationValue[outpoint] / 10 ** 8)} ${
           currentNetwork.coinSymbol

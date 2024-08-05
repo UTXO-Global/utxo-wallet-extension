@@ -1,9 +1,7 @@
-import Tile from "@/ui/components/tile";
 import { TileProps } from "@/ui/components/tile/component";
-import { GlobeAltIcon, KeyIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { GlobeAltIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { t } from "i18next";
 import Analytics from "@/ui/utils/gtm";
-import s from "./styles.module.scss";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 
@@ -54,7 +52,11 @@ const NewWallet = () => {
 
   return (
     <div className="w-full p-4">
-      <img src="/logo.png" alt="utxo global" className="w-[150px] mx-auto -mt-10" />
+      <img
+        src="/logo.png"
+        alt="utxo global"
+        className="w-[150px] mx-auto -mt-10"
+      />
 
       <div className="grid gap-4">
         {items.map((i) => (

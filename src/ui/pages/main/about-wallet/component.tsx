@@ -1,8 +1,6 @@
 import { useWalletState } from "@/ui/states/walletState";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { t } from "i18next";
 import { useState } from "react";

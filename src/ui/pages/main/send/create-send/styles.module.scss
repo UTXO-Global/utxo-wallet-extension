@@ -16,7 +16,7 @@
   .includeFeeInAmountDiv {
     @apply flex gap-2 mt-2 select-none;
 
-    >* {
+    > * {
       @apply cursor-pointer;
     }
   }

@@ -43,7 +43,7 @@ export type NetworkData = {
   coinName: string;
   coinSymbol: string;
   network: BitcoinNetwork | CkbNetwork;
-  decimal?: number
+  decimal?: number;
   walletToImport?: WalletToImport[];
   rpc?: string;
 };

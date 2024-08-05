@@ -7,20 +7,14 @@ import {
 import { t } from "i18next";
 import { Link } from "react-router-dom";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import {
-  useGetCurrentAccount,
-  useGetCurrentNetwork,
-} from "@/ui/states/walletState";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo } from "react";
-import { formatNumber } from "@/shared/utils";
 
 const TransactionList = () => {
   const { lastBlock, transactions, loadMoreTransactions } =
     useTransactionManagerContext();
-  const currentAccount = useGetCurrentAccount();
   const { ref, inView } = useInView();
   const currentNetwork = useGetCurrentNetwork();
 
@@ -90,7 +84,7 @@ const TransactionList = () => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_3351_10107)">
+          <g clipPath="url(#clip0_3351_10107)">
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -407,31 +401,6 @@ const TransactionList = () => {
 };
 
 export default TransactionList;
-
-const getPercent = (lastBlock: number, currentBlock?: number) => {
-  if (!currentBlock) return 0;
-  if (lastBlock - currentBlock > 6) {
-    return 100;
-  }
-  return Math.floor(((lastBlock - currentBlock) / 6) * 100);
-};
-
-const getConfirmationsCount = (lastBlock: number, currentBlock?: number) => {
-  if (!currentBlock)
-    return (
-      <div className="p-0.5 flex items-center justify-center leading-[159%]">
-        0
-      </div>
-    );
-  if (lastBlock - currentBlock < 6) {
-    return (
-      <div className="p-0.5 flex items-center justify-center leading-[159%]">
-        {lastBlock - currentBlock}
-      </div>
-    );
-  }
-  return <CheckIcon className="w-6 h-6 p-0.5" />;
-};
 
 const IcnTxReceive = ({ className }: { className?: string }) => {
   return (

@@ -107,7 +107,7 @@ export function useCreateTxCallback() {
         // the tx fee could calculated by tx size
         // TODO: this is just a simple example
         const fixedFee = 100000;
-        const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount
+        const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount;
         const neededCapacity = BI.from(_toAmount).add(fixedFee);
 
         if (safeBalance.lt(neededCapacity)) {

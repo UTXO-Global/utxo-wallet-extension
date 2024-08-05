@@ -203,7 +203,7 @@ export class OrdTransaction {
     psbt.setVersion(1);
     this.inputs.forEach((v, index) => {
       if (v.utxo.addressType === AddressType.P2PKH) {
-        //@ts-ignore
+        // @ts-expect-error - unsafe with p2pkh
         psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = true;
       }
       psbt.addInput(v.data);

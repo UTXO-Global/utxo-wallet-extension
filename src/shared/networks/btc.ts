@@ -77,7 +77,7 @@ export const BTC_LIVENET: NetworkData = {
   coinName: "Bitcoin",
   coinSymbol: "BTC",
   network: networks.bitcoin,
-  decimal: 8
+  decimal: 8,
 };
 
 export const BTC_TESTNET: NetworkData = {
@@ -90,7 +90,7 @@ export const BTC_TESTNET: NetworkData = {
   coinName: "Bitcoin Testnet3",
   coinSymbol: "tBTC",
   network: networks.testnet,
-  decimal: 8
+  decimal: 8,
 };
 
 export const BTC_TESTNET4: NetworkData = {
@@ -103,7 +103,7 @@ export const BTC_TESTNET4: NetworkData = {
   coinName: "Bitcoin Testnet4",
   coinSymbol: "tBTC",
   network: networks.testnet,
-  decimal: 8
+  decimal: 8,
 };
 
 export const BTC_SIGNET: NetworkData = {
@@ -116,5 +116,5 @@ export const BTC_SIGNET: NetworkData = {
   coinName: "Bitcoin Signet",
   coinSymbol: "tBTC",
   network: networks.testnet,
-  decimal: 8
+  decimal: 8,
 };

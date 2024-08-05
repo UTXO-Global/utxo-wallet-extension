@@ -7,20 +7,24 @@ import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 export const defaultNetwork = CKB_TESTNET;
 
 export const btcTestnetSlug = ["btc_testnet", "btc_testnet_4", "btc_signet"];
-export const nervosTestnetSlug = ["nervos_testnet"]
+export const nervosTestnetSlug = ["nervos_testnet"];
 
 export const supportedNetworks: ChainData[] = [
   {
     name: "Nervos",
     slug: "nervos",
-    networks: [CKB_MAINNET, CKB_TESTNET].map(chain => ({...chain, parentSlug: "nervos"})),
+    networks: [CKB_MAINNET, CKB_TESTNET].map((chain) => ({
+      ...chain,
+      parentSlug: "nervos",
+    })),
   },
   {
     name: "Bitcoin",
     slug: "btc",
     networks: [BTC_LIVENET, BTC_TESTNET, BTC_TESTNET4, BTC_SIGNET].map(
       (chain) => ({
-        ...chain, parentSlug: "btc",
+        ...chain,
+        parentSlug: "btc",
         walletToImport: [
           {
             name: "BitSnap",

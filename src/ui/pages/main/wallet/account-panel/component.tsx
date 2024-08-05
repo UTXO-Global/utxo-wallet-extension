@@ -11,13 +11,7 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
-import {
-  IcnApproximate,
-  IcnSend,
-  IcnReceive,
-  IcnSwap,
-  IcnBuy,
-} from "@/ui/components/icons";
+import { IcnApproximate, IcnSend, IcnReceive } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
@@ -53,20 +47,6 @@ const AccountPanel = () => {
             icon: <IcnSend />,
             title: t("wallet_page.send"),
           },
-          /*{
-        navPath: "/pages/swap",
-        navName: "pf_swap",
-        navLabel: "swap",
-        icon: <IcnSwap />,
-        title: t("wallet_page.swap")
-      },
-      {
-        navPath: "/pages/buy",
-        navName: "pf_buy",
-        navLabel: "buy",
-        icon: <IcnBuy />,
-        title: t("wallet_page.buy")
-      }*/
         ]
       : [
           {
@@ -84,20 +64,6 @@ const AccountPanel = () => {
             icon: <IcnSend />,
             title: t("wallet_page.send"),
           },
-          /*{
-        navPath: "/pages/swap",
-        navName: "pf_swap",
-        navLabel: "swap",
-        icon: <IcnSwap />,
-        title: t("wallet_page.swap")
-      },
-      {
-        navPath: "/pages/buy",
-        navName: "pf_buy",
-        navLabel: "buy",
-        icon: <IcnBuy />,
-        title: t("wallet_page.buy")
-      }*/
         ];
   }, [currentAccount.accounts, currentNetwork.network]);
 
@@ -198,7 +164,8 @@ const AccountPanel = () => {
               </div>
               <div className="text-center">
                 {currentAccount?.balance !== undefined
-                  ? currentPrice !== 0 && currentPrice !== undefined && (
+                  ? currentPrice !== 0 &&
+                    currentPrice !== undefined && (
                       <div className="text-[#787575] gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
                         <IcnApproximate className="w-[9px]" /> $
                         {(currentAccount.balance * currentPrice)?.toFixed(3)}

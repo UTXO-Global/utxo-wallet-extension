@@ -348,58 +348,6 @@ class KeyringService {
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
     throw new Error("Not supported");
-    // const account = storageService.currentAccount;
-    // if (!account || !account.address)
-    //   throw new Error("Error when trying to get the current account");
-
-    // const publicKey = this.exportPublicKey("account.address");
-
-    // const networkSlug = storageService.currentNetwork;
-    // const network = getNetworkDataBySlug(networkSlug);
-
-    // if (isBitcoinNetwork(network.network)) {
-    //   const psbt = await createSendOrd({
-    //     utxos: data.utxos.map((v) => {
-    //       return {
-    //         txId: v.txid,
-    //         outputIndex: v.vout,
-    //         satoshis: v.value,
-    //         scriptPk: getScriptForAddress(
-    //           Buffer.from(publicKey, "hex"),
-    //           account.addressType.value,
-    //           networkSlug
-    //         ).toString("hex"),
-    //         addressType: account.addressType.value,
-    //         address: account.address,
-    //         ords: (v as ApiOrdUTXO & { isOrd: boolean }).isOrd
-    //           ? [
-    //               {
-    //                 id: `${(v as ApiOrdUTXO).inscription_id}`,
-    //                 offset: (v as ApiOrdUTXO).offset,
-    //               },
-    //             ]
-    //           : [],
-    //       };
-    //     }),
-    //     toAddress: data.to,
-    //     outputValue: data.utxos.find(
-    //       (i) => (i as ApiOrdUTXO & { isOrd: boolean }).isOrd
-    //     )?.value,
-    //     signTransaction: this.signPsbt.bind(this),
-    //     network: network.network,
-    //     changeAddress: account.address,
-    //     pubkey: this.exportPublicKey(account.address),
-    //     feeRate: data.feeRate,
-    //     enableRBF: false,
-    //   });
-
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore We are really dont know what is it but we still copy working code
-    //   psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
-    //   return psbt.toHex();
-    // } else {
-    //   throw new Error("Invalid network");
-    // }
   }
 
   async sendMultiOrd(
@@ -409,37 +357,6 @@ class KeyringService {
     utxos: ApiUTXO[]
   ): Promise<string> {
     throw new Error("Not supported");
-    // return await createMultisendOrd({
-    //   changeAddress: storageService.currentAccount.address,
-    //   feeRate,
-    //   signPsbtHex: async (psbtHex: string) => {
-    //     const psbt = Psbt.fromHex(psbtHex);
-    //     this.signAllPsbtInputs(psbt);
-    //     return psbt.toHex();
-    //   },
-    //   toAddress,
-    //   utxos: [
-    //     ...utxos.map((f) => ({
-    //       txId: f.txid,
-    //       satoshis: f.value,
-    //       rawHex: f.hex,
-    //       outputIndex: f.vout,
-    //       ords: [],
-    //     })),
-    //     ...ordUtxos.map((f) => ({
-    //       txId: f.txid,
-    //       satoshis: f.value,
-    //       rawHex: f.rawHex,
-    //       outputIndex: f.vout,
-    //       ords: [
-    //         {
-    //           id: f.inscription_id,
-    //           offset: f.offset,
-    //         },
-    //       ],
-    //     })),
-    //   ],
-    // });
   }
 
   async deleteWallet(id: number) {

@@ -1,4 +1,8 @@
-import { browserTabsOnUpdated, browserTabsOnRemoved, browserTabsCreate } from "@/shared/utils/browser";
+import {
+  browserTabsOnUpdated,
+  browserTabsOnRemoved,
+  browserTabsCreate,
+} from "@/shared/utils/browser";
 import { EventEmitter } from "events";
 
 export const tabEvent = new EventEmitter();
@@ -35,7 +39,9 @@ export const queryCurrentActiveTab = async function () {
       if (!tabs) return resolve({});
       const [activeTab] = tabs;
       const { id, title, url } = activeTab;
-      const { origin, protocol } = url ? new URL(url) : { origin: null, protocol: null };
+      const { origin, protocol } = url
+        ? new URL(url)
+        : { origin: null, protocol: null };
 
       if (!origin || origin === "null") {
         resolve({});

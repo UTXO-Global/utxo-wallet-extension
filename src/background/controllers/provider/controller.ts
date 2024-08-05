@@ -4,7 +4,6 @@ import type { ApiUTXO } from "@/shared/interfaces/api";
 import { SignPsbtOptions } from "@/shared/interfaces/provider";
 import {
   btcTestnetSlug,
-  getNetworkChainSlug,
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
@@ -24,8 +23,6 @@ import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
-import { commons, helpers } from "@ckb-lumos/lumos";
-import { TransactionSkeletonType } from "@ckb-lumos/lumos/helpers";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 
 class ProviderController {
@@ -124,7 +121,11 @@ class ProviderController {
     );
   };
 
-  @Reflect.metadata("APPROVAL", ["switchChain", (_req: any) => {}])
+  @Reflect.metadata("APPROVAL", [
+    "switchChain",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_req: any) => {},
+  ])
   switchChain = async ({
     data: {
       params: { chain },
@@ -138,7 +139,11 @@ class ProviderController {
     return storageService.currentNetwork;
   };
 
-  @Reflect.metadata("APPROVAL", ["switchNetwork", (_req: any) => {}])
+  @Reflect.metadata(
+    "APPROVAL",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ["switchNetwork", (_req: any) => {}]
+  )
   switchNetwork = async ({
     data: {
       params: { network },
@@ -433,7 +438,7 @@ class CKBProviderController extends ProviderController {
       })
     );
 
-    tx.outputs?.forEach((output: any, index: number) => {
+    tx.outputs?.forEach((output: any) => {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
