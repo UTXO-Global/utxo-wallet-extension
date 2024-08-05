@@ -63,8 +63,15 @@ const Login = () => {
 
   return (
     <div className="p-4 w-full flex flex-col justify-center">
-      <img src="/account.png" alt="utxo global" className="w-[80px] mx-auto mb-6" />
-      <form className="w-full flex flex-col gap-6" onSubmit={handleSubmit(login)}>
+      <img
+        src="/account.png"
+        alt="utxo global"
+        className="w-[80px] mx-auto mb-6"
+      />
+      <form
+        className="w-full flex flex-col gap-6"
+        onSubmit={handleSubmit(login)}
+      >
         <div className="w-full justify-center flex form-title mb-4">
           {t("login.welcome_back")}
         </div>

@@ -1,5 +1,5 @@
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.maybe =
   exports.Boolean =
   exports.Array =
@@ -7,12 +7,12 @@ exports.maybe =
   exports.Network =
   exports.typeforce =
     void 0;
-exports.typeforce = require('typeforce');
+exports.typeforce = require("typeforce");
 // exposed, external API
 exports.Network = exports.typeforce.compile({
   messagePrefix: exports.typeforce.oneOf(
     exports.typeforce.Buffer,
-    exports.typeforce.String,
+    exports.typeforce.String
   ),
   bip32: {
     public: exports.typeforce.UInt32,

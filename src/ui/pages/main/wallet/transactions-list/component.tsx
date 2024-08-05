@@ -7,9 +7,7 @@ import {
 import { t } from "i18next";
 import { Link } from "react-router-dom";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import {
-  useGetCurrentNetwork,
-} from "@/ui/states/walletState";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo } from "react";

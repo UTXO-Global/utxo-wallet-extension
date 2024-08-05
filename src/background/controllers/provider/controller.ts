@@ -121,7 +121,11 @@ class ProviderController {
     );
   };
 
-  @Reflect.metadata("APPROVAL", ["switchChain", (_req: any) => { }])
+  @Reflect.metadata("APPROVAL", [
+    "switchChain",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_req: any) => {},
+  ])
   switchChain = async ({
     data: {
       params: { chain },
@@ -135,7 +139,11 @@ class ProviderController {
     return storageService.currentNetwork;
   };
 
-  @Reflect.metadata("APPROVAL", ["switchNetwork", (_req: any) => { }])
+  @Reflect.metadata(
+    "APPROVAL",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ["switchNetwork", (_req: any) => {}]
+  )
   switchNetwork = async ({
     data: {
       params: { network },
@@ -227,7 +235,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signMessage",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signMessage = async ({
     data: {
@@ -251,7 +259,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signLNInvoice",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signLNInvoice = async ({
     data: {
@@ -276,7 +284,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -311,7 +319,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signTransaction = async (data: {
     data: {
@@ -343,7 +351,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -367,7 +375,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
@@ -430,7 +438,7 @@ class CKBProviderController extends ProviderController {
       })
     );
 
-    tx.outputs?.forEach((output: any, index: number) => {
+    tx.outputs?.forEach((output: any) => {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {

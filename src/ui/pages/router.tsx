@@ -47,7 +47,6 @@ export const guestRouter = createHashRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "create-password", element: <CreatePassword /> },
-
     ],
   },
   { path: "*", element: <Navigate to={"/account/login"} /> },

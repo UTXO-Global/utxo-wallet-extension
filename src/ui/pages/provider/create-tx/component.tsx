@@ -31,13 +31,11 @@ const CreateTx = () => {
       value: shortAddress(psbt.to, 15),
     },
     {
-      label: t(
-        `send.confirm_send.amount`
-      ),
+      label: t(`send.confirm_send.amount`),
       value: `
         <span style="font-size: 16px">${psbt.amount}</span>
         <span style="font-size: 16px; color: #A69C8C">${currentNetwork.coinSymbol}</span>
-      `
+      `,
     },
     {
       label: "Fee Rate",

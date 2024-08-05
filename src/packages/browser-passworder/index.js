@@ -1,38 +1,57 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isVaultUpdated = exports.updateVaultWithDetail = exports.updateVault = exports.generateSalt = exports.serializeBufferForStorage = exports.serializeBufferFromStorage = exports.keyFromPassword = exports.exportKey = exports.importKey = exports.decryptWithKey = exports.decryptWithDetail = exports.decrypt = exports.encryptWithKey = exports.encryptWithDetail = exports.encrypt = exports.isPlainObject = exports.hasProperty = void 0;
-const hasProperty = (objectToCheck, name) => Object.hasOwnProperty.call(objectToCheck, name);
+exports.isVaultUpdated =
+  exports.updateVaultWithDetail =
+  exports.updateVault =
+  exports.generateSalt =
+  exports.serializeBufferForStorage =
+  exports.serializeBufferFromStorage =
+  exports.keyFromPassword =
+  exports.exportKey =
+  exports.importKey =
+  exports.decryptWithKey =
+  exports.decryptWithDetail =
+  exports.decrypt =
+  exports.encryptWithKey =
+  exports.encryptWithDetail =
+  exports.encrypt =
+  exports.isPlainObject =
+  exports.hasProperty =
+    void 0;
+
+const hasProperty = (objectToCheck, name) =>
+  Object.hasOwnProperty.call(objectToCheck, name);
+
 exports.hasProperty = hasProperty;
 function isPlainObject(value) {
-    if (typeof value !== 'object' || value === null) {
-        return false;
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  try {
+    let proto = value;
+    while (Object.getPrototypeOf(proto) !== null) {
+      proto = Object.getPrototypeOf(proto);
     }
-    try {
-        let proto = value;
-        while (Object.getPrototypeOf(proto) !== null) {
-            proto = Object.getPrototypeOf(proto);
-        }
-        return Object.getPrototypeOf(value) === proto;
-    }
-    catch (_) {
-        return false;
-    }
+    return Object.getPrototypeOf(value) === proto;
+  } catch (_) {
+    return false;
+  }
 }
 exports.isPlainObject = isPlainObject;
-const EXPORT_FORMAT = 'jwk';
-const DERIVED_KEY_FORMAT = 'AES-GCM';
-const STRING_ENCODING = 'utf-8';
+const EXPORT_FORMAT = "jwk";
+const DERIVED_KEY_FORMAT = "AES-GCM";
+const STRING_ENCODING = "utf-8";
 const OLD_DERIVATION_PARAMS = {
-    algorithm: 'PBKDF2',
-    params: {
-        iterations: 10000,
-    },
+  algorithm: "PBKDF2",
+  params: {
+    iterations: 10000,
+  },
 };
 const DEFAULT_DERIVATION_PARAMS = {
-    algorithm: 'PBKDF2',
-    params: {
-        iterations: 900000,
-    },
+  algorithm: "PBKDF2",
+  params: {
+    iterations: 900000,
+  },
 };
 /**
  * Encrypts a data object that can be any serializable value using
@@ -45,11 +64,18 @@ const DEFAULT_DERIVATION_PARAMS = {
  * @param keyDerivationOptions - The options to use for key derivation.
  * @returns The encrypted vault.
  */
-async function encrypt(password, dataObj, key, salt = generateSalt(), keyDerivationOptions = DEFAULT_DERIVATION_PARAMS) {
-    const cryptoKey = key || (await keyFromPassword(password, salt, false, keyDerivationOptions));
-    const payload = await encryptWithKey(cryptoKey, dataObj);
-    payload.salt = salt;
-    return JSON.stringify(payload);
+async function encrypt(
+  password,
+  dataObj,
+  key,
+  salt = generateSalt(),
+  keyDerivationOptions = DEFAULT_DERIVATION_PARAMS
+) {
+  const cryptoKey =
+    key || (await keyFromPassword(password, salt, false, keyDerivationOptions));
+  const payload = await encryptWithKey(cryptoKey, dataObj);
+  payload.salt = salt;
+  return JSON.stringify(payload);
 }
 exports.encrypt = encrypt;
 /**
@@ -62,14 +88,19 @@ exports.encrypt = encrypt;
  * @param keyDerivationOptions - The options to use for key derivation.
  * @returns The vault and exported key string.
  */
-async function encryptWithDetail(password, dataObj, salt = generateSalt(), keyDerivationOptions = DEFAULT_DERIVATION_PARAMS) {
-    const key = await keyFromPassword(password, salt, true, keyDerivationOptions);
-    const exportedKeyString = await exportKey(key);
-    const vault = await encrypt(password, dataObj, key, salt);
-    return {
-        vault,
-        exportedKeyString,
-    };
+async function encryptWithDetail(
+  password,
+  dataObj,
+  salt = generateSalt(),
+  keyDerivationOptions = DEFAULT_DERIVATION_PARAMS
+) {
+  const key = await keyFromPassword(password, salt, true, keyDerivationOptions);
+  const exportedKeyString = await exportKey(key);
+  const vault = await encrypt(password, dataObj, key, salt);
+  return {
+    vault,
+    exportedKeyString,
+  };
 }
 exports.encryptWithDetail = encryptWithDetail;
 /**
@@ -82,25 +113,29 @@ exports.encryptWithDetail = encryptWithDetail;
  * @returns The encrypted data.
  */
 async function encryptWithKey(encryptionKey, dataObj) {
-    const data = JSON.stringify(dataObj);
-    const dataBuffer = Buffer.from(data, STRING_ENCODING);
-    const vector = global.crypto.getRandomValues(new Uint8Array(16));
-    const key = unwrapKey(encryptionKey);
-    const buf = await global.crypto.subtle.encrypt({
-        name: DERIVED_KEY_FORMAT,
-        iv: vector,
-    }, key, dataBuffer);
-    const buffer = new Uint8Array(buf);
-    const vectorStr = Buffer.from(vector).toString('base64');
-    const vaultStr = Buffer.from(buffer).toString('base64');
-    const encryptionResult = {
-        data: vaultStr,
-        iv: vectorStr,
-    };
-    if (isEncryptionKey(encryptionKey)) {
-        encryptionResult.keyMetadata = encryptionKey.derivationOptions;
-    }
-    return encryptionResult;
+  const data = JSON.stringify(dataObj);
+  const dataBuffer = Buffer.from(data, STRING_ENCODING);
+  const vector = global.crypto.getRandomValues(new Uint8Array(16));
+  const key = unwrapKey(encryptionKey);
+  const buf = await global.crypto.subtle.encrypt(
+    {
+      name: DERIVED_KEY_FORMAT,
+      iv: vector,
+    },
+    key,
+    dataBuffer
+  );
+  const buffer = new Uint8Array(buf);
+  const vectorStr = Buffer.from(vector).toString("base64");
+  const vaultStr = Buffer.from(buffer).toString("base64");
+  const encryptionResult = {
+    data: vaultStr,
+    iv: vectorStr,
+  };
+  if (isEncryptionKey(encryptionKey)) {
+    encryptionResult.keyMetadata = encryptionKey.derivationOptions;
+  }
+  return encryptionResult;
 }
 exports.encryptWithKey = encryptWithKey;
 /**
@@ -113,12 +148,13 @@ exports.encryptWithKey = encryptWithKey;
  * @returns The decrypted data.
  */
 async function decrypt(password, text, encryptionKey) {
-    const payload = JSON.parse(text);
-    const { salt, keyMetadata } = payload;
-    const cryptoKey = unwrapKey(encryptionKey ||
-        (await keyFromPassword(password, salt, false, keyMetadata)));
-    const result = await decryptWithKey(cryptoKey, payload);
-    return result;
+  const payload = JSON.parse(text);
+  const { salt, keyMetadata } = payload;
+  const cryptoKey = unwrapKey(
+    encryptionKey || (await keyFromPassword(password, salt, false, keyMetadata))
+  );
+  const result = await decryptWithKey(cryptoKey, payload);
+  return result;
 }
 exports.decrypt = decrypt;
 /**
@@ -130,16 +166,16 @@ exports.decrypt = decrypt;
  * @returns The decrypted vault along with the salt and exported key.
  */
 async function decryptWithDetail(password, text) {
-    const payload = JSON.parse(text);
-    const { salt, keyMetadata } = payload;
-    const key = await keyFromPassword(password, salt, true, keyMetadata);
-    const exportedKeyString = await exportKey(key);
-    const vault = await decrypt(password, text, key);
-    return {
-        exportedKeyString,
-        vault,
-        salt,
-    };
+  const payload = JSON.parse(text);
+  const { salt, keyMetadata } = payload;
+  const key = await keyFromPassword(password, salt, true, keyMetadata);
+  const exportedKeyString = await exportKey(key);
+  const vault = await decrypt(password, text, key);
+  return {
+    exportedKeyString,
+    vault,
+    salt,
+  };
 }
 exports.decryptWithDetail = decryptWithDetail;
 /**
@@ -151,20 +187,23 @@ exports.decryptWithDetail = decryptWithDetail;
  * @returns The decrypted data.
  */
 async function decryptWithKey(encryptionKey, payload) {
-    const encryptedData = Buffer.from(payload.data, 'base64');
-    const vector = Buffer.from(payload.iv, 'base64');
-    const key = unwrapKey(encryptionKey);
-    let decryptedObj;
-    try {
-        const result = await crypto.subtle.decrypt({ name: DERIVED_KEY_FORMAT, iv: vector }, key, encryptedData);
-        const decryptedData = new Uint8Array(result);
-        const decryptedStr = Buffer.from(decryptedData).toString(STRING_ENCODING);
-        decryptedObj = JSON.parse(decryptedStr);
-    }
-    catch (e) {
-        throw new Error('Incorrect password');
-    }
-    return decryptedObj;
+  const encryptedData = Buffer.from(payload.data, "base64");
+  const vector = Buffer.from(payload.iv, "base64");
+  const key = unwrapKey(encryptionKey);
+  let decryptedObj;
+  try {
+    const result = await crypto.subtle.decrypt(
+      { name: DERIVED_KEY_FORMAT, iv: vector },
+      key,
+      encryptedData
+    );
+    const decryptedData = new Uint8Array(result);
+    const decryptedStr = Buffer.from(decryptedData).toString(STRING_ENCODING);
+    decryptedObj = JSON.parse(decryptedStr);
+  } catch (e) {
+    throw new Error("Incorrect password");
+  }
+  return decryptedObj;
 }
 exports.decryptWithKey = decryptWithKey;
 /**
@@ -177,14 +216,26 @@ exports.decryptWithKey = decryptWithKey;
  * @returns An EncryptionKey or a CryptoKey.
  */
 async function importKey(keyString) {
-    const exportedEncryptionKey = JSON.parse(keyString);
-    if (isExportedEncryptionKey(exportedEncryptionKey)) {
-        return {
-            key: await window.crypto.subtle.importKey(EXPORT_FORMAT, exportedEncryptionKey.key, DERIVED_KEY_FORMAT, true, ['encrypt', 'decrypt']),
-            derivationOptions: exportedEncryptionKey.derivationOptions,
-        };
-    }
-    return await window.crypto.subtle.importKey(EXPORT_FORMAT, exportedEncryptionKey, DERIVED_KEY_FORMAT, true, ['encrypt', 'decrypt']);
+  const exportedEncryptionKey = JSON.parse(keyString);
+  if (isExportedEncryptionKey(exportedEncryptionKey)) {
+    return {
+      key: await window.crypto.subtle.importKey(
+        EXPORT_FORMAT,
+        exportedEncryptionKey.key,
+        DERIVED_KEY_FORMAT,
+        true,
+        ["encrypt", "decrypt"]
+      ),
+      derivationOptions: exportedEncryptionKey.derivationOptions,
+    };
+  }
+  return await window.crypto.subtle.importKey(
+    EXPORT_FORMAT,
+    exportedEncryptionKey,
+    DERIVED_KEY_FORMAT,
+    true,
+    ["encrypt", "decrypt"]
+  );
 }
 exports.importKey = importKey;
 /**
@@ -195,33 +246,54 @@ exports.importKey = importKey;
  * @returns A key string.
  */
 async function exportKey(encryptionKey) {
-    if (isEncryptionKey(encryptionKey)) {
-        return JSON.stringify({
-            key: await window.crypto.subtle.exportKey(EXPORT_FORMAT, encryptionKey.key),
-            derivationOptions: encryptionKey.derivationOptions,
-        });
-    }
-    return JSON.stringify(await window.crypto.subtle.exportKey(EXPORT_FORMAT, encryptionKey));
+  if (isEncryptionKey(encryptionKey)) {
+    return JSON.stringify({
+      key: await window.crypto.subtle.exportKey(
+        EXPORT_FORMAT,
+        encryptionKey.key
+      ),
+      derivationOptions: encryptionKey.derivationOptions,
+    });
+  }
+  return JSON.stringify(
+    await window.crypto.subtle.exportKey(EXPORT_FORMAT, encryptionKey)
+  );
 }
 exports.exportKey = exportKey;
 // The overloads are already documented.
-// eslint-disable-next-line jsdoc/require-jsdoc
-async function keyFromPassword(password, salt, exportable = false, opts = OLD_DERIVATION_PARAMS) {
-    const passBuffer = Buffer.from(password, STRING_ENCODING);
-    const saltBuffer = Buffer.from(salt, 'base64');
-    const key = await global.crypto.subtle.importKey('raw', passBuffer, { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey']);
-    const derivedKey = await global.crypto.subtle.deriveKey({
-        name: 'PBKDF2',
-        salt: saltBuffer,
-        iterations: opts.params.iterations,
-        hash: 'SHA-256',
-    }, key, { name: DERIVED_KEY_FORMAT, length: 256 }, exportable, ['encrypt', 'decrypt']);
-    return opts
-        ? {
-            key: derivedKey,
-            derivationOptions: opts,
-        }
-        : derivedKey;
+async function keyFromPassword(
+  password,
+  salt,
+  exportable = false,
+  opts = OLD_DERIVATION_PARAMS
+) {
+  const passBuffer = Buffer.from(password, STRING_ENCODING);
+  const saltBuffer = Buffer.from(salt, "base64");
+  const key = await global.crypto.subtle.importKey(
+    "raw",
+    passBuffer,
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits", "deriveKey"]
+  );
+  const derivedKey = await global.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: saltBuffer,
+      iterations: opts.params.iterations,
+      hash: "SHA-256",
+    },
+    key,
+    { name: DERIVED_KEY_FORMAT, length: 256 },
+    exportable,
+    ["encrypt", "decrypt"]
+  );
+  return opts
+    ? {
+        key: derivedKey,
+        derivationOptions: opts,
+      }
+    : derivedKey;
 }
 exports.keyFromPassword = keyFromPassword;
 /**
@@ -231,13 +303,13 @@ exports.keyFromPassword = keyFromPassword;
  * @returns The string ecoded as a byte array.
  */
 function serializeBufferFromStorage(str) {
-    const stripStr = str.slice(0, 2) === '0x' ? str.slice(2) : str;
-    const buf = new Uint8Array(stripStr.length / 2);
-    for (let i = 0; i < stripStr.length; i += 2) {
-        const seg = stripStr.substr(i, 2);
-        buf[i / 2] = parseInt(seg, 16);
-    }
-    return buf;
+  const stripStr = str.slice(0, 2) === "0x" ? str.slice(2) : str;
+  const buf = new Uint8Array(stripStr.length / 2);
+  for (let i = 0; i < stripStr.length; i += 2) {
+    const seg = stripStr.substr(i, 2);
+    buf[i / 2] = parseInt(seg, 16);
+  }
+  return buf;
 }
 exports.serializeBufferFromStorage = serializeBufferFromStorage;
 /**
@@ -247,11 +319,11 @@ exports.serializeBufferFromStorage = serializeBufferFromStorage;
  * @returns A hex encoded string.
  */
 function serializeBufferForStorage(buffer) {
-    let result = '0x';
-    buffer.forEach((value) => {
-        result += unprefixedHex(value);
-    });
-    return result;
+  let result = "0x";
+  buffer.forEach((value) => {
+    result += unprefixedHex(value);
+  });
+  return result;
 }
 exports.serializeBufferForStorage = serializeBufferForStorage;
 /**
@@ -262,11 +334,11 @@ exports.serializeBufferForStorage = serializeBufferForStorage;
  * @returns An unprefixed hex string.
  */
 function unprefixedHex(num) {
-    let hex = num.toString(16);
-    while (hex.length < 2) {
-        hex = `0${hex}`;
-    }
-    return hex;
+  let hex = num.toString(16);
+  while (hex.length < 2) {
+    hex = `0${hex}`;
+  }
+  return hex;
 }
 /**
  * Generates a random string for use as a salt in CryptoKey generation.
@@ -275,15 +347,15 @@ function unprefixedHex(num) {
  * @returns A randomly generated string.
  */
 function generateSalt(byteCount = 32) {
-    const view = new Uint8Array(byteCount);
-    global.crypto.getRandomValues(view);
-    // Uint8Array is a fixed length array and thus does not have methods like pop, etc
-    // so TypeScript complains about casting it to an array. Array.from() works here for
-    // getting the proper type, but it results in a functional difference. In order to
-    // cast, you have to first cast view to unknown then cast the unknown value to number[]
-    // TypeScript ftw: double opt in to write potentially type-mismatched code.
-    const b64encoded = btoa(String.fromCharCode.apply(null, view));
-    return b64encoded;
+  const view = new Uint8Array(byteCount);
+  global.crypto.getRandomValues(view);
+  // Uint8Array is a fixed length array and thus does not have methods like pop, etc
+  // so TypeScript complains about casting it to an array. Array.from() works here for
+  // getting the proper type, but it results in a functional difference. In order to
+  // cast, you have to first cast view to unknown then cast the unknown value to number[]
+  // TypeScript ftw: double opt in to write potentially type-mismatched code.
+  const b64encoded = btoa(String.fromCharCode.apply(null, view));
+  return b64encoded;
 }
 exports.generateSalt = generateSalt;
 /**
@@ -298,11 +370,21 @@ exports.generateSalt = generateSalt;
  * @param targetDerivationParams - The options to use for key derivation.
  * @returns A promise resolving to the updated vault.
  */
-async function updateVault(vault, password, targetDerivationParams = DEFAULT_DERIVATION_PARAMS) {
-    if (isVaultUpdated(vault, targetDerivationParams)) {
-        return vault;
-    }
-    return encrypt(password, await decrypt(password, vault), undefined, undefined, targetDerivationParams);
+async function updateVault(
+  vault,
+  password,
+  targetDerivationParams = DEFAULT_DERIVATION_PARAMS
+) {
+  if (isVaultUpdated(vault, targetDerivationParams)) {
+    return vault;
+  }
+  return encrypt(
+    password,
+    await decrypt(password, vault),
+    undefined,
+    undefined,
+    targetDerivationParams
+  );
 }
 exports.updateVault = updateVault;
 /**
@@ -317,11 +399,20 @@ exports.updateVault = updateVault;
  * @param targetDerivationParams - The options to use for key derivation.
  * @returns A promise resolving to the updated encrypted data and exported key.
  */
-async function updateVaultWithDetail(encryptionResult, password, targetDerivationParams = DEFAULT_DERIVATION_PARAMS) {
-    if (isVaultUpdated(encryptionResult.vault, targetDerivationParams)) {
-        return encryptionResult;
-    }
-    return encryptWithDetail(password, await decrypt(password, encryptionResult.vault), undefined, targetDerivationParams);
+async function updateVaultWithDetail(
+  encryptionResult,
+  password,
+  targetDerivationParams = DEFAULT_DERIVATION_PARAMS
+) {
+  if (isVaultUpdated(encryptionResult.vault, targetDerivationParams)) {
+    return encryptionResult;
+  }
+  return encryptWithDetail(
+    password,
+    await decrypt(password, encryptionResult.vault),
+    undefined,
+    targetDerivationParams
+  );
 }
 exports.updateVaultWithDetail = updateVaultWithDetail;
 /**
@@ -331,11 +422,13 @@ exports.updateVaultWithDetail = updateVaultWithDetail;
  * @returns Whether or not the key is an `EncryptionKey`.
  */
 function isEncryptionKey(encryptionKey) {
-    return (isPlainObject(encryptionKey) &&
-        (0, exports.hasProperty)(encryptionKey, 'key') &&
-        (0, exports.hasProperty)(encryptionKey, 'derivationOptions') &&
-        encryptionKey.key instanceof CryptoKey &&
-        isKeyDerivationOptions(encryptionKey.derivationOptions));
+  return (
+    isPlainObject(encryptionKey) &&
+    (0, exports.hasProperty)(encryptionKey, "key") &&
+    (0, exports.hasProperty)(encryptionKey, "derivationOptions") &&
+    encryptionKey.key instanceof CryptoKey &&
+    isKeyDerivationOptions(encryptionKey.derivationOptions)
+  );
 }
 /**
  * Checks if the provided object is a `KeyDerivationOptions`.
@@ -344,9 +437,11 @@ function isEncryptionKey(encryptionKey) {
  * @returns Whether or not the object is a `KeyDerivationOptions`.
  */
 function isKeyDerivationOptions(derivationOptions) {
-    return (isPlainObject(derivationOptions) &&
-        (0, exports.hasProperty)(derivationOptions, 'algorithm') &&
-        (0, exports.hasProperty)(derivationOptions, 'params'));
+  return (
+    isPlainObject(derivationOptions) &&
+    (0, exports.hasProperty)(derivationOptions, "algorithm") &&
+    (0, exports.hasProperty)(derivationOptions, "params")
+  );
 }
 /**
  * Checks if the provided key is an `ExportedEncryptionKey`.
@@ -355,10 +450,12 @@ function isKeyDerivationOptions(derivationOptions) {
  * @returns Whether or not the object is an `ExportedEncryptionKey`.
  */
 function isExportedEncryptionKey(exportedKey) {
-    return (isPlainObject(exportedKey) &&
-        (0, exports.hasProperty)(exportedKey, 'key') &&
-        (0, exports.hasProperty)(exportedKey, 'derivationOptions') &&
-        isKeyDerivationOptions(exportedKey.derivationOptions));
+  return (
+    isPlainObject(exportedKey) &&
+    (0, exports.hasProperty)(exportedKey, "key") &&
+    (0, exports.hasProperty)(exportedKey, "derivationOptions") &&
+    isKeyDerivationOptions(exportedKey.derivationOptions)
+  );
 }
 /**
  * Returns the `CryptoKey` from the provided encryption key.
@@ -368,7 +465,7 @@ function isExportedEncryptionKey(exportedKey) {
  * @returns The `CryptoKey` from the provided encryption key.
  */
 function unwrapKey(encryptionKey) {
-    return isEncryptionKey(encryptionKey) ? encryptionKey.key : encryptionKey;
+  return isEncryptionKey(encryptionKey) ? encryptionKey.key : encryptionKey;
 }
 /**
  * Checks if the provided vault is an updated encryption format.
@@ -377,11 +474,16 @@ function unwrapKey(encryptionKey) {
  * @param targetDerivationParams - The options to use for key derivation.
  * @returns Whether or not the vault is an updated encryption format.
  */
-function isVaultUpdated(vault, targetDerivationParams = DEFAULT_DERIVATION_PARAMS) {
-    const { keyMetadata } = JSON.parse(vault);
-    return (isKeyDerivationOptions(keyMetadata) &&
-        keyMetadata.algorithm === targetDerivationParams.algorithm &&
-        keyMetadata.params.iterations === targetDerivationParams.params.iterations);
+function isVaultUpdated(
+  vault,
+  targetDerivationParams = DEFAULT_DERIVATION_PARAMS
+) {
+  const { keyMetadata } = JSON.parse(vault);
+  return (
+    isKeyDerivationOptions(keyMetadata) &&
+    keyMetadata.algorithm === targetDerivationParams.algorithm &&
+    keyMetadata.params.iterations === targetDerivationParams.params.iterations
+  );
 }
 exports.isVaultUpdated = isVaultUpdated;
 //# sourceMappingURL=index.js.map

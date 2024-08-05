@@ -67,9 +67,12 @@ const AddressInput: FC<Props> = ({ address, onChange, onOpenModal }) => {
         </div>
       </Combobox>
       <div className="px-2">
-        <IcnBook className="w-8 h-8 cursor-pointer" onClick={() => {
-          onOpenModal();
-        }} />
+        <IcnBook
+          className="w-8 h-8 cursor-pointer"
+          onClick={() => {
+            onOpenModal();
+          }}
+        />
       </div>
     </div>
   );

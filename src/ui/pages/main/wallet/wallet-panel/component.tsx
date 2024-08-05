@@ -34,7 +34,10 @@ const WalletPanel = () => {
         className="flex gap-3 items-center select-none cursor-pointer"
         to={"/pages/switch-account"}
       >
-        <img src="/utxo-global-account.png" className="w-10 h-10 rounded-full" />
+        <img
+          src="/utxo-global-account.png"
+          className="w-10 h-10 rounded-full"
+        />
         <div className="grid">
           <div className="flex gap-2 items-center">
             <div className={`${s.change} font-normal !leading-[22.4px]`}>

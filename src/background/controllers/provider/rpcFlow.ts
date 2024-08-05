@@ -7,29 +7,40 @@ import PromiseFlow, { underline2Camelcase } from "@/background/utils";
 import { EVENTS } from "@/shared/constant";
 import eventBus from "@/shared/eventBus";
 import { ethErrors } from "eth-rpc-errors";
-import providerController, { btcProviderController, ckbProviderController } from "./controller";
+import providerController, {
+  btcProviderController,
+  ckbProviderController,
+} from "./controller";
 
 const isSignApproval = (type: string) => {
-  const SIGN_APPROVALS = ["switchChain", "switchNetwork", "signMessage", "signPsbt", "signAllPsbtInputs"];
+  const SIGN_APPROVALS = [
+    "switchChain",
+    "switchNetwork",
+    "signMessage",
+    "signPsbt",
+    "signAllPsbtInputs",
+  ];
   return SIGN_APPROVALS.includes(type);
 };
 
 const windowHeight = 600;
 const flow = new PromiseFlow();
 const flowContext = flow
-  .use(async(ctx, next) => {
-    const { data: { provider } } = ctx.request;
-    switch(provider) {
+  .use(async (ctx, next) => {
+    const {
+      data: { provider },
+    } = ctx.request;
+    switch (provider) {
       case "btc":
         ctx.providerController = btcProviderController;
-        ctx.providerController._switchChain("btc")
+        ctx.providerController._switchChain("btc");
         break;
       case "ckb":
         ctx.providerController = ckbProviderController;
-        ctx.providerController._switchChain("nervos")
+        ctx.providerController._switchChain("nervos");
         break;
       default:
-        ctx.providerController = providerController
+        ctx.providerController = providerController;
     }
 
     return next();

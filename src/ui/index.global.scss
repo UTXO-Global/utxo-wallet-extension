@@ -42,7 +42,6 @@
   font-style: normal;
 }
 
-
 * {
   @apply m-0 p-0 outline-none;
 }
@@ -55,7 +54,7 @@ body {
   @apply mx-auto bg-light-100 text-primary standard:max-w-2xl standard:py-6 min-w-[350px] min-h-[600px];
 
   font-family: "Satoshi", sans-serif;
-  font-size: 16px
+  font-size: 16px;
 }
 
 body.lock {

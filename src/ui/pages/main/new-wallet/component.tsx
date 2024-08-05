@@ -52,7 +52,11 @@ const NewWallet = () => {
 
   return (
     <div className="w-full p-4">
-      <img src="/logo.png" alt="utxo global" className="w-[150px] mx-auto -mt-10" />
+      <img
+        src="/logo.png"
+        alt="utxo global"
+        className="w-[150px] mx-auto -mt-10"
+      />
 
       <div className="grid gap-4">
         {items.map((i) => (

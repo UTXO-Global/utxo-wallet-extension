@@ -6,7 +6,6 @@ import { shortAddress } from "@/shared/utils/transactions";
 import toast from "react-hot-toast";
 import { IcnCopy } from "@/ui/components/icons";
 
-
 interface Props {
   active: boolean;
   onClose: () => void;

@@ -1,5 +1,9 @@
 import { Inscription } from "@/shared/interfaces/inscriptions";
-import { NETWORK_ICON, getNetworkDataBySlug, isCkbNetwork } from "@/shared/networks";
+import {
+  NETWORK_ICON,
+  getNetworkDataBySlug,
+  isCkbNetwork,
+} from "@/shared/networks";
 import { shortAddress } from "@/shared/utils/transactions";
 import Switch from "@/ui/components/switch";
 import { useCreateOrdTx, useCreateTxCallback } from "@/ui/hooks/transactions";
@@ -63,25 +67,29 @@ const CreateSend = () => {
 
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
-    if (formData.address?.trim().length <= 0) return false
+    if (formData.address?.trim().length <= 0) return false;
 
     if (Number(formData.amount) < 0.00001 && !inscriptionTransaction) {
-      return false
+      return false;
     }
 
     if (Number(formData.amount) > (currentAccount?.balance ?? 0)) {
-      return false
+      return false;
     }
 
-    if (typeof formData.feeAmount !== "number" || !formData.feeAmount || formData.feeAmount < 1) {
-      return false
+    if (
+      typeof formData.feeAmount !== "number" ||
+      !formData.feeAmount ||
+      formData.feeAmount < 1
+    ) {
+      return false;
     }
 
     if (formData.feeAmount % 1 !== 0) {
-      return false
+      return false;
     }
 
-    return true
+    return true;
   }, [formData]);
 
   const send = async ({
@@ -110,11 +118,11 @@ const CreateSend = () => {
 
       const { fee, rawtx, fromAddresses } = !inscriptionTransaction
         ? await createTx(
-          address,
-          Number((Number(amount) * 10 ** 8).toFixed(0)),
-          feeRate,
-          includeFeeInAmount
-        )
+            address,
+            Number((Number(amount) * 10 ** 8).toFixed(0)),
+            feeRate,
+            includeFeeInAmount
+          )
         : await createOrdTx(address, feeRate, inscription);
 
       // NOTE: [GA] - Send BTC
@@ -212,7 +220,9 @@ const CreateSend = () => {
       >
         <div className={s.inputs}>
           <div className="form-field">
-            <span className="font-medium text-base">{t("send.create_send.send_to")}</span>
+            <span className="font-medium text-base">
+              {t("send.create_send.send_to")}
+            </span>
             <AddressInput
               address={formData.address}
               onChange={(v) => setFormData((p) => ({ ...p, address: v }))}
@@ -242,7 +252,9 @@ const CreateSend = () => {
                 <div>{`${t("wallet_page.your_balance")} `}</div>
                 <div className="flex gap-2 items-center">
                   <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
-                  <span className="text-[#787575]">{currentNetwork.coinSymbol}</span>
+                  <span className="text-[#787575]">
+                    {currentNetwork.coinSymbol}
+                  </span>
                 </div>
               </div>
             </div>
@@ -258,10 +270,9 @@ const CreateSend = () => {
                 {t("send.create_send.fee_label")}
               </span>
               <FeeInput
-                onChange={useCallback(
-                  (v) => setFormData((prev) => ({ ...prev, feeAmount: v })),
-                  [setFormData]
-                )}
+                onChange={(v) =>
+                  setFormData((prev) => ({ ...prev, feeAmount: v }))
+                }
                 value={formData.feeAmount}
               />
             </div>
@@ -280,9 +291,7 @@ const CreateSend = () => {
           )}
 
           <Switch
-            label={t(
-              "send.create_send.save_address"
-            )}
+            label={t("send.create_send.save_address")}
             value={isSaveAddress}
             onChange={setIsSaveAddress}
             locked={false}
@@ -298,7 +307,9 @@ const CreateSend = () => {
       ) : (
         <button
           type="submit"
-          className={"btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100"}
+          className={
+            "btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100"
+          }
           form={formId}
           disabled={!isValidForm}
         >

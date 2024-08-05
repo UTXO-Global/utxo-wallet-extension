@@ -54,25 +54,29 @@ export const customizedFetch: typeof fetch = (
   });
 };
 
-export async function callCKBRPC(rpcURl: string, method: string, params: any[]) {
+export async function callCKBRPC(
+  rpcURl: string,
+  method: string,
+  params: any[]
+) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
 
   const body = JSON.stringify({
-    "id": 0,
-    "jsonrpc": "2.0",
-    "method": method,
-    "params": params
+    id: 0,
+    jsonrpc: "2.0",
+    method: method,
+    params: params,
   });
 
   const response = await fetch(rpcURl, {
     method: "POST",
     headers: headers,
     body: body,
-  })
+  });
 
   const r = await response.json();
-  console.log("r", r, r.result)
+  console.log("r", r, r.result);
 
-  return await r.result
+  return await r.result;
 }

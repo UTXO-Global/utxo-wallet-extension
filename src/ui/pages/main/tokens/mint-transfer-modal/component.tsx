@@ -36,7 +36,10 @@ const MintTransferModal: FC<Props> = ({
   });
   const formId = useId();
   const [loading, setLoading] = useState<boolean>(false);
-  const inscribeTransferToken = async (data: ITransferToken, feeRate: number) => {};
+  const inscribeTransferToken = async (
+    data: ITransferToken,
+    feeRate: number
+  ) => {};
 
   const onAmountChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData((prev) => ({

@@ -271,10 +271,16 @@ export const useUpdateCurrentAccountBalance = () => {
 
       await updateCurrentAccount({
         balance: groupCardinalAccountBalance / 10 ** currentNetwork.decimal,
-        ordinalBalance: groupOrdinalAccountBalance / 10 ** currentNetwork.decimal,
+        ordinalBalance:
+          groupOrdinalAccountBalance / 10 ** currentNetwork.decimal,
       });
     },
-    [updateCurrentAccount, currentNetwork.decimal, currentAccount, apiController]
+    [
+      updateCurrentAccount,
+      currentNetwork.decimal,
+      currentAccount,
+      apiController,
+    ]
   );
 };
 

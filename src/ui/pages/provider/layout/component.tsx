@@ -10,11 +10,7 @@ interface Props {
   resolveBtnClassName: string;
 }
 
-const Layout: FC<Props> = ({
-  children,
-  documentTitle,
-  resolveBtnText,
-}) => {
+const Layout: FC<Props> = ({ children, documentTitle, resolveBtnText }) => {
   const [origin, setOrigin] = useState<string>("");
   const [iconUrl, setIconUrl] = useState<string>("");
 
@@ -58,9 +54,7 @@ const Layout: FC<Props> = ({
           </div>
         </div>
 
-        <div className="mt-[48px]">
-          {children}
-        </div>
+        <div className="mt-[48px]">{children}</div>
       </div>
 
       <div className="grid gap-2 grid-cols-2 pt-4">

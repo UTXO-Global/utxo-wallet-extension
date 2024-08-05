@@ -47,7 +47,7 @@ export interface ITransaction {
   sigops: number;
   fee: number;
   status: Status;
-  address?: string
+  address?: string;
 }
 
 export interface Vin {

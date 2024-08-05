@@ -17,7 +17,7 @@ export const CKB_MAINNET: NetworkData = {
   coinName: "CKB",
   coinSymbol: "CKB",
   network: offCKBConfig.network.mainnet,
-  decimal: 8
+  decimal: 8,
 };
 
 export const CKB_TESTNET: NetworkData = {
@@ -36,5 +36,5 @@ export const CKB_TESTNET: NetworkData = {
   coinName: "CKB",
   coinSymbol: "CKB",
   network: offCKBConfig.network.testnet,
-  decimal: 8
+  decimal: 8,
 };

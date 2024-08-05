@@ -38,7 +38,7 @@ export const useGetCurrentAccount = () => {
   }, [selectedAccount, selectedWallet, wallets]);
 };
 
-export const useGetCurrentWallet = () => {
+export const useGetCurrentWallet = async () => {
   const { selectedWallet, wallets } = useWalletState((v) => ({
     selectedWallet: v.selectedWallet,
     wallets: v.wallets,
@@ -49,13 +49,14 @@ export const useGetCurrentWallet = () => {
     return wallets[selectedWallet];
   }, [selectedWallet, wallets]);
 
+  const switchWallet = useSwitchWallet();
+
   if (
     currentWallet &&
     currentWallet.accounts &&
     !currentWallet.accounts[0].accounts[0].address
   ) {
-    const switchWallet = useSwitchWallet();
-    switchWallet(currentWallet.id);
+    await switchWallet(currentWallet.id);
   }
 
   return currentWallet;

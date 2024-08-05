@@ -19,12 +19,14 @@ const Connect = () => {
       <div className="rounded-lg bg-[#F5F5F5] p-4 flex items-center gap-2 mt-6">
         <img src="/account.png" alt="account" className="w-[32px]" />
         <div className="flex-1">
-          <p className="text-[18px] leading-[140%] text-primary font-medium">{currentAccount.name}</p>
-          <p className="mt-[2px] text-[14px] leading-[18px] text-[#787575]">{shortAddress(currentAccount.accounts[0].address)}</p>
+          <p className="text-[18px] leading-[140%] text-primary font-medium">
+            {currentAccount.name}
+          </p>
+          <p className="mt-[2px] text-[14px] leading-[18px] text-[#787575]">
+            {shortAddress(currentAccount.accounts[0].address)}
+          </p>
         </div>
       </div>
-
-    
     </Layout>
   );
 };

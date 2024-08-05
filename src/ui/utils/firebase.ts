@@ -1,7 +1,15 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth/web-extension";
 import { getFirestore } from "firebase/firestore";
-import { FIREBASE_API_KEY, FIREBASE_APP_ID, FIREBASE_AUTH_DOMAIN, FIREBASE_MEASUREMENT_ID, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET } from "@/shared/constant";
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_APP_ID,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_MEASUREMENT_ID,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+} from "@/shared/constant";
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,

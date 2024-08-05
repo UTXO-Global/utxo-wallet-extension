@@ -10,7 +10,9 @@ class DedupePromise {
 
   async call(key: string, defer: () => Promise<any>) {
     if (this._blackList.includes(key) && this._tasks[key]) {
-      throw ethErrors.rpc.transactionRejected("there is a pending request, please request after it resolved");
+      throw ethErrors.rpc.transactionRejected(
+        "there is a pending request, please request after it resolved"
+      );
     }
 
     return new Promise((resolve) => {
