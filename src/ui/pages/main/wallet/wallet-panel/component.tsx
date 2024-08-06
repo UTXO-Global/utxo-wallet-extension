@@ -59,7 +59,7 @@ const WalletPanel = () => {
           onClick={() => setIsShowCopyAddress(true)}
         />
         <IcnSetting
-          className="w-6 h-6 transition-colors stroke-primary hover:stroke-[#787575] hover:rotate-90 cursor-pointer transition-transform"
+          className="w-6 h-6 stroke-primary hover:stroke-[#787575] hover:rotate-90 cursor-pointer transition-transform"
           onClick={() =>
             _navigate("/pages/settings", "pf_settings", "settings")
           }

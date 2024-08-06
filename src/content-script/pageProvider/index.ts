@@ -254,11 +254,13 @@ export class CKBProvider extends UtxoGlobalProvider {
   }
 
   signTransaction = async (tx: ccc.TransactionLike) => {
-    const rawTx = cccA.JsonRpcTransformers.transactionFrom(tx);
+    const rawTx = JSON.stringify(tx, (key, value) =>
+      typeof value === "bigint" ? `0x${value.toString(16)}` : value
+    );
     return this._request({
       method: "signTransaction",
       params: {
-        tx: rawTx,
+        tx: JSON.parse(rawTx),
       },
     });
   };

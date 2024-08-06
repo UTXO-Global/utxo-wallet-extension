@@ -14,12 +14,10 @@ import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 const SignTransaction = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<IField[]>([]);
-  const [cellOutput] = useState<any[]>([]);
   const [modalInputIndex, setModalInputIndex] = useState<number | undefined>(
     undefined
   );
   const [rawtx, setRawTx] = useState<any>({});
-  const currentNetwork = useGetCurrentNetwork();
   const { notificationController } = useControllersState((v) => ({
     apiController: v.apiController,
     notificationController: v.notificationController,
@@ -42,29 +40,6 @@ const SignTransaction = () => {
     }
   }, [getPsbtFields, fields]);
 
-  const updateCellOutput = async (tx: any) => {
-    const networkConfig = currentNetwork.network as NetworkConfig;
-    if (cellOutput.length <= 0) setLoading(true);
-    await Promise.all(
-      tx.inputs?.map(async (input, index) => {
-        const txInput = await callCKBRPC(
-          networkConfig.rpc_url,
-          "get_transaction",
-          [input.previous_output.tx_hash]
-        );
-        const cellOutput =
-          txInput.transaction.outputs[Number(input.previous_output.index)];
-        tx.inputs[index] = {
-          ...tx.inputs[index],
-          cell_output: { ...cellOutput },
-        };
-      })
-    );
-
-    setLoading(false);
-    return tx;
-  };
-
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => {
@@ -75,8 +50,7 @@ const SignTransaction = () => {
         }
         setRawTx(fields);
       } else if (approval.params.data.tx) {
-        const tx = await updateCellOutput(approval.params.data.tx);
-        setRawTx(tx);
+        setRawTx(approval.params.data.tx);
       }
     })();
   }, [notificationController, updateFields, fields]);
