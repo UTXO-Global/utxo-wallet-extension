@@ -125,15 +125,13 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   const updateAll = useCallback(
     async (force = false) => {
       setLoading(true);
-      try {
-        await Promise.all([
-          updateAccountBalance(),
-          updateTransactions(force),
-          updateInscriptions(force),
-          updateFeeRates(),
-          updateTokens(),
-        ]);
-      } catch (e) {}
+      await Promise.allSettled([
+        updateAccountBalance(),
+        updateTransactions(force),
+        updateInscriptions(force),
+        updateFeeRates(),
+        updateTokens(),
+      ]);
       setLoading(false);
     },
     [
@@ -299,16 +297,14 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   useEffect(() => {
     if (!currentAccount?.id) return;
     const interval = setInterval(async () => {
-      try {
-        await Promise.all([
-          updateAccountBalance(),
-          updateTransactions(),
-          updateLastBlock(),
-          inscriptionIntervalUpdate(),
-          updateFeeRates(),
-          updateTokens(),
-        ]);
-      } catch (e) {}
+      await Promise.allSettled([
+        updateAccountBalance(),
+        updateTransactions(),
+        updateLastBlock(),
+        inscriptionIntervalUpdate(),
+        updateFeeRates(),
+        updateTokens(),
+      ]);
     }, 10000);
     return () => {
       clearInterval(interval);
