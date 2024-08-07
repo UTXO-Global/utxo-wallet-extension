@@ -161,6 +161,7 @@ class ApiController implements IApiController {
       json: false,
       body: rawTx,
     });
+    console.log("pushTx", data);
     return {
       txid: data,
     };
