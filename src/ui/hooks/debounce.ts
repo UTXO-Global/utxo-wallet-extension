@@ -8,11 +8,13 @@ export function useDebounceCall(
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (triggered !== undefined) {
-        setTriggered(undefined);
-        const copy = [...triggered];
-        await value(...copy);
-      }
+      try {
+        if (triggered !== undefined) {
+          setTriggered(undefined);
+          const copy = [...triggered];
+          await value(...copy);
+        }
+      } catch (e) {}
     }, delay || 500);
 
     return () => {

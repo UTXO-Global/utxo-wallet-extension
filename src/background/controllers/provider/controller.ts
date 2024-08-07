@@ -24,6 +24,7 @@ import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
+import { helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
   connect = async () => {
@@ -393,61 +394,37 @@ class CKBProviderController extends ProviderController {
 
     const tx = data.data.params.tx;
     let txSkeleton = helpers.TransactionSkeleton();
-
-    if (tx.cell_deps && tx.cell_deps.length > 0) {
-      tx.cell_deps?.forEach((cellDep: any) => {
+    if (tx.cellDeps && tx.cellDeps.length > 0) {
+      tx.cellDeps?.forEach((cellDep: any) => {
         txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
-          cellDeps.push({
-            outPoint: {
-              txHash: cellDep.out_point.tx_hash,
-              index: cellDep.out_point.index,
-            },
-            depType: cellDep.dep_type === "dep_group" ? "depGroup" : "code",
-          })
+          cellDeps.push(cellDep)
         );
       });
     }
 
-    await Promise.all(
-      tx.inputs?.map(async (input: any) => {
-        const txInput = await callCKBRPC(
-          networkConfig.rpc_url,
-          "get_transaction",
-          [input.previous_output.tx_hash]
-        );
-        const cellOutput =
-          txInput.transaction.outputs[Number(input.previous_output.index)];
-        txSkeleton = txSkeleton.update("inputs", (inputs) =>
-          inputs.push({
-            outPoint: {
-              txHash: input.previous_output.tx_hash,
-              index: input.previous_output.index,
-            },
-            data: input.output_data || "0x",
-            cellOutput: {
-              capacity: cellOutput.capacity,
-              lock: {
-                codeHash: cellOutput.lock?.code_hash,
-                hashType: cellOutput.lock?.hash_type,
-                args: cellOutput.lock?.args,
-              },
-              type: cellOutput.type,
-            },
-          })
-        );
-      })
-    );
+    tx.inputs?.map(async (input: any) => {
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.push({
+          outPoint: {
+            txHash: input.previousOutput.txHash,
+            index: input.previousOutput.index,
+          },
+          data: input.outputData || "0x",
+          cellOutput: {
+            capacity: input.cellOutput.capacity,
+            lock: input.cellOutput.lock,
+            type: input.cellOutput.type,
+          },
+        })
+      );
+    });
 
     tx.outputs?.forEach((output: any) => {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
             capacity: output.capacity,
-            lock: {
-              codeHash: output.lock?.code_hash,
-              hashType: output.lock?.hash_type,
-              args: output.lock?.args,
-            },
+            lock: output.lock,
             type: output.type || null,
           },
           data: "0x",

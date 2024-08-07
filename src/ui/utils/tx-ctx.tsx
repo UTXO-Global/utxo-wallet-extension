@@ -282,9 +282,11 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   ]);
 
   const loadNativeCoinPrice = useCallback(async () => {
-    const data = await apiController.getNativeCoinPrice();
-    setCurrentPrice(data.usd);
-    await updateLastBlock();
+    if (apiController && apiController.getNativeCoinPrice) {
+      const data = await apiController.getNativeCoinPrice();
+      setCurrentPrice(data.usd);
+      await updateLastBlock();
+    }
   }, [apiController, updateLastBlock]);
 
   useEffect(() => {

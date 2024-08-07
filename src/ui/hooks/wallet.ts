@@ -138,47 +138,50 @@ export const useSwitchWallet = () => {
 
   return useCallback(
     async (key: number, accKey?: number) => {
-      const wallet = wallets.find((f) => f.id === key);
-      if (!wallet) return;
-      if (
-        wallet.accounts &&
-        wallet.accounts[0] &&
-        !wallet.accounts[0].accounts[0].address
-      ) {
-        wallet.accounts = await walletController.loadAccountsData(
-          wallet.id,
-          wallet.accounts
-        );
-      }
-
-      const networkGroupAccounts = wallet.accounts.filter(
-        (account) => account.network === network.slug
-      );
-      if (networkGroupAccounts.length === 0) {
-        // this wallet doesn't have any account match with this network
-        // need initialize
-        const networkGroupAccount =
-          await walletController.createDefaultGroupAccount(
-            network.slug,
-            wallet.id
+      const f = async () => {
+        const wallet = wallets.find((f) => f.id === key);
+        if (!wallet) return;
+        if (
+          wallet.accounts &&
+          wallet.accounts[0] &&
+          !wallet.accounts[0].accounts[0].address
+        ) {
+          wallet.accounts = await walletController.loadAccountsData(
+            wallet.id,
+            wallet.accounts
           );
-        accKey = wallet.accounts.length;
-        wallet.accounts = [...wallet.accounts, networkGroupAccount].map(
-          (f, i) => ({
-            ...f,
-            id: i,
-          })
-        );
-      }
+        }
 
-      await updateWalletState({
-        selectedWallet: wallet.id,
-        wallets: wallets.with(key, wallet),
-        selectedAccount: accKey ?? networkGroupAccounts[0].id,
-      });
-      await notificationController.changedAccount();
-      resetTransactions();
-      trottledUpdate(true);
+        const networkGroupAccounts = wallet.accounts.filter(
+          (account) => account.network === network.slug
+        );
+        if (networkGroupAccounts.length === 0) {
+          // this wallet doesn't have any account match with this network
+          // need initialize
+          const networkGroupAccount =
+            await walletController.createDefaultGroupAccount(
+              network.slug,
+              wallet.id
+            );
+          accKey = wallet.accounts.length;
+          wallet.accounts = [...wallet.accounts, networkGroupAccount].map(
+            (f, i) => ({
+              ...f,
+              id: i,
+            })
+          );
+        }
+
+        await updateWalletState({
+          selectedWallet: wallet.id,
+          wallets: wallets.with(key, wallet),
+          selectedAccount: accKey ?? networkGroupAccounts[0].id,
+        });
+        await notificationController.changedAccount();
+        resetTransactions();
+        trottledUpdate(true);
+      };
+      f();
     },
     [
       wallets,
