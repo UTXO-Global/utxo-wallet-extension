@@ -125,7 +125,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   const updateAll = useCallback(
     async (force = false) => {
       setLoading(true);
-      await Promise.all([
+      await Promise.allSettled([
         updateAccountBalance(),
         updateTransactions(force),
         updateInscriptions(force),
@@ -297,7 +297,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   useEffect(() => {
     if (!currentAccount?.id) return;
     const interval = setInterval(async () => {
-      await Promise.all([
+      await Promise.allSettled([
         updateAccountBalance(),
         updateTransactions(),
         updateLastBlock(),

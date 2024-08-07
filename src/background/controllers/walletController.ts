@@ -260,7 +260,7 @@ class WalletController implements IWalletController {
         addressType,
         network: networkSlug,
         address,
-        hdPath: addressType.hdPath,
+        hdPath: hdPath,
       };
     });
 
