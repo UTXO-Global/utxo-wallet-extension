@@ -381,7 +381,6 @@ class CKBProviderController extends ProviderController {
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
-    const networkConfig = network.network as NetworkConfig;
 
     if (!isCkbNetwork(network.network)) {
       throw new Error("Error when trying to get the current account");
@@ -420,7 +419,6 @@ class CKBProviderController extends ProviderController {
     });
 
     const outputsData = tx.outputsData || [];
-
     tx.outputs?.forEach((output: any, index: number) => {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
