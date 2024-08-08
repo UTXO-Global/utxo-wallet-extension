@@ -99,10 +99,9 @@ export function useCreateTxCallback() {
         // CKB has only one address type - no need to use loop
         const fromAddress = currentAccount.accounts[0].address;
         const cells = await apiController.getCells(fromAddress);
-        const safeBalance = (cells ?? []).reduce(
-          (pre, cur) => pre.add(cur.cellOutput.capacity),
-          BI.from(0)
-        );
+        const safeBalance = (cells ?? []).reduce((pre, cur) => {
+          return cur.cellOutput.type ? pre : pre.add(cur.cellOutput.capacity);
+        }, BI.from(0));
         // additional 0.001 ckb for tx fee
         // the tx fee could calculated by tx size
         // TODO: this is just a simple example
