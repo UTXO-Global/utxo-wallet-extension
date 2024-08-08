@@ -24,7 +24,7 @@ import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
-import { helpers } from "@ckb-lumos/lumos";
+import { commons, helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
   connect = async () => {
@@ -419,7 +419,9 @@ class CKBProviderController extends ProviderController {
       );
     });
 
-    tx.outputs?.forEach((output: any) => {
+    const outputsData = tx.outputsData || [];
+
+    tx.outputs?.forEach((output: any, index: number) => {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -427,7 +429,7 @@ class CKBProviderController extends ProviderController {
             lock: output.lock,
             type: output.type || null,
           },
-          data: "0x",
+          data: outputsData[index] || "0x",
         })
       );
     });
