@@ -237,8 +237,10 @@ class KeyringService {
       const collected: Cell[] = [];
       let collectedSum = BI.from(0);
       for (const cell of (data as SendCkbCoin).cells) {
-        collectedSum = collectedSum.add(cell.cellOutput.capacity);
-        collected.push(cell);
+        if (!cell.cellOutput.type) {
+          collectedSum = collectedSum.add(cell.cellOutput.capacity);
+          collected.push(cell);
+        }
         if (collectedSum.gte(neededCapacity)) break;
       }
 
