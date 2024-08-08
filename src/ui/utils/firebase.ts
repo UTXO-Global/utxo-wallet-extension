@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth/web-extension";
 import { getFirestore } from "firebase/firestore";
 import {
   FIREBASE_API_KEY,
