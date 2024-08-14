@@ -73,10 +73,12 @@ async function _createDefaultGroupAccount({
   networkSlug,
   key,
   walletId,
+  hdPath
 }: {
   networkSlug: NetworkSlug;
   key?: Keyring<Json>;
   walletId?: number;
+  hdPath?: string;
 }): Promise<IGroupAccount> {
   const keyring =
     key ??
@@ -96,7 +98,7 @@ async function _createDefaultGroupAccount({
     }
 
     const accounts: IAccount[] = addressTypes.map((addressType, id) => {
-      const publicKey = keyring.exportPublicKey(addressType.hdPath);
+      const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
         Buffer.from(publicKey, "hex"),
@@ -108,7 +110,7 @@ async function _createDefaultGroupAccount({
         addressType,
         network: networkSlug,
         address,
-        hdPath: addressType.hdPath,
+        hdPath: hdPath || addressType.hdPath,
       };
     });
 
@@ -125,7 +127,7 @@ async function _createDefaultGroupAccount({
       ? network.addressTypes.slice(0, -1)
       : network.addressTypes;
     const accounts: IAccount[] = addressTypes.map((addressType, id) => {
-      const publicKey = keyring.exportPublicKey(addressType.hdPath);
+      const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
         Buffer.from(publicKey, "hex"),
@@ -169,6 +171,7 @@ class WalletController implements IWalletController {
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
+      hdPath: props.hdPath
     });
 
     return {
@@ -274,9 +277,10 @@ class WalletController implements IWalletController {
 
   async createDefaultGroupAccount(
     networkSlug: NetworkSlug,
-    walletId?: number
+    walletId?: number,
+    hdPath?: string,
   ): Promise<IGroupAccount> {
-    return _createDefaultGroupAccount({ networkSlug, walletId });
+    return _createDefaultGroupAccount({ networkSlug, walletId, hdPath });
   }
 
   async generateMnemonicPhrase(): Promise<string> {

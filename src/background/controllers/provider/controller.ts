@@ -22,7 +22,7 @@ import { IGroupAccount, IWallet } from "@/shared/interfaces";
 import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
-import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
+import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "@/shared/networks/ckb";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { commons, helpers } from "@ckb-lumos/lumos";
 
@@ -60,9 +60,27 @@ class ProviderController {
       );
 
       if (!networkGroupAccounts || networkGroupAccounts.length === 0) {
+        let _otherNetworkGroupAccounts: IGroupAccount[] = [];
+        if (["nervos", "nervos_testnet"].includes(_network)) {
+          _otherNetworkGroupAccounts = wallet.accounts.filter(
+            (account) =>
+              account.network ===
+              (_network === "nervos" ? "nervos_testnet" : "nervos")
+          );
+        }
+        
+        const hdPathForNeuronWallet =
+          _otherNetworkGroupAccounts.length === 0
+            ? ""
+            : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
+              CKB_NEURON_HD_PATH
+            ? CKB_NEURON_HD_PATH
+            : "";
+            
         const accounts = await walletController.createDefaultGroupAccount(
           _network,
-          wallet.id
+          wallet.id,
+          hdPathForNeuronWallet
         );
         if (wallet.id === currentWallet.id) {
           selectedAccount = wallet.accounts.length;

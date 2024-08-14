@@ -87,3 +87,4 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
     };
   });
 }
+
