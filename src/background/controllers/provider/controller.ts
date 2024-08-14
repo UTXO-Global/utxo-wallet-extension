@@ -432,7 +432,7 @@ class CKBProviderController extends ProviderController {
       );
     });
 
-    tx.header_deps?.forEach((headerDep: any) => {
+    tx.headerDeps?.forEach((headerDep: any) => {
       txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
         headerDeps.push(headerDep)
       );

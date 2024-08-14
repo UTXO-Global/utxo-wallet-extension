@@ -14,7 +14,9 @@ export function useDebounceCall(
           const copy = [...triggered];
           await value(...copy);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     }, delay || 500);
 
     return () => {

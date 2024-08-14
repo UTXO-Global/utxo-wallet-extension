@@ -49,7 +49,9 @@
       "about_wallet": "About Wallet",
       "explorer": "Explore",
       "restore_wallet": "Restore Wallet",
-      "receive": "Receive"
+      "receive": "Receive",
+      "confirmation": "Confirmation",
+      "mnemonic_confirm_desc": "Please select words in order according to your mnemonic words"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",

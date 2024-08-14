@@ -31,7 +31,9 @@
       "show_mnemonic": "Показать мнемонику",
       "show_private_key": "Показать приватный ключ",
       "restore_from_mnemonic": "Восстановить из мнемоника",
-      "restore_from_private_key": "Восстановить кошелек"
+      "restore_from_private_key": "Восстановить кошелек",
+      "confirmation": "Подтверждения",
+      "mnemonic_confirm_desc": "Пожалуйста, выберите слова в порядке, соответствующем вашим мнемоническим словам."
     },
     "check_password": {
       "incorrect_password_error": "Неверный пароль",

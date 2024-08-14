@@ -40,6 +40,7 @@ import RestoreType from "./main/new-wallet/restore-type";
 import SwitchNetwork from "./provider/switch-network/component";
 import SwitchChain from "./provider/switch-chain/component";
 import SignTransaction from "./provider/sign-transaction";
+import ConfirmMnemonic from "./main/new-wallet/new-mnemonic/confirm-mnemonic";
 
 export const guestRouter = createHashRouter([
   {
@@ -74,6 +75,7 @@ export const authenticatedRouter = createHashRouter([
       { path: "create-new-wallet", element: <NewWallet /> },
       { path: "restore-type", element: <RestoreType /> },
       { path: "new-mnemonic", element: <NewMnemonic /> },
+      { path: "confirm-mnemonic", element: <ConfirmMnemonic /> },
       { path: "restore-mnemonic", element: <RestoreMnemonic /> },
       { path: "restore-priv-key", element: <RestorePrivKey /> },
       { path: "show-pk/:accId", element: <ShowPk /> },

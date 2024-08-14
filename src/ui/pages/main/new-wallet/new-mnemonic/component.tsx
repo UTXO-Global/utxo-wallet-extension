@@ -1,4 +1,3 @@
-import { useCreateNewWallet } from "@/ui/hooks/wallet";
 import { useAppState } from "@/ui/states/appState";
 import { useControllersState } from "@/ui/states/controllerState";
 import { useWalletState } from "@/ui/states/walletState";
@@ -16,9 +15,6 @@ const NewMnemonic = () => {
 
   const [loading, setLoading] = useState(false);
   const [savedPhrase, setSavedPhrase] = useState(false);
-  const { updateWalletState } = useWalletState((v) => ({
-    updateWalletState: v.updateWalletState,
-  }));
   const { updateAppState } = useAppState((v) => ({
     updateAppState: v.updateAppState,
   }));
@@ -29,8 +25,6 @@ const NewMnemonic = () => {
   const [mnemonicPhrase, setMnemonicPhrase] = useState<string | undefined>(
     undefined
   );
-
-  const createNewWallet = useCreateNewWallet();
 
   const init = useCallback(async () => {
     if (location.state?.pending) {
@@ -56,22 +50,6 @@ const NewMnemonic = () => {
   }, [mnemonicPhrase, init]);
 
   const navigate = useNavigate();
-
-  const onCreate = async () => {
-    if (!mnemonicPhrase) {
-      toast.error(t("new_wallet.new_mnemonic.error_phrase_blank"));
-      return;
-    }
-    setLoading(true);
-    await createNewWallet({
-      payload: mnemonicPhrase,
-      walletType: "root",
-    });
-    await updateWalletState({ vaultIsEmpty: false });
-    await stateController.clearPendingWallet();
-    setLoading(false);
-    navigate("/home");
-  };
 
   const onSwitch = () => {
     setSavedPhrase((p) => !p);
@@ -128,7 +106,7 @@ const NewMnemonic = () => {
         <div className={s.continueWrapper}>
           <button
             className="btn primary w-full"
-            onClick={() => onCreate()}
+            onClick={() => navigate("/pages/confirm-mnemonic")}
             disabled={!savedPhrase}
           >
             {t("new_wallet.continue")}
