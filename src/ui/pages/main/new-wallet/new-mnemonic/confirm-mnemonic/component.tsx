@@ -116,7 +116,7 @@ const ConfirmMnemonic = () => {
                     word
                   ) : (
                     <input
-                      className="w-full bg-transparent"
+                      className="w-full bg-transparent text-center"
                       onChange={(e) => {
                         setMNemonicPhaseConfirm((prevState) => {
                           const newState = [...prevState];
