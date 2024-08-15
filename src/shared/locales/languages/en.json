@@ -50,8 +50,10 @@
       "explorer": "Explore",
       "restore_wallet": "Restore Wallet",
       "receive": "Receive",
-      "confirmation": "Confirmation",
-      "mnemonic_confirm_desc": "Please select words in order according to your mnemonic words"
+      "mnemonic_confirmation": "Confirm Recovery Phrase",
+      "mnemonic_confirm_desc": "Confirm Secret Recovery Phrase",
+      "next": "Next",
+      "confirm": "Confirm"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -137,7 +139,7 @@
     "new_mnemonic": {
       "error_phrase_blank": "Mnemonic phrase blank",
       "warning": "If you lose these words, you will never be able to recover your lost account",
-      "i_saved_this_phrase": "I saved this phrase",
+      "i_saved_this_phrase": "I have written down and securely stored this recovery phrase",
       "copy": "Copy"
     },
     "restore_mnemonic": {

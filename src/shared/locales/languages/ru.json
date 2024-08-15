@@ -32,8 +32,10 @@
       "show_private_key": "Показать приватный ключ",
       "restore_from_mnemonic": "Восстановить из мнемоника",
       "restore_from_private_key": "Восстановить кошелек",
-      "confirmation": "Подтверждения",
-      "mnemonic_confirm_desc": "Пожалуйста, выберите слова в порядке, соответствующем вашим мнемоническим словам."
+      "mnemonic_confirmation": "Подтвердите фразу восстановления",
+      "mnemonic_confirm_desc": "Подтвердите секретную фразу восстановления",
+      "next": "следующий",
+      "confirm": "Подтверждать"
     },
     "check_password": {
       "incorrect_password_error": "Неверный пароль",
@@ -88,7 +90,7 @@
     "new_mnemonic": {
       "error_phrase_blank": "Мнемоника пуста",
       "warning": "Если вы потеряете эти слова, вы никогда не сможете восстановить свой аккаунт",
-      "i_saved_this_phrase": "Я сохранил эту фразу",
+      "i_saved_this_phrase": "Я записал и надежно сохранил эту фразу для восстановления.",
       "copy": "Копировать"
     },
     "restore_mnemonic": {

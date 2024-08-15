@@ -68,7 +68,7 @@ const NewMnemonic = () => {
         )}
       >
         <div>
-          <p className="w-full flex justify-center text-[#FF4545] mb-5 text-sm text-center">
+          <p className="w-full flex justify-center text-[#FF4545] mb-5 text-base text-center">
             {t("new_wallet.new_mnemonic.warning")}
           </p>
           <div className="grid grid-cols-3 text-sm gap-x-2 gap-y-6 mt-10">
@@ -109,7 +109,7 @@ const NewMnemonic = () => {
             onClick={() => navigate("/pages/confirm-mnemonic")}
             disabled={!savedPhrase}
           >
-            {t("new_wallet.continue")}
+            {t("components.layout.next")}
           </button>
         </div>
       </div>
