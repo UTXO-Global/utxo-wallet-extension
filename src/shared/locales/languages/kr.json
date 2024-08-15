@@ -31,7 +31,9 @@
       "show_mnemonic": "니모닉 표시",
       "show_private_key": "비밀 키 표시",
       "restore_from_mnemonic": "니모닉에서 복원",
-      "restore_from_private_key": "개인 키에서 복원"
+      "restore_from_private_key": "개인 키에서 복원",
+      "confirmation": "확인",
+      "mnemonic_confirm_desc": "기억하는 단어에 따라 순서대로 단어를 선택해주세요."
     },
     "check_password": {
       "incorrect_password_error": "잘못된 비밀번호",

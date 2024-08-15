@@ -182,6 +182,7 @@ export const useSwitchWallet = () => {
         resetTransactions();
         trottledUpdate(true);
       };
+      // eslint-disable-next-line
       f();
     },
     [

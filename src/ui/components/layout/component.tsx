@@ -170,6 +170,13 @@ export default function PagesLayout() {
           },
         },
         {
+          route: "/pages/confirm-mnemonic",
+          title: t("components.layout.confirmation"),
+          backAction: async () => {
+            navigate(-1);
+          },
+        },
+        {
           backAction: () => {
             navigate("/home");
           },

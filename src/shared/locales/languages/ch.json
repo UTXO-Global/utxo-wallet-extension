@@ -39,7 +39,9 @@
       "about_wallet": "关于钱包",
       "explorer": "探索",
       "restore_wallet": "Restore Wallet",
-      "receive": "Receive"
+      "receive": "Receive",
+      "confirmation": "确认",
+      "mnemonic_confirm_desc": "请按照助记词的顺序选择单词"
     },
     "check_password": {
       "incorrect_password_error": "密码错误",
