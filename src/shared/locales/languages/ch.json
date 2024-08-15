@@ -40,8 +40,10 @@
       "explorer": "探索",
       "restore_wallet": "Restore Wallet",
       "receive": "Receive",
-      "confirmation": "确认",
-      "mnemonic_confirm_desc": "请按照助记词的顺序选择单词"
+      "mnemonic_confirmation": "確認恢復短語",
+      "mnemonic_confirm_desc": "確認秘密恢復短語",
+      "next": "下一個",
+      "confirm": "確認"
     },
     "check_password": {
       "incorrect_password_error": "密码错误",
@@ -98,7 +100,7 @@
     "new_mnemonic": {
       "error_phrase_blank": "助记词为空",
       "warning": "如果你丢失了这些单词，你将无法恢复你的账户",
-      "i_saved_this_phrase": "我已保存这个短语",
+      "i_saved_this_phrase": "我已寫下並安全地儲存此恢復短語",
       "copy": "复制"
     },
     "restore_mnemonic": {

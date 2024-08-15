@@ -171,7 +171,7 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/confirm-mnemonic",
-          title: t("components.layout.confirmation"),
+          title: t("components.layout.mnemonic_confirmation"),
           backAction: async () => {
             navigate(-1);
           },

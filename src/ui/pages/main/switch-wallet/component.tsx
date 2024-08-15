@@ -19,7 +19,7 @@ const SwitchWallet = () => {
 
   useEffect(() => {
     if (wallets.findIndex((f) => f.id === currentWallet.id) > 5)
-      document.getElementById(String(currentWallet.id)).scrollIntoView();
+      document.getElementById(String(currentWallet.id))?.scrollIntoView();
   }, [currentWallet.id, wallets]);
 
   return (
