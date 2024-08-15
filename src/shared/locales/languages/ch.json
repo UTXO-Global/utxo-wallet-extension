@@ -41,7 +41,7 @@
       "restore_wallet": "Restore Wallet",
       "receive": "Receive",
       "mnemonic_confirmation": "確認恢復短語",
-      "mnemonic_confirm_desc": "確認秘密恢復短語",
+      "mnemonic_confirm_desc": "请输入正确的钱包种子或单击“返回”重新创建钱包",
       "next": "下一個",
       "confirm": "確認"
     },

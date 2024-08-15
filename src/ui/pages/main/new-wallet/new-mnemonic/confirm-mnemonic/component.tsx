@@ -10,6 +10,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import ReactLoading from "react-loading";
 
+const convertToAsterisks = (word: string) => {
+  return '*'.repeat(word.length)
+}
+
 const ConfirmMnemonic = () => {
   const [loading, setLoading] = useState(false);
   const { updateWalletState } = useWalletState((v) => ({
@@ -113,7 +117,7 @@ const ConfirmMnemonic = () => {
                   )}
                 >
                   {!indices.includes(index) ? (
-                    word
+                    convertToAsterisks(word)
                   ) : (
                     <input
                       className="w-full bg-transparent text-center"

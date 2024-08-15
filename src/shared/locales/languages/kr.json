@@ -33,7 +33,7 @@
       "restore_from_mnemonic": "니모닉에서 복원",
       "restore_from_private_key": "개인 키에서 복원",
       "mnemonic_confirmation": "복구 문구 확인",
-      "mnemonic_confirm_desc": "비밀 복구 문구 확인",
+      "mnemonic_confirm_desc": "올바른 지갑 시드를 입력하거나 뒤로 클릭하여 지갑을 다시 만드십시오.",
       "next": "다음",
       "confirm": "확인하다"
     },
