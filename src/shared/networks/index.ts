@@ -1,6 +1,6 @@
 import { Network as BitcoinNetwork } from "bitcoinjs-lib";
 import { BTC_LIVENET, BTC_SIGNET, BTC_TESTNET, BTC_TESTNET4 } from "./btc";
-import { CKB_MAINNET, CKB_TESTNET } from "./ckb";
+import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "./ckb";
 import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
 import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 
@@ -16,6 +16,23 @@ export const supportedNetworks: ChainData[] = [
     networks: [CKB_MAINNET, CKB_TESTNET].map((chain) => ({
       ...chain,
       parentSlug: "nervos",
+      walletToImport: [
+        {
+          name: "UTXO Global",
+          hdPath: "",
+          passphrase: "",
+        },
+        {
+          name: "Neuron",
+          hdPath: CKB_NEURON_HD_PATH,
+          passphrase: "",
+        },
+        {
+          name: "Others",
+          hdPath: "",
+          passphrase: "",
+        },
+      ],
     })),
   },
   {

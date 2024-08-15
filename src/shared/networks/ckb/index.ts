@@ -38,3 +38,5 @@ export const CKB_TESTNET: NetworkData = {
   network: offCKBConfig.network.testnet,
   decimal: 8,
 };
+
+export const CKB_NEURON_HD_PATH = "m/44'/309'/0'/0/0";

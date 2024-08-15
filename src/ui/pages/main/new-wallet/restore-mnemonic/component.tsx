@@ -54,6 +54,12 @@ const RestoreMnemonic = () => {
               ).passphrase
             : "",
         walletName: selectedWalletName !== "" ? selectedWalletName : undefined,
+        hdPath:
+          selectedWalletName !== ""
+            ? currentNetwork.walletToImport.find(
+                (w) => w.name === selectedWalletName
+              ).hdPath
+            : "",
       });
       await updateWalletState({ vaultIsEmpty: false });
       // NOTE: [GA] - Restore mnemonic

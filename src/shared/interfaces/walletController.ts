@@ -22,7 +22,8 @@ export interface IWalletController {
   ): Promise<IGroupAccount>;
   createDefaultGroupAccount(
     network: NetworkSlug,
-    walletId?: number
+    walletId?: number,
+    hdPath?: string
   ): Promise<IGroupAccount>;
   getAddresses(network: NetworkSlug): Promise<string[][]>;
   getCurrentNetwork(): Promise<NetworkSlug>;
