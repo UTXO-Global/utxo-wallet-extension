@@ -51,7 +51,7 @@
       "restore_wallet": "Restore Wallet",
       "receive": "Receive",
       "mnemonic_confirmation": "Confirm Recovery Phrase",
-      "mnemonic_confirm_desc": "Confirm Secret Recovery Phrase",
+      "mnemonic_confirm_desc": "Please Enter the Correct Wallet Seed or Click Back to Recreate the Wallet",
       "next": "Next",
       "confirm": "Confirm"
     },
