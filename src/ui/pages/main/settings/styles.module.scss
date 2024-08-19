@@ -15,7 +15,7 @@
 }
 
 .version {
-  @apply text-primary text-center standard:hidden text-xs mt-6;
+  @apply text-primary text-center standard:hidden text-[10px] mt-6;
 
   span {
     @apply font-medium;

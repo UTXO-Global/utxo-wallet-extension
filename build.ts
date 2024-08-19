@@ -37,11 +37,11 @@ function mergeManifests(): Plugin {
         ...extraManifest,
         version: process.env.npm_package_version ?? "0.0.1",
       };
-      if (Bun.argv.includes("--watch") && !Bun.argv.includes("--firefox")) {
-        content.chrome_url_overrides = {
-          newtab: "index.html",
-        };
-      }
+      // if (Bun.argv.includes("--watch") && !Bun.argv.includes("--firefox")) {
+      //   content.chrome_url_overrides = {
+      //     newtab: "index.html",
+      //   };
+      // }
       build.onEnd(() => {
         const path = build.initialOptions.outdir + "/manifest.json";
         Bun.write(path, JSON.stringify(content, undefined, 2)).catch((err) =>
