@@ -50,7 +50,7 @@ const Layout: FC<Props> = ({ children, documentTitle, resolveBtnText }) => {
         <div className="flex justify-center">
           <div className="rounded-[100px] px-4 py-2 flex gap-2 justify-center text-base border border-primary">
             <img src={iconUrl} className="w-6 h-6 rounded-xl" alt="icon" />
-            <span>{origin}</span>
+            <p className="max-w-[200px] truncate">{origin}</p>
           </div>
         </div>
 
