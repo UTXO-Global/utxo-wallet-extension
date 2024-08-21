@@ -20,3 +20,14 @@ export const logErrorToFirestore = async (
 
   await setDoc(doc(db, collectionName, time), errorData);
 };
+
+export const hexStringToUint8Array = (hexString: string): Uint8Array => {
+  const len = hexString.length;
+  const buffer = new Uint8Array(len / 2);
+
+  for (let i = 0; i < len; i += 2) {
+    buffer[i / 2] = parseInt(hexString.substr(i, 2), 16);
+  }
+
+  return buffer;
+};

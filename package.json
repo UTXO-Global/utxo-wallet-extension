@@ -42,6 +42,7 @@
     "@nervosnetwork/ckb-sdk-utils": "^0.109.1",
     "@noble/curves": "^1.4.2",
     "@noble/hashes": "1.4.0",
+    "@spore-sdk/core": "^0.1.0",
     "big.js": "6.2.1",
     "bip39": "3.1.0",
     "bitcoinjs-lib": "^6.1.6",
