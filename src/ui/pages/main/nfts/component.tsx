@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import Loading from "react-loading";
+import { useNavigate } from "react-router-dom";
 import { useGetMyNFTs } from "@/ui/hooks/nft";
 import cn from "classnames";
 
@@ -11,6 +12,7 @@ import { isCkbNetwork } from "@/shared/networks";
 
 const ListNFTs = () => {
   const { isLoading, nfts, setPage, isNext, isPrev, page } = useGetMyNFTs();
+  const navigate = useNavigate();
 
   const currentNetwork = useGetCurrentNetwork();
 
@@ -34,8 +36,8 @@ const ListNFTs = () => {
                   )}
                   disabled={!isPrev}
                   onClick={() => {
-                    console.log(isPrev)
-                    if (!isPrev) return
+                    console.log(isPrev);
+                    if (!isPrev) return;
                     setPage(page - 1);
                   }}
                 >
@@ -50,7 +52,7 @@ const ListNFTs = () => {
                   )}
                   disabled={!isNext}
                   onClick={() => {
-                    if (!isNext) return
+                    if (!isNext) return;
                     setPage(page + 1);
                   }}
                 >
@@ -72,7 +74,9 @@ const ListNFTs = () => {
             ) : (
               <div className="grid grid-cols-2 standard:grid-cols-3 gap-2 px-4 mt-[2px] pb-[14px]">
                 {nfts.map((z, i) => (
-                  <NftCard key={i} nft={z} />
+                  <div key={i} className="cursor-pointer" onClick={() => navigate(`/pages/detail-nft/${z.collection.sn}/${z.token_id}`)}>
+                    <NftCard nft={z} />
+                  </div>
                 ))}
               </div>
             )}

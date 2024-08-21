@@ -35,7 +35,8 @@
       "mnemonic_confirmation": "복구 문구 확인",
       "mnemonic_confirm_desc": "올바른 지갑 시드를 입력하거나 뒤로 클릭하여 지갑을 다시 만드십시오.",
       "next": "다음",
-      "confirm": "확인하다"
+      "confirm": "확인하다",
+      "detailNFT": "세부 NFT"
     },
     "check_password": {
       "incorrect_password_error": "잘못된 비밀번호",
@@ -194,5 +195,10 @@
     "wallet": {
       "last_wallet_error": "마지막 지갑을 삭제할 수 없습니다"
     }
+  },
+  "detailNFT": {
+    "type": "유형",
+    "occupied": "가득차 있는",
+    "creator": "창조자"
   }
 }

@@ -1,28 +1,37 @@
 import { unpackToRawSporeData } from "@spore-sdk/core";
-import offCKBConfig from "@/shared/networks/ckb/offckb.config";
+import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { hexStringToUint8Array } from "./helpers";
+import { NetworkData } from "@/shared/networks/types";
 
-const { rpc } = offCKBConfig;
-offCKBConfig.initializeLumosConfig();
-
-export async function showSporeContent(txHash: string, index = 0) {
+export async function getSporeContent(
+  txHash: string,
+  index = 0,
+  network: NetworkData
+) {
   const indexHex = "0x" + index.toString(16);
-  const { cell } = await rpc.getLiveCell({ txHash, index: indexHex }, true);
+  const { cell } = await (network.network as NetworkConfig).rpc.getLiveCell(
+    { txHash, index: indexHex },
+    true
+  );
   if (cell == null) {
     return alert("cell not found, please retry later");
   }
   const data = cell.data.content;
   const msg = unpackToRawSporeData(data);
-  return msg;
+  return { msg, capacity: cell.output.capacity };
 }
 
-export const renderSpore = async (txHash: string, outputIndex: number) => {
-  const res = await showSporeContent(txHash, outputIndex);
+export const getExtraDetailSpore = async (
+  txHash: string,
+  outputIndex: number,
+  network: NetworkData
+) => {
+  const res = await getSporeContent(txHash, outputIndex, network);
   if (!res) return;
 
   // Create Blob from binary data
-  const buffer = hexStringToUint8Array(res.content.toString().slice(2));
-  const blob = new Blob([buffer], { type: res.contentType });
+  const buffer = hexStringToUint8Array(res.msg.content.toString().slice(2));
+  const blob = new Blob([buffer], { type: res.msg.contentType });
   const url = URL.createObjectURL(blob);
-  return url
+  return { url, capacity: res.capacity };
 };
