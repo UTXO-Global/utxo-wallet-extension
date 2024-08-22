@@ -66,6 +66,7 @@
     "react-intersection-observer": "9.10.3",
     "react-loading": "2.0.3",
     "react-router-dom": "6.24.1",
+    "react-tooltip": "^5.28.0",
     "reflect-metadata": "0.2.2",
     "secp256k1": "^5.0.0",
     "swiper": "^10.0.4",

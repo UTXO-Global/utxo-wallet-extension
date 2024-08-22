@@ -1,6 +1,7 @@
 import Loading from "react-loading";
 import toast from "react-hot-toast";
 import { t } from "i18next";
+import { Tooltip } from "react-tooltip";
 
 import { IcnCopy, IcnExternalLink } from "@/ui/components/icons";
 import { useGetDetailNFT } from "@/ui/hooks/nft";
@@ -68,14 +69,52 @@ const DetailNFT = () => {
               </div>
 
               <div className="flex justify-between">
-                <p className="text-base font-medium text-[#787575]">{t("detailNFT.type")}</p>
+                <p className="text-base font-medium text-[#787575]">
+                  {t("detailNFT.type")}
+                </p>
                 <p className="text-base font-medium text-primary text-right">
                   DOBs
                 </p>
               </div>
 
               <div className="flex justify-between">
-                <p className="text-base font-medium text-[#787575]">{t("detailNFT.occupied")}</p>
+                <div className="flex gap-1 items-center">
+                  <p className="text-base font-medium text-[#787575]">
+                    {t("detailNFT.occupied")}
+                  </p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="occupied"
+                  >
+                    <path
+                      d="M7.99967 14.6673C11.6663 14.6673 14.6663 11.6673 14.6663 8.00065C14.6663 4.33398 11.6663 1.33398 7.99967 1.33398C4.33301 1.33398 1.33301 4.33398 1.33301 8.00065C1.33301 11.6673 4.33301 14.6673 7.99967 14.6673Z"
+                      stroke="#787575"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8 5.33398V8.66732"
+                      stroke="#787575"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M7.99609 10.666H8.00208"
+                      stroke="#787575"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <Tooltip anchorSelect=".occupied" place="top" className="!text-[12px] !leading-[16px] !bg-[#0d0d0d] !text-white !px-2 !py-[6px]">
+                    The amount of CKByte occupied <br /> on-chain, redeemable upon
+                    melt.
+                  </Tooltip>
+                </div>
+
                 <p className="text-base font-medium text-primary text-right">
                   {formatNumber(Number(detailNFT.capacity) / 10 ** 8, 0, 0)}{" "}
                   CKBytes
@@ -83,7 +122,9 @@ const DetailNFT = () => {
               </div>
 
               <div className="flex justify-between">
-                <p className="text-base font-medium text-[#787575]">{t("detailNFT.creator")}</p>
+                <p className="text-base font-medium text-[#787575]">
+                  {t("detailNFT.creator")}
+                </p>
                 <p className="text-base font-medium text-primary text-right">
                   {detailNFT.collection.creator || "--"}
                 </p>
