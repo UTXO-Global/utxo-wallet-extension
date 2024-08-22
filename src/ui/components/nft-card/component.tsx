@@ -8,7 +8,7 @@ const NftCard = ({ nft }: { nft: any }) => {
         <img src={nft.imageUrl} alt="" className="h-full" />
       </div>
       <div className="p-2 group-hover:bg-[#F5F5F5] transition-colors">
-        <p className="text-base text-primary font-medium">{nft.collection.name || "<No Cluster>"}</p>
+        <p className="text-[14px] leading-[20px] text-primary font-medium">{nft.collection.name || "<No Cluster>"}</p>
         <p className="text-[12px] leading-[18px] mt-[2px]">
           #{shortAddress(nft.type_script.args, 8)}
         </p>
