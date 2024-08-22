@@ -1,9 +1,8 @@
-
 export interface ITypeScript {
   args: string | null;
   code_hash: string | null;
   hash_type: string | null;
-  script_hash: string | null
+  script_hash: string | null;
 }
 
 export interface ICell {
@@ -17,7 +16,8 @@ export interface INFTCollection {
   creator: string;
   sn: string;
   tags: string[];
-  type_script: ITypeScript
+  type_script: ITypeScript;
+  name: string;
 }
 
 export interface INFT {
@@ -26,5 +26,8 @@ export interface INFT {
   owner: string;
   standard: string;
   token_id: string;
-  type_script: ITypeScript
+  type_script: ITypeScript;
+  imageUrl: string;
+  capacity: number;
+  name: string;
 }
