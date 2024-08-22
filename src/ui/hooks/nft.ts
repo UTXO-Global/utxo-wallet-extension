@@ -7,12 +7,14 @@ import {
   useGetCurrentNetwork,
 } from "../states/walletState";
 import { isCkbNetwork } from "@/shared/networks";
+import { INFT } from "@/shared/interfaces/nft";
+import { ckbExplorerApi } from "../utils/helpers";
 
 export const useGetMyNFTs = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(0);
-  const [nfts, setNFTs] = useState<any[]>([]);
+  const [nfts, setNFTs] = useState<INFT[]>([]);
 
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
@@ -33,9 +35,12 @@ export const useGetMyNFTs = () => {
       }
       setIsLoading(isLoading);
       try {
-        // TODO: update base url
         const res = await fetch(
-          `https://testnet-api.explorer.nervos.org/api/v2/nft/items?page=${page}&owner=${currentAccount.accounts[0].address}&standard=spore`,
+          `${ckbExplorerApi(
+            currentNetwork.slug
+          )}/v2/nft/items?page=${page}&owner=${
+            currentAccount.accounts[0].address
+          }&standard=spore`,
           {
             method: "GET",
             headers: {
@@ -81,16 +86,16 @@ export const useGetMyNFTs = () => {
 export const useGetDetailNFT = () => {
   const { collection, nftId } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // TODO: add type
-  const [detailNFT, setDetailNFT] = useState<any>(null);
+  const [detailNFT, setDetailNFT] = useState<INFT | undefined>(undefined);
 
   const currentNetwork = useGetCurrentNetwork();
 
   const getDetailNFT = async () => {
     try {
-      // TODO: update base url
       const res = await fetch(
-        `https://testnet-api.explorer.nervos.org/api/v2/nft/collections/${collection}/items/${nftId}`,
+        `${ckbExplorerApi(
+          currentNetwork.slug
+        )}/v2/nft/collections/${collection}/items/${nftId}`,
         {
           method: "GET",
           headers: {

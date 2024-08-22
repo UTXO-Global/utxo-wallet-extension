@@ -24,7 +24,7 @@ const ListNFTs = () => {
           <>
             <div className="flex justify-between items-center sticky top-[66px] px-4 bg-white pt-[14px] pb-[12px]">
               <div className="px-4 py-1 rounded-[100px] bg-[#F5F5F5] text-[14px] leading-[20px] text-[#787575] font-medium">
-                DOBs
+                NFT
               </div>
               <div className="flex gap-2">
                 <button

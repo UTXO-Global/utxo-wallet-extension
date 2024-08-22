@@ -31,3 +31,8 @@ export const hexStringToUint8Array = (hexString: string): Uint8Array => {
 
   return buffer;
 };
+
+export const ckbExplorerApi = (networkSlug: string) => {
+  const _network = networkSlug === "nervos"? "mainnet": "testnet"
+  return `${process.env.API_BASE_URL}/ckb/${_network}`
+}
