@@ -1,4 +1,4 @@
-## UTXO Global Wallet [![License: MIT][license-badge]][license] [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/UTXOGlobal)](https://x.com/UTXOGlobal)
+## UTXO Global Wallet [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/UTXOGlobal)](https://x.com/UTXOGlobal)
 
 [license]: https://opensource.org/licenses/MIT
 [license-badge]: https://img.shields.io/badge/License-MIT-blue.svg

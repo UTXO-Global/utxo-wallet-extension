@@ -5,6 +5,8 @@ import {
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
+  AGGRON4,
+  nervosTestnetSlug,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -13,6 +15,7 @@ import { blockchain } from "@ckb-lumos/base";
 import { ScriptValue } from "@ckb-lumos/base/lib/values";
 import { bytes } from "@ckb-lumos/codec";
 import { BI, Cell, commons, helpers, WitnessArgs } from "@ckb-lumos/lumos";
+import { predefined } from "@ckb-lumos/config-manager";
 import { Psbt } from "bitcoinjs-lib";
 import { HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
 import { KeyringServiceError } from "./consts";
@@ -129,7 +132,12 @@ class KeyringService {
     tx: helpers.TransactionSkeletonType;
     hdPath: string;
   }) {
-    const txSkeleton = commons.common.prepareSigningEntries(params.tx);
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const txSkeleton = commons.common.prepareSigningEntries(params.tx, {
+      config: isTestnet ? AGGRON4 : predefined.LINA,
+    });
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const Sig = keyring.signRecoverable(params.hdPath, message);
