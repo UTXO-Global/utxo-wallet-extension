@@ -41,6 +41,8 @@ import SwitchNetwork from "./provider/switch-network/component";
 import SwitchChain from "./provider/switch-chain/component";
 import SignTransaction from "./provider/sign-transaction";
 import ConfirmMnemonic from "./main/new-wallet/new-mnemonic/confirm-mnemonic";
+import ListNFTs from "./main/nfts/component";
+import DetailNFT from "./main/detail-nft";
 
 export const guestRouter = createHashRouter([
   {
@@ -58,6 +60,10 @@ export const authenticatedRouter = createHashRouter([
   {
     path: "home",
     element: <Wallet />,
+  },
+  {
+    path: "nfts",
+    element: <ListNFTs />
   },
   {
     path: "pages",
@@ -91,6 +97,7 @@ export const authenticatedRouter = createHashRouter([
       { path: "inscription-details", element: <InscriptionDetails /> },
       { path: "inscriptions", element: <Inscriptions /> },
       { path: "explore", element: <Explore /> },
+      { path: "detail-nft/:collection/:nftId", element: <DetailNFT /> },
     ],
   },
   {

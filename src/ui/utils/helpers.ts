@@ -20,3 +20,19 @@ export const logErrorToFirestore = async (
 
   await setDoc(doc(db, collectionName, time), errorData);
 };
+
+export const hexStringToUint8Array = (hexString: string): Uint8Array => {
+  const len = hexString.length;
+  const buffer = new Uint8Array(len / 2);
+
+  for (let i = 0; i < len; i += 2) {
+    buffer[i / 2] = parseInt(hexString.substr(i, 2), 16);
+  }
+
+  return buffer;
+};
+
+export const ckbExplorerApi = (networkSlug: string) => {
+  const _network = networkSlug === "nervos"? "mainnet": "testnet"
+  return `${process.env.API_BASE_URL}/ckb/${_network}`
+}
