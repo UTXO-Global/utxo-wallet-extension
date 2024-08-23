@@ -2,6 +2,7 @@
   "wallet_page": {
     "transactions": "交易",
     "no_transactions": "没有交易",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "接收",
     "send": "发送",
     "swap": "交换",

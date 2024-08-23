@@ -2,6 +2,7 @@
   "wallet_page": {
     "transactions": "거래",
     "no_transactions": "거래 없음",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "받기",
     "send": "보내기",
     "your_balance": "귀하의 잔액"

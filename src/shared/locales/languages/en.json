@@ -3,6 +3,7 @@
     "transactions": "Transactions",
     "no_transactions": "No transations",
     "no_inscriptions": "You currently don't have any inscriptions",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "Receive",
     "send": "Send",
     "nft": "NFT",

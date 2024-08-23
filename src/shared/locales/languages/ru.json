@@ -2,6 +2,7 @@
   "wallet_page": {
     "transactions": "Транзакции",
     "no_transactions": "Нет транзакций",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "Получить",
     "send": "Отправить",
     "your_balance": "Ваш баланс"

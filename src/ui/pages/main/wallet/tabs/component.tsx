@@ -1,23 +1,73 @@
 import cn from "classnames";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Tokens from "./tokens";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
+import { ckbExplorerApi } from "@/ui/utils/helpers";
+import Loading from "react-loading";
+
 export default function Tabs({ active }: { active?: string }) {
+  const [tabActive, setTabActive] = useState(active || "xudt");
+  const [isLoading, setIsLoading] = useState(false);
+  const currentNetwork = useGetCurrentNetwork();
+  const currentAccount = useGetCurrentAccount();
+  const [xudtData, setxUDTData] = useState<any[]>([]);
+  const [sudtData, setsUDTData] = useState<any[]>([]);
+
   const TABs = [
-    { name: "xudt", title: "xUDT", ele: <Tokens type="xudt" /> },
-    { name: "sudt", title: "sUDT", ele: <Tokens type="sudt" /> },
+    { name: "xudt", title: "xUDT" },
+    { name: "sudt", title: "sUDT" },
   ];
 
-  const [tabActive, setTabActive] = useState(active || "tokens");
+  const getAddressInfo = useCallback(async () => {
+    if (isLoading) return;
+    setIsLoading(true);
 
-  const currentTab = useMemo(() => {
-    return TABs.find((t) => t.name === tabActive);
-  }, [tabActive]);
+    try {
+      const res = await fetch(
+        `
+        ${ckbExplorerApi(currentNetwork.slug)}/v1/addresses/${
+          currentAccount.accounts[0].address
+        }`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/vnd.api+json",
+          },
+        }
+      );
+      const { data } = await res.json();
+      if (
+        data[0] &&
+        data[0].attributes &&
+        data[0].attributes.udt_accounts &&
+        data[0].attributes.udt_accounts.length > 0
+      ) {
+        setsUDTData(
+          data[0].attributes.udt_accounts.filter(
+            (token) => token.udt_type === "sudt"
+          )
+        );
 
-  const Children = useMemo(() => {
-    if (!currentTab) return <></>;
+        setxUDTData(
+          data[0].attributes.udt_accounts.filter(
+            (token) => token.udt_type === "xudt"
+          )
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setIsLoading(false);
+  }, [isLoading]);
 
-    return currentTab.ele;
-  }, [currentTab]);
+  useEffect(() => {
+    if (currentAccount.accounts.length > 0 && currentNetwork) {
+      getAddressInfo();
+    }
+  }, [currentNetwork, currentAccount]);
 
   return (
     <div className="px-4">
@@ -45,7 +95,22 @@ export default function Tabs({ active }: { active?: string }) {
           </div>
         </div>
       )}
-      <div className="mt-6">{Children}</div>
+      <div className="mt-6">
+        {isLoading && (
+          <div className="flex justify-center">
+            <Loading
+              type="spin"
+              color="#ODODOD"
+              width={"2rem"}
+              height={"2rem"}
+              className="react-loading pr-2"
+            />
+          </div>
+        )}
+        {!isLoading && (
+          <Tokens tokens={tabActive === "xudt" ? xudtData : sudtData} />
+        )}
+      </div>
     </div>
   );
 }
