@@ -2,9 +2,12 @@
   "wallet_page": {
     "transactions": "Транзакции",
     "no_transactions": "Нет транзакций",
+    "no_tokens": "В настоящее время у вас нет токенов",
     "receive": "Получить",
     "send": "Отправить",
-    "your_balance": "Ваш баланс"
+    "your_balance": "Ваш баланс",
+    "available_balance": "Доступный остаток",
+    "occupied_balance": "Занятый баланс"
   },
   "settings": {
     "language": "Язык",
@@ -36,6 +39,7 @@
       "mnemonic_confirm_desc": "Введите правильный ключ кошелька или нажмите «Назад», чтобы заново создать кошелек.",
       "next": "следующий",
       "confirm": "Подтверждать",
+      "details": "Подробнее",
       "detailNFT": "Подробный НФТ"
     },
     "check_password": {

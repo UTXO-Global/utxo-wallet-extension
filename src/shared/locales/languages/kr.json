@@ -2,9 +2,12 @@
   "wallet_page": {
     "transactions": "거래",
     "no_transactions": "거래 없음",
+    "no_tokens": "현재 토큰이 없습니다",
     "receive": "받기",
     "send": "보내기",
-    "your_balance": "귀하의 잔액"
+    "your_balance": "귀하의 잔액",
+    "available_balance": "사용 가능한 잔액",
+    "occupied_balance": "점유된 잔액"
   },
   "settings": {
     "language": "언어",
@@ -36,6 +39,7 @@
       "mnemonic_confirm_desc": "올바른 지갑 시드를 입력하거나 뒤로 클릭하여 지갑을 다시 만드십시오.",
       "next": "다음",
       "confirm": "확인하다",
+      "details": "세부 사항",
       "detailNFT": "세부 NFT"
     },
     "check_password": {

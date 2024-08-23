@@ -147,6 +147,10 @@ export default function PagesLayout() {
         title: t("components.layout.explorer"),
       },
       {
+        route: "/pages/tokens/@",
+        title: t("components.layout.details"),
+      },
+      {
         route: "/pages/detail-nft/@",
         title: t("components.layout.detailNFT"),
       },

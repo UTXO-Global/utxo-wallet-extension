@@ -3,6 +3,7 @@
     "transactions": "Transactions",
     "no_transactions": "No transations",
     "no_inscriptions": "You currently don't have any inscriptions",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "Receive",
     "send": "Send",
     "nft": "NFT",
@@ -10,7 +11,9 @@
     "amount_in_inscriptions": "Ordinal balance",
     "swap": "Swap",
     "buy": "Buy",
-    "your_balance": "Your Balance"
+    "your_balance": "Your balance",
+    "available_balance": "Available balance",
+    "occupied_balance": "Occupied Balance"
   },
   "settings": {
     "language": "Language",
@@ -54,6 +57,7 @@
       "mnemonic_confirm_desc": "Please Enter the Correct Wallet Seed or Click Back to Recreate the Wallet",
       "next": "Next",
       "confirm": "Confirm",
+      "details": "Details",
       "detailNFT": "Detail NFT"
     },
     "check_password": {

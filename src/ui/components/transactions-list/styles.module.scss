@@ -1,0 +1,19 @@
+.transactions {
+    @apply text-sm uppercase tracking-widest mt-5 mb-0.5 font-medium select-none px-2;
+}
+
+.transactionsDiv {
+    @apply h-full flex flex-col items-center overflow-y-auto gap-2;
+}
+
+.transaction {
+    @apply flex justify-between items-center w-full rounded-sm cursor-pointer border-b border-grey-300 pt-2 pb-3;
+}
+
+.transaction:last-child {
+    border: none;
+}
+
+.noTransactions {
+    @apply w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6;
+}

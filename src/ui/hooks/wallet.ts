@@ -371,7 +371,7 @@ export const useSwitchNetwork = () => {
                 (slug === "nervos" ? "nervos_testnet" : "nervos")
             );
           }
-          
+
           const hdPathForNeuronWallet =
             _otherNetworkGroupAccounts.length === 0
               ? ""
@@ -381,7 +381,11 @@ export const useSwitchNetwork = () => {
               : "";
 
           const networkGroupAccount =
-            await walletController.createDefaultGroupAccount(slug, wallet.id, hdPathForNeuronWallet);
+            await walletController.createDefaultGroupAccount(
+              slug,
+              wallet.id,
+              hdPathForNeuronWallet
+            );
           if (wallet.id === currentWallet.id) {
             selectedAccount = wallet.accounts.length;
           }
