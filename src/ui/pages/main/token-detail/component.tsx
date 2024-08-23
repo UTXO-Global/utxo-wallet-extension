@@ -13,19 +13,31 @@ import { isCkbNetwork } from "@/shared/networks";
 import { t } from "i18next";
 import cn from "classnames";
 import Analytics from "@/ui/utils/gtm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
+import { formatNumber } from "@/shared/utils";
 
 const TokenDetail = () => {
+  const { token } = useParams();
   const [isShowReceive, setIsShowReceive] = useState<boolean>(false);
-  const { trottledUpdate } = useTransactionManagerContext();
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
 
+  const { trottledUpdate } = useTransactionManagerContext();
   useEffect(() => {
     trottledUpdate();
   }, [trottledUpdate]);
+
+  const ckbBalance = useMemo(() => {
+    return currentAccount.balance ? Number(currentAccount.balance) : 0;
+  }, [currentAccount.balance]);
+
+  const ckbOccupiedBalance = useMemo(() => {
+    return currentAccount.ordinalBalance
+      ? Number(currentAccount.ordinalBalance)
+      : 0;
+  }, [currentAccount.ordinalBalance]);
 
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
@@ -88,30 +100,33 @@ const TokenDetail = () => {
                 (Nervos CKB)
               </span>
             </p>
-            <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
-              <p>0x178fb47b597...</p>
-              <IcnCopy
-                className="w-4 h-4 right-2 transition-colors stroke#787575] hover:stroke-primary cursor-pointer"
-                onClick={() => {
-                  navigator.clipboard
-                    .writeText("0x178fb47b597")
-                    .then(() => {
-                      toast.success("Address copied");
-                    })
-                    .catch((err) => {
-                      toast.error("Failed to copy");
-                    });
-                }}
-              />
-            </div>
+            {token !== "ckb" && (
+              <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
+                <p>0x178fb47b597...</p>
+                <IcnCopy
+                  className="w-4 h-4 right-2 transition-colors stroke-[#787575] hover:stroke-primary cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText("0x178fb47b597")
+                      .then(() => {
+                        toast.success("Address copied");
+                      })
+                      .catch((err) => {
+                        toast.error("Failed to copy");
+                      });
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="font-medium leading-6 flex gap-4 justify-between items-center mt-4">
           <label className="text-base">
             {t("components.token_card.balance")}
           </label>
-          <span className="text-lg">100,000.000</span>
+          <span className="text-lg">{formatNumber(ckbBalance, 2, 3)}</span>
         </div>
+
         <div
           className={cn(`grid gap-2 mt-5 pb-2`, {
             "grid-cols-2": panelNavs.length <= 2,
@@ -147,7 +162,7 @@ const TokenDetail = () => {
             </div>
           ))}
         </div>
-        <TransactionList className="mt-6" />
+        <TransactionList className="mt-6 !px-0" />
       </div>
       <ReceiveAddress
         active={isShowReceive}

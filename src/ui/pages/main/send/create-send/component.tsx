@@ -258,7 +258,7 @@ const CreateSend = () => {
                 </div>
               </div>
               <div className="flex justify-between text-base font-medium text-[#787575]">
-                <div>{t("wallet_page.occupied_alance")}:</div>
+                <div>{t("wallet_page.occupied_balance")}:</div>
                 <div className="flex gap-2 items-center">
                   <span>
                     {formatNumber(currentAccount.ordinalBalance, 2, 8)}
