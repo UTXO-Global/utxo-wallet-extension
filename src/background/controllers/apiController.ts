@@ -6,7 +6,7 @@ import {
   isBitcoinNetwork,
   isCkbNetwork,
 } from "@/shared/networks";
-import { capacityOf, getCells } from "@/shared/networks/ckb/helpers";
+import { balanceOf, capacityOf, getCells } from "@/shared/networks/ckb/helpers";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import {
   CkbTipBlockResponse,
@@ -96,10 +96,10 @@ class ApiController implements IApiController {
         ordinalBalance,
       };
     } else if (isCkbNetwork(networkData.network)) {
-      const balance = await capacityOf(networkData.network, address);
+      const balances = await balanceOf(networkData.slug, address);
       return {
-        cardinalBalance: balance.toNumber(),
-        ordinalBalance: 0,
+        cardinalBalance: balances.balance.toNumber(),
+        ordinalBalance: balances.balance_occupied.toNumber(),
       };
     }
   }

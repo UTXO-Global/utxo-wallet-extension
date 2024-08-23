@@ -53,7 +53,6 @@ export default function TokenTabs({ active }: { active?: string }) {
         data[0].attributes.udt_accounts.length > 0
       ) {
         const tokens = data[0].attributes.udt_accounts as CKBTokenInfo[];
-        console.log(tokens);
         setsUDTData(tokens.filter((token) => token.udt_type === "sudt"));
         setxUDTData(tokens.filter((token) => token.udt_type === "xudt"));
       }

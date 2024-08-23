@@ -2,6 +2,7 @@ import { BI, Cell } from "@ckb-lumos/lumos";
 import { parseAddress } from "@ckb-lumos/lumos/helpers";
 import { CKBHasher } from "@ckb-lumos/lumos/utils";
 import { NetworkConfig } from "./offckb.config";
+import { ckbExplorerApi } from "@/ui/utils/helpers";
 
 export function publicKeyToBlake160(publicKey: string): string {
   const blake160: string = new CKBHasher()
@@ -21,9 +22,12 @@ export async function capacityOf(
   });
 
   let balance = BI.from(0);
+  let occupied_balance = BI.from(0);
   for await (const cell of collector.collect()) {
     balance = balance.add(cell.cellOutput.capacity);
   }
+
+  console.log(occupied_balance.toNumber(), balance.toNumber());
 
   return balance;
 }
@@ -76,7 +80,35 @@ export async function callCKBRPC(
   });
 
   const r = await response.json();
-  console.log("r", r, r.result);
 
   return await r.result;
+}
+
+export async function balanceOf(
+  networkSlug: string,
+  address: string
+): Promise<{ balance: BI; balance_occupied: BI }> {
+  try {
+    const res = await fetch(
+      `${ckbExplorerApi(networkSlug)}/v1/addresses/${address}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/vnd.api+json",
+        },
+      }
+    );
+    const { data } = await res.json();
+
+    return {
+      balance: BI.from(data[0].attributes.balance),
+      balance_occupied: BI.from(data[0].attributes.balance_occupied),
+    };
+  } catch (e) {
+    console.log(e);
+  }
+  return {
+    balance: BI.from(0),
+    balance_occupied: BI.from(0),
+  };
 }
