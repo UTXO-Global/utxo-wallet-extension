@@ -10,7 +10,7 @@ export default function Tokens({ tokens }: { tokens: CKBTokenInfo[] }) {
   return (
     <div className="rounded-lg border border-grey-300 last:*:border-b-0">
       {tokens.length === 0 && (
-        <div className="px-4 py-3 text-sm text-grey-100 capitalize">
+        <div className="px-4 py-3 text-sm text-grey-100">
           {t("wallet_page.no_tokens")}
         </div>
       )}

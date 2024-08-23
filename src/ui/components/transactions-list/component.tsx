@@ -363,7 +363,7 @@ const TransactionList = ({ className }: { className?: string }) => {
                         <div className="flex gap-2 items-center justify-between">
                           <ICon isReceived={isReceived} />
                           <div>
-                            <div className="text-lg">
+                            <div className="text-base">
                               {isReceived ? "Received" : "Sent"}
                             </div>
                             <div className="text-[#787575] text-sm font-normal">

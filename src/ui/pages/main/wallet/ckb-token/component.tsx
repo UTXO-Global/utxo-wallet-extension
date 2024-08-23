@@ -38,7 +38,7 @@ export default function CKBToken() {
         <div className="flex gap-[10px] items-center">
           <img src="/ckb.png" className="w-8 h-8 rounded-full" />
           <div className="flex flex-col gap-0">
-            <label className="font-medium text-lg">CKB</label>
+            <label className="font-medium text-base">CKB</label>
             <div className="flex items-center gap-1">
               <span className="text-sm font-normal text-[#787575] leading-[18px]">
                 ${ckbPrice.toFixed(3)}

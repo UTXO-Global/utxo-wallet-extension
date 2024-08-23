@@ -36,7 +36,7 @@ const Wallet = () => {
             <TokenTabs active="xudt" />
           </>
         )}
-        <TransactionList className="mt-4" />
+        <TransactionList className="my-4" />
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />
