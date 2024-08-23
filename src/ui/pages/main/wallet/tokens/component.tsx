@@ -8,7 +8,7 @@ import {
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import Loading from "react-loading";
 
-export default function Tabs({ active }: { active?: string }) {
+export default function TokenTabs({ active }: { active?: string }) {
   const [tabActive, setTabActive] = useState(active || "xudt");
   const [isLoading, setIsLoading] = useState(false);
   const currentNetwork = useGetCurrentNetwork();

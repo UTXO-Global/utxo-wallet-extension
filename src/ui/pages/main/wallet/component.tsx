@@ -7,7 +7,7 @@ import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import CKBToken from "./ckb-token/component";
-import Tabs from "./tabs";
+import TokenTabs from "./tokens";
 import TransactionList from "@/ui/components/transactions-list";
 
 const Wallet = () => {
@@ -26,7 +26,7 @@ const Wallet = () => {
         <WalletPanel />
         <AccountPanel />
         <CKBToken />
-        <Tabs active="xudt" />
+        <TokenTabs active="xudt" />
         <TransactionList className="mt-4" />
       </div>
       <div className="absolute w-full bottom-0">
