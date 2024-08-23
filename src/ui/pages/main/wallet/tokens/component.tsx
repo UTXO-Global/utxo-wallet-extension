@@ -65,7 +65,13 @@ export default function TokenTabs({ active }: { active?: string }) {
 
   useEffect(() => {
     if (currentAccount.accounts.length > 0 && currentNetwork) {
-      getAddressInfo();
+      getAddressInfo()
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [currentNetwork, currentAccount]);
 
