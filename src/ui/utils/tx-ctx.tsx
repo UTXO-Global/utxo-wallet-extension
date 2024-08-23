@@ -46,6 +46,9 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   );
 
   const [currentPrice, setCurrentPrice] = useState<number | undefined>();
+  const [changePercent24Hr, setChangePercent24Hr] = useState<
+    number | undefined
+  >();
   const updateAccountBalance = useUpdateCurrentAccountBalance();
 
   const [transactionTxIds, setTransactionTxIds] = useState<string[]>([]);
@@ -285,6 +288,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     if (apiController && apiController.getNativeCoinPrice) {
       const data = await apiController.getNativeCoinPrice();
       setCurrentPrice(data.usd);
+      setChangePercent24Hr(data.changePercent24Hr);
       await updateLastBlock();
     }
   }, [apiController, updateLastBlock]);
@@ -334,6 +338,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     transactions,
     inscriptions,
     currentPrice,
+    changePercent24Hr,
     loadMoreTransactions,
     loadMoreInscriptions,
     trottledUpdate: throttleUpdate,
@@ -363,6 +368,7 @@ interface TransactionManagerContextType {
   transactions: ITransaction[];
   inscriptions: Inscription[];
   currentPrice: number | undefined;
+  changePercent24Hr: number | undefined;
   loadMoreTransactions: () => Promise<void>;
   loadMoreInscriptions: () => Promise<void>;
   trottledUpdate: (force?: boolean) => void;
@@ -406,6 +412,7 @@ export const useTransactionManagerContext = () => {
       transactions: [],
       inscriptions: [],
       currentPrice: undefined,
+      changePercent24Hr: undefined,
       loadMoreTransactions: () => {},
       loadMoreInscriptions: () => {},
       trottledUpdate: () => {},

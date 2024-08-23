@@ -35,7 +35,8 @@
       "mnemonic_confirmation": "Подтвердите фразу восстановления",
       "mnemonic_confirm_desc": "Введите правильный ключ кошелька или нажмите «Назад», чтобы заново создать кошелек.",
       "next": "следующий",
-      "confirm": "Подтверждать"
+      "confirm": "Подтверждать",
+      "details": "Подробнее"
     },
     "check_password": {
       "incorrect_password_error": "Неверный пароль",

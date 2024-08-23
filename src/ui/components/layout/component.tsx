@@ -146,6 +146,10 @@ export default function PagesLayout() {
         route: "/pages/explore",
         title: t("components.layout.explorer"),
       },
+      {
+        route: "/pages/tokens/@",
+        title: t("components.layout.details"),
+      },
     ],
     [currentAccount?.name]
   );

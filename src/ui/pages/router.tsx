@@ -12,7 +12,6 @@ import AccountDetail from "./main/about-account";
 import WalletDetail from "./main/about-wallet/component";
 import AddressType from "./main/address-type";
 import ConnectedSites from "./main/connected-sites";
-import Home from "./main/home";
 import InscriptionDetails from "./main/inscription-details";
 import Inscriptions from "./main/inscriptions";
 import Language from "./main/language";
@@ -41,6 +40,8 @@ import SwitchNetwork from "./provider/switch-network/component";
 import SwitchChain from "./provider/switch-chain/component";
 import SignTransaction from "./provider/sign-transaction";
 import ConfirmMnemonic from "./main/new-wallet/new-mnemonic/confirm-mnemonic";
+import Home from "./main/home";
+import TokenDetail from "./main/token-detail";
 
 export const guestRouter = createHashRouter([
   {
@@ -63,6 +64,10 @@ export const authenticatedRouter = createHashRouter([
     path: "pages",
     element: <PagesLayout />,
     children: [
+      {
+        path: "tokens/:token",
+        element: <TokenDetail />,
+      },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },
       { path: "address-type/:accId", element: <AddressType /> },

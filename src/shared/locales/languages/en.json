@@ -53,7 +53,8 @@
       "mnemonic_confirmation": "Confirm Recovery Phrase",
       "mnemonic_confirm_desc": "Please Enter the Correct Wallet Seed or Click Back to Recreate the Wallet",
       "next": "Next",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "details": "Details"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",

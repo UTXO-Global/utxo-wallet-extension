@@ -39,7 +39,7 @@ export interface IApiController {
     address: string,
     location: string
   ): Promise<Inscription[] | undefined>;
-  getNativeCoinPrice(): Promise<{ usd: number }>;
+  getNativeCoinPrice(): Promise<{ usd: number; changePercent24Hr: number }>;
   getLastBlock(): Promise<number>;
   getFees(): Promise<{ fast: number; slow: number }>;
   getInscriptions(address: string): Promise<Inscription[] | undefined>;
@@ -263,30 +263,34 @@ class ApiController implements IApiController {
     }
   }
 
-  async getNativeCoinPrice(): Promise<{ usd: number }> {
+  async getNativeCoinPrice(): Promise<{
+    usd: number;
+    changePercent24Hr: number;
+  }> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    switch (networkData.slug) {
-      case "btc":
-        return {
-          usd: (
-            await fetchEsplora<any>({
-              path: `https://api.coincap.io/v2/assets/bitcoin`,
-            })
-          ).data.priceUsd,
-        };
-      case "nervos":
-        return {
-          usd: (
-            await fetchEsplora<any>({
-              path: `https://api.coincap.io/v2/assets/nervos-network`,
-            })
-          ).data.priceUsd,
-        };
-      default:
-        return {
-          usd: 0,
-        };
+    const slug = networkData.parentSlug || networkData.slug;
+    let apiFetchPrice = "";
+    if (slug === "btc") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
+    } else if (slug === "nervos") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
     }
+
+    if (!apiFetchPrice) {
+      return {
+        usd: 0,
+        changePercent24Hr: 0,
+      };
+    }
+
+    const { data } = await fetchEsplora<any>({
+      path: apiFetchPrice,
+    });
+
+    return {
+      usd: data.priceUsd || 0,
+      changePercent24Hr: data.changePercent24Hr || 0,
+    };
   }
 
   async getDiscovery(): Promise<Inscription[] | undefined> {

@@ -1,4 +1,4 @@
-import s from "../styles.module.scss";
+import s from "./styles.module.scss";
 import {
   shortAddress,
   isIncomeTx,
@@ -12,7 +12,7 @@ import cn from "classnames";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo } from "react";
 
-const TransactionList = () => {
+const TransactionList = ({ className }: { className?: string }) => {
   const { lastBlock, transactions, loadMoreTransactions } =
     useTransactionManagerContext();
   const { ref, inView } = useInView();
@@ -321,7 +321,9 @@ const TransactionList = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 px-4">
+    <div
+      className={cn(`flex flex-col gap-2 px-4 ${className ? className : ""}`)}
+    >
       <div className="text-base font-medium py-2 sticky top-[65px] standard:top-0 z-10 bg-light-100">
         Activities
       </div>
