@@ -22,12 +22,9 @@ export async function capacityOf(
   });
 
   let balance = BI.from(0);
-  let occupied_balance = BI.from(0);
   for await (const cell of collector.collect()) {
     balance = balance.add(cell.cellOutput.capacity);
   }
-
-  console.log(occupied_balance.toNumber(), balance.toNumber());
 
   return balance;
 }

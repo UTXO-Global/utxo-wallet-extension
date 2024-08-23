@@ -150,6 +150,10 @@ export default function PagesLayout() {
         route: "/pages/tokens/@",
         title: t("components.layout.details"),
       },
+      {
+        route: "/pages/detail-nft/@",
+        title: t("components.layout.detailNFT"),
+      },
     ],
     [currentAccount?.name]
   );

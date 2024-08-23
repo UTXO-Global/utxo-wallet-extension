@@ -11,7 +11,9 @@
     "amount_in_inscriptions": "Ordinal balance",
     "swap": "Swap",
     "buy": "Buy",
-    "your_balance": "Your Balance"
+    "your_balance": "Your balance",
+    "available_balance": "Available balance",
+    "occupied_alance": "Occupied Balance"
   },
   "settings": {
     "language": "Language",
@@ -55,7 +57,8 @@
       "mnemonic_confirm_desc": "Please Enter the Correct Wallet Seed or Click Back to Recreate the Wallet",
       "next": "Next",
       "confirm": "Confirm",
-      "details": "Details"
+      "details": "Details",
+      "detailNFT": "Detail NFT"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -332,5 +335,10 @@
   "explore": {
     "feature": "Feature",
     "recommended": "Recommended"
+  },
+  "detailNFT": {
+    "type": "Type",
+    "occupied": "Occupied",
+    "creator": "Creator"
   }
 }
