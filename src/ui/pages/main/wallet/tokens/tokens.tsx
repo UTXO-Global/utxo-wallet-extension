@@ -3,8 +3,9 @@ import { formatNumber } from "@/shared/utils";
 import { BI } from "@ckb-lumos/lumos";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 
-export default function Tokens({ tokens }: { tokens: any[] }) {
+export default function Tokens({ tokens }: { tokens: CKBTokenInfo[] }) {
   const navigate = useNavigate();
   return (
     <div className="rounded-lg border border-grey-300 last:*:border-b-0">

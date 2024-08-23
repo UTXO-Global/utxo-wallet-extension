@@ -7,19 +7,25 @@ import {
 } from "@/ui/states/walletState";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import Loading from "react-loading";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { isCkbNetwork as IsCKBNetwork } from "@/shared/networks";
 
 export default function TokenTabs({ active }: { active?: string }) {
   const [tabActive, setTabActive] = useState(active || "xudt");
   const [isLoading, setIsLoading] = useState(false);
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
-  const [xudtData, setxUDTData] = useState<any[]>([]);
+  const [xudtData, setxUDTData] = useState<CKBTokenInfo[]>([]);
   const [sudtData, setsUDTData] = useState<any[]>([]);
 
   const TABs = [
     { name: "xudt", title: "xUDT" },
     { name: "sudt", title: "sUDT" },
   ];
+
+  const isCKBNetwork = useMemo(() => {
+    return IsCKBNetwork(currentNetwork.network);
+  }, [currentNetwork.network]);
 
   const getAddressInfo = useCallback(async () => {
     if (isLoading) return;
@@ -40,22 +46,16 @@ export default function TokenTabs({ active }: { active?: string }) {
       );
       const { data } = await res.json();
       if (
-        data[0] &&
+        data &&
+        data.length > 0 &&
         data[0].attributes &&
         data[0].attributes.udt_accounts &&
         data[0].attributes.udt_accounts.length > 0
       ) {
-        setsUDTData(
-          data[0].attributes.udt_accounts.filter(
-            (token) => token.udt_type === "sudt"
-          )
-        );
-
-        setxUDTData(
-          data[0].attributes.udt_accounts.filter(
-            (token) => token.udt_type === "xudt"
-          )
-        );
+        const tokens = data[0].attributes.udt_accounts as CKBTokenInfo[];
+        console.log(tokens);
+        setsUDTData(tokens.filter((token) => token.udt_type === "sudt"));
+        setxUDTData(tokens.filter((token) => token.udt_type === "xudt"));
       }
     } catch (e) {
       console.error(e);
@@ -64,7 +64,7 @@ export default function TokenTabs({ active }: { active?: string }) {
   }, [isLoading]);
 
   useEffect(() => {
-    if (currentAccount.accounts.length > 0 && currentNetwork) {
+    if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {
       getAddressInfo()
         .catch((e) => {
           console.log(e);
@@ -73,7 +73,7 @@ export default function TokenTabs({ active }: { active?: string }) {
           setIsLoading(false);
         });
     }
-  }, [currentNetwork, currentAccount]);
+  }, [currentNetwork, currentAccount, isCKBNetwork]);
 
   return (
     <div className="px-4">

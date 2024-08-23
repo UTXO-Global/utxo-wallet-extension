@@ -88,3 +88,16 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
   });
 }
 
+export type CKBTokenInfo = {
+  amount: string;
+  decimal: string;
+  symbol: string;
+  type_hash: string;
+  udt_icon_file: string;
+  udt_type: string;
+  udt_type_script: {
+    args: string;
+    code_hash: string;
+    hash_type: string;
+  };
+};

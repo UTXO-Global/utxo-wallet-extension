@@ -1,5 +1,9 @@
+import { isCkbNetwork } from "@/shared/networks";
 import { formatNumber } from "@/shared/utils";
-import { useGetCurrentAccount } from "@/ui/states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import cn from "classnames";
 import { useMemo } from "react";
@@ -7,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function CKBToken() {
   const currentAccount = useGetCurrentAccount();
+  const currentNetwork = useGetCurrentNetwork();
   const { currentPrice, changePercent24Hr } = useTransactionManagerContext();
   const ckbPrice = useMemo(() => {
     return currentPrice ? Number(currentPrice) : 0;
@@ -21,6 +26,8 @@ export default function CKBToken() {
   }, [currentAccount.balance]);
 
   const navigate = useNavigate();
+
+  if (!isCkbNetwork(currentNetwork.network)) return <></>;
 
   return (
     <div className="px-4">
