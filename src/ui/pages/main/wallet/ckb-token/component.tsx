@@ -33,7 +33,7 @@ export default function CKBToken() {
     <div className="px-4">
       <div
         className="bg-grey-400 hover:bg-grey-300 py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer"
-        onClick={() => navigate("/pages/tokens/ckb")}
+        onClick={() => navigate("/pages/tokens/ckb/ckb")}
       >
         <div className="flex gap-[10px] items-center">
           <img src="/ckb.png" className="w-8 h-8 rounded-full" />

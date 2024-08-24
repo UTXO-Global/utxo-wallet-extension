@@ -88,16 +88,68 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
   });
 }
 
+export type CKBAddressInfo = {
+  attributes: {
+    address_hash: string;
+    average_deposit_time: string;
+    balance: string;
+    balance_occupied: string;
+    bitcoin_address_hash: string;
+    dao_compensation: string;
+    dao_deposit: string;
+    interest: string;
+    is_special: string;
+    live_cells_count: string;
+    lock_info: any;
+    lock_script: {
+      args: string;
+      code_hash: string;
+      hash_type: string;
+    };
+    mined_blocks_count: string;
+    transactions_count: string;
+    udt_accounts: {
+      amount: string;
+      decimal: string;
+      symbol: string;
+      type_hash: string;
+      udt_icon_file: string;
+      udt_type: string;
+      udt_type_script: {
+        args: string;
+        code_hash: string;
+        hash_type: string;
+      };
+    }[];
+  };
+  type: string;
+  id: string;
+};
+
 export type CKBTokenInfo = {
-  amount: string;
-  decimal: string;
-  symbol: string;
-  type_hash: string;
-  udt_icon_file: string;
-  udt_type: string;
-  udt_type_script: {
-    args: string;
-    code_hash: string;
-    hash_type: string;
+  type?: string;
+  id?: string;
+  attributes: {
+    symbol: string;
+    full_name: string;
+    icon_file: string;
+    decimal: string;
+    published?: string;
+    description?: string;
+    type_hash?: string;
+    type_script?: {
+      args: string;
+      code_hash: string;
+      hash_type: string;
+    };
+    issuer_address?: string;
+    udt_type?: string;
+    operator_website?: string;
+    email?: string;
+    total_amount?: string;
+    addresses_count?: string;
+    h24_ckb_transactions_count?: string;
+    created_at?: string;
+    xudt_tags?: string[];
   };
 };

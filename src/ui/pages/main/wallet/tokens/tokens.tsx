@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 
-export default function Tokens({ tokens }: { tokens: CKBTokenInfo[] }) {
+export default function Tokens({ tokens }: { tokens: any[] }) {
   const navigate = useNavigate();
   return (
     <div className="rounded-lg border border-grey-300 last:*:border-b-0">
@@ -19,7 +19,9 @@ export default function Tokens({ tokens }: { tokens: CKBTokenInfo[] }) {
           <div
             className="flex justify-between items-center px-4 py-3 border-b border-b-grey-300 hover:bg-grey-300 cursor-pointer transition-all"
             key={`token-${token.symbol}=${index}`}
-            onClick={() => navigate(`/pages/tokens/${token.symbol}`)}
+            onClick={() =>
+              navigate(`/pages/tokens/${token.udt_type}/${token.type_hash}`)
+            }
           >
             <div className="flex gap-[10px]">
               <img
