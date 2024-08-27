@@ -25,7 +25,6 @@ const TransactionInfo = () => {
     state: { transaction, lastBlock },
   } = useLocation();
   const tx = transaction as ITransaction;
-  console.log(tx);
 
   const onOpenExplorer = async () => {
     await browserTabsCreate({

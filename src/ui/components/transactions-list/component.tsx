@@ -8,7 +8,6 @@ import {
 } from "@/shared/utils/transactions";
 import { t } from "i18next";
 import { Link } from "react-router-dom";
-import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
@@ -44,7 +43,10 @@ const TransactionList = ({
       const block = await apiController.getLastBlock();
       setLastBlock(block);
     };
-    f();
+
+    f().catch((e) => {
+      console.log(e);
+    });
   }, [apiController]);
 
   useEffect(() => {
@@ -59,14 +61,11 @@ const TransactionList = ({
       }
       setLoading(false);
     };
-    f();
-  }, [currentNetwork, type, typeHash]);
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    if (inView) {
-    }
-  }, [inView]);
+    f().catch((e) => {
+      console.log(e);
+    });
+  }, [currentNetwork, type, typeHash]);
 
   if (!Array.isArray(transactions)) {
     return (
