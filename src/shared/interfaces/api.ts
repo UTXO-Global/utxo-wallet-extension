@@ -60,6 +60,12 @@ export interface Vin {
   is_coinbase: boolean;
   sequence: number;
   inner_redeemscript_asm?: string;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    symbol: string;
+    type_hash: string;
+  };
 }
 
 export interface Prevout {
@@ -76,6 +82,12 @@ export interface Vout {
   scriptpubkey_type: string;
   scriptpubkey_address: string;
   value: number;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    symbol: string;
+    type_hash: string;
+  };
 }
 
 export interface Status {

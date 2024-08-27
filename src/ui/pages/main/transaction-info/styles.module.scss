@@ -1,5 +1,5 @@
 .transactionInfoDiv {
-  @apply h-full w-full flex items-center justify-center break-all px-6 pt-6 flex-col;
+  @apply h-full w-full flex items-center justify-center break-all px-4 pt-6 flex-col;
 
   .transaction {
     @apply flex flex-col w-full break-all h-full;
@@ -14,7 +14,7 @@
   }
 
   span {
-    @apply text-sm block px-4 py-2 bg-input-bg rounded-xl;
+    @apply text-sm block px-4 py-2 bg-grey-300 rounded-xl;
   }
 }
 
@@ -47,7 +47,7 @@
     @apply flex flex-col gap-3;
   }
 
-  > h3 {
+  >h3 {
     @apply text-sm mb-4 font-medium pl-2;
   }
 

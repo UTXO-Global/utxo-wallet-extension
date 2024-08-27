@@ -17,6 +17,13 @@ type CkbOutput = {
   generated_tx_hash: string;
   cell_index: string;
   address_hash: string;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    published: boolean;
+    symbol: string;
+    type_hash: string;
+  };
 };
 
 type CkbInput = {
@@ -24,6 +31,13 @@ type CkbInput = {
   capacity: string;
   cell_index: string;
   address_hash: string;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    published: boolean;
+    symbol: string;
+    type_hash: string;
+  };
 };
 
 type CkbTransaction = {
@@ -66,6 +80,7 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
         scriptsig: "",
         scriptsig_asm: "",
         is_coinbase: false,
+        extra_info: x.extra_info,
       })),
       vout: d.attributes.display_outputs.map((x) => ({
         value: parseFloat(x.capacity),
@@ -73,6 +88,7 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
         scriptpubkey: "",
         scriptpubkey_asm: "",
         scriptpubkey_type: "",
+        extra_info: x.extra_info,
       })),
       size: 0,
       weight: 0,

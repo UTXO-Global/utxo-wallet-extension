@@ -55,7 +55,7 @@ export default function TokenTabs({ active }: { active?: string }) {
           </div>
         </div>
       )}
-      <div className="mt-6">
+      <div className="mt-4">
         {isLoading && (
           <div className="flex justify-center">
             <Loading

@@ -31,6 +31,13 @@ export interface IApiController {
   pushTx(rawTx: string): Promise<{ txid: string } | undefined>;
   pushCkbTx(rawTx: string): Promise<{ txid: string } | undefined>;
   getTransactions(): Promise<ITransaction[] | undefined>;
+  getCKBTransactions({
+    type,
+    typeHash,
+  }: {
+    type?: string;
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined>;
   getPaginatedTransactions(
     address: string,
     txid: string
@@ -190,21 +197,35 @@ class ApiController implements IApiController {
         })
       );
       return data.flat();
-    } else if (isCkbNetwork(networkData.network)) {
-      // TODO: add pagination
-      const res = await fetchEsplora<CkbTransactionResponse>({
-        path: `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`,
-        headers: {
-          "content-type": "application/vnd.api+json",
-          accept: "application/vnd.api+json",
-        },
-      });
-
-      return toITransactions(res).map((z) => ({
-        ...z,
-        address: accounts[0].address,
-      }));
     }
+  }
+
+  async getCKBTransactions({
+    type,
+    typeHash,
+  }: {
+    type?: string;
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const accounts = storageService.currentAccount.accounts;
+
+    let apiURL = `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`;
+    if (!!type && !!typeHash) {
+      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25`;
+    }
+
+    const res = await fetchEsplora<CkbTransactionResponse>({
+      path: apiURL,
+      headers: {
+        "content-type": "application/vnd.api+json",
+        accept: "application/vnd.api+json",
+      },
+    });
+    return toITransactions(res).map((z) => ({
+      ...z,
+      address: accounts[0].address,
+    }));
   }
 
   async getInscriptions(address: string): Promise<Inscription[] | undefined> {

@@ -25,6 +25,7 @@ const TransactionInfo = () => {
     state: { transaction, lastBlock },
   } = useLocation();
   const tx = transaction as ITransaction;
+  console.log(tx);
 
   const onOpenExplorer = async () => {
     await browserTabsCreate({
@@ -100,12 +101,12 @@ const TransactionInfo = () => {
               <div className={s.tableContainer}>
                 <TableItem
                   label={t("transaction_info.inputs")}
-                  currentAddress={currentAccount.address}
+                  currentAddress={currentAccount.accounts[0].address}
                   items={filteredInput}
                 />
                 <TableItem
                   label={t("transaction_info.outputs")}
-                  currentAddress={currentAccount.address}
+                  currentAddress={currentAccount.accounts[0].address}
                   items={tx.vout}
                 />
               </div>

@@ -33,7 +33,6 @@ const TokenDetail = () => {
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
-  const { trottledUpdate } = useTransactionManagerContext();
   const { isLoading: addressInfoLoading, addressInfo } = useGetCKBAddressInfo();
 
   const isCKBToken = useMemo(() => {
@@ -84,6 +83,12 @@ const TokenDetail = () => {
   const ckbBalance = useMemo(() => {
     return currentAccount.balance ? Number(currentAccount.balance) : 0;
   }, [currentAccount.balance]);
+
+  const ckbOccupiedBalance = useMemo(() => {
+    return currentAccount.ordinalBalance
+      ? Number(currentAccount.ordinalBalance)
+      : 0;
+  }, [currentAccount.ordinalBalance]);
 
   const tokenBalence = useMemo(() => {
     if (isCKBToken) {
@@ -150,10 +155,6 @@ const TokenDetail = () => {
     });
   }, []);
 
-  useEffect(() => {
-    trottledUpdate();
-  }, [trottledUpdate]);
-
   if (!currentAccount || !tokenInfo) return <Loading color="#ODODOD" />;
 
   return (
@@ -193,15 +194,28 @@ const TokenDetail = () => {
             )}
           </div>
         </div>
-        <div className="font-medium leading-6 flex gap-4 justify-between items-center mt-4">
-          <label className="text-base">
-            {t("components.token_card.balance")}
-          </label>
-          <span className="text-lg">{formatNumber(tokenBalence, 2, 3)}</span>
+        <div className="flex flex-col gap-1 mt-4">
+          <div className="font-medium leading-6 flex gap-4 justify-between items-center">
+            <label className="text-base">
+              {t("wallet_page.available_balance")}
+            </label>
+            <span className="text-lg">{formatNumber(tokenBalence, 2, 3)}</span>
+          </div>
+
+          {isCKBToken && (
+            <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
+              <label className="text-base">
+                {t("wallet_page.occupied_balance")}
+              </label>
+              <span className="text-lg">
+                {formatNumber(ckbOccupiedBalance, 2, 3)}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
-          className={cn(`grid gap-2 mt-5 pb-2`, {
+          className={cn(`grid gap-2 mt-4`, {
             "grid-cols-2": panelNavs.length <= 2,
             "grid-cols-4": panelNavs.length > 2,
           })}
@@ -226,12 +240,15 @@ const TokenDetail = () => {
                 }
               }}
             >
-              {nav.icon}
               <p className="text-base font-medium">{nav.title}</p>
             </div>
           ))}
         </div>
-        <TransactionList className="mt-6 mb-4 !px-0" />
+        <TransactionList
+          className="mt-4 mb-4 !px-0 !z-5"
+          type={type !== "ckb" ? type : undefined}
+          typeHash={typeHash !== "ckb" ? typeHash : undefined}
+        />
       </div>
       <ReceiveAddress
         active={isShowReceive}
@@ -242,6 +259,3 @@ const TokenDetail = () => {
 };
 
 export default TokenDetail;
-
-// https://mainnet-api.explorer.nervos.org/api/v1/udt_transactions/{type_hash}
-// https://mainnet-api.explorer.nervos.org/api/v1/udt_transactions/{type_hash}
