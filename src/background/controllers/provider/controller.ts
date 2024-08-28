@@ -22,7 +22,11 @@ import { IGroupAccount, IWallet } from "@/shared/interfaces";
 import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
-import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "@/shared/networks/ckb";
+import {
+  CKB_MAINNET,
+  CKB_NEURON_HD_PATH,
+  CKB_TESTNET,
+} from "@/shared/networks/ckb";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { commons, helpers } from "@ckb-lumos/lumos";
 
@@ -68,7 +72,7 @@ class ProviderController {
               (_network === "nervos" ? "nervos_testnet" : "nervos")
           );
         }
-        
+
         const hdPathForNeuronWallet =
           _otherNetworkGroupAccounts.length === 0
             ? ""
@@ -76,7 +80,7 @@ class ProviderController {
               CKB_NEURON_HD_PATH
             ? CKB_NEURON_HD_PATH
             : "";
-            
+
         const accounts = await walletController.createDefaultGroupAccount(
           _network,
           wallet.id,
@@ -419,7 +423,7 @@ class CKBProviderController extends ProviderController {
       });
     }
 
-    tx.inputs?.map(async (input: any) => {
+    tx.inputs?.forEach((input: any) => {
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
         inputs.push({
           outPoint: {
