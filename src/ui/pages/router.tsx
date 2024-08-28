@@ -71,7 +71,7 @@ export const authenticatedRouter = createHashRouter([
     element: <PagesLayout />,
     children: [
       {
-        path: "tokens/:token",
+        path: "tokens/:type/:typeHash",
         element: <TokenDetail />,
       },
       { path: "settings", element: <Settings /> },

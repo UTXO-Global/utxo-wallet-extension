@@ -30,10 +30,10 @@ export default function CKBToken() {
   if (!isCkbNetwork(currentNetwork.network)) return <></>;
 
   return (
-    <div className="px-4">
+    <div className="px-4 mt-2">
       <div
         className="bg-grey-400 hover:bg-grey-300 py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer"
-        onClick={() => navigate("/pages/tokens/ckb")}
+        onClick={() => navigate("/pages/tokens/ckb/ckb")}
       >
         <div className="flex gap-[10px] items-center">
           <img src="/ckb.png" className="w-8 h-8 rounded-full" />
@@ -49,7 +49,7 @@ export default function CKBToken() {
                   "text-[#FF4545]": ckbChange24h < 0,
                 })}
               >
-                ({ckbChange24h.toFixed(2)})
+                ({ckbChange24h.toFixed(2)}%)
               </span>
             </div>
           </div>

@@ -1,78 +1,33 @@
 import cn from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Tokens from "./tokens";
-import {
-  useGetCurrentAccount,
-  useGetCurrentNetwork,
-} from "@/ui/states/walletState";
-import { ckbExplorerApi } from "@/ui/utils/helpers";
 import Loading from "react-loading";
-import { CKBTokenInfo } from "@/shared/networks/ckb/types";
-import { isCkbNetwork as IsCKBNetwork } from "@/shared/networks";
+import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 
 export default function TokenTabs({ active }: { active?: string }) {
   const [tabActive, setTabActive] = useState(active || "xudt");
-  const [isLoading, setIsLoading] = useState(false);
-  const currentNetwork = useGetCurrentNetwork();
-  const currentAccount = useGetCurrentAccount();
-  const [xudtData, setxUDTData] = useState<CKBTokenInfo[]>([]);
+  const [xudtData, setxUDTData] = useState<any[]>([]);
   const [sudtData, setsUDTData] = useState<any[]>([]);
+
+  const { isLoading, addressInfo } = useGetCKBAddressInfo();
 
   const TABs = [
     { name: "xudt", title: "xUDT" },
     { name: "sudt", title: "sUDT" },
   ];
 
-  const isCKBNetwork = useMemo(() => {
-    return IsCKBNetwork(currentNetwork.network);
-  }, [currentNetwork.network]);
-
-  const getAddressInfo = useCallback(async () => {
-    if (isLoading) return;
-    setIsLoading(true);
-
-    try {
-      const res = await fetch(
-        `
-        ${ckbExplorerApi(currentNetwork.slug)}/v1/addresses/${
-          currentAccount.accounts[0].address
-        }`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.api+json",
-          },
-        }
-      );
-      const { data } = await res.json();
-      if (
-        data &&
-        data.length > 0 &&
-        data[0].attributes &&
-        data[0].attributes.udt_accounts &&
-        data[0].attributes.udt_accounts.length > 0
-      ) {
-        const tokens = data[0].attributes.udt_accounts as CKBTokenInfo[];
-        setsUDTData(tokens.filter((token) => token.udt_type === "sudt"));
-        setxUDTData(tokens.filter((token) => token.udt_type === "xudt"));
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    setIsLoading(false);
-  }, [isLoading]);
-
   useEffect(() => {
-    if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {
-      getAddressInfo()
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    if (
+      addressInfo &&
+      addressInfo.attributes &&
+      addressInfo.attributes.udt_accounts &&
+      addressInfo.attributes.udt_accounts.length > 0
+    ) {
+      const tokens = addressInfo.attributes.udt_accounts;
+      setsUDTData(tokens.filter((token) => token.udt_type === "sudt"));
+      setxUDTData(tokens.filter((token) => token.udt_type === "xudt"));
     }
-  }, [currentNetwork, currentAccount, isCKBNetwork]);
+  }, [addressInfo, isLoading]);
 
   return (
     <div className="px-4">
@@ -100,7 +55,7 @@ export default function TokenTabs({ active }: { active?: string }) {
           </div>
         </div>
       )}
-      <div className="mt-6">
+      <div className="mt-4">
         {isLoading && (
           <div className="flex justify-center">
             <Loading

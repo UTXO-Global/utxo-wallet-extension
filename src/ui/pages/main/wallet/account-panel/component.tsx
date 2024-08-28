@@ -157,7 +157,7 @@ const AccountPanel = () => {
               </p>
             ) : null}
 
-            <div className="grid gap-3 min-h-[80px]">
+            <div className="grid gap-3 my-6">
               <div className="text-4xl font-medium leading-[39.6px] text-right flex flex-wrap items-center justify-center gap-1">
                 {currentAccount?.balance === undefined ? (
                   <Loading
@@ -171,34 +171,6 @@ const AccountPanel = () => {
                   <span className="max-w-[310px] truncate">
                     ${formatNumber(ckbBalance * ckbPrice, 2, 3)}
                   </span>
-                )}
-              </div>
-              <div className="text-center">
-                {currentAccount?.balance !== undefined && (
-                  <div
-                    className={cn("flex gap-2 items-center justify-center", {
-                      "text-[#09C148]": ckbChange24h >= 0,
-                      "text-[#FF4545]": ckbChange24h < 0,
-                    })}
-                  >
-                    <div className="gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
-                      <IcnApproximate className="w-[9px]" />$
-                      {Number(ckbPrice)?.toFixed(3)}
-                    </div>
-                    <div className="gap-2 flex items-center justify-center">
-                      <span
-                        className={cn(
-                          "text-sm font-medium rounded py-[2px] px-1",
-                          {
-                            "bg-[#FF4545]/20": ckbChange24h < 0,
-                            "bg-[#09C148]/20": ckbChange24h >= 0,
-                          }
-                        )}
-                      >
-                        {ckbChange24h.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
                 )}
               </div>
             </div>

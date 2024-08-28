@@ -16,18 +16,69 @@ import Analytics from "@/ui/utils/gtm";
 import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
+import { ckbExplorerApi } from "@/ui/utils/helpers";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
+import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
+import { shortAddress } from "@/shared/utils/transactions";
+import { BI } from "@ckb-lumos/lumos";
 
 const TokenDetail = () => {
-  const { token } = useParams();
+  const { type, typeHash } = useParams();
   const [isShowReceive, setIsShowReceive] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tokenInfo, setTokenInfo] = useState<CKBTokenInfo | undefined>(
+    undefined
+  );
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
+  const { isLoading: addressInfoLoading, addressInfo } = useGetCKBAddressInfo();
 
-  const { trottledUpdate } = useTransactionManagerContext();
-  useEffect(() => {
-    trottledUpdate();
-  }, [trottledUpdate]);
+  const isCKBToken = useMemo(() => {
+    return type === "ckb" && typeHash === "ckb";
+  }, [type, typeHash]);
+
+  const currentToken = useMemo(() => {
+    if (!addressInfo) return;
+
+    return addressInfo.attributes.udt_accounts.find(
+      (t) => t.type_hash === typeHash && t.udt_type === type
+    );
+  }, [addressInfoLoading, addressInfo]);
+
+  const getToken = async () => {
+    if (type === "ckb" && typeHash === "ckb") {
+      setTokenInfo({
+        attributes: {
+          symbol: "CKB",
+          full_name: "Nervos CKB",
+          icon_file: "/ckb.png",
+          decimal: "8",
+        },
+      });
+      return;
+    }
+    if (isLoading) return;
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(
+        `${ckbExplorerApi(currentNetwork.slug)}/v1/${type}s/${typeHash}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/vnd.api+json",
+          },
+        }
+      );
+      const { data } = await res.json();
+      setTokenInfo(data as CKBTokenInfo);
+    } catch (e) {
+      console.error(e);
+    }
+    setIsLoading(false);
+  };
 
   const ckbBalance = useMemo(() => {
     return currentAccount.balance ? Number(currentAccount.balance) : 0;
@@ -38,6 +89,18 @@ const TokenDetail = () => {
       ? Number(currentAccount.ordinalBalance)
       : 0;
   }, [currentAccount.ordinalBalance]);
+
+  const tokenBalence = useMemo(() => {
+    if (isCKBToken) {
+      return currentAccount.balance ? Number(currentAccount.balance) : 0;
+    }
+
+    if (!currentToken) return 0;
+
+    return BI.from(currentToken.amount)
+      .div(BI.from(10 ** Number(currentToken.decimal)))
+      .toNumber();
+  }, [ckbBalance, currentToken]);
 
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
@@ -86,30 +149,41 @@ const TokenDetail = () => {
     navigate(path);
   };
 
-  if (!currentAccount) return <Loading color="#ODODOD" />;
+  useEffect(() => {
+    getToken().catch((e) => {
+      console.log(e);
+    });
+  }, []);
+
+  if (!currentAccount || !tokenInfo) return <Loading color="#ODODOD" />;
 
   return (
     <div className="relative w-full h-full top-0 px-4 mt-4">
       <div className="w-full flex-col justify-start relative top-0 overflow-auto">
         <div className="flex gap-4 items-center">
-          <img src="/ckb.png" className="w-16 h-16" />
+          <img
+            src={tokenInfo.attributes.icon_file || TOKEN_FILE_ICON_DEFAULT}
+            className="w-16 h-16"
+          />
           <div className="flex flex-col gap-1">
             <p className="text-primary">
-              <strong className="font-bold text-xl leading-6">CKB</strong>{" "}
+              <strong className="font-bold text-xl leading-6">
+                {tokenInfo.attributes.symbol}
+              </strong>{" "}
               <span className="text-sm font-normal leading-[18px]">
-                (Nervos CKB)
+                ({tokenInfo.attributes.full_name})
               </span>
             </p>
-            {token !== "ckb" && (
+            {typeHash !== "ckb" && (
               <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
-                <p>0x178fb47b597...</p>
+                <p>{shortAddress(tokenInfo.attributes.type_hash, 10)}</p>
                 <IcnCopy
                   className="w-4 h-4 right-2 transition-colors stroke-[#787575] hover:stroke-primary cursor-pointer"
                   onClick={() => {
                     navigator.clipboard
-                      .writeText("0x178fb47b597")
+                      .writeText(tokenInfo.attributes.type_hash)
                       .then(() => {
-                        toast.success("Address copied");
+                        toast.success("Type hash copied");
                       })
                       .catch((err) => {
                         toast.error("Failed to copy");
@@ -120,15 +194,28 @@ const TokenDetail = () => {
             )}
           </div>
         </div>
-        <div className="font-medium leading-6 flex gap-4 justify-between items-center mt-4">
-          <label className="text-base">
-            {t("components.token_card.balance")}
-          </label>
-          <span className="text-lg">{formatNumber(ckbBalance, 2, 3)}</span>
+        <div className="flex flex-col gap-1 mt-4">
+          <div className="font-medium leading-6 flex gap-4 justify-between items-center">
+            <label className="text-base">
+              {t("wallet_page.available_balance")}
+            </label>
+            <span className="text-lg">{formatNumber(tokenBalence, 2, 3)}</span>
+          </div>
+
+          {isCKBToken && (
+            <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
+              <label className="text-base">
+                {t("wallet_page.occupied_balance")}
+              </label>
+              <span className="text-lg">
+                {formatNumber(ckbOccupiedBalance, 2, 3)}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
-          className={cn(`grid gap-2 mt-5 pb-2`, {
+          className={cn(`grid gap-2 mt-4`, {
             "grid-cols-2": panelNavs.length <= 2,
             "grid-cols-4": panelNavs.length > 2,
           })}
@@ -140,29 +227,28 @@ const TokenDetail = () => {
                 `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
                 {
                   "!cursor-not-allowed hover:!bg-grey-300":
-                    currentAccount?.balance === undefined &&
-                    nav.navPath === "/pages/create-send",
+                    tokenBalence <= 0 && nav.navPath === "/pages/create-send",
                 }
               )}
               onClick={() => {
                 if (nav.isPopup) {
                   setIsShowReceive(true);
                 } else {
-                  if (
-                    currentAccount?.balance === undefined &&
-                    nav.navPath === "/pages/create-send"
-                  )
+                  if (tokenBalence <= 0 && nav.navPath === "/pages/create-send")
                     return;
                   _navigate(nav.navPath, nav.navName, nav.navLabel);
                 }
               }}
             >
-              {nav.icon}
               <p className="text-base font-medium">{nav.title}</p>
             </div>
           ))}
         </div>
-        <TransactionList className="mt-6 mb-4 !px-0" />
+        <TransactionList
+          className="mt-4 mb-4 !px-0 !z-5"
+          type={type !== "ckb" ? type : undefined}
+          typeHash={typeHash !== "ckb" ? typeHash : undefined}
+        />
       </div>
       <ReceiveAddress
         active={isShowReceive}
