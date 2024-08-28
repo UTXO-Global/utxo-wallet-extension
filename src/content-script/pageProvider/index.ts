@@ -1,7 +1,7 @@
 import { ethErrors, serializeError } from "eth-rpc-errors";
 import { EventEmitter } from "events";
-import { cccA } from "@ckb-ccc/core/advanced";
 import { ccc } from "@ckb-ccc/core";
+import DOMPurify from "dompurify";
 
 import BroadcastChannelMessage from "@/shared/utils/message/broadcastChannelMessage";
 
@@ -78,12 +78,19 @@ export class UtxoGlobalProvider extends EventEmitter {
         origin;
 
       try {
-        await this._bcm.request({
-          method: "tabCheckin",
-          params: { icon, name, origin },
-        });
-      } catch {
-        //
+        const sanitizedIcon = DOMPurify.sanitize(icon);
+        const sanitizedName = DOMPurify.sanitize(name);
+        const sanitizedOrigin = DOMPurify.sanitize(origin);
+
+        if (this._isValidURL(sanitizedOrigin)) {
+          await this._bcm.request({
+            method: "tabCheckin",
+            params: { sanitizedIcon, sanitizedName, sanitizedOrigin },
+          });
+        }
+
+      } catch (err) {
+        console.error(err);
       }
     });
 
@@ -110,6 +117,15 @@ export class UtxoGlobalProvider extends EventEmitter {
     }
   };
 
+  private _isValidURL = (url: string): boolean => {
+    try {
+      const newUrl = new URL(url);
+      return newUrl.protocol === 'https:';
+    } catch (err) {
+      return false;
+    }
+  }
+
   private _requestPromiseCheckVisibility = () => {
     if (document.visibilityState === "visible") {
       this._requestPromise.check(1);
@@ -119,10 +135,11 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
-    if (this._pushEventHandlers[event]) {
-      return this._pushEventHandlers[event](data);
+    if (!this._pushEventHandlers[event]) {
+      return; // Ignore unexpected events
     }
 
+    this._pushEventHandlers[event](data);
     this.emit(event, data);
   };
 
