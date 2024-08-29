@@ -4,7 +4,9 @@
     "no_transactions": "Нет транзакций",
     "receive": "Получить",
     "send": "Отправить",
-    "your_balance": "Ваш баланс"
+    "your_balance": "Ваш баланс",
+    "available_balance": "Доступный остаток",
+    "occupied_balance": "Занятый баланс"
   },
   "settings": {
     "language": "Язык",
