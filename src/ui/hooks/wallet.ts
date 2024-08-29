@@ -414,7 +414,9 @@ export const useSwitchNetwork = () => {
         wallets: _wallets,
       });
 
+      await notificationController.changedNetwork();
       await notificationController.changedAccount();
+      await notificationController.changedNetwork();
 
       trottledUpdate(true);
       resetTransactions();
