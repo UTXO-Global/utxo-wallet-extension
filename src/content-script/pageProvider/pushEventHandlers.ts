@@ -40,6 +40,7 @@ class PushEventHandlers {
     const disconnectError = ethErrors.provider.disconnected();
 
     this._emit("accountsChanged", []);
+    this._emit("networkChanged", "");
     this._emit("disconnect", disconnectError);
     this._emit("close", disconnectError);
   };
@@ -48,7 +49,7 @@ class PushEventHandlers {
     if (accounts?.[0] === this.provider._selectedAddress) {
       return;
     }
-
+    this.connect({});
     this.provider._selectedAddress = accounts?.[0];
     this.provider._state.accounts = accounts;
     this._emit("accountsChanged", accounts);
@@ -56,7 +57,6 @@ class PushEventHandlers {
 
   networkChanged = ({ network }) => {
     this.connect({});
-
     if (network !== this.provider._network) {
       this.provider._network = network;
       this._emit("networkChanged", network);

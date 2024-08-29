@@ -27,15 +27,14 @@ import {
   CKB_NEURON_HD_PATH,
   CKB_TESTNET,
 } from "@/shared/networks/ckb";
-import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { commons, helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
   connect = async () => {
     if (storageService.currentWallet === undefined) return undefined;
     // TODO
-    const _account = storageService.currentAccount.id;
-    const account = _account ? _account : "";
+    const _account = storageService.currentAccount.accounts;
+    const account = _account ? _account : [];
     sessionService.broadcastEvent("accountsChanged", account);
     return account;
   };
@@ -110,7 +109,6 @@ class ProviderController {
       wallets: _wallets,
     });
 
-    sessionService.broadcastEvent("accountsChanged", _network);
     sessionService.broadcastEvent("networkChanged", _network);
     return _network;
   };
@@ -120,6 +118,10 @@ class ProviderController {
     const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(
       currentNetwork
     );
+    if (this._getCurrentChain() === chainSlug) {
+      return chainSlug;
+    }
+
     let network: NetworkData | undefined = undefined;
     switch (chainSlug) {
       case "btc":
@@ -134,6 +136,11 @@ class ProviderController {
     }
 
     return chainSlug;
+  };
+
+  _getCurrentChain = () => {
+    const currentChain = storageService.currentNetwork.split("_", 1);
+    return currentChain.length > 0 ? currentChain[0] : "";
   };
 
   @Reflect.metadata("SAFE", true)
