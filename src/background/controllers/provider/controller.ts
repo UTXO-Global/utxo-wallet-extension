@@ -27,7 +27,6 @@ import {
   CKB_NEURON_HD_PATH,
   CKB_TESTNET,
 } from "@/shared/networks/ckb";
-
 import { helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
