@@ -10,6 +10,7 @@ export interface INotificationController {
   ): Promise<void>;
   resolveApproval(data?: any, forceReject?: boolean): Promise<void>;
   changedAccount(): Promise<void>;
+  changedNetwork(): Promise<void>;
   getConnectedSites(): Promise<ConnectedSite[]>;
   removeSite(origin: string): Promise<ConnectedSite[]>;
 }

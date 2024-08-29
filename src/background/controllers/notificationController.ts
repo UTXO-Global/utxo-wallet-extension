@@ -37,11 +37,16 @@ class NotificationController implements INotificationController {
   }
 
   async changedAccount(): Promise<void> {
-    permissionService.disconnectSites();
     sessionService.broadcastEvent(
       "accountsChanged",
-      storageService.currentAccount
+      storageService.currentAccount.accounts.map((item) => item.address)
     );
+  }
+
+  async changedNetwork(): Promise<void> {
+    sessionService.broadcastEvent("networkChanged", {
+      network: storageService.currentNetwork,
+    });
   }
 
   async getConnectedSites(): Promise<ConnectedSite[]> {
