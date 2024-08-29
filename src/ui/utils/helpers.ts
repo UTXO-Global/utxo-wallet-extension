@@ -25,3 +25,22 @@ export const ckbExplorerApi = (networkSlug: string) => {
   const _network = networkSlug === "nervos" ? "mainnet" : "testnet";
   return `${process.env.API_BASE_URL}/ckb/${_network}`;
 };
+
+export const evaluatePassword = (password: string): number => {
+  let score = 0;
+
+  if (!password || password.length < 8) return 0;
+
+  // Check password length
+  if (password.length > 8) score += 1;
+  // Contains lowercase
+  if (/[a-z]/.test(password)) score += 1;
+  // Contains uppercase
+  if (/[A-Z]/.test(password)) score += 1;
+  // Contains numbers
+  if (/\d/.test(password)) score += 1;
+  // Contains special characters
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  return score;
+};

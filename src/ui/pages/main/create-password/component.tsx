@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { t } from "i18next";
 import Analytics from "@/ui/utils/gtm";
+import { evaluatePassword } from "@/ui/utils/helpers";
 
 interface FormType {
   password: string;
@@ -33,16 +34,24 @@ const CreatePassword = () => {
   }));
 
   const createPassword = async ({ confirmPassword, password }: FormType) => {
-    if (password === confirmPassword) {
-      await updateAppState({ password, isUnlocked: true });
-      // NOTE: [GA] - Create password
-      await Analytics.fireEvent("ob_create_password", {
-        action: "click",
-        label: "create password",
-      });
-    } else {
+    if (password !== confirmPassword) {
       toast.error("Passwords dismatches");
+      return;
     }
+
+    if (evaluatePassword(password) < 3) {
+      toast.error(
+        "Password must be at least 8 characters and include 3 of the following: uppercase letter, lowercase letter, number, special character"
+      );
+      return;
+    }
+
+    await updateAppState({ password, isUnlocked: true });
+    // NOTE: [GA] - Create password
+    await Analytics.fireEvent("ob_create_password", {
+      action: "click",
+      label: "create password",
+    });
   };
 
   return (
