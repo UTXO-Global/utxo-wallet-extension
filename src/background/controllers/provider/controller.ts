@@ -39,6 +39,11 @@ class ProviderController {
     return account;
   };
 
+  _getCurrentChain = () => {
+    const currentChain = storageService.currentNetwork.split("_", 1);
+    return currentChain.length > 0 ? currentChain[0] : "";
+  };
+
   _switchNetwork = async (_network: NetworkSlug) => {
     const currentNetwork = storageService.currentNetwork;
     if (currentNetwork === _network) return currentNetwork;
@@ -118,6 +123,7 @@ class ProviderController {
     const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(
       currentNetwork
     );
+
     if (this._getCurrentChain() === chainSlug) {
       return chainSlug;
     }
