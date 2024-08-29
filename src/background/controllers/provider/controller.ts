@@ -144,11 +144,6 @@ class ProviderController {
     return chainSlug;
   };
 
-  _getCurrentChain = () => {
-    const currentChain = storageService.currentNetwork.split("_", 1);
-    return currentChain.length > 0 ? currentChain[0] : "";
-  };
-
   @Reflect.metadata("SAFE", true)
   getAccounts = async () => {
     if (storageService.currentWallet === undefined) return undefined;
