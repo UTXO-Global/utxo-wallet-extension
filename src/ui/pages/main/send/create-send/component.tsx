@@ -249,12 +249,21 @@ const CreateSend = () => {
                 </div>
               </div>
               <div className="flex justify-between text-base font-medium">
-                <div>{`${t("wallet_page.your_balance")} `}</div>
+                <div>Available Balance:</div>
                 <div className="flex gap-2 items-center">
                   <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
                   <span className="text-[#787575]">
                     {currentNetwork.coinSymbol}
                   </span>
+                </div>
+              </div>
+              <div className="flex justify-between text-base font-medium text-[#787575]">
+                <div>Occupied Balance:</div>
+                <div className="flex gap-2 items-center">
+                  <span>
+                    {formatNumber(currentAccount.ordinalBalance, 2, 8)}
+                  </span>
+                  <span>{currentNetwork.coinSymbol}</span>
                 </div>
               </div>
             </div>

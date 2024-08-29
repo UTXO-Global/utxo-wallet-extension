@@ -20,3 +20,8 @@ export const logErrorToFirestore = async (
 
   await setDoc(doc(db, collectionName, time), errorData);
 };
+
+export const ckbExplorerApi = (networkSlug: string) => {
+  const _network = networkSlug === "nervos" ? "mainnet" : "testnet";
+  return `${process.env.API_BASE_URL}/ckb/${_network}`;
+};
