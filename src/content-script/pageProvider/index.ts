@@ -292,12 +292,15 @@ declare global {
   }
 }
 
-// const provider = new UtxoGlobalProvider();
+const provider = new UtxoGlobalProvider();
 const btcProvider = new BTCProvider();
 const ckbProvider = new CKBProvider();
 
 Object.defineProperty(window, "utxoGlobal", {
   value: {
+    ...new Proxy(provider, {
+      deleteProperty: () => true,
+    }),
     bitcoinSigner: new Proxy(btcProvider, {
       deleteProperty: () => true,
     }),
@@ -308,5 +311,6 @@ Object.defineProperty(window, "utxoGlobal", {
   writable: false,
 });
 
+window.dispatchEvent(new Event("utxoGlobal#initialized"));
 window.dispatchEvent(new Event("utxoGlobal.bitcoinSigner#initialized"));
 window.dispatchEvent(new Event("utxoGlobal.ckbSigner#initialized"));
