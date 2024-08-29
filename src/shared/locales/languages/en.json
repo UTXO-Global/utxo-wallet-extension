@@ -10,7 +10,9 @@
     "amount_in_inscriptions": "Ordinal balance",
     "swap": "Swap",
     "buy": "Buy",
-    "your_balance": "Your Balance"
+    "your_balance": "Your Balance",
+    "available_balance": "Available balance",
+    "occupied_balance": "Occupied Balance"
   },
   "settings": {
     "language": "Language",

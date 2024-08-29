@@ -22,18 +22,26 @@ import { IGroupAccount, IWallet } from "@/shared/interfaces";
 import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
-import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "@/shared/networks/ckb";
-import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
-import { commons, helpers } from "@ckb-lumos/lumos";
+import {
+  CKB_MAINNET,
+  CKB_NEURON_HD_PATH,
+  CKB_TESTNET,
+} from "@/shared/networks/ckb";
+import { helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
   connect = async () => {
     if (storageService.currentWallet === undefined) return undefined;
     // TODO
-    const _account = storageService.currentAccount.id;
-    const account = _account ? _account : "";
+    const _account = storageService.currentAccount.accounts;
+    const account = _account ? _account : [];
     sessionService.broadcastEvent("accountsChanged", account);
     return account;
+  };
+
+  _getCurrentChain = () => {
+    const currentChain = storageService.currentNetwork.split("_", 1);
+    return currentChain.length > 0 ? currentChain[0] : "";
   };
 
   _switchNetwork = async (_network: NetworkSlug) => {
@@ -68,7 +76,7 @@ class ProviderController {
               (_network === "nervos" ? "nervos_testnet" : "nervos")
           );
         }
-        
+
         const hdPathForNeuronWallet =
           _otherNetworkGroupAccounts.length === 0
             ? ""
@@ -76,7 +84,7 @@ class ProviderController {
               CKB_NEURON_HD_PATH
             ? CKB_NEURON_HD_PATH
             : "";
-            
+
         const accounts = await walletController.createDefaultGroupAccount(
           _network,
           wallet.id,
@@ -116,6 +124,11 @@ class ProviderController {
     const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(
       currentNetwork
     );
+
+    if (this._getCurrentChain() === chainSlug) {
+      return chainSlug;
+    }
+
     let network: NetworkData | undefined = undefined;
     switch (chainSlug) {
       case "btc":
@@ -419,7 +432,7 @@ class CKBProviderController extends ProviderController {
       });
     }
 
-    tx.inputs?.map(async (input: any) => {
+    tx.inputs?.forEach((input: any) => {
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
         inputs.push({
           outPoint: {
