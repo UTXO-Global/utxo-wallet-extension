@@ -27,7 +27,8 @@ import {
   CKB_NEURON_HD_PATH,
   CKB_TESTNET,
 } from "@/shared/networks/ckb";
-import { commons, helpers } from "@ckb-lumos/lumos";
+
+import { helpers } from "@ckb-lumos/lumos";
 
 class ProviderController {
   connect = async () => {
