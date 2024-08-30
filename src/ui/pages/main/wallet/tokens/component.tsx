@@ -1,26 +1,57 @@
 import cn from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Tokens from "./tokens";
 import Loading from "react-loading";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 
 export default function TokenTabs({ active }: { active?: string }) {
-  const [tokens, setsTokens] = useState<any[]>([]);
-
+  const [tokens, setTokens] = useState<any[]>([]);
   const { isLoading, addressInfo } = useGetCKBAddressInfo();
+  const currentNetwork = useGetCurrentNetwork();
+
+  const getTokenDefaults = async () => {
+    const _network = currentNetwork.slug === "nervos" ? "mainnet" : "testnet";
+    const jsonURL = `https://config.utxo.global/${_network}.tokens.json`;
+    try {
+      const res = await fetch(`${jsonURL}?t=${Date.now()}`);
+      const data = await res.json();
+      setTokens([...data]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+    }
+  };
 
   useEffect(() => {
-    if (
-      addressInfo &&
-      addressInfo.attributes &&
-      addressInfo.attributes.udt_accounts &&
-      addressInfo.attributes.udt_accounts.length > 0
-    ) {
-      const tokens = addressInfo.attributes.udt_accounts;
-      setsTokens(
-        tokens.filter((token) => ["sudt", "xudt"].includes(token.udt_type))
-      );
-    }
+    const f = async () => {
+      await getTokenDefaults();
+      const udtAccounts = addressInfo?.attributes?.udt_accounts || [];
+      if (udtAccounts.length > 0) {
+        const udtAccounts = addressInfo.attributes.udt_accounts;
+        const tokens = udtAccounts.filter((token) =>
+          ["sudt", "xudt"].includes(token.udt_type)
+        );
+
+        setTokens((prev) => {
+          return tokens.reduce(
+            (newTokens, t) => {
+              const idx = newTokens.findIndex(
+                (item) => item.type_hash === t.type_hash
+              );
+              if (idx > -1) {
+                newTokens[idx] = { ...t };
+              } else {
+                newTokens.push(t);
+              }
+              return newTokens;
+            },
+            [...prev]
+          );
+        });
+      }
+    };
+    f().catch((e) => console.log(e));
   }, [addressInfo, isLoading]);
 
   return (

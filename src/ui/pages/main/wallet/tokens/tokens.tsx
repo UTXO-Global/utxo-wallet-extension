@@ -48,7 +48,9 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
               <div className="text-sm leading-5 font-medium">
                 <span>
                   {Number(amountAnalyze.first) > 1
-                    ? formatNumber(Number(amountAnalyze.first), 0, 2)
+                    ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
+                        !!amountAnalyze.last ? "." : ""
+                      }`
                     : amountAnalyze.first}
                 </span>
                 {amountAnalyze.zeroes > 0 && (

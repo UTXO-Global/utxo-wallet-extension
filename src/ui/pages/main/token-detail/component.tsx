@@ -225,7 +225,9 @@ const TokenDetail = () => {
             <div>
               <span className="text-lg">
                 {Number(amountAnalyze.first) > 1
-                  ? formatNumber(Number(amountAnalyze.first), 0, 2)
+                  ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
+                      !!amountAnalyze.last ? "." : ""
+                    }`
                   : amountAnalyze.first}
               </span>
               {amountAnalyze.zeroes > 0 && (
