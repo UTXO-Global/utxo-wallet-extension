@@ -37,6 +37,7 @@ module.exports = {
         "react-hooks/rules-of-hooks": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "no-constant-condition": "off",
+        "no-extra-boolean-cast": "off",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-floating-promises": [

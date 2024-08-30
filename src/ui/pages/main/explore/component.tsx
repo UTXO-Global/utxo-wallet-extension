@@ -18,6 +18,7 @@ const Explorer = () => {
   const swiperRef = useRef(null);
   const [active, setActive] = useState<number>(0);
   const [feature, setFeature] = useState<IFeature[]>([]);
+  const [partners, setPartners] = useState<IFeature[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -26,6 +27,7 @@ const Explorer = () => {
       const res = await fetch(`${EXPLORER_LINK}?t=${Date.now()}`);
       const data = await res.json();
       setFeature(data.feature);
+      setPartners(data.partners);
     } catch (e) {
       console.error(e);
     } finally {
@@ -47,7 +49,7 @@ const Explorer = () => {
         <>
           <div>
             <div className="flex justify-between items-start">
-              <p className="text-[20px] leading-[28px] text-primary">
+              <p className="text-xl leading-7 text-primary font-medium">
                 {t("explore.feature")}
               </p>
               <div className="flex gap-4 items-center">
@@ -106,36 +108,36 @@ const Explorer = () => {
               </Swiper>
             </div>
           </div>
-          {/* <div className="mt-6">
-            <p className="text-[20px] leading-[28px] text-primary">
-              {t('explore.recommended')}
+          <div className="mt-6">
+            <p className="text-xl leading-7 text-primary font-medium">
+              {t("explore.partners")}
             </p>
-            <div className="mt-4 grid gap-6">
-              {recommended.map((z, i) => (
+            <div className="mt-4 grid border border-grey-300 rounded-lg last:*:border-b-0">
+              {partners.map((z, i) => (
                 <a
                   key={i}
                   href={z.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex gap-4 items-start"
+                  className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300"
                 >
                   <img
                     src={z.image}
                     alt={z.title}
-                    className="w-[50px] h-[50px] object-cover rounded-full"
+                    className="w-12 h-12 rounded-xl object-cover"
                   />
                   <div className="flex-1">
-                    <p className="text-[16px] leading-[140%] font-bold text-primary">
+                    <p className="text-sm leading-5 font-medium text-primary">
                       {z.title}
                     </p>
-                    <p className="text-base text-primary mt-1 description-2-lines">
+                    <p className="text-sm leading-[18px] text-[#787575] mt-[2px]">
                       {z.description}
                     </p>
                   </div>
                 </a>
               ))}
             </div>
-          </div> */}
+          </div>
         </>
       )}
       <BottomPanel />

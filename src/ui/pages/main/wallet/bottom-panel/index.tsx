@@ -1,7 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 import cn from "classnames";
-import { IcnWallet, IcnGlobal, IcnImage } from "@/ui/components/icons";
+import {
+  IcnWallet,
+  IcnGlobal,
+  IcnImage,
+  IcnThunder,
+} from "@/ui/components/icons";
 
 const BottomPanel = () => {
   const navigate = useNavigate();
@@ -22,11 +27,16 @@ const BottomPanel = () => {
     },
     {
       path: "/nfts",
-      icon: <IcnImage
-        className={cn(`w-6 h-6 transition-all fill-[#ABA8A1] group-hover:fill-primary`, {
-          "!fill-primary": currentRoute.pathname === "/pages/todo-1",
-        })}
-      />
+      icon: (
+        <IcnImage
+          className={cn(
+            `w-6 h-6 transition-all fill-[#ABA8A1] group-hover:fill-primary`,
+            {
+              "!fill-primary": currentRoute.pathname === "/pages/todo-1",
+            }
+          )}
+        />
+      ),
     },
     // {
     //   path: "/pages/swap",
@@ -36,14 +46,19 @@ const BottomPanel = () => {
     //     })}
     //   />
     // },
-    // {
-    //   path: "/pages/todo-2",
-    //   icon: <IcnThunder
-    //     className={cn(`w-6 h-6 transition-all fill-[#ABA8A1] group-hover:fill-primary`, {
-    //       "!fill-primary": currentRoute.pathname === "/pages/todo-2",
-    //     })}
-    //   />
-    // },
+    {
+      path: "/activities",
+      icon: (
+        <IcnThunder
+          className={cn(
+            `w-6 h-6 transition-all fill-[#ABA8A1] group-hover:fill-primary`,
+            {
+              "!fill-primary": currentRoute.pathname === "/activities",
+            }
+          )}
+        />
+      ),
+    },
     {
       path: "/pages/explore",
       icon: (

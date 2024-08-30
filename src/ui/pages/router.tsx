@@ -44,6 +44,7 @@ import Home from "./main/home";
 import TokenDetail from "./main/token-detail";
 import ListNFTs from "./main/nfts/component";
 import DetailNFT from "./main/detail-nft";
+import Activities from "./main/activities";
 
 export const guestRouter = createHashRouter([
   {
@@ -67,13 +68,13 @@ export const authenticatedRouter = createHashRouter([
     element: <ListNFTs />,
   },
   {
+    path: "activities",
+    element: <Activities />,
+  },
+  {
     path: "pages",
     element: <PagesLayout />,
     children: [
-      {
-        path: "tokens/:type/:typeHash",
-        element: <TokenDetail />,
-      },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },
       { path: "address-type/:accId", element: <AddressType /> },
