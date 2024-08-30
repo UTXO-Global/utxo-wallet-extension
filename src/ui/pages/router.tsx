@@ -75,6 +75,10 @@ export const authenticatedRouter = createHashRouter([
     path: "pages",
     element: <PagesLayout />,
     children: [
+      {
+        path: "tokens/:type/:typeHash",
+        element: <TokenDetail />,
+      },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },
       { path: "address-type/:accId", element: <AddressType /> },
