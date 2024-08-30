@@ -5,16 +5,9 @@ import Loading from "react-loading";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 
 export default function TokenTabs({ active }: { active?: string }) {
-  const [tabActive, setTabActive] = useState(active || "xudt");
-  const [xudtData, setxUDTData] = useState<any[]>([]);
-  const [sudtData, setsUDTData] = useState<any[]>([]);
+  const [tokens, setsTokens] = useState<any[]>([]);
 
   const { isLoading, addressInfo } = useGetCKBAddressInfo();
-
-  const TABs = [
-    { name: "xudt", title: "xUDT" },
-    { name: "sudt", title: "sUDT" },
-  ];
 
   useEffect(() => {
     if (
@@ -24,37 +17,25 @@ export default function TokenTabs({ active }: { active?: string }) {
       addressInfo.attributes.udt_accounts.length > 0
     ) {
       const tokens = addressInfo.attributes.udt_accounts;
-      setsUDTData(tokens.filter((token) => token.udt_type === "sudt"));
-      setxUDTData(tokens.filter((token) => token.udt_type === "xudt"));
+      setsTokens(
+        tokens.filter((token) => ["sudt", "xudt"].includes(token.udt_type))
+      );
     }
   }, [addressInfo, isLoading]);
 
   return (
     <div className="px-4">
-      {TABs && (
-        <div className="mt-4 inline-block">
-          <div className="bg-grey-400 rounded-full flex gap-0">
-            {TABs.map((t, index) => (
-              <div
-                key={`wallet-${t.name}-${index}`}
-                className={cn(
-                  "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer",
-                  {
-                    "bg-grey-200": t.name === tabActive,
-                  }
-                )}
-                onClick={() => {
-                  if (tabActive !== t.name) {
-                    setTabActive(t.name);
-                  }
-                }}
-              >
-                {t.title}
-              </div>
-            ))}
+      <div className="mt-4 inline-block">
+        <div className="bg-grey-400 rounded-full flex gap-0">
+          <div
+            className={cn(
+              "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-200"
+            )}
+          >
+            Coins
           </div>
         </div>
-      )}
+      </div>
       <div className="mt-4">
         {isLoading && (
           <div className="flex justify-center">
@@ -67,9 +48,7 @@ export default function TokenTabs({ active }: { active?: string }) {
             />
           </div>
         )}
-        {!isLoading && (
-          <Tokens tokens={tabActive === "xudt" ? xudtData : sudtData} />
-        )}
+        {!isLoading && <Tokens tokens={tokens} />}
       </div>
     </div>
   );

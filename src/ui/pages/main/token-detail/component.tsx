@@ -15,7 +15,7 @@ import cn from "classnames";
 import Analytics from "@/ui/utils/gtm";
 import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
-import { formatNumber } from "@/shared/utils";
+import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
@@ -97,10 +97,12 @@ const TokenDetail = () => {
 
     if (!currentToken) return 0;
 
-    return BI.from(currentToken.amount)
-      .div(BI.from(10 ** Number(currentToken.decimal)))
-      .toNumber();
+    return Number(currentToken.amount) / 10 ** Number(currentToken.decimal);
   }, [ckbBalance, currentToken]);
+
+  const amountAnalyze = useMemo(() => {
+    return analyzeSmallNumber(tokenBalence, 5);
+  }, [tokenBalence]);
 
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
@@ -166,14 +168,35 @@ const TokenDetail = () => {
             className="w-16 h-16"
           />
           <div className="flex flex-col gap-1">
-            <p className="text-primary">
+            <div className="text-primary flex gap-1 items-center">
               <strong className="font-bold text-xl leading-6">
-                {tokenInfo.attributes.symbol}
+                {!!tokenInfo.attributes.symbol
+                  ? tokenInfo.attributes.symbol
+                  : "Unnamed"}
               </strong>{" "}
-              <span className="text-sm font-normal leading-[18px]">
-                ({tokenInfo.attributes.full_name})
-              </span>
-            </p>
+              {!!tokenInfo.attributes.full_name && (
+                <span className="text-base font-normal leading-[18px]">
+                  ({tokenInfo.attributes.full_name})
+                </span>
+              )}
+              <div className="h-[21px] w-[1px] bg-grey-200" />
+              <div className="flex gap-1 items-center">
+                <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
+                  {tokenInfo.attributes.udt_type}
+                </label>
+                {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
+                  <label
+                    className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5"
+                    style={{
+                      background:
+                        "linear-gradient(120.76deg, #FFD37B 31.34%, #77F8BA 92.54%)",
+                    }}
+                  >
+                    RGB++
+                  </label>
+                )}
+              </div>
+            </div>
             {typeHash !== "ckb" && (
               <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
                 <p>{shortAddress(tokenInfo.attributes.type_hash, 10)}</p>
@@ -199,7 +222,21 @@ const TokenDetail = () => {
             <label className="text-base">
               {t("wallet_page.available_balance")}
             </label>
-            <span className="text-lg">{formatNumber(tokenBalence, 2, 3)}</span>
+            <div>
+              <span className="text-lg">
+                {Number(amountAnalyze.first) > 1
+                  ? formatNumber(Number(amountAnalyze.first), 0, 2)
+                  : amountAnalyze.first}
+              </span>
+              {amountAnalyze.zeroes > 0 && (
+                <span className="align-sub text-xs">
+                  {amountAnalyze.zeroes}
+                </span>
+              )}
+              {Number(amountAnalyze.last) > 0 && (
+                <span>{amountAnalyze.last}</span>
+              )}
+            </div>
           </div>
 
           {isCKBToken && (

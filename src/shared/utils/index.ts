@@ -63,7 +63,7 @@ export const formatNumber = (
   return number.toLocaleString(undefined, options);
 };
 
-export const analyzeSmallNumber = (num: number, zeroCount: number = 2) => {
+export const analyzeSmallNumber = (num: number, zeroCount: number) => {
   const numberString = num.toLocaleString("fullwide", {
     useGrouping: false,
     maximumFractionDigits: 100,
