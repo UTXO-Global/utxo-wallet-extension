@@ -92,8 +92,7 @@ export const getTransactionValue = (
 
 export const getTransactionTokenValue = (
   transaction: ITransaction,
-  targetAddress: string,
-  fixed: number = 2
+  targetAddress: string
 ) => {
   const direction = getTxDirection(transaction, targetAddress);
   let value: number;
@@ -108,9 +107,8 @@ export const getTransactionTokenValue = (
         symbol = cur.extra_info.symbol;
         return (
           acc +
-          BI.from(cur.extra_info.amount || 0)
-            .div(10 ** Number(cur.extra_info.decimal))
-            .toNumber()
+          Number(cur.extra_info.amount || 0) /
+            10 ** Number(cur.extra_info.decimal)
         );
       }, 0);
       break;
@@ -127,9 +125,8 @@ export const getTransactionTokenValue = (
           symbol = cur.extra_info.symbol;
           return (
             acc -
-            BI.from(cur.extra_info.amount || 0)
-              .div(10 ** Number(cur.extra_info.decimal))
-              .toNumber()
+            Number(cur.extra_info.amount || 0) /
+              10 ** Number(cur.extra_info.decimal)
           );
         }, 0) +
         transaction.vout.reduce((acc, cur) => {
@@ -140,15 +137,14 @@ export const getTransactionTokenValue = (
           symbol = cur.extra_info.symbol;
           return (
             acc +
-            BI.from(cur.extra_info.amount || 0)
-              .div(10 ** Number(cur.extra_info.decimal))
-              .toNumber()
+            Number(cur.extra_info.amount || 0) /
+              10 ** Number(cur.extra_info.decimal)
           );
         }, 0);
       break;
   }
 
-  return { amount: formatNumber(Math.abs(value), 2, 8), symbol: symbol };
+  return { amount: value, symbol: symbol };
 };
 
 export const isIncomeTx = (

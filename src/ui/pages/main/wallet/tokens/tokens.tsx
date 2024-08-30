@@ -4,6 +4,7 @@ import { BI } from "@ckb-lumos/lumos";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import ShortBalance from "@/ui/components/ShortBalance";
 
 export default function Tokens({ tokens }: { tokens: any[] }) {
   const navigate = useNavigate();
@@ -20,7 +21,6 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
             !!token.amount && !!token.decimal
               ? Number(token.amount) / 10 ** Number(token.decimal)
               : 0;
-          const amountAnalyze = analyzeSmallNumber(tokenAmount, 2);
           return (
             <div
               className="flex justify-between items-center px-4 py-3 border-b border-b-grey-300 group hover:bg-grey-300 cursor-pointer transition-all"
@@ -46,21 +46,7 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
                 </div>
               </div>
               <div className="text-sm leading-5 font-medium">
-                <span>
-                  {Number(amountAnalyze.first) > 1
-                    ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
-                        !!amountAnalyze.last ? "." : ""
-                      }`
-                    : amountAnalyze.first}
-                </span>
-                {amountAnalyze.zeroes > 0 && (
-                  <span className="align-sub text-[10px]">
-                    {amountAnalyze.zeroes}
-                  </span>
-                )}
-                {Number(amountAnalyze.last) > 0 && (
-                  <span>{amountAnalyze.last}</span>
-                )}
+                <ShortBalance balance={tokenAmount} zeroDisplay={2} />
               </div>
             </div>
           );

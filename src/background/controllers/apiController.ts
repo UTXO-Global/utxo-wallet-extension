@@ -22,6 +22,7 @@ export interface IApiController {
     | {
         cardinalBalance: number;
         ordinalBalance: number;
+        coinBalances: { [key: string]: any };
       }
     | undefined
   >;
@@ -101,12 +102,14 @@ class ApiController implements IApiController {
       return {
         cardinalBalance: balance - ordinalBalance,
         ordinalBalance,
+        coinBalances: {},
       };
     } else if (isCkbNetwork(networkData.network)) {
       const balances = await balanceOf(networkData.slug, address);
       return {
         cardinalBalance: balances.balance.toNumber(),
         ordinalBalance: balances.balance_occupied.toNumber(),
+        coinBalances: balances.udtBalances,
       };
     }
   }

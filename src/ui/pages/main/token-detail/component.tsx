@@ -22,6 +22,7 @@ import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import { shortAddress } from "@/shared/utils/transactions";
 import { BI } from "@ckb-lumos/lumos";
+import ShortBalance from "@/ui/components/ShortBalance";
 
 const TokenDetail = () => {
   const { type, typeHash } = useParams();
@@ -100,10 +101,6 @@ const TokenDetail = () => {
     return Number(currentToken.amount) / 10 ** Number(currentToken.decimal);
   }, [ckbBalance, currentToken]);
 
-  const amountAnalyze = useMemo(() => {
-    return analyzeSmallNumber(tokenBalence, 5);
-  }, [tokenBalence]);
-
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
       ? [
@@ -148,7 +145,11 @@ const TokenDetail = () => {
       action: "click",
       label,
     });
-    navigate(path);
+    navigate(path, {
+      state: {
+        token: !isCKBToken ? tokenInfo : undefined,
+      },
+    });
   };
 
   useEffect(() => {
@@ -168,9 +169,8 @@ const TokenDetail = () => {
         />
         <div className="flex flex-col gap-1">
           <div
-            className={cn("text-primary flex-col flex gap-1 items-center", {
-              "flex-col":
-                !!tokenInfo.attributes.full_name &&
+            className={cn("text-primary flex gap-1 items-center", {
+              "flex-col !items-start":
                 tokenInfo.attributes.full_name.length > 5,
             })}
           >
@@ -185,11 +185,11 @@ const TokenDetail = () => {
                   ({tokenInfo.attributes.full_name})
                 </span>
               )}
-              {tokenInfo.attributes.full_name?.length <= 5 && (
-                <div className="h-[21px] w-[1px] bg-grey-200" />
-              )}
             </div>
-            <div className="flex gap-1 items-center">
+            {tokenInfo.attributes.full_name?.length <= 5 && (
+              <div className="h-[21px] w-[1px] bg-grey-200" />
+            )}
+            <div className="flex gap-1 items-start">
               <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
                 {tokenInfo.attributes.udt_type === "xudt" ? "xUDT" : "sUDT"}
               </label>
@@ -233,23 +233,7 @@ const TokenDetail = () => {
               <label className="text-base">
                 {t("components.token_card.balance")}
               </label>
-              <div>
-                <span className="text-lg">
-                  {Number(amountAnalyze.first) > 1
-                    ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
-                        !!amountAnalyze.last ? "." : ""
-                      }`
-                    : amountAnalyze.first}
-                </span>
-                {amountAnalyze.zeroes > 0 && (
-                  <span className="align-sub text-xs">
-                    {amountAnalyze.zeroes}
-                  </span>
-                )}
-                {Number(amountAnalyze.last) > 0 && (
-                  <span>{amountAnalyze.last}</span>
-                )}
-              </div>
+              <ShortBalance balance={tokenBalence} zeroDisplay={5} />
             </div>
 
             {isCKBToken && (

@@ -32,7 +32,7 @@ export default function CKBToken() {
   return (
     <div className="px-4 mt-2">
       <div
-        className="py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer border border-grey-300 rounded-lg"
+        className="py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer border border-grey-300"
         onClick={() => navigate("/pages/tokens/ckb/ckb")}
       >
         <div className="flex gap-[10px] items-center">

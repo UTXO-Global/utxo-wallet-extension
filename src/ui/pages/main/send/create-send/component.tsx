@@ -31,8 +31,10 @@ import AddressBookModal from "./address-book-modal";
 import AddressInput from "./address-input";
 import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
-import { formatNumber } from "@/shared/utils";
+import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
+import ShortBalance from "@/ui/components/ShortBalance";
 
 export interface FormType {
   address: string;
@@ -67,6 +69,23 @@ const CreateSend = () => {
   const [isTokenTransaction, setIsTokenTransaction] = useState(false);
   const [token, setToken] = useState<CKBTokenInfo | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const balance = useMemo(() => {
+    if (!currentAccount) return 0;
+    if (!isTokenTransaction) return currentAccount.balance;
+    if (currentAccount.coinBalances[token.attributes.type_hash]) {
+      return currentAccount.coinBalances[token.attributes.type_hash].balance;
+    }
+    return 0;
+  }, [token, isTokenTransaction, currentAccount]);
+
+  const symbol = useMemo(() => {
+    if (token && isTokenTransaction) {
+      return token.attributes.symbol;
+    }
+
+    return currentNetwork.coinSymbol;
+  }, [token, isTokenTransaction, currentNetwork]);
 
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
@@ -216,7 +235,14 @@ const CreateSend = () => {
   return (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="pt-8 pb-3 flex items-center justify-center">
-        <img src={NETWORK_ICON[currentNetwork.slug]} className="w-10 h-10" />
+        <img
+          src={
+            isTokenTransaction
+              ? token?.attributes?.icon_file || TOKEN_FILE_ICON_DEFAULT
+              : NETWORK_ICON[currentNetwork.slug]
+          }
+          className="w-10 h-10"
+        />
       </div>
       <form
         id={formId}
@@ -260,19 +286,21 @@ const CreateSend = () => {
                 <div className="flex justify-between text-base font-medium">
                   <div>{t("wallet_page.available_balance")}:</div>
                   <div className="flex gap-2 items-center">
-                    <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
-                    <span>{currentNetwork.coinSymbol}</span>
+                    <ShortBalance balance={balance} zeroDisplay={5} />
+                    <span>{symbol}</span>
                   </div>
                 </div>
-                <div className="flex justify-between text-base font-medium text-[#787575]">
-                  <div>{t("wallet_page.occupied_balance")}:</div>
-                  <div className="flex gap-2 items-center">
-                    <span>
-                      {formatNumber(currentAccount.ordinalBalance, 2, 8)}
-                    </span>
-                    <span>{currentNetwork.coinSymbol}</span>
+                {!isTokenTransaction && (
+                  <div className="flex justify-between text-base font-medium text-[#787575]">
+                    <div>{t("wallet_page.occupied_balance")}:</div>
+                    <div className="flex gap-2 items-center">
+                      <span>
+                        {formatNumber(currentAccount.ordinalBalance, 2, 8)}
+                      </span>
+                      <span>{symbol}</span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
