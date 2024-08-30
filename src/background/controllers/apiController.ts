@@ -215,7 +215,7 @@ class ApiController implements IApiController {
 
     let apiURL = `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`;
     if (!!type && !!typeHash) {
-      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25`;
+      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${accounts[0].address}`;
     }
 
     const res = await fetchEsplora<CkbTransactionResponse>({

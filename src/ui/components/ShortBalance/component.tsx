@@ -13,7 +13,6 @@ export default function ShortBalance({
 }) {
   const amountAnalyze = useMemo(() => {
     const b = analyzeSmallNumber(balance, zeroDisplay ? zeroDisplay : 2);
-    console.log(balance, b);
     return b;
   }, [balance, zeroDisplay]);
 

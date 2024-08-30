@@ -171,7 +171,7 @@ const TokenDetail = () => {
           <div
             className={cn("text-primary flex gap-1 items-center", {
               "flex-col !items-start":
-                tokenInfo.attributes.full_name.length > 5,
+                tokenInfo.attributes.full_name.length > 10,
             })}
           >
             <div>
@@ -186,7 +186,7 @@ const TokenDetail = () => {
                 </span>
               )}
             </div>
-            {tokenInfo.attributes.full_name?.length <= 5 && (
+            {tokenInfo.attributes.full_name?.length <= 10 && (
               <div className="h-[21px] w-[1px] bg-grey-200" />
             )}
             <div className="flex gap-1 items-start">
@@ -233,7 +233,7 @@ const TokenDetail = () => {
               <label className="text-base">
                 {t("components.token_card.balance")}
               </label>
-              <ShortBalance balance={tokenBalence} zeroDisplay={5} />
+              <ShortBalance balance={tokenBalence} zeroDisplay={18} />
             </div>
 
             {isCKBToken && (
