@@ -49,17 +49,40 @@ export class UtxoGlobalProvider extends EventEmitter {
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(0);
 
-  private _bcm = new BroadcastChannelMessage(channelName);
+  private _bcm: BroadcastChannelMessage;
 
   constructor({ maxListeners = 100 } = {}) {
     super();
     this.setMaxListeners(maxListeners);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.initialize();
-    this._pushEventHandlers = new PushEventHandlers(this);
   }
 
   initialize = async () => {
+    const origin = window.top?.location.origin;
+    const icon =
+      ($('head > link[rel~="icon"]') as HTMLLinkElement)?.href ||
+      ($('head > meta[itemprop="image"]') as HTMLMetaElement)?.content;
+
+    const name =
+      document.title ||
+      ($('head > meta[name="title"]') as HTMLMetaElement)?.content ||
+      origin;
+
+    const sanitizedIcon = DOMPurify.sanitize(icon);
+    const sanitizedName = DOMPurify.sanitize(name);
+    const sanitizedOrigin = DOMPurify.sanitize(origin);
+    if (!this._isValidURL(sanitizedOrigin)) {
+      throw Error(
+        "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
+      );
+    }
+
+    if (!this._bcm) {
+      this._bcm = new BroadcastChannelMessage(channelName);
+    }
+    this._pushEventHandlers = new PushEventHandlers(this);
+
     document.addEventListener(
       "visibilitychange",
       this._requestPromiseCheckVisibility
@@ -67,28 +90,15 @@ export class UtxoGlobalProvider extends EventEmitter {
 
     this._bcm.connect().on("message", this._handleBackgroundMessage);
     domReadyCall(async () => {
-      const origin = window.top?.location.origin;
-      const icon =
-        ($('head > link[rel~="icon"]') as HTMLLinkElement)?.href ||
-        ($('head > meta[itemprop="image"]') as HTMLMetaElement)?.content;
-
-      const name =
-        document.title ||
-        ($('head > meta[name="title"]') as HTMLMetaElement)?.content ||
-        origin;
-
       try {
-        const sanitizedIcon = DOMPurify.sanitize(icon);
-        const sanitizedName = DOMPurify.sanitize(name);
-        const sanitizedOrigin = DOMPurify.sanitize(origin);
-
-        if (this._isValidURL(sanitizedOrigin)) {
-          await this._bcm.request({
-            method: "tabCheckin",
-            params: { sanitizedIcon, sanitizedName, sanitizedOrigin },
-          });
-        }
-
+        await this._bcm.request({
+          method: "tabCheckin",
+          params: {
+            icon: sanitizedIcon,
+            name: sanitizedName,
+            origin: sanitizedOrigin,
+          },
+        });
       } catch (err) {
         console.error(err);
       }
@@ -120,11 +130,11 @@ export class UtxoGlobalProvider extends EventEmitter {
   private _isValidURL = (url: string): boolean => {
     try {
       const newUrl = new URL(url);
-      return newUrl.protocol === 'https:';
+      return ["http:", "https:"].includes(newUrl.protocol);
     } catch (err) {
       return false;
     }
-  }
+  };
 
   private _requestPromiseCheckVisibility = () => {
     if (document.visibilityState === "visible") {
@@ -143,7 +153,13 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.emit(event, data);
   };
 
-  _request = async (data) => {
+  _request = async (data: any) => {
+    const origin = window.top?.location.origin;
+    if (!this._isValidURL(origin)) {
+      throw Error(
+        "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
+      );
+    }
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
     }
