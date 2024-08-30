@@ -200,6 +200,11 @@
       "last_wallet_error": "Вы не можете удалить ваш последний кошелек"
     }
   },
+  "explore": {
+    "feature": "Особенность",
+    "recommended": "Рекомендовано",
+    "partners": "Партнеры"
+  },
   "detailNFT": {
     "type": "Тип",
     "occupied": "Занятый",

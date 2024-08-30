@@ -40,9 +40,10 @@ const CreatePassword = () => {
     }
 
     if (evaluatePassword(password) < 3) {
-      toast.error("Password must be at least 8 characters and include 3 of the following: uppercase letter, lowercase letter, number, special character");
+      toast.error(
+        "Password must be at least 8 characters and include 3 of the following: uppercase letter, lowercase letter, number, special character"
+      );
       return;
-
     }
 
     await updateAppState({ password, isUnlocked: true });

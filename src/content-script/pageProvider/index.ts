@@ -345,3 +345,5 @@ Object.defineProperty(window, "utxoGlobal", {
 });
 
 window.dispatchEvent(new Event("utxoGlobal#initialized"));
+window.dispatchEvent(new Event("utxoGlobal.bitcoinSigner#initialized"));
+window.dispatchEvent(new Event("utxoGlobal.ckbSigner#initialized"));

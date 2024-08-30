@@ -200,6 +200,11 @@
       "last_wallet_error": "마지막 지갑을 삭제할 수 없습니다"
     }
   },
+  "explore": {
+    "feature": "특징",
+    "recommended": "추천",
+    "partners": "파트너"
+  },
   "detailNFT": {
     "type": "유형",
     "occupied": "가득차 있는",

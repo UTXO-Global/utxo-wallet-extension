@@ -230,7 +230,8 @@
   },
   "explore": {
     "feature": "功能",
-    "recommended": "推荐"
+    "recommended": "推荐",
+    "partners": "合作伙伴的优惠"
   },
   "provider": {
     "sign_tx": "签署交易",
