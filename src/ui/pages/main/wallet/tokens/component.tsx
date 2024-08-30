@@ -59,7 +59,7 @@ export default function TokenTabs({ active }: { active?: string }) {
         <div className="bg-grey-400 rounded-full flex gap-0">
           <div
             className={cn(
-              "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-200"
+              "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-300"
             )}
           >
             Coins

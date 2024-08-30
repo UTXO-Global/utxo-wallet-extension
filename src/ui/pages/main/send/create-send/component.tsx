@@ -32,6 +32,7 @@ import AddressInput from "./address-input";
 import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 
 export interface FormType {
   address: string;
@@ -63,6 +64,8 @@ const CreateSend = () => {
   );
   const [inscriptionTransaction, setInscriptionTransaction] =
     useState<boolean>(false);
+  const [isTokenTransaction, setIsTokenTransaction] = useState(false);
+  const [token, setToken] = useState<CKBTokenInfo | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
   const isValidForm = useMemo(() => {
@@ -152,8 +155,8 @@ const CreateSend = () => {
         },
       });
     } catch (e) {
-      console.error(e);
-      toast.error(t("send.create_send.default_error"));
+      console.error(e.message.includes(address));
+      toast.error(t("send.create_send.address_invalid"));
     } finally {
       setLoading(false);
     }
@@ -176,6 +179,11 @@ const CreateSend = () => {
     if (location.state && location.state.inscription_id) {
       setInscription(location.state);
       setInscriptionTransaction(true);
+    }
+
+    if (location.state && location.state.token) {
+      setIsTokenTransaction(true);
+      setToken(token);
     }
   }, [location.state, setFormData, currentAccount?.balance]);
 
@@ -248,22 +256,22 @@ const CreateSend = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex justify-between text-base font-medium">
-                <div>{t("wallet_page.available_balance")}:</div>
-                <div className="flex gap-2 items-center">
-                  <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
-                  <span className="text-[#787575]">
-                    {currentNetwork.coinSymbol}
-                  </span>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between text-base font-medium">
+                  <div>{t("wallet_page.available_balance")}:</div>
+                  <div className="flex gap-2 items-center">
+                    <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
+                    <span>{currentNetwork.coinSymbol}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between text-base font-medium text-[#787575]">
-                <div>{t("wallet_page.occupied_balance")}:</div>
-                <div className="flex gap-2 items-center">
-                  <span>
-                    {formatNumber(currentAccount.ordinalBalance, 2, 8)}
-                  </span>
-                  <span>{currentNetwork.coinSymbol}</span>
+                <div className="flex justify-between text-base font-medium text-[#787575]">
+                  <div>{t("wallet_page.occupied_balance")}:</div>
+                  <div className="flex gap-2 items-center">
+                    <span>
+                      {formatNumber(currentAccount.ordinalBalance, 2, 8)}
+                    </span>
+                    <span>{currentNetwork.coinSymbol}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -316,9 +324,12 @@ const CreateSend = () => {
       ) : (
         <button
           type="submit"
-          className={
-            "btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100"
-          }
+          className={cn(
+            "btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100",
+            {
+              "hover:bg-none hover:border-transparent": !isValidForm,
+            }
+          )}
           form={formId}
           disabled={!isValidForm}
         >

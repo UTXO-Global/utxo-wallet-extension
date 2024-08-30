@@ -125,6 +125,7 @@
     "create_send": {
       "minimum_amount_error": "최소 금액은 0.0001 BEL입니다",
       "address_error": "수신자의 주소 입력",
+      "address_invalid": "주소가 잘못되었습니다",
       "not_enough_money_error": "계정에 잔액이 부족합니다",
       "not_enough_fee_error": "수수료를 늘려주세요",
       "fee_is_text_error": "수수료는 정수여야 합니다",

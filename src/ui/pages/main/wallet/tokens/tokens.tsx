@@ -23,7 +23,7 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
           const amountAnalyze = analyzeSmallNumber(tokenAmount, 2);
           return (
             <div
-              className="flex justify-between items-center px-4 py-3 border-b border-b-grey-300 hover:bg-grey-300 cursor-pointer transition-all"
+              className="flex justify-between items-center px-4 py-3 border-b border-b-grey-300 group hover:bg-grey-300 cursor-pointer transition-all"
               key={`token-${token.symbol}=${index}`}
               onClick={() =>
                 navigate(`/pages/tokens/${token.udt_type}/${token.type_hash}`)
@@ -32,15 +32,15 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
               <div className="flex gap-[10px]">
                 <img
                   src={token.udt_icon_file || TOKEN_FILE_ICON_DEFAULT}
-                  className="w-6 h-6 rounded-full"
+                  className="w-9 h-9 rounded-full"
                 />
                 <div className="flex flex-col gap-1">
                   <div className="font-medium text-base leading-6">
                     {!!token.symbol ? token.symbol : "Unnamed"}
                   </div>
                   <div className="flex gap-1">
-                    <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575]">
-                      {token.udt_type}
+                    <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] group-hover:bg-grey-200">
+                      {token.udt_type === "sudt" ? "sUDT" : "xUDT"}
                     </label>
                   </div>
                 </div>

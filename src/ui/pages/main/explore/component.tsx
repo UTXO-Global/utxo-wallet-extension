@@ -98,7 +98,7 @@ const Explorer = () => {
                           alt={z.title}
                           className="object-cover"
                         />
-                        <div className="px-4 py-[14px] bg-[#F5F5F5] text-[14px] leading-[18px] text-primary rounded-b-[8px]">
+                        <div className="px-4 py-[14px] bg-grey-300 hover:bg-grey-200 text-[14px] leading-[18px] text-primary rounded-b-[8px]">
                           {z.title}
                         </div>
                       </div>
@@ -119,13 +119,15 @@ const Explorer = () => {
                   href={z.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300"
+                  className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300 group hover:bg-grey-300"
                 >
-                  <img
-                    src={z.image}
-                    alt={z.title}
-                    className="w-12 h-12 rounded-xl object-cover"
-                  />
+                  <div className="w-12 h-12 flex items-center justify-center bg-grey-300 group-hover:bg-grey-200 rounded-xl">
+                    <img
+                      src={z.image}
+                      alt={z.title}
+                      className="w-[33px] h-[33px] object-cover rounded-full"
+                    />
+                  </div>
                   <div className="flex-1">
                     <p className="text-sm leading-5 font-medium text-primary">
                       {z.title}

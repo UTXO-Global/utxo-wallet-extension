@@ -160,15 +160,21 @@ const TokenDetail = () => {
   if (!currentAccount || !tokenInfo) return <Loading color="#ODODOD" />;
 
   return (
-    <div className="relative w-full h-full top-0 px-4 mt-4">
-      <div className="w-full flex-col justify-start relative top-0 overflow-auto">
-        <div className="flex gap-4 items-center">
-          <img
-            src={tokenInfo.attributes.icon_file || TOKEN_FILE_ICON_DEFAULT}
-            className="w-16 h-16"
-          />
-          <div className="flex flex-col gap-1">
-            <div className="text-primary flex gap-1 items-center">
+    <>
+      <div className="flex gap-4 items-center bg-grey-400 p-4 pb-0 w-full">
+        <img
+          src={tokenInfo.attributes.icon_file || TOKEN_FILE_ICON_DEFAULT}
+          className="w-16 h-16"
+        />
+        <div className="flex flex-col gap-1">
+          <div
+            className={cn("text-primary flex-col flex gap-1 items-center", {
+              "flex-col":
+                !!tokenInfo.attributes.full_name &&
+                tokenInfo.attributes.full_name.length > 5,
+            })}
+          >
+            <div>
               <strong className="font-bold text-xl leading-6">
                 {!!tokenInfo.attributes.symbol
                   ? tokenInfo.attributes.symbol
@@ -179,121 +185,130 @@ const TokenDetail = () => {
                   ({tokenInfo.attributes.full_name})
                 </span>
               )}
-              <div className="h-[21px] w-[1px] bg-grey-200" />
-              <div className="flex gap-1 items-center">
-                <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
-                  {tokenInfo.attributes.udt_type}
-                </label>
-                {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
-                  <label
-                    className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5"
-                    style={{
-                      background:
-                        "linear-gradient(120.76deg, #FFD37B 31.34%, #77F8BA 92.54%)",
-                    }}
-                  >
-                    RGB++
-                  </label>
-                )}
-              </div>
-            </div>
-            {typeHash !== "ckb" && (
-              <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
-                <p>{shortAddress(tokenInfo.attributes.type_hash, 10)}</p>
-                <IcnCopy
-                  className="w-4 h-4 right-2 transition-colors stroke-[#787575] hover:stroke-primary cursor-pointer"
-                  onClick={() => {
-                    navigator.clipboard
-                      .writeText(tokenInfo.attributes.type_hash)
-                      .then(() => {
-                        toast.success("Type hash copied");
-                      })
-                      .catch((err) => {
-                        toast.error("Failed to copy");
-                      });
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col gap-1 mt-4">
-          <div className="font-medium leading-6 flex gap-4 justify-between items-center">
-            <label className="text-base">
-              {t("wallet_page.available_balance")}
-            </label>
-            <div>
-              <span className="text-lg">
-                {Number(amountAnalyze.first) > 1
-                  ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
-                      !!amountAnalyze.last ? "." : ""
-                    }`
-                  : amountAnalyze.first}
-              </span>
-              {amountAnalyze.zeroes > 0 && (
-                <span className="align-sub text-xs">
-                  {amountAnalyze.zeroes}
-                </span>
-              )}
-              {Number(amountAnalyze.last) > 0 && (
-                <span>{amountAnalyze.last}</span>
+              {tokenInfo.attributes.full_name?.length <= 5 && (
+                <div className="h-[21px] w-[1px] bg-grey-200" />
               )}
             </div>
-          </div>
-
-          {isCKBToken && (
-            <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
-              <label className="text-base">
-                {t("wallet_page.occupied_balance")}
+            <div className="flex gap-1 items-center">
+              <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
+                {tokenInfo.attributes.udt_type === "xudt" ? "xUDT" : "sUDT"}
               </label>
-              <span className="text-lg">
-                {formatNumber(ckbOccupiedBalance, 2, 3)}
-              </span>
+              {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
+                <label
+                  className="inline-block bg-grey-300 px-2 rounded text-[10px] text-black leading-5"
+                  style={{
+                    background:
+                      "linear-gradient(120.76deg, #FFD37B 31.34%, #77F8BA 92.54%)",
+                  }}
+                >
+                  RGB++
+                </label>
+              )}
+            </div>
+          </div>
+          {typeHash !== "ckb" && (
+            <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
+              <p>{shortAddress(tokenInfo.attributes.type_hash, 5)}</p>
+              <IcnCopy
+                className="w-4 h-4 right-2 transition-colors stroke-[#787575] hover:stroke-primary cursor-pointer"
+                onClick={() => {
+                  navigator.clipboard
+                    .writeText(tokenInfo.attributes.type_hash)
+                    .then(() => {
+                      toast.success("Type hash copied");
+                    })
+                    .catch((err) => {
+                      toast.error("Failed to copy");
+                    });
+                }}
+              />
             </div>
           )}
         </div>
-
-        <div
-          className={cn(`grid gap-2 mt-4`, {
-            "grid-cols-2": panelNavs.length <= 2,
-            "grid-cols-4": panelNavs.length > 2,
-          })}
-        >
-          {panelNavs.map((nav, i) => (
-            <div
-              key={`panel-account-nav-${i}`}
-              className={cn(
-                `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
-                {
-                  "!cursor-not-allowed hover:!bg-grey-300":
-                    tokenBalence <= 0 && nav.navPath === "/pages/create-send",
-                }
-              )}
-              onClick={() => {
-                if (nav.isPopup) {
-                  setIsShowReceive(true);
-                } else {
-                  if (tokenBalence <= 0 && nav.navPath === "/pages/create-send")
-                    return;
-                  _navigate(nav.navPath, nav.navName, nav.navLabel);
-                }
-              }}
-            >
-              <p className="text-base font-medium">{nav.title}</p>
+      </div>
+      <div className="relative w-full h-full top-0 px-4">
+        <div className="w-full flex-col justify-start relative top-0 overflow-auto">
+          <div className="flex flex-col gap-1 mt-4">
+            <div className="font-medium leading-6 flex gap-4 justify-between items-center">
+              <label className="text-base">
+                {t("components.token_card.balance")}
+              </label>
+              <div>
+                <span className="text-lg">
+                  {Number(amountAnalyze.first) > 1
+                    ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}${
+                        !!amountAnalyze.last ? "." : ""
+                      }`
+                    : amountAnalyze.first}
+                </span>
+                {amountAnalyze.zeroes > 0 && (
+                  <span className="align-sub text-xs">
+                    {amountAnalyze.zeroes}
+                  </span>
+                )}
+                {Number(amountAnalyze.last) > 0 && (
+                  <span>{amountAnalyze.last}</span>
+                )}
+              </div>
             </div>
-          ))}
+
+            {isCKBToken && (
+              <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
+                <label className="text-base">
+                  {t("wallet_page.occupied_balance")}
+                </label>
+                <span className="text-lg">
+                  {formatNumber(ckbOccupiedBalance, 2, 3)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div
+            className={cn(`grid gap-2 mt-4`, {
+              "grid-cols-2": panelNavs.length <= 2,
+              "grid-cols-4": panelNavs.length > 2,
+            })}
+          >
+            {panelNavs.map((nav, i) => (
+              <div
+                key={`panel-account-nav-${i}`}
+                className={cn(
+                  `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
+                  {
+                    "!cursor-not-allowed hover:!bg-grey-300":
+                      tokenBalence <= 0 && nav.navPath === "/pages/create-send",
+                  }
+                )}
+                onClick={() => {
+                  if (nav.isPopup) {
+                    setIsShowReceive(true);
+                  } else {
+                    if (
+                      tokenBalence <= 0 &&
+                      nav.navPath === "/pages/create-send"
+                    )
+                      return;
+                    _navigate(nav.navPath, nav.navName, nav.navLabel);
+                  }
+                }}
+              >
+                <p className="text-base font-medium">{nav.title}</p>
+              </div>
+            ))}
+          </div>
+          <TransactionList
+            className="mt-4 mb-4 !px-0 !z-5"
+            type={type !== "ckb" ? type : undefined}
+            typeHash={typeHash !== "ckb" ? typeHash : undefined}
+          />
         </div>
-        <TransactionList
-          className="mt-4 mb-4 !px-0 !z-5"
-          type={type !== "ckb" ? type : undefined}
-          typeHash={typeHash !== "ckb" ? typeHash : undefined}
+        <ReceiveAddress
+          active={isShowReceive}
+          onClose={() => setIsShowReceive(false)}
         />
       </div>
-      <ReceiveAddress
-        active={isShowReceive}
-        onClose={() => setIsShowReceive(false)}
-      />
-    </div>
+    </>
   );
 };
 

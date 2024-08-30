@@ -50,9 +50,6 @@ export function useCreateTxCallback() {
           const nonOrdUtxo = utxos.filter(
             (utxo) => !outpointOrds.includes(`${utxo.txid}:${utxo.vout}`)
           );
-          console.log(nonOrdUtxo, "nonOrdUtxo");
-          console.log(outpointOrds, "outpointOrds");
-          console.log(utxos, "utxos");
 
           totalUtxos.push(...nonOrdUtxo);
         }

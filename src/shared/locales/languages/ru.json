@@ -125,6 +125,7 @@
     "create_send": {
       "minimum_amount_error": "Минимальная сумма - 0.0001 BTC",
       "address_error": "Введите адрес получателя",
+      "address_invalid": "Неверный адрес",
       "not_enough_money_error": "На вашем счету недостаточно средств",
       "not_enough_fee_error": "Увеличьте сбор",
       "fee_is_text_error": "Сбор должен быть числом",
