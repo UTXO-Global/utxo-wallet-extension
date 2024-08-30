@@ -19,7 +19,6 @@ export default function TokenTabs({ active }: { active?: string }) {
       setTokens([...data]);
     } catch (e) {
       console.error(e);
-    } finally {
     }
   };
 

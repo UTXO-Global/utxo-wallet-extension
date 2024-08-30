@@ -68,7 +68,7 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
     useGrouping: false,
     maximumFractionDigits: 100,
   });
-  let [integerPart, decimalPart] = numberString.split(".");
+  const [integerPart, decimalPart] = numberString.split(".");
   if (Number(integerPart) > 0) {
     return {
       first: `${integerPart}.`,
@@ -77,8 +77,7 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
     };
   }
 
-  decimalPart = decimalPart || "";
-  if (decimalPart.length <= zeroCount) {
+  if (!decimalPart || decimalPart.length <= zeroCount) {
     return {
       first: `${integerPart}.`,
       last: decimalPart,
