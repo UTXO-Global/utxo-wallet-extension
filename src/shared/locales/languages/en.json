@@ -334,7 +334,8 @@
   },
   "explore": {
     "feature": "Feature",
-    "recommended": "Recommended"
+    "recommended": "Recommended",
+    "partners": "Partners"
   },
   "detailNFT": {
     "type": "Type",
