@@ -28,6 +28,7 @@ import {
   CKB_TESTNET,
 } from "@/shared/networks/ckb";
 import { helpers } from "@ckb-lumos/lumos";
+import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 
 class ProviderController {
   connect = async () => {
@@ -411,6 +412,7 @@ class CKBProviderController extends ProviderController {
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
+    const networkConfig = network.network as NetworkConfig;
 
     if (!isCkbNetwork(network.network)) {
       throw new Error("Error when trying to get the current account");
@@ -431,22 +433,39 @@ class CKBProviderController extends ProviderController {
       });
     }
 
-    tx.inputs?.forEach((input: any) => {
-      txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.push({
-          outPoint: {
-            txHash: input.previousOutput.txHash,
-            index: input.previousOutput.index,
-          },
-          data: input.outputData || "0x",
-          cellOutput: {
-            capacity: input.cellOutput.capacity,
-            lock: input.cellOutput.lock,
-            type: input.cellOutput.type,
-          },
-        })
-      );
-    });
+    await Promise.all(
+      tx.inputs?.map(async (input: any) => {
+        let cellOutput = input.cellOutput;
+        if (!cellOutput) {
+          const txInput = await callCKBRPC(
+            networkConfig.rpc_url,
+            "get_transaction",
+            [input.previous_output.tx_hash]
+          );
+          cellOutput =
+            txInput.transaction.outputs[Number(input.previous_output.index)];
+        }
+
+        txSkeleton = txSkeleton.update("inputs", (inputs) =>
+          inputs.push({
+            outPoint: {
+              txHash: input.previousOutput.txHash,
+              index: input.previousOutput.index,
+            },
+            data: input.outputData || "0x",
+            cellOutput: {
+              capacity: cellOutput.capacity,
+              lock: {
+                codeHash: cellOutput.lock?.code_hash,
+                hashType: cellOutput.lock?.hash_type,
+                args: cellOutput.lock?.args,
+              },
+              type: cellOutput.type,
+            },
+          })
+        );
+      })
+    );
 
     const outputsData = tx.outputsData || [];
     tx.outputs?.forEach((output: any, index: number) => {
