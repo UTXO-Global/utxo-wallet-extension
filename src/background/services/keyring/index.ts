@@ -11,7 +11,7 @@ import {
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
 import { getScriptForAddress } from "@/shared/utils/transactions";
-import { blockchain } from "@ckb-lumos/base";
+import { Script, blockchain } from "@ckb-lumos/base";
 import { ScriptValue } from "@ckb-lumos/base/lib/values";
 import { bytes } from "@ckb-lumos/codec";
 import { BI, Cell, commons, helpers, WitnessArgs } from "@ckb-lumos/lumos";
@@ -27,11 +27,15 @@ import type {
   PublicKeyUserToSignInput,
   SendBtcCoin,
   SendCkbCoin,
+  SendCkbToken,
   SendCoin,
   SendOrd,
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
+import { ccc } from "@ckb-ccc/core";
+import { Uint128 } from "@ckb-lumos/codec/lib/number";
+import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -354,6 +358,95 @@ class KeyringService {
     } else {
       throw Error("Invalid network");
     }
+  }
+
+  async sendToken(data: SendCkbToken): Promise<string> {
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address)
+      throw new Error("Error when trying to get the current account");
+
+    const ckbAccount = account.accounts[0];
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (!isCkbNetwork(network.network)) {
+      throw new Error("Network invalid");
+    }
+
+    const indexer = network.network.indexer;
+    const cellProvider: TransactionSkeletonType["cellProvider"] = {
+      collector: (query) =>
+        indexer.collector({ type: "empty", data: "0x", ...query }),
+    };
+
+    const fromScript = helpers.parseAddress(ckbAccount.address, {
+      config: AGGRON4,
+    });
+
+    const toScript = helpers.parseAddress(data.to, {
+      config: AGGRON4,
+    });
+
+    const xUdtType = {
+      codeHash:
+        "0x25c29dc317811a6f6f3985a7a9ebc4838bd388d19d0feeecf0bcd60f6c0975bb",
+      hashType: "type",
+      args: data.token.attributes.type_script.args,
+    } as Script;
+
+    const xudtCollector = indexer.collector({
+      type: xUdtType,
+      lock: fromScript,
+    });
+
+    let transferCell: Cell | undefined;
+    for await (const cell of xudtCollector.collect()) {
+      transferCell = cell;
+      break;
+    }
+
+    if (!transferCell) {
+      throw new Error(
+        "Owner do not have an xUDT cell yet, please call mint first"
+      );
+    }
+
+    let txSkeleton = helpers.TransactionSkeleton({ cellProvider });
+
+    // UDTs
+    txSkeleton = addCellDep(txSkeleton, {
+      outPoint: {
+        txHash:
+          "0xbf6fb538763efec2a70a6a3dcb7242787087e1030c4e7d86585bc63a9d337f5f",
+        index: "0x0",
+      },
+      depType: "code",
+    });
+
+    txSkeleton = await commons.common.setupInputCell(txSkeleton, transferCell);
+    txSkeleton = txSkeleton.update("outputs", (outputs) =>
+      outputs.update(0, (cell) => ({
+        ...cell!,
+        cellOutput: { ...cell!.cellOutput, lock: toScript },
+      }))
+    );
+    txSkeleton = await commons.common.payFeeByFeeRate(
+      txSkeleton,
+      [ckbAccount.address],
+      data.feeRate,
+      undefined,
+      {
+        config: AGGRON4,
+      }
+    );
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
+      config: AGGRON4,
+    });
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
+    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
+
+    return JSON.stringify(tx);
   }
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {

@@ -411,8 +411,6 @@ const TransactionList = ({
                         amount = getTransactionValue(t, t.address, 5);
                       }
 
-                      console.log(amount, amount.toString().replace(/,/g, ""));
-
                       return (
                         <Link
                           className={s.transaction}

@@ -31,7 +31,7 @@ import AddressBookModal from "./address-book-modal";
 import AddressInput from "./address-input";
 import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
-import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
+import { formatNumber } from "@/shared/utils";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import ShortBalance from "@/ui/components/ShortBalance";
@@ -73,8 +73,8 @@ const CreateSend = () => {
   const balance = useMemo(() => {
     if (!currentAccount) return 0;
     if (!isTokenTransaction) return currentAccount.balance;
-    if (currentAccount.coinBalances[token.attributes.type_hash]) {
-      return currentAccount.coinBalances[token.attributes.type_hash].balance;
+    if (token && currentAccount.coinBalances[token.attributes.type_hash]) {
+      return currentAccount.coinBalances[token.attributes.type_hash];
     }
     return 0;
   }, [token, isTokenTransaction, currentAccount]);
@@ -85,7 +85,7 @@ const CreateSend = () => {
     }
 
     return currentNetwork.coinSymbol;
-  }, [token, isTokenTransaction, currentNetwork]);
+  }, [token, isTokenTransaction, currentNetwork, currentAccount]);
 
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
@@ -143,7 +143,8 @@ const CreateSend = () => {
             address,
             Number((Number(amount) * 10 ** 8).toFixed(0)),
             feeRate,
-            includeFeeInAmount
+            includeFeeInAmount,
+            token
           )
         : await createOrdTx(address, feeRate, inscription);
 
@@ -174,8 +175,12 @@ const CreateSend = () => {
         },
       });
     } catch (e) {
-      console.error(e.message.includes(address));
-      toast.error(t("send.create_send.address_invalid"));
+      console.error(e);
+      if (e.message.includes(address)) {
+        toast.error(t("send.create_send.address_invalid"));
+      } else {
+        toast.error(e.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -202,7 +207,8 @@ const CreateSend = () => {
 
     if (location.state && location.state.token) {
       setIsTokenTransaction(true);
-      setToken(token);
+      setIncludeFeeLocked(true);
+      setToken(location.state.token);
     }
   }, [location.state, setFormData, currentAccount?.balance]);
 
@@ -224,12 +230,13 @@ const CreateSend = () => {
 
   const onMaxClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
+    setIncludeFeeLocked(true);
+    const isIncludeFee = !isTokenTransaction;
     setFormData((prev) => ({
       ...prev,
-      amount: currentAccount?.balance.toString(),
-      includeFeeInAmount: true,
+      amount: balance.toString(),
+      includeFeeInAmount: isIncludeFee,
     }));
-    setIncludeFeeLocked(true);
   };
 
   return (
@@ -286,7 +293,8 @@ const CreateSend = () => {
                 <div className="flex justify-between text-base font-medium">
                   <div>{t("wallet_page.available_balance")}:</div>
                   <div className="flex gap-2 items-center">
-                    <ShortBalance balance={balance} zeroDisplay={5} />
+                    <ShortBalance balance={balance} zeroDisplay={2} />
+
                     <span>{symbol}</span>
                   </div>
                 </div>

@@ -15,6 +15,7 @@ import {
   useGetCurrentNetwork,
   useWalletState,
 } from "../states/walletState";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -28,12 +29,84 @@ export function useCreateTxCallback() {
   }));
   const { network } = useGetCurrentNetwork();
 
+  const ckbSendNativeCoin = async (
+    toAddress: Hex,
+    toAmount: number,
+    feeRate: number,
+    receiverToPayFee = false
+  ) => {
+    // Send CKB tx
+    // CKB has only one address type - no need to use loop
+    const fromAddress = currentAccount.accounts[0].address;
+    const cells = await apiController.getCells(fromAddress);
+    const safeBalance = (cells ?? []).reduce((pre, cur) => {
+      return cur.cellOutput.type ? pre : pre.add(cur.cellOutput.capacity);
+    }, BI.from(0));
+    // additional 0.001 ckb for tx fee
+    // the tx fee could calculated by tx size
+    // TODO: this is just a simple example
+    const fixedFee = 100000;
+    const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount;
+    const neededCapacity = BI.from(_toAmount).add(fixedFee);
+
+    if (safeBalance.lt(neededCapacity)) {
+      throw new Error(
+        `${t("hooks.transaction.insufficient_balance_0")} (${tidoshisToAmount(
+          safeBalance.toNumber()
+        )} ${t("hooks.transaction.insufficient_balance_1")} ${tidoshisToAmount(
+          _toAmount
+        )} ${t("hooks.transaction.insufficient_balance_2")}`
+      );
+    } else if (BI.from(_toAmount).lt(BI.from("6100000000"))) {
+      toast.error("Must be at least 61 CKB");
+      throw new Error(
+        `every cell's capacity must be at least 61 CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
+      );
+    }
+
+    const tx = await keyringController.sendCoin({
+      to: toAddress,
+      amount: _toAmount,
+      cells,
+      receiverToPayFee,
+      feeRate,
+    });
+
+    return {
+      rawtx: tx,
+      fee: fixedFee,
+      fromAddresses: [fromAddress],
+    };
+  };
+
+  const ckbSendToken = async (
+    toAddress: Hex,
+    toAmount: number,
+    token: CKBTokenInfo,
+    feeRate: number
+  ) => {
+    const fromAddress = currentAccount.accounts[0].address;
+    const tx = await keyringController.sendToken({
+      to: toAddress,
+      amount: toAmount,
+      feeRate,
+      token,
+      receiverToPayFee: false,
+    });
+    return {
+      rawtx: tx,
+      fee: "",
+      fromAddresses: [fromAddress],
+    };
+  };
+
   return useCallback(
     async (
       toAddress: Hex,
       toAmount: number,
       feeRate: number,
-      receiverToPayFee = false
+      receiverToPayFee = false,
+      token?: CKBTokenInfo
     ) => {
       if (selectedWallet === undefined || selectedAccount === undefined)
         throw new Error("Failed to get current wallet or account");
@@ -92,49 +165,14 @@ export function useCreateTxCallback() {
           }),
         };
       } else if (isCkbNetwork(network)) {
-        // Send CKB tx
-        // CKB has only one address type - no need to use loop
-        const fromAddress = currentAccount.accounts[0].address;
-        const cells = await apiController.getCells(fromAddress);
-        const safeBalance = (cells ?? []).reduce((pre, cur) => {
-          return cur.cellOutput.type ? pre : pre.add(cur.cellOutput.capacity);
-        }, BI.from(0));
-        // additional 0.001 ckb for tx fee
-        // the tx fee could calculated by tx size
-        // TODO: this is just a simple example
-        const fixedFee = 100000;
-        const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount;
-        const neededCapacity = BI.from(_toAmount).add(fixedFee);
-
-        if (safeBalance.lt(neededCapacity)) {
-          throw new Error(
-            `${t(
-              "hooks.transaction.insufficient_balance_0"
-            )} (${tidoshisToAmount(safeBalance.toNumber())} ${t(
-              "hooks.transaction.insufficient_balance_1"
-            )} ${tidoshisToAmount(_toAmount)} ${t(
-              "hooks.transaction.insufficient_balance_2"
-            )}`
-          );
-        } else if (BI.from(_toAmount).lt(BI.from("6100000000"))) {
-          toast.error("Must be at least 61 CKB");
-          throw new Error(
-            `every cell's capacity must be at least 61 CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
-          );
-        }
-
-        const tx = await keyringController.sendCoin({
-          to: toAddress,
-          amount: _toAmount,
-          cells,
-          receiverToPayFee,
-          feeRate,
-        });
-        return {
-          rawtx: tx,
-          fee: fixedFee,
-          fromAddresses: [fromAddress],
-        };
+        return token
+          ? await ckbSendToken(toAddress, toAmount, token, feeRate)
+          : await ckbSendNativeCoin(
+              toAddress,
+              toAmount,
+              feeRate,
+              receiverToPayFee
+            );
       } else {
         toast.error("Invalid network");
       }

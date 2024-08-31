@@ -171,7 +171,7 @@ const TokenDetail = () => {
           <div
             className={cn("text-primary flex gap-1 items-center", {
               "flex-col !items-start":
-                tokenInfo.attributes.full_name.length > 10,
+                tokenInfo.attributes.full_name?.length > 10,
             })}
           >
             <div>
@@ -186,27 +186,31 @@ const TokenDetail = () => {
                 </span>
               )}
             </div>
-            {tokenInfo.attributes.full_name?.length <= 10 && (
-              <div className="h-[21px] w-[1px] bg-grey-200" />
+            {!isCKBToken && (
+              <>
+                {tokenInfo.attributes.full_name?.length <= 10 && (
+                  <div className="h-[21px] w-[1px] bg-grey-200" />
+                )}
+                <div className="flex gap-1 items-start">
+                  <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
+                    {tokenInfo.attributes.udt_type === "xudt" ? "xUDT" : "sUDT"}
+                  </label>
+                  {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
+                    <label
+                      className="inline-block bg-grey-300 px-2 rounded text-[10px] text-black leading-5"
+                      style={{
+                        background:
+                          "linear-gradient(120.76deg, #FFD37B 31.34%, #77F8BA 92.54%)",
+                      }}
+                    >
+                      RGB++
+                    </label>
+                  )}
+                </div>
+              </>
             )}
-            <div className="flex gap-1 items-start">
-              <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
-                {tokenInfo.attributes.udt_type === "xudt" ? "xUDT" : "sUDT"}
-              </label>
-              {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
-                <label
-                  className="inline-block bg-grey-300 px-2 rounded text-[10px] text-black leading-5"
-                  style={{
-                    background:
-                      "linear-gradient(120.76deg, #FFD37B 31.34%, #77F8BA 92.54%)",
-                  }}
-                >
-                  RGB++
-                </label>
-              )}
-            </div>
           </div>
-          {typeHash !== "ckb" && (
+          {!isCKBToken && (
             <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
               <p>{shortAddress(tokenInfo.attributes.type_hash, 5)}</p>
               <IcnCopy
