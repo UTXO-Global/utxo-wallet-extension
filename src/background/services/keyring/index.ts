@@ -138,6 +138,7 @@ class KeyringService {
     const txSkeleton = commons.common.prepareSigningEntries(params.tx, {
       config: isTestnet ? AGGRON4 : predefined.LINA,
     });
+
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const Sig = keyring.signRecoverable(params.hdPath, message);
