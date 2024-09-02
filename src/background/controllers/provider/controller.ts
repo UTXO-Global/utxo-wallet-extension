@@ -433,17 +433,28 @@ class CKBProviderController extends ProviderController {
       });
     }
 
+    if (!tx.inputs) {
+      throw new Error("Error when trying to get inputs");
+    }
+
     await Promise.all(
-      tx.inputs?.map(async (input: any) => {
-        let cellOutput = input.cellOutput;
+      tx.inputs.map(async (input: any) => {
+        if (!input.previousOutput) {
+          throw new Error("Error when trying to get the previous output");
+        }
+
+        const txInput = await callCKBRPC(
+          networkConfig.rpc_url,
+          "get_transaction",
+          [input.previousOutput.txHash]
+        );
+        const cellOutput =
+          txInput?.transaction?.outputs[Number(input.previousOutput.index)];
+
         if (!cellOutput) {
-          const txInput = await callCKBRPC(
-            networkConfig.rpc_url,
-            "get_transaction",
-            [input.previous_output.tx_hash]
+          throw new Error(
+            `Error when trying to get the cell output ${input.previousOutput.txHash}`
           );
-          cellOutput =
-            txInput.transaction.outputs[Number(input.previous_output.index)];
         }
 
         txSkeleton = txSkeleton.update("inputs", (inputs) =>
@@ -452,7 +463,7 @@ class CKBProviderController extends ProviderController {
               txHash: input.previousOutput.txHash,
               index: input.previousOutput.index,
             },
-            data: input.outputData || "0x",
+            data: input.outputData ? input.outputData : "0x",
             cellOutput: {
               capacity: cellOutput.capacity,
               lock: {
