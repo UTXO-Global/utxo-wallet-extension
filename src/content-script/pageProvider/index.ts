@@ -2,7 +2,6 @@ import { ethErrors, serializeError } from "eth-rpc-errors";
 import { EventEmitter } from "events";
 import { ccc } from "@ckb-ccc/core";
 import DOMPurify from "dompurify";
-
 import BroadcastChannelMessage from "@/shared/utils/message/broadcastChannelMessage";
 
 import type {
@@ -99,8 +98,8 @@ export class UtxoGlobalProvider extends EventEmitter {
             origin: sanitizedOrigin,
           },
         });
-      } catch (err) {
-        console.error(err);
+      } catch (e) {
+        console.log(e);
       }
     });
 
@@ -155,7 +154,8 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   _request = async (data: any) => {
     const origin = window.top?.location.origin;
-    if (!this._isValidURL(origin)) {
+    const sanitizedOrigin = DOMPurify.sanitize(origin);
+    if (!this._isValidURL(sanitizedOrigin)) {
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
       );
