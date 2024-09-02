@@ -436,15 +436,25 @@ class CKBProviderController extends ProviderController {
 
     await Promise.all(
       tx.inputs?.map(async (input: any) => {
+        if (!input.previousOutput) {
+          throw new Error("Error when trying to get the previous output");
+        }
+
         let cellOutput = input.cellOutput;
         if (!cellOutput) {
           const txInput = await callCKBRPC(
             networkConfig.rpc_url,
             "get_transaction",
-            [input.previous_output.tx_hash]
+            [input.previousOutput.txHash]
           );
           cellOutput =
-            txInput.transaction.outputs[Number(input.previous_output.index)];
+            txInput?.transaction?.outputs[Number(input.previous_output.index)];
+        }
+
+        if (!cellOutput) {
+          throw new Error(
+            `Error when trying to get the cell output ${input.previousOutput.txHash}`
+          );
         }
 
         txSkeleton = txSkeleton.update("inputs", (inputs) =>
