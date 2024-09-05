@@ -24,7 +24,7 @@ export interface IKeyringController {
     data: string;
   }): Promise<string>;
   sendCoin(data: SendCoin): Promise<string>;
-  sendToken(data: SendCkbToken): Promise<string>;
+  sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }>;
   sendOrd(data: Omit<SendOrd, "amount">): Promise<string>;
   exportPublicKey(address: string): Promise<string>;
   serializeKeyringById(index: number): Promise<any>;
@@ -110,7 +110,7 @@ class KeyringController implements IKeyringController {
     return await keyringService.sendCoin(data);
   }
 
-  async sendToken(data: SendCkbToken): Promise<string> {
+  async sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }> {
     return await keyringService.sendToken(data);
   }
 

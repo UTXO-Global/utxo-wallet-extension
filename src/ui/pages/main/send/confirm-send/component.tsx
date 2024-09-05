@@ -77,9 +77,13 @@ const ConfirmSend = () => {
     {
       label: t("send.confirm_send.fee"),
       value: `
-        <div style="font-size: 16px">${
-          location.state.feeAmount / 10 ** 8
-        } <span style="color: #787575">(${
+        <div style="font-size: 16px">${(
+          location.state.feeAmount /
+          10 ** 8
+        ).toLocaleString("fullwide", {
+          useGrouping: false,
+          maximumFractionDigits: 8,
+        })} <span style="color: #787575">(${
         location.state.includeFeeInAmount
           ? t("send.confirm_send.included")
           : t("send.confirm_send.not_included")

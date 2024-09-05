@@ -86,7 +86,7 @@ export function useCreateTxCallback() {
     feeRate: number
   ) => {
     const fromAddress = currentAccount.accounts[0].address;
-    const tx = await keyringController.sendToken({
+    const { tx, fee } = await keyringController.sendToken({
       to: toAddress,
       amount: toAmount,
       feeRate,
@@ -95,7 +95,7 @@ export function useCreateTxCallback() {
     });
     return {
       rawtx: tx,
-      fee: "",
+      fee: fee,
       fromAddresses: [fromAddress],
     };
   };
@@ -166,7 +166,7 @@ export function useCreateTxCallback() {
         };
       } else if (isCkbNetwork(network)) {
         return token
-          ? await ckbSendToken(toAddress, toAmount, token, feeRate)
+          ? await ckbSendToken(toAddress, toAmount, token, 3600)
           : await ckbSendNativeCoin(
               toAddress,
               toAmount,

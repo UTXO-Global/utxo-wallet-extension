@@ -87,6 +87,14 @@ const CreateSend = () => {
     return currentNetwork.coinSymbol;
   }, [token, isTokenTransaction, currentNetwork, currentAccount]);
 
+  const decimal = useMemo(() => {
+    if (token && isTokenTransaction) {
+      return Number(token.attributes.decimal);
+    }
+
+    return currentNetwork.decimal || 8;
+  }, [token, isTokenTransaction, currentNetwork, currentAccount]);
+
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
     if (formData.address?.trim().length <= 0) return false;
@@ -141,7 +149,7 @@ const CreateSend = () => {
       const { fee, rawtx, fromAddresses } = !inscriptionTransaction
         ? await createTx(
             address,
-            Number((Number(amount) * 10 ** 8).toFixed(0)),
+            Number((Number(amount) * 10 ** decimal).toFixed(0)),
             feeRate,
             includeFeeInAmount,
             token

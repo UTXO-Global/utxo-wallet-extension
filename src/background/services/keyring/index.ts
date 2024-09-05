@@ -34,7 +34,11 @@ import type {
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
-import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
+import {
+  TransactionSkeletonType,
+  addCellDep,
+  createTransactionFromSkeleton,
+} from "@ckb-lumos/lumos/helpers";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -360,7 +364,7 @@ class KeyringService {
     }
   }
 
-  async sendToken(data: SendCkbToken): Promise<string> {
+  async sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }> {
     const account = storageService.currentAccount;
     if (!account || !account.accounts[0].address)
       throw new Error("Error when trying to get the current account");
@@ -521,10 +525,13 @@ class KeyringService {
       );
     }
 
-    txSkeleton = await commons.common.payFeeByFeeRate(
+    const cccTransaction = ccc.Transaction.fromLumosSkeleton(txSkeleton);
+    const fee = cccTransaction.estimateFee(data.feeRate);
+
+    txSkeleton = await commons.common.payFee(
       txSkeleton,
       [ckbAccount.address],
-      10000,
+      fee,
       undefined,
       {
         config: lumosConfig,
@@ -540,7 +547,7 @@ class KeyringService {
     const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
     const tx = helpers.sealTransaction(txSkeleton, [Sig]);
 
-    return JSON.stringify(tx);
+    return { tx: JSON.stringify(tx), fee: fee.toString() };
   }
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
