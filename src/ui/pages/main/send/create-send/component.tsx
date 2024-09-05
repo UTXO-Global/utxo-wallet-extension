@@ -172,6 +172,7 @@ const CreateSend = () => {
           hex: rawtx,
           save: isSaveAddress,
           inscriptionTransaction,
+          token: token,
         },
       });
     } catch (e) {

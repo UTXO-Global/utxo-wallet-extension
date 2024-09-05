@@ -6,6 +6,7 @@ import {
   isBitcoinNetwork,
   isCkbNetwork,
   AGGRON4,
+  LINA,
   nervosTestnetSlug,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
@@ -15,7 +16,6 @@ import { Script, blockchain } from "@ckb-lumos/base";
 import { ScriptValue } from "@ckb-lumos/base/lib/values";
 import { bytes } from "@ckb-lumos/codec";
 import { BI, Cell, commons, helpers, WitnessArgs } from "@ckb-lumos/lumos";
-import { predefined } from "@ckb-lumos/config-manager";
 import { Psbt } from "bitcoinjs-lib";
 import { HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
 import { KeyringServiceError } from "./consts";
@@ -34,7 +34,6 @@ import type {
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
-import { Uint128 } from "@ckb-lumos/codec/lib/number";
 import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
 
 export const KEYRING_SDK_TYPES = {
@@ -140,7 +139,7 @@ class KeyringService {
     const network = getNetworkDataBySlug(networkSlug);
     const isTestnet = nervosTestnetSlug.includes(network.slug);
     const txSkeleton = commons.common.prepareSigningEntries(params.tx, {
-      config: isTestnet ? AGGRON4 : predefined.LINA,
+      config: isTestnet ? AGGRON4 : LINA,
     });
 
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
@@ -373,6 +372,9 @@ class KeyringService {
       throw new Error("Network invalid");
     }
 
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const lumosConfig = isTestnet ? AGGRON4 : LINA;
+
     const indexer = network.network.indexer;
     const cellProvider: TransactionSkeletonType["cellProvider"] = {
       collector: (query) =>
@@ -380,16 +382,15 @@ class KeyringService {
     };
 
     const fromScript = helpers.parseAddress(ckbAccount.address, {
-      config: AGGRON4,
+      config: lumosConfig,
     });
 
     const toScript = helpers.parseAddress(data.to, {
-      config: AGGRON4,
+      config: lumosConfig,
     });
 
     const xUdtType = {
-      codeHash:
-        "0x25c29dc317811a6f6f3985a7a9ebc4838bd388d19d0feeecf0bcd60f6c0975bb",
+      codeHash: lumosConfig.SCRIPTS.XUDT.CODE_HASH,
       hashType: "type",
       args: data.token.attributes.type_script.args,
     } as Script;
@@ -399,49 +400,141 @@ class KeyringService {
       lock: fromScript,
     });
 
-    let transferCell: Cell | undefined;
+    const cellCollector = indexer.collector({
+      lock: fromScript,
+      data: "0x",
+    });
+
+    const xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
+    let collectedCells: Cell[] = [];
+    const neededCapacity = xUDTCapacity;
+    let totalCapacity = BI.from(0);
+
+    let tokensCell: Cell[] = [];
+    const totalTokenBalanceNeeed = BI.from(data.amount);
+    let totalTokenBalance = BI.from(0);
+
     for await (const cell of xudtCollector.collect()) {
-      transferCell = cell;
-      break;
+      const balNum = ccc.numFromBytes(cell.data);
+      totalTokenBalance = totalTokenBalance.add(BI.from(balNum));
+      tokensCell.push(cell);
+
+      if (totalTokenBalance.gte(totalTokenBalanceNeeed)) {
+        break;
+      }
     }
 
-    if (!transferCell) {
+    if (tokensCell.length === 0) {
       throw new Error(
         "Owner do not have an xUDT cell yet, please call mint first"
       );
     }
 
+    if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
+      throw new Error(`${data.token.attributes.symbol} insufficient balance`);
+    }
+
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider });
 
-    // UDTs
     txSkeleton = addCellDep(txSkeleton, {
       outPoint: {
-        txHash:
-          "0xbf6fb538763efec2a70a6a3dcb7242787087e1030c4e7d86585bc63a9d337f5f",
-        index: "0x0",
+        txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
+        index: lumosConfig.SCRIPTS.XUDT.INDEX,
       },
-      depType: "code",
+      depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
     });
 
-    txSkeleton = await commons.common.setupInputCell(txSkeleton, transferCell);
+    for (const cell of tokensCell) {
+      txSkeleton = await commons.common.setupInputCell(txSkeleton, cell, null, {
+        config: lumosConfig,
+      });
+    }
+
     txSkeleton = txSkeleton.update("outputs", (outputs) =>
       outputs.update(0, (cell) => ({
         ...cell!,
-        cellOutput: { ...cell!.cellOutput, lock: toScript },
+        cellOutput: {
+          ...cell!.cellOutput,
+          lock: toScript,
+          type: xUdtType,
+        },
+        data: ccc.hexFrom(
+          ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
+        ),
       }))
     );
+
+    const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
+    if (diff.gt(BI.from(0))) {
+      neededCapacity.add(xUDTCapacity);
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: xUDTCapacity.toHexString(),
+            lock: fromScript,
+            type: xUdtType,
+          },
+          data: ccc.hexFrom(ccc.numLeToBytes(diff.toBigInt(), 16)),
+        })
+      );
+    }
+
+    for await (const cell of cellCollector.collect()) {
+      console.log(cell, cell.data);
+      if (cell.data !== "0x") {
+        continue;
+      }
+
+      if (
+        txSkeleton.inputs.some(
+          (input) =>
+            input.outPoint.txHash === cell.outPoint.txHash &&
+            input.outPoint.index === cell.outPoint.index
+        )
+      ) {
+        continue;
+      }
+      collectedCells.push(cell);
+      totalCapacity = totalCapacity.add(BI.from(cell.cellOutput.capacity));
+      if (totalCapacity.gte(neededCapacity)) {
+        break;
+      }
+    }
+
+    if (totalCapacity.lt(neededCapacity)) {
+      throw new Error(`CKB: insufficient balance`);
+    }
+
+    txSkeleton = txSkeleton.update("inputs", (inputs) =>
+      inputs.push(...collectedCells)
+    );
+
+    if (totalCapacity.gte(neededCapacity)) {
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: totalCapacity.sub(neededCapacity).toHexString(),
+            lock: fromScript,
+          },
+          data: "0x",
+        })
+      );
+    }
+
     txSkeleton = await commons.common.payFeeByFeeRate(
       txSkeleton,
       [ckbAccount.address],
-      data.feeRate,
+      10000,
       undefined,
       {
-        config: AGGRON4,
+        config: lumosConfig,
       }
     );
+
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
-      config: AGGRON4,
+      config: lumosConfig,
     });
+
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);

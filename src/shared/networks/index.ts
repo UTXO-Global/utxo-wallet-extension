@@ -122,5 +122,18 @@ export const AGGRON4: Config = {
       DEP_TYPE: "depGroup",
       SHORT_ID: 1,
     },
+    XUDT: {
+      CODE_HASH:
+        "0x25c29dc317811a6f6f3985a7a9ebc4838bd388d19d0feeecf0bcd60f6c0975bb",
+      HASH_TYPE: "type",
+      TX_HASH:
+        "0xbf6fb538763efec2a70a6a3dcb7242787087e1030c4e7d86585bc63a9d337f5f",
+      INDEX: "0x0",
+      DEP_TYPE: "code",
+    },
   },
+};
+
+export const LINA: Config = {
+  ...predefined.LINA,
 };
