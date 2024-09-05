@@ -70,6 +70,7 @@ const RestoreMnemonic = () => {
       });
       navigate("/home");
     } catch (e) {
+      console.log(e);
       if (e.message === "Already existed") {
         toast.error(e.message);
       } else {

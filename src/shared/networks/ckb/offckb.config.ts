@@ -2,6 +2,7 @@ import { RPC, config } from "@ckb-lumos/lumos";
 import { customizedFetch } from "./helpers";
 import { CkbIndexer } from "./Indexer";
 import { AGGRON4, LINA } from "..";
+import { predefined } from "@ckb-lumos/config-manager";
 export interface NetworkConfig {
   lumosConfig: config.Config;
   rpc_url: string;
@@ -42,17 +43,61 @@ function readEnvNetwork(): "devnet" | "testnet" | "mainnet" {
 // we use it as a check point in offCKB
 // ---devnet lumos config---
 const lumosConfig: config.Config = {
-  ...AGGRON4,
+  ...predefined.AGGRON4,
+  SCRIPTS: {
+    ...predefined.AGGRON4.SCRIPTS,
+    SECP256K1_BLAKE160_MULTISIG: {
+      CODE_HASH:
+        "0x765b3ed6ae264b335d07e73ac332bf2c0f38f8d3340ed521cb447b4c42dd5f09",
+      HASH_TYPE: "type",
+      TX_HASH:
+        "0xe6774580c98c8b15799c628f539ed5722f3bc2b17206c2280e15f99be3c1ad71",
+      INDEX: "0x0",
+      DEP_TYPE: "depGroup",
+      SHORT_ID: 1,
+    },
+    XUDT: {
+      CODE_HASH:
+        "0x25c29dc317811a6f6f3985a7a9ebc4838bd388d19d0feeecf0bcd60f6c0975bb",
+      HASH_TYPE: "type",
+      TX_HASH:
+        "0xbf6fb538763efec2a70a6a3dcb7242787087e1030c4e7d86585bc63a9d337f5f",
+      INDEX: "0x0",
+      DEP_TYPE: "code",
+    },
+  },
 } as config.Config;
 // ---end of devnet lumos config---
 // ---testnet lumos config---
 const testnetLumosConfig: config.Config = {
-  ...AGGRON4,
+  ...predefined.AGGRON4,
+  SCRIPTS: {
+    ...predefined.AGGRON4.SCRIPTS,
+    SECP256K1_BLAKE160_MULTISIG: {
+      CODE_HASH:
+        "0x765b3ed6ae264b335d07e73ac332bf2c0f38f8d3340ed521cb447b4c42dd5f09",
+      HASH_TYPE: "type",
+      TX_HASH:
+        "0xe6774580c98c8b15799c628f539ed5722f3bc2b17206c2280e15f99be3c1ad71",
+      INDEX: "0x0",
+      DEP_TYPE: "depGroup",
+      SHORT_ID: 1,
+    },
+    XUDT: {
+      CODE_HASH:
+        "0x25c29dc317811a6f6f3985a7a9ebc4838bd388d19d0feeecf0bcd60f6c0975bb",
+      HASH_TYPE: "type",
+      TX_HASH:
+        "0xbf6fb538763efec2a70a6a3dcb7242787087e1030c4e7d86585bc63a9d337f5f",
+      INDEX: "0x0",
+      DEP_TYPE: "code",
+    },
+  },
 } as config.Config;
 // ---end of testnet lumos config---
 // ---mainnet lumos config---
 const mainnetLumosConfig: config.Config = {
-  ...LINA,
+  ...predefined.LINA,
 } as config.Config;
 // ---end of mainnet lumos config---
 

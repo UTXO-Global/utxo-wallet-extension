@@ -4,7 +4,7 @@ import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "./ckb";
 import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
 import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
-import { Config } from "@ckb-lumos/lumos/config";
+import { Config, createConfig } from "@ckb-lumos/lumos/config";
 
 export const defaultNetwork = CKB_TESTNET;
 
@@ -108,7 +108,7 @@ export const NETWORK_ICON = {
   nervos_testnet: "/ckb.png",
 };
 
-export const AGGRON4: Config = {
+export const AGGRON4: Config = createConfig({
   ...predefined.AGGRON4,
   SCRIPTS: {
     ...predefined.AGGRON4.SCRIPTS,
@@ -132,8 +132,8 @@ export const AGGRON4: Config = {
       DEP_TYPE: "code",
     },
   },
-};
+});
 
-export const LINA: Config = {
+export const LINA: Config = createConfig({
   ...predefined.LINA,
-};
+});
