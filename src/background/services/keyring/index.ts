@@ -409,9 +409,17 @@ class KeyringService {
       data: "0x",
     });
 
-    const xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
+    let xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
+
+    const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
+    const joyCapacityAddMore = "200000000"; // 2 ckb
+
+    if (isAddressTypeJoy) {
+      xUDTCapacity = xUDTCapacity.add(joyCapacityAddMore);
+    }
+
     let collectedCells: Cell[] = [];
-    const neededCapacity = xUDTCapacity;
+    let neededCapacity = xUDTCapacity;
     let totalCapacity = BI.from(0);
 
     let tokensCell: Cell[] = [];
@@ -455,22 +463,32 @@ class KeyringService {
     }
 
     txSkeleton = txSkeleton.update("outputs", (outputs) =>
-      outputs.update(0, (cell) => ({
-        ...cell!,
-        cellOutput: {
-          ...cell!.cellOutput,
-          lock: toScript,
-          type: xUdtType,
-        },
-        data: ccc.hexFrom(
-          ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
-        ),
-      }))
+      outputs.update(0, (cell) => {
+        let recap = BI.from(cell!.cellOutput.capacity);
+        if (isAddressTypeJoy) {
+          recap = recap.add(joyCapacityAddMore);
+        }
+        return {
+          ...cell!,
+          cellOutput: {
+            ...cell!.cellOutput,
+            capacity: recap.toHexString(),
+            lock: toScript,
+            type: xUdtType,
+          },
+          data: ccc.hexFrom(
+            ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
+          ),
+        };
+      })
     );
 
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
-      neededCapacity.add(xUDTCapacity);
+      neededCapacity = neededCapacity.add(xUDTCapacity);
+      if (isAddressTypeJoy) {
+        neededCapacity = neededCapacity.add(joyCapacityAddMore);
+      }
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -484,7 +502,6 @@ class KeyringService {
     }
 
     for await (const cell of cellCollector.collect()) {
-      console.log(cell, cell.data);
       if (cell.data !== "0x") {
         continue;
       }
@@ -500,6 +517,9 @@ class KeyringService {
       }
       collectedCells.push(cell);
       totalCapacity = totalCapacity.add(BI.from(cell.cellOutput.capacity));
+      if (isAddressTypeJoy) {
+        totalCapacity = totalCapacity.add(joyCapacityAddMore);
+      }
       if (totalCapacity.gte(neededCapacity)) {
         break;
       }
