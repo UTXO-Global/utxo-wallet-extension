@@ -114,7 +114,6 @@ export function getAddress(
     const args = publicKeyToBlake160(
       "0x" + Buffer.from(publicKey).toString("hex")
     );
-    console.log("network", network);
     const template = network.lumosConfig.SCRIPTS.SECP256K1_BLAKE160!;
     const lockScript = {
       codeHash: template.CODE_HASH,
