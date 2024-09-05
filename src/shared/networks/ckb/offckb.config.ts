@@ -1,7 +1,6 @@
 import { RPC, config } from "@ckb-lumos/lumos";
 import { customizedFetch } from "./helpers";
 import { CkbIndexer } from "./Indexer";
-import { AGGRON4, LINA } from "..";
 import { predefined } from "@ckb-lumos/config-manager";
 export interface NetworkConfig {
   lumosConfig: config.Config;

@@ -80,7 +80,7 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
   if (!decimalPart || decimalPart.length <= zeroCount) {
     return {
       first: `${integerPart}`,
-      last: decimalPart,
+      last: decimalPart?.slice(2),
       zeroes: 0,
     };
   }
@@ -93,7 +93,7 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
 
   return {
     first: `0.${"0".repeat(zeroCount)}`,
-    last: decimalPart.slice(zeroes, zeroes + 2),
+    last: decimalPart.slice(zeroes, zeroes + 3),
     zeroes: zeroes - zeroCount,
   };
 };

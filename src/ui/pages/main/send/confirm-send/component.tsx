@@ -70,7 +70,13 @@ const ConfirmSend = () => {
         }`
       ),
       value: `
-        <span style="font-size: 16px">${location.state.amount}</span>
+        <span style="font-size: 16px">${location.state.amount.toLocaleString(
+          "fullwide",
+          {
+            useGrouping: false,
+            maximumFractionDigits: 100,
+          }
+        )}</span>
         <span style="font-size: 16px; color: #A69C8C">${symbol}</span>
       `,
     },
