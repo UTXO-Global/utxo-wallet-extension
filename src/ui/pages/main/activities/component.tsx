@@ -7,7 +7,7 @@ export default function Activities() {
     <div className="w-full h-full top-0 relative">
       <div className="!h-100vh-72px standard:!h-100vh-100px overflow-auto">
         <WalletPanel />
-        <TransactionList className="mt-4 mb-4 px-4 !z-5" />
+        <TransactionList className="mb-4 px-4 !z-5 !pt-4 bg-white" />
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />

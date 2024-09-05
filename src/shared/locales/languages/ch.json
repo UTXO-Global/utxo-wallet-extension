@@ -137,6 +137,7 @@
     "create_send": {
       "minimum_amount_error": "最小金额 - 0.0001 BTC",
       "address_error": "请输入收件人地址",
+      "address_invalid": "地址无效",
       "not_enough_money_error": "你的账户资金不足",
       "not_enough_fee_error": "请提升费用",
       "fee_is_text_error": "费用必须是数字",

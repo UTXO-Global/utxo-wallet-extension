@@ -7,6 +7,7 @@ export interface IGroupAccount {
   network: NetworkSlug;
   balance?: number;
   ordinalBalance?: number;
+  coinBalances?: { [key: string]: any };
 }
 
 export interface IAccount {

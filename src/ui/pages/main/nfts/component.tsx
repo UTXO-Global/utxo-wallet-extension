@@ -24,7 +24,7 @@ const ListNFTs = () => {
           <>
             <div className="flex justify-between items-center sticky top-[66px] px-4 bg-white pt-[14px] pb-[12px]">
               <div className="px-4 py-1 rounded-[100px] bg-[#F5F5F5] text-[14px] leading-[20px] text-[#787575] font-medium">
-                NFT
+                DOBs
               </div>
               <div className="flex gap-2">
                 <button
@@ -74,7 +74,15 @@ const ListNFTs = () => {
             ) : (
               <div className="grid grid-cols-2 standard:grid-cols-3 gap-2 px-4 mt-[2px] pb-[14px]">
                 {nfts.map((z, i) => (
-                  <div key={i} className="cursor-pointer" onClick={() => navigate(`/pages/detail-nft/${z.collection.sn}/${z.token_id}`)}>
+                  <div
+                    key={i}
+                    className="cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/pages/detail-nft/${z.collection.sn}/${z.token_id}`
+                      )
+                    }
+                  >
                     <NftCard nft={z} />
                   </div>
                 ))}

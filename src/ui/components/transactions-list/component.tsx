@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useControllersState } from "@/ui/states/controllerState";
 import { ITransaction } from "@/shared/interfaces/api";
 import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import ShortBalance from "../ShortBalance";
 
 const TransactionList = ({
   className,
@@ -366,16 +367,18 @@ const TransactionList = ({
 
   return (
     <div
-      className={cn(`flex flex-col gap-2 px-4 ${className ? className : ""}`)}
+      className={cn(
+        `flex flex-col gap-2 px-4 bg-white ${className ? className : ""}`
+      )}
     >
-      <div className="text-base font-medium py-2 sticky top-[65px] standard:top-0 z-10 bg-light-100">
+      <div className="text-base font-medium sticky top-[73px] standard:top-0 z-10 bg-light-100">
         Activities
       </div>
 
       {!txes.length ? (
         <NoTransaction />
       ) : (
-        <div className="border border-grey-300 rounded-lg py-4 px-3 pb-2 standard:pb-[50px]">
+        <div className="border border-grey-300 rounded-lg px-3 standard:pb-[50px] mt-2">
           <div className={s.transactionsDiv}>
             {txes.map((item) => {
               const currentDate = new Date().toLocaleDateString("en-US", {
@@ -385,7 +388,7 @@ const TransactionList = ({
               });
               return (
                 <div
-                  className="flex flex-col gap-2 w-full mb-2"
+                  className="flex flex-col gap-2 w-full pt-3 pb-2"
                   key={`tx-date-${item.key}`}
                 >
                   <div
@@ -395,15 +398,14 @@ const TransactionList = ({
                   >
                     {item.key === currentDate ? "Today" : item.title}
                   </div>
-                  <div>
+                  <div className="">
                     {item.data.map((t, index) => {
                       const isReceived = isIncomeTx(t, t.address);
                       let amount = "",
                         symbol = currentNetwork.coinSymbol;
-                      console.log("isCKB", isCKB, type, typeHash);
                       if (isTxToken(t)) {
-                        const v = getTransactionTokenValue(t, t.address, 5);
-                        amount = v.amount;
+                        const v = getTransactionTokenValue(t, t.address);
+                        amount = v.amount.toString();
                         symbol = v.symbol;
                       } else {
                         amount = getTransactionValue(t, t.address, 5);
@@ -443,9 +445,15 @@ const TransactionList = ({
                               color: isReceived ? "#09C148" : "#FF4545",
                             }}
                           >
-                            <span className="w-[80px] truncate block text-right">
+                            <span className="w-[110px] truncate block text-right">
                               {isReceived ? "+" : "-"}
-                              {amount.toString().replace(/\.?0+$/, "")}
+                              <ShortBalance
+                                balance={Math.abs(
+                                  Number(amount.toString().replace(/,/g, ""))
+                                )}
+                                zeroDisplay={1}
+                                className="!text-sm !inline-block"
+                              />
                             </span>
                             <span className="text-primary flex-1">
                               {`${symbol || currentNetwork.coinSymbol}`}

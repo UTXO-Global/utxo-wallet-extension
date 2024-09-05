@@ -45,7 +45,7 @@ export const useGetCKBAddressInfo = () => {
       console.error(e);
     }
     setIsLoading(false);
-  }, [isLoading]);
+  }, [isLoading, currentAccount]);
 
   useEffect(() => {
     if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {

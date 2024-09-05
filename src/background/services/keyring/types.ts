@@ -1,5 +1,6 @@
 import type { ApiUTXO } from "@/shared/interfaces/api";
 import { ApiOrdUTXO } from "@/shared/interfaces/inscriptions";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { Cell } from "@ckb-lumos/lumos";
 
 export type Json = any;
@@ -27,6 +28,10 @@ export interface SendBtcCoin extends SendBase {
 
 export interface SendCkbCoin extends SendBase {
   cells: Cell[];
+}
+
+export interface SendCkbToken extends SendBase {
+  token: CKBTokenInfo;
 }
 
 export interface SendOrd extends SendBase {
