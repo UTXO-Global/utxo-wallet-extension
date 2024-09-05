@@ -4,6 +4,7 @@ import Tokens from "./tokens";
 import Loading from "react-loading";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import { BI } from "@ckb-lumos/lumos";
 
 export default function TokenTabs({ active }: { active?: string }) {
   const [tokens, setTokens] = useState<any[]>([]);
@@ -28,8 +29,10 @@ export default function TokenTabs({ active }: { active?: string }) {
       const udtAccounts = addressInfo?.attributes?.udt_accounts || [];
       if (udtAccounts.length > 0) {
         const udtAccounts = addressInfo.attributes.udt_accounts;
-        const tokens = udtAccounts.filter((token) =>
-          ["sudt", "xudt"].includes(token.udt_type)
+        const tokens = udtAccounts.filter(
+          (token) =>
+            ["sudt", "xudt"].includes(token.udt_type) &&
+            BI.from(token.amount).gt(BI.from(0))
         );
 
         setTokens((prev) => {
