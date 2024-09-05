@@ -340,6 +340,7 @@
   },
   "detailNFT": {
     "type": "Type",
+    "content_type": "Content Type",
     "occupied": "Occupied",
     "creator": "Creator"
   }

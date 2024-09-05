@@ -33,5 +33,12 @@ export const getExtraDetailSpore = async (
   const buffer = hexStringToUint8Array(res.msg.content.toString().slice(2));
   const blob = new Blob([buffer], { type: res.msg.contentType });
   const url = URL.createObjectURL(blob);
-  return { url, capacity: res.capacity };
+  return { url, capacity: res.capacity, contentType: res.msg.contentType };
+};
+
+export const getURLFromHex = (dataHex: string) => {
+  const msg = unpackToRawSporeData(dataHex);
+  const buffer = hexStringToUint8Array(msg.content.toString().slice(2));
+  const blob = new Blob([buffer], { type: msg.contentType });
+  return { url: URL.createObjectURL(blob), contentType: msg.contentType };
 };

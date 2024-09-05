@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getExtraDetailSpore } from "../utils/dob";
+import { getExtraDetailSpore, getURLFromHex } from "../utils/dob";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
@@ -52,11 +52,7 @@ export const useGetMyNFTs = () => {
         setTotalPage(data.pagination.pages);
         const _nfts = [];
         for (let index = 0; index < data.data.length; index++) {
-          const { url: imageUrl } = await getExtraDetailSpore(
-            data.data[index].cell.tx_hash,
-            data.data[index].cell.cell_index,
-            currentNetwork
-          );
+          const { url: imageUrl } = getURLFromHex(data.data[index].cell.data);
           _nfts.push({ ...data.data[index], imageUrl });
         }
         setNFTs(_nfts);
@@ -104,12 +100,16 @@ export const useGetDetailNFT = () => {
         }
       );
       const data = await res.json();
-      const { url: imageUrl, capacity } = await getExtraDetailSpore(
+      const {
+        url: imageUrl,
+        capacity,
+        contentType,
+      } = await getExtraDetailSpore(
         data.cell.tx_hash,
         data.cell.cell_index,
         currentNetwork
       );
-      setDetailNFT({ ...data, imageUrl, capacity });
+      setDetailNFT({ ...data, imageUrl, capacity, contentType });
     } catch (e) {
       console.error(e);
     } finally {

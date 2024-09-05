@@ -208,6 +208,7 @@
   },
   "detailNFT": {
     "type": "유형",
+    "content_type": "콘텐츠 유형",
     "occupied": "가득차 있는",
     "creator": "창조자"
   }

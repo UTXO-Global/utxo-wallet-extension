@@ -30,4 +30,5 @@ export interface INFT {
   imageUrl: string;
   capacity: number;
   name: string;
+  contentType?: string;
 }

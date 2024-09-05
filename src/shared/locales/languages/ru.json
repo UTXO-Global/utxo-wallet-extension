@@ -208,6 +208,7 @@
   },
   "detailNFT": {
     "type": "Тип",
+    "content_type": "Тип контента",
     "occupied": "Занятый",
     "creator": "Создатель"
   }
