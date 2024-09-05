@@ -69,10 +69,11 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
     maximumFractionDigits: 100,
   });
   const [integerPart, decimalPart] = numberString.split(".");
+  console.log(numberString, "===>", integerPart, decimalPart);
   if (Number(integerPart) > 0) {
     return {
       first: `${integerPart}`,
-      last: decimalPart?.slice(2),
+      last: decimalPart?.slice(0, 4),
       zeroes: 0,
     };
   }
@@ -80,7 +81,7 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
   if (!decimalPart || decimalPart.length <= zeroCount) {
     return {
       first: `${integerPart}`,
-      last: decimalPart?.slice(2),
+      last: decimalPart?.slice(0, 2),
       zeroes: 0,
     };
   }
