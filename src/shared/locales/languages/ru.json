@@ -118,9 +118,11 @@
       "from_address": "С адреса",
       "amount": "Сумма",
       "fee": "Сбор",
+      "transaction_fee": "Комиссия за транзакцию",
       "included": "включено",
       "not_included": "не включено",
-      "confirm": "Подтвердить"
+      "confirm": "Подтвердить",
+      "confirmation": "Подтверждение"
     },
     "create_send": {
       "minimum_amount_error": "Минимальная сумма - 0.0001 BTC",
@@ -142,6 +144,7 @@
       "continue": "Продолжить",
       "fee_input": {
         "fast": "Быстро",
+        "standard": "Стандарт",
         "slow": "Медленно",
         "custom": "Свой вариант"
       },
@@ -210,6 +213,7 @@
     "type": "Тип",
     "content_type": "Тип контента",
     "occupied": "Занятый",
-    "creator": "Создатель"
+    "creator": "Создатель",
+    "transfer": "Передача"
   }
 }

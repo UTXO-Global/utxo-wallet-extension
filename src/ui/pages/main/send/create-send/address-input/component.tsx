@@ -6,14 +6,21 @@ import { FC, Fragment, useState } from "react";
 import { useAppState } from "@/ui/states/appState";
 import { t } from "i18next";
 import { IcnBook } from "@/ui/components/icons/IcnBook";
+import cn from "classnames";
 
 interface Props {
   address: string;
   onChange: (value: string) => void;
   onOpenModal: () => void;
+  className?: string;
 }
 
-const AddressInput: FC<Props> = ({ address, onChange, onOpenModal }) => {
+const AddressInput: FC<Props> = ({
+  address,
+  onChange,
+  onOpenModal,
+  className,
+}) => {
   const [filtered, setFiltered] = useState([]);
 
   const { addressBook } = useAppState((v) => ({
@@ -25,7 +32,13 @@ const AddressInput: FC<Props> = ({ address, onChange, onOpenModal }) => {
   };
 
   return (
-    <div className="flex gap-2 items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300">
+    <div
+      className={cn(
+        `flex gap-2 items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300 ${
+          className ? className : ""
+        }`
+      )}
+    >
       <Combobox value={address} onChange={onChange}>
         <div className="relative w-full">
           <Combobox.Input

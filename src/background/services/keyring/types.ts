@@ -38,6 +38,15 @@ export interface SendOrd extends SendBase {
   utxos: ((ApiOrdUTXO & { isOrd?: boolean }) | ApiUTXO)[];
 }
 
+export interface TransferNFT {
+  toAddress: string;
+  feeRate: number;
+  outPoint: {
+    txHash: string;
+    index: string;
+  };
+}
+
 interface BaseUserToSignInput {
   index: number;
   sighashTypes: number[] | undefined;

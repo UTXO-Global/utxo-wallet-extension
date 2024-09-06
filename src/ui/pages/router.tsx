@@ -45,6 +45,8 @@ import TokenDetail from "./main/token-detail";
 import ListNFTs from "./main/nfts/component";
 import DetailNFT from "./main/detail-nft";
 import Activities from "./main/activities";
+import TransferNft from "./main/transfer-nft";
+import ConfirmTransferNft from "./main/transfer-nft/confirm-transfer-nft";
 
 export const guestRouter = createHashRouter([
   {
@@ -108,6 +110,8 @@ export const authenticatedRouter = createHashRouter([
       { path: "inscriptions", element: <Inscriptions /> },
       { path: "explore", element: <Explore /> },
       { path: "detail-nft/:collection/:nftId", element: <DetailNFT /> },
+      { path: "transfer-nft/:collection/:nftId", element: <TransferNft /> },
+      { path: "confirm-transfer-nft", element: <ConfirmTransferNft /> },
     ],
   },
   {

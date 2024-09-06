@@ -69,7 +69,6 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
     maximumFractionDigits: 100,
   });
   const [integerPart, decimalPart] = numberString.split(".");
-  console.log(numberString, "===>", integerPart, decimalPart);
   if (Number(integerPart) > 0) {
     return {
       first: `${integerPart}`,

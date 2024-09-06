@@ -10,10 +10,12 @@ import { browserTabsCreate } from "@/shared/utils/browser";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { formatNumber } from "@/shared/utils";
 import cn from "classnames";
+import { useNavigate } from "react-router-dom";
 
 const DetailNFT = () => {
   const { isLoading, detailNFT } = useGetDetailNFT();
   const currentNetwork = useGetCurrentNetwork();
+  const navigate = useNavigate();
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(detailNFT.type_script.args);
@@ -27,8 +29,27 @@ const DetailNFT = () => {
     });
   };
 
+  const onNextToTransfer = async () => {
+    if (!detailNFT) {
+      return;
+    }
+
+    try {
+      navigate(
+        `/pages/transfer-nft/${detailNFT.collection.sn}/${detailNFT.token_id}`,
+        {
+          state: {
+            nft: detailNFT,
+          },
+        }
+      );
+    } catch (e) {
+      console.log("Transfer: ", e);
+    }
+  };
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col justify-between">
       {isLoading ? (
         <div className="flex justify-center mt-10 py-6">
           <Loading type="spin" width={50} color="#ODODOD" />
@@ -158,6 +179,12 @@ const DetailNFT = () => {
               </div>
             </div>
           </div>
+          <button
+            className={cn("btn primary mx-4 mb-4 standard:m-6 standard:mb-3")}
+            onClick={onNextToTransfer}
+          >
+            {t("detailNFT.transfer")}
+          </button>
         </>
       ) : (
         <div className="flex flex-col items-center justify-center mt-10">

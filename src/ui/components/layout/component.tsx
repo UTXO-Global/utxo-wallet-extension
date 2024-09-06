@@ -154,6 +154,11 @@ export default function PagesLayout() {
         route: "/pages/detail-nft/@",
         title: t("components.layout.detailNFT"),
       },
+      { route: "/pages/transfer-nft/@", title: t("detailNFT.transfer") },
+      {
+        route: "/pages/confirm-transfer-nft",
+        title: t("send.confirm_send.confirmation"),
+      },
     ],
     [currentAccount?.name]
   );

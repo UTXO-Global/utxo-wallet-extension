@@ -170,9 +170,11 @@
       "from_address": "From Address",
       "amount": "Amount",
       "fee": "Fee",
+      "transaction_fee": "Transaction Fee",
       "included": "included",
       "not_included": "not included",
       "confirm": "Confirm",
+      "confirmation": "Confirmation",
       "inscription_id": "Inscription Id"
     },
     "create_send": {
@@ -196,6 +198,7 @@
       "fee_input": {
         "fast": "Fast",
         "slow": "Slow",
+        "standard": "Standard",
         "custom": "Custom"
       },
       "address_input": {
@@ -342,6 +345,7 @@
     "type": "Type",
     "content_type": "Content Type",
     "occupied": "Occupied",
-    "creator": "Creator"
+    "creator": "Creator",
+    "transfer": "Transfer"
   }
 }

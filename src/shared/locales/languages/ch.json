@@ -130,9 +130,11 @@
       "from_address": "来自地址",
       "amount": "金额",
       "fee": "费用",
+      "transaction_fee": "交易费",
       "included": "已包括",
       "not_included": "未包括",
-      "confirm": "确认"
+      "confirm": "确认",
+      "confirmation": "确认"
     },
     "create_send": {
       "minimum_amount_error": "最小金额 - 0.0001 BTC",
@@ -155,6 +157,7 @@
       "continue": "继续",
       "fee_input": {
         "fast": "快",
+        "standard": "标准",
         "slow": "慢",
         "custom": "自定义"
       },
@@ -261,6 +264,7 @@
     "type": "类型",
     "content_type": "内容类型",
     "occupied": "占领",
-    "creator": "创建者"
+    "creator": "创建者",
+    "transfer": "转移"
   }
 }
