@@ -285,11 +285,15 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   ]);
 
   const loadNativeCoinPrice = useCallback(async () => {
-    if (apiController && apiController.getNativeCoinPrice) {
-      const data = await apiController.getNativeCoinPrice();
-      setCurrentPrice(data.usd);
-      setChangePercent24Hr(data.changePercent24Hr);
-      await updateLastBlock();
+    try {
+      if (apiController && apiController.getNativeCoinPrice) {
+        const data = await apiController.getNativeCoinPrice();
+        setCurrentPrice(data.usd);
+        setChangePercent24Hr(data.changePercent24Hr);
+        await updateLastBlock();
+      }
+    } catch (e) {
+      console.log("Load native coin price: ", e.message);
     }
   }, [apiController, updateLastBlock]);
 
