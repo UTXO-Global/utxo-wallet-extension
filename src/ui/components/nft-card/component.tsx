@@ -11,7 +11,7 @@ const NftCard = ({ nft }: { nft: any }) => {
         <img
           src={nft.imageUrl || "/nft-default.png"}
           alt=""
-          className={cn("max-w", {
+          className={cn("max-w mix-blend-multiply p-2", {
             "h-full": nft.contentType !== "dob/0",
           })}
         />

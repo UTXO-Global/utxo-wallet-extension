@@ -6,6 +6,7 @@ import { FC } from "react";
 
 import { t } from "i18next";
 import s from "./styles.module.scss";
+import { IcnDelete } from "@/ui/components/icons/IcnDelete";
 
 interface Props {
   isOpen: boolean;
@@ -43,14 +44,20 @@ const AddressBookModal: FC<Props> = ({ isOpen, onClose, setAddress }) => {
           {t("send.create_send.address_book.no_addresses")}
         </div>
       ) : undefined}
-      <div className={`${s.items} -mx-4`}>
+      <div className={`${s.items} -mx-0 !mt-0`}>
         {addressBook.map((i, idx) => (
-          <div key={`ab-${idx}`} className={s.item}>
+          <div
+            key={`ab-${idx}`}
+            className={`${s.item} justify-between items-center`}
+          >
             <div onClick={() => onSelect(i)} className={s.address}>
-              {shortAddress(i, 17)}
+              {shortAddress(i, 15)}
             </div>
-            <div className={s.remove} onClick={() => onRemove(i)}>
-              <MinusCircleIcon className="w-5 h-5" />
+            <div
+              className="w-8 h-8 flex items-center justify-center"
+              onClick={() => onRemove(i)}
+            >
+              <IcnDelete className="w-4 h-4" />
             </div>
           </div>
         ))}

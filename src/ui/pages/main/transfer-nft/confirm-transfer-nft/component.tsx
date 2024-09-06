@@ -78,7 +78,7 @@ export default function ConfirmTransferNFT() {
               />
             </div>
           ))}
-          <div className="p-4 flex items-center w-full justify-between bg-grey-300 rounded-lg">
+          <div className="px-4 py-2 flex items-center w-full justify-between bg-grey-300 rounded-lg h-[120px]">
             <div className="flex flex-col gap-[2px]">
               {!!location.state.nft.collection.name && (
                 <div className="text-primary text-base font-medium">
@@ -97,7 +97,9 @@ export default function ConfirmTransferNFT() {
             <img
               src={location.state.nft.imageUrl || "/nft-default.png"}
               alt={location.state.nft.name}
-              className={cn("rounded max-w-[120px]")}
+              className={cn(
+                "rounded max-w-[120px] h-full mix-blend-multiply p-2"
+              )}
             />
           </div>
         </div>

@@ -60,7 +60,7 @@ const DetailNFT = () => {
             <img
               src={detailNFT.imageUrl || "/nft-default.png"}
               alt={detailNFT.name}
-              className={cn("rounded", {
+              className={cn("rounded mix-blend-multiply p-2", {
                 "h-full": !!detailNFT.imageUrl,
               })}
             />

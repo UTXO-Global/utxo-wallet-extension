@@ -129,7 +129,7 @@ export default function TransferNFT() {
         detailNFT && (
           <>
             <div className="p-4">
-              <div className="p-4 flex items-center w-full justify-between bg-grey-300 rounded-lg">
+              <div className="px-4 py-2 flex items-center w-full justify-between bg-grey-300 rounded-lg h-[120px]">
                 <div className="flex flex-col gap-[2px]">
                   {!!detailNFT.collection.name && (
                     <div className="text-primary text-base font-medium">
@@ -150,7 +150,9 @@ export default function TransferNFT() {
                 <img
                   src={detailNFT.imageUrl || "/nft-default.png"}
                   alt={detailNFT.name}
-                  className={cn("rounded max-w-[120px]")}
+                  className={cn(
+                    "rounded max-w-[120px] h-full mix-blend-multiply p-2"
+                  )}
                 />
               </div>
               <div className="w-full flex flex-col justify-start items-start gap-4 py-4">
