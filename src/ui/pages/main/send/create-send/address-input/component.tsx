@@ -56,24 +56,26 @@ const AddressInput: FC<Props> = ({
           />
 
           {filtered.length > 0 ? (
-            <Transition
-              as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Combobox.Options className={s.addressbookoptions}>
-                {filtered.map((address) => (
-                  <Combobox.Option
-                    className={s.addressbookoption}
-                    key={address}
-                    value={address}
-                  >
-                    {shortAddress(address, 14)}
-                  </Combobox.Option>
-                ))}
-              </Combobox.Options>
-            </Transition>
+            <div className="w-[100vw] px-4 absolute -left-4 z-10">
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Combobox.Options className={s.addressbookoptions}>
+                  {filtered.map((address) => (
+                    <Combobox.Option
+                      className={s.addressbookoption}
+                      key={address}
+                      value={address}
+                    >
+                      {shortAddress(address, 14)}
+                    </Combobox.Option>
+                  ))}
+                </Combobox.Options>
+              </Transition>
+            </div>
           ) : (
             ""
           )}
