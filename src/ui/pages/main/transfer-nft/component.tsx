@@ -100,7 +100,7 @@ export default function TransferNFT() {
       });
 
       if (!rawtx) {
-        return toast.error("Failed pushing create transaction");
+        return toast.error("Failed to create transaction");
       }
 
       navigate("/pages/confirm-transfer-nft", {
@@ -148,9 +148,9 @@ export default function TransferNFT() {
                   </div>
                 </div>
                 <img
-                  src={detailNFT.imageUrl}
+                  src={detailNFT.imageUrl || "/nft-default.png"}
                   alt={detailNFT.name}
-                  className="max-w-[120px]"
+                  className={cn("rounded max-w-[120px]")}
                 />
               </div>
               <div className="w-full flex flex-col justify-start items-start gap-4 py-4">

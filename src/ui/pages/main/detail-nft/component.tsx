@@ -56,14 +56,16 @@ const DetailNFT = () => {
         </div>
       ) : detailNFT ? (
         <>
-          <div className="h-[179px] bg-[#FAFAFA] flex justify-center items-center">
+          <div className="h-[179px] bg-[#FAFAFA] flex justify-center items-center p-4">
             <img
-              src={detailNFT.imageUrl}
+              src={detailNFT.imageUrl || "/nft-default.png"}
               alt={detailNFT.name}
-              className="h-full"
+              className={cn("rounded", {
+                "h-full": !!detailNFT.imageUrl,
+              })}
             />
           </div>
-          <div className="p-4">
+          <div className="p-4 flex-auto">
             <div className="flex justify-between items-center">
               <div>
                 {!!detailNFT.collection.name && (

@@ -95,9 +95,9 @@ export default function ConfirmTransferNFT() {
               </div>
             </div>
             <img
-              src={location.state.nft.imageUrl}
+              src={location.state.nft.imageUrl || "/nft-default.png"}
               alt={location.state.nft.name}
-              className="max-w-[120px]"
+              className={cn("rounded max-w-[120px]")}
             />
           </div>
         </div>

@@ -58,7 +58,8 @@ export const useGetMyNFTs = () => {
 
           _nfts.push({
             ...data.data[index],
-            imageUrl: contentType !== "dob/0" ? imageUrl : "/nft-default.png",
+            imageUrl,
+            contentType,
           });
         }
         setNFTs(_nfts);
@@ -117,7 +118,7 @@ export const useGetDetailNFT = () => {
       );
       setDetailNFT({
         ...data,
-        imageUrl: contentType !== "dob/0" ? imageUrl : "/nft-default.png",
+        imageUrl,
         capacity,
         contentType,
       });
