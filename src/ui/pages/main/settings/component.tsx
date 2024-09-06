@@ -16,6 +16,8 @@ import {
   IcnSecurity,
   IcnWallet,
 } from "@/ui/components/icons";
+import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
+import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -71,6 +73,12 @@ const Settings = () => {
       label: t("settings.logout"),
       onClick: logout,
       gaLabel: "logout",
+    },
+    {
+      icon: <IcnHelpSupport className={ICON_CN} />,
+      label: t("settings.help_n_support"),
+      onClick: () => chrome.tabs.create({ url: TELEGRAM_HELP_AND_SUPPORT }),
+      gaLabel: "helpAndSupport",
     },
   ];
 

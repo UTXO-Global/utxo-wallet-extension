@@ -15,7 +15,10 @@
     "connected_sites": "연결된 사이트",
     "expand_view": "보기 확대",
     "change_password": "비밀번호 변경",
-    "address_type": "주소 유형"
+    "address_type": "주소 유형",
+    "wallet": "지갑",
+    "help_n_support": "도움말 및 지원",
+    "become_a_partner": "파트너가 되세요"
   },
   "components": {
     "layout": {
