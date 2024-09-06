@@ -18,7 +18,9 @@
     "expand_view": "扩大视图",
     "change_password": "更改密码",
     "address_type": "地址类型",
-    "wallet": "Wallet"
+    "wallet": "钱包",
+    "help_n_support": "帮助和支持",
+    "become_a_partner": "成为合作伙伴"
   },
   "components": {
     "layout": {

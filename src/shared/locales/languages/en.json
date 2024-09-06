@@ -23,7 +23,9 @@
     "security_settings": "Security Settings",
     "address_type": "Address Type",
     "network": "Network",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "help_n_support": "Help & Support",
+    "become_a_partner": "Become a Partner"
   },
   "components": {
     "layout": {

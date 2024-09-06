@@ -15,7 +15,10 @@
     "connected_sites": "Подключенные сайты",
     "expand_view": "Развернуть обзор",
     "change_password": "Сменить пароль",
-    "address_type": "Тип адреса"
+    "address_type": "Тип адреса",
+    "wallet": "Кошелек",
+    "help_n_support": "Помощь и поддержка",
+    "become_a_partner": "Стать партнером"
   },
   "components": {
     "layout": {
