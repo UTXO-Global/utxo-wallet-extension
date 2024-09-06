@@ -96,10 +96,7 @@ export default function TransferNFT() {
       const { rawtx, fee } = await createTransferNFT({
         toAddress: formData.address,
         feeRate: formData.feeRate,
-        outPoint: {
-          txHash: detailNFT.cell.tx_hash,
-          index: `0x${detailNFT.cell.cell_index.toString(16)}`,
-        },
+        nft: detailNFT,
       });
 
       if (!rawtx) {

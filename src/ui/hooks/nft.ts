@@ -52,8 +52,14 @@ export const useGetMyNFTs = () => {
         setTotalPage(data.pagination.pages);
         const _nfts = [];
         for (let index = 0; index < data.data.length; index++) {
-          const { url: imageUrl } = getURLFromHex(data.data[index].cell.data);
-          _nfts.push({ ...data.data[index], imageUrl });
+          const { url: imageUrl, contentType } = getURLFromHex(
+            data.data[index].cell.data
+          );
+
+          _nfts.push({
+            ...data.data[index],
+            imageUrl: contentType !== "dob/0" ? imageUrl : "/nft-default.png",
+          });
         }
         setNFTs(_nfts);
       } catch (e) {
@@ -109,7 +115,12 @@ export const useGetDetailNFT = () => {
         data.cell.cell_index,
         currentNetwork
       );
-      setDetailNFT({ ...data, imageUrl, capacity, contentType });
+      setDetailNFT({
+        ...data,
+        imageUrl: contentType !== "dob/0" ? imageUrl : "/nft-default.png",
+        capacity,
+        contentType,
+      });
     } catch (e) {
       console.error(e);
     } finally {

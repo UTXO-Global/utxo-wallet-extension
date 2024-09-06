@@ -8,6 +8,8 @@ import {
   AGGRON4,
   LINA,
   nervosTestnetSlug,
+  DOBS_TESTNET_CONFIG,
+  DOBS_MAINNET_CONFIG,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -36,7 +38,14 @@ import type {
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
 import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
-import { predefinedSporeConfigs, transferSpore } from "@spore-sdk/core";
+import {
+  calculateFeeByTransactionSkeleton,
+  generateTransferSporeAction,
+  getSporeScript,
+  injectCommonCobuildProof,
+  injectLiveSporeCell,
+  payFeeByOutput,
+} from "@spore-sdk/core";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -568,7 +577,9 @@ class KeyringService {
     return { tx: JSON.stringify(tx), fee: fee.toString() };
   }
 
-  async transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }> {
+  transferNFT = async (
+    data: TransferNFT
+  ): Promise<{ tx: string; fee: string }> => {
     const account = storageService.currentAccount;
     if (!account || !account.accounts[0].address) {
       throw new Error("Error when trying to get the current account");
@@ -578,51 +589,111 @@ class KeyringService {
 
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
-    if (isCkbNetwork(network.network)) {
-      const isTestnet = nervosTestnetSlug.includes(network.slug);
-      const lumosConfig = isTestnet ? AGGRON4 : LINA;
-      const sporeConfig = isTestnet
-        ? predefinedSporeConfigs.Testnet
-        : predefinedSporeConfigs.Mainnet;
-
-      const toScript = helpers.parseAddress(data.toAddress, {
-        config: lumosConfig,
-      });
-
-      const { txSkeleton: _txSkeleton } = await transferSpore({
-        outPoint: data.outPoint,
-        fromInfos: [ckbAccount.address],
-        toLock: toScript,
-        config: sporeConfig,
-      });
-
-      console.log(_txSkeleton);
-
-      const cccTransaction = ccc.Transaction.fromLumosSkeleton(_txSkeleton);
-      const fee = cccTransaction.estimateFee(data.feeRate);
-      let txSkeleton = await commons.common.payFee(
-        _txSkeleton,
-        [ckbAccount.address],
-        fee,
-        undefined,
-        {
-          config: lumosConfig,
-        }
-      );
-
-      txSkeleton = commons.common.prepareSigningEntries(_txSkeleton, {
-        config: lumosConfig,
-      });
-
-      const message = txSkeleton.get("signingEntries").get(0)!.message;
-      const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
-      const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
-      const tx = helpers.sealTransaction(txSkeleton, [Sig]);
-      console.log("tx", tx);
-      return { tx: JSON.stringify(tx), fee: fee.toString() };
+    if (!isCkbNetwork(network.network)) {
+      return { tx: "", fee: "0" };
     }
-    return { tx: "", fee: "0" };
-  }
+
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const lumosConfig = isTestnet ? AGGRON4 : LINA;
+    const sporeConfig = isTestnet ? DOBS_TESTNET_CONFIG : DOBS_MAINNET_CONFIG;
+
+    const fromScript = helpers.parseAddress(ckbAccount.address, {
+      config: lumosConfig,
+    });
+
+    const toScript = helpers.parseAddress(data.toAddress, {
+      config: lumosConfig,
+    });
+
+    const indexer = network.network.indexer;
+
+    // TransactionSkeleton
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: indexer,
+    });
+
+    const nftType = {
+      codeHash: data.nft.type_script.code_hash,
+      hashType: data.nft.type_script.hash_type,
+      args: data.nft.type_script.args,
+    } as Script;
+
+    const nftCollector = indexer.collector({
+      type: nftType,
+      lock: fromScript,
+    });
+
+    let nftCell: Cell | undefined;
+    for await (const cell of nftCollector.collect()) {
+      nftCell = cell;
+      break;
+    }
+
+    if (!nftCell) {
+      throw new Error(
+        "Owner do not have an NFT cell yet, please call mint first"
+      );
+    }
+
+    const sporeScript = getSporeScript(
+      sporeConfig,
+      "Spore",
+      nftCell.cellOutput.type!
+    );
+
+    const injectLiveSporeCellResult = await injectLiveSporeCell({
+      txSkeleton,
+      cell: nftCell,
+      addOutput: true,
+      updateOutput(cell) {
+        cell.cellOutput.lock = toScript;
+        return cell;
+      },
+      config: sporeConfig,
+    });
+
+    txSkeleton = injectLiveSporeCellResult.txSkeleton;
+
+    // Generate TransferSpore actions
+    const actionResult = generateTransferSporeAction({
+      txSkeleton,
+      inputIndex: injectLiveSporeCellResult.inputIndex,
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+    });
+
+    // Inject CobuildProof
+    if (sporeScript.behaviors?.cobuild) {
+      const injectCobuildProofResult = injectCommonCobuildProof({
+        txSkeleton: txSkeleton,
+        actions: actionResult.actions,
+      });
+      txSkeleton = injectCobuildProofResult.txSkeleton;
+    }
+
+    // Pay fee by the spore cell's capacity margin
+    txSkeleton = await payFeeByOutput({
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+      feeRate: data.feeRate,
+      txSkeleton,
+      config: sporeConfig,
+    });
+
+    const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
+
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
+      config: lumosConfig,
+    });
+
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
+    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
+
+    return {
+      tx: JSON.stringify(tx),
+      fee: fee.toString(),
+    };
+  };
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
     throw new Error("Not supported");

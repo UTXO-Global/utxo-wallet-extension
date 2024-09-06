@@ -33,10 +33,10 @@
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.1.1",
-    "@ckb-ccc/core": "^0.0.10-alpha.7",
-    "@ckb-lumos/base": "^0.23.0",
-    "@ckb-lumos/codec": "^0.23.0",
-    "@ckb-lumos/lumos": "^0.23.0",
+    "@ckb-ccc/core": "^0.0.14-alpha.0",
+    "@ckb-lumos/base": "^0.24.0-next.2",
+    "@ckb-lumos/codec": "^0.24.0-next.2",
+    "@ckb-lumos/lumos": "^0.24.0-next.2",
     "@exact-realty/multipart-parser": "^1.0.14",
     "@headlessui/react": "2.0.4",
     "@heroicons/react": "2.1.1",
@@ -60,6 +60,7 @@
     "koa-compose": "4.1.0",
     "light-bolt11-decoder": "^3.1.1",
     "lodash": "^4.17.21",
+    "node-fetch": "^3.3.2",
     "qr-code-styling": "1.6.0-rc.1",
     "rc-progress": "4.0.0",
     "react": "18.3.1",
@@ -75,7 +76,6 @@
     "swiper": "^10.0.4",
     "varuint-bitcoin": "^1.1.2",
     "wif": "^4.0.0",
-    "xhr2": "^0.2.1",
     "zustand": "4.5.2"
   },
   "devDependencies": {
