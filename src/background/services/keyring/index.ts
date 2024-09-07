@@ -463,30 +463,28 @@ class KeyringService {
       depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
     });
 
-    for (const cell of tokensCell) {
-      txSkeleton = await commons.common.setupInputCell(txSkeleton, cell, null, {
-        config: lumosConfig,
-      });
-    }
+    txSkeleton = addCellDep(txSkeleton, {
+      outPoint: {
+        txHash: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.TX_HASH,
+        index: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.INDEX,
+      },
+      depType: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.DEP_TYPE,
+    });
+
+    txSkeleton = txSkeleton.update("inputs", (inputs) =>
+      inputs.push(...tokensCell)
+    );
 
     txSkeleton = txSkeleton.update("outputs", (outputs) =>
-      outputs.update(0, (cell) => {
-        let recap = BI.from(cell!.cellOutput.capacity);
-        if (isAddressTypeJoy) {
-          recap = recap.add(joyCapacityAddMore);
-        }
-        return {
-          ...cell!,
-          cellOutput: {
-            ...cell!.cellOutput,
-            capacity: recap.toHexString(),
-            lock: toScript,
-            type: xUdtType,
-          },
-          data: ccc.hexFrom(
-            ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
-          ),
-        };
+      outputs.push({
+        cellOutput: {
+          capacity: tokensCell[0].cellOutput.capacity,
+          lock: toScript,
+          type: xUdtType,
+        },
+        data: ccc.hexFrom(
+          ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
+        ),
       })
     );
 
@@ -540,7 +538,7 @@ class KeyringService {
       inputs.push(...collectedCells)
     );
 
-    if (totalCapacity.gte(neededCapacity)) {
+    if (totalCapacity.gt(neededCapacity)) {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -564,6 +562,56 @@ class KeyringService {
         config: lumosConfig,
       }
     );
+
+    const firstIndex = txSkeleton
+      .get("inputs")
+      .findIndex(
+        (input) =>
+          input.cellOutput.lock.codeHash === fromScript.codeHash &&
+          input.cellOutput.lock.hashType === fromScript.hashType &&
+          input.cellOutput.lock.args === fromScript.args
+      );
+
+    if (firstIndex !== -1) {
+      while (firstIndex >= txSkeleton.get("witnesses").size) {
+        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+          witnesses.push("0x")
+        );
+      }
+      let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
+      const newWitnessArgs: WitnessArgs = {
+        /* 65-byte zeros in hex */
+        lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      };
+
+      if (witness !== "0x") {
+        const witnessArgs = blockchain.WitnessArgs.unpack(
+          bytes.bytify(witness)
+        );
+        const lock = witnessArgs.lock;
+        if (
+          !!lock &&
+          !!newWitnessArgs.lock &&
+          !bytes.equal(lock, newWitnessArgs.lock)
+        ) {
+          throw new Error(
+            "Lock field in first witness is set aside for signature!"
+          );
+        }
+        const inputType = witnessArgs.inputType;
+        if (inputType) {
+          newWitnessArgs.inputType = inputType;
+        }
+        const outputType = witnessArgs.outputType;
+        if (outputType) {
+          newWitnessArgs.outputType = outputType;
+        }
+      }
+      witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.set(firstIndex, witness)
+      );
+    }
 
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
       config: lumosConfig,
