@@ -7,12 +7,12 @@ const NftCard = ({ nft }: { nft: any }) => {
       className="rounded-lg border border-grey-300 group cursor-pointer relative h-full flex flex-col justify-between"
       style={{ boxShadow: "0px 2.52px 12.59px 0px #0000000D" }}
     >
-      <div className="flex justify-center items-center h-[128px] p-2">
+      <div className="flex justify-center items-center h-full">
         <img
           src={nft.imageUrl || "/nft-default.png"}
           alt=""
-          className={cn("max-w mix-blend-multiply p-2", {
-            "h-full": nft.contentType !== "dob/0",
+          className={cn("max-w mix-blend-multiply rounded-t-lg", {
+            "w-full": nft.contentType !== "dob/0",
           })}
         />
       </div>

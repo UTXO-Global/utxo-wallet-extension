@@ -56,16 +56,16 @@ const DetailNFT = () => {
         </div>
       ) : detailNFT ? (
         <>
-          <div className="h-[179px] bg-[#FAFAFA] flex justify-center items-center p-4">
+          <div className="flex justify-center items-center p-4">
             <img
               src={detailNFT.imageUrl || "/nft-default.png"}
               alt={detailNFT.name}
-              className={cn("rounded mix-blend-multiply p-2", {
-                "h-full": !!detailNFT.imageUrl,
+              className={cn("rounded-lg mix-blend-multiply w-full", {
+                "py-16 !w-36": !detailNFT.imageUrl,
               })}
             />
           </div>
-          <div className="p-4 flex-auto">
+          <div className="px-4 flex-auto pb-4">
             <div className="flex justify-between items-center">
               <div>
                 {!!detailNFT.collection.name && (
@@ -95,6 +95,14 @@ const DetailNFT = () => {
                 onClick={onViewExplorer}
               />
             </div>
+            <div className="mt-4">
+              <button
+                className={cn("btn primary w-full")}
+                onClick={onNextToTransfer}
+              >
+                {t("detailNFT.transfer")}
+              </button>
+            </div>
             <div className="mt-4 rounded-lg bg-[#FAFAFA] p-4 grid gap-4">
               <div className="flex justify-between">
                 <p className="text-base font-medium text-[#787575]">Cluster</p>
@@ -122,7 +130,6 @@ const DetailNFT = () => {
                   </p>
                 </div>
               )}
-
               <div className="flex justify-between">
                 <div className="flex gap-1 items-center">
                   <p className="text-base font-medium text-[#787575]">
@@ -181,12 +188,6 @@ const DetailNFT = () => {
               </div>
             </div>
           </div>
-          <button
-            className={cn("btn primary mx-4 mb-4 standard:m-6 standard:mb-3")}
-            onClick={onNextToTransfer}
-          >
-            {t("detailNFT.transfer")}
-          </button>
         </>
       ) : (
         <div className="flex flex-col items-center justify-center mt-10">
