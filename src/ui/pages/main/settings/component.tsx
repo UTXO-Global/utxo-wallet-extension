@@ -77,7 +77,8 @@ const Settings = () => {
     {
       icon: <IcnHelpSupport className={ICON_CN} />,
       label: t("settings.help_n_support"),
-      onClick: () => chrome.tabs.create({ url: TELEGRAM_HELP_AND_SUPPORT }),
+      link: TELEGRAM_HELP_AND_SUPPORT,
+      target: "_blank",
       gaLabel: "helpAndSupport",
     },
   ];

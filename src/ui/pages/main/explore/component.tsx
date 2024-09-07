@@ -113,11 +113,10 @@ const Explorer = () => {
               <p className="text-xl leading-7 text-primary font-medium">
                 {t("explore.partners")}
               </p>
-              <div
+              <a
                 className="text-white text-xs leading-[18px] font-medium bg-primary p-2 rounded flex justify-center items-center gap-1 cursor-pointer"
-                onClick={() =>
-                  chrome.tabs.create({ url: TELEGRAM_PARTNERSHIP })
-                }
+                href={TELEGRAM_PARTNERSHIP}
+                target="_blank"
               >
                 <svg
                   width="16"
@@ -140,34 +139,49 @@ const Explorer = () => {
                 </svg>
 
                 <span>{t("settings.become_a_partner")}</span>
-              </div>
+              </a>
             </div>
             <div className="mt-4 grid border border-grey-300 rounded-lg last:*:border-b-0">
-              {partners.map((z, i) => (
-                <a
-                  key={i}
-                  href={z.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300 group hover:bg-grey-300"
-                >
-                  <div className="w-12 h-12 flex items-center justify-center bg-grey-300 group-hover:bg-grey-200 rounded-xl">
+              {!partners || partners.length === 0 ? (
+                <a href={TELEGRAM_PARTNERSHIP} target="_blank" rel="noreferrer">
+                  <div className="rounded-[8px] overflow-hidden">
                     <img
-                      src={z.image}
-                      alt={z.title}
-                      className="w-[33px] h-[33px] object-cover rounded-full"
+                      src="/partnership.png"
+                      alt="Partnership"
+                      className="object-cover max-h-[120px] w-full rounded-t-lg"
                     />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm leading-5 font-medium text-primary">
-                      {z.title}
-                    </p>
-                    <p className="text-sm leading-[18px] text-[#787575] mt-[2px]">
-                      {z.description}
-                    </p>
+                    <div className="px-4 py-[14px] bg-grey-300 hover:bg-grey-200 text-sm leading-[18px] text-primary rounded-b-[8px]">
+                      Partnership Inquiry
+                    </div>
                   </div>
                 </a>
-              ))}
+              ) : (
+                partners.map((z, i) => (
+                  <a
+                    key={i}
+                    href={z.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300 group hover:bg-grey-300"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center bg-grey-300 group-hover:bg-grey-200 rounded-xl">
+                      <img
+                        src={z.image}
+                        alt={z.title}
+                        className="w-[33px] h-[33px] object-cover rounded-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm leading-5 font-medium text-primary">
+                        {z.title}
+                      </p>
+                      <p className="text-sm leading-[18px] text-[#787575] mt-[2px]">
+                        {z.description}
+                      </p>
+                    </div>
+                  </a>
+                ))
+              )}
             </div>
           </div>
         </>
