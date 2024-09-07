@@ -475,18 +475,22 @@ class KeyringService {
       inputs.push(...tokensCell)
     );
 
-    txSkeleton = txSkeleton.update("outputs", (outputs) =>
-      outputs.push({
+    txSkeleton = txSkeleton.update("outputs", (outputs) => {
+      let recap = BI.from(tokensCell[0].cellOutput.capacity);
+      if (isAddressTypeJoy) {
+        recap = recap.add(joyCapacityAddMore);
+      }
+      return outputs.push({
         cellOutput: {
-          capacity: tokensCell[0].cellOutput.capacity,
+          capacity: recap.toHexString(),
           lock: toScript,
           type: xUdtType,
         },
         data: ccc.hexFrom(
           ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
         ),
-      })
-    );
+      });
+    });
 
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
