@@ -137,6 +137,7 @@
       "included": "已包括",
       "not_included": "未包括",
       "confirm": "确认",
+      "confirming": "确认",
       "confirmation": "确认"
     },
     "create_send": {
