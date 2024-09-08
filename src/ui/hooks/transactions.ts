@@ -349,7 +349,7 @@ export function usePushCkbTxCallback() {
 
           const { data } = await res.json();
           setIsSent(data.attributes?.tx_status === "committed");
-        }, 10000);
+        }, 11000);
       }
     } catch (e) {
       console.log(e);

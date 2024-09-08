@@ -200,7 +200,7 @@ export default function TransferNFT() {
                   <div className="flex gap-2 items-center">
                     <ShortBalance
                       balance={currentAccount.balance}
-                      zeroDisplay={2}
+                      zeroDisplay={6}
                     />
 
                     <span className="text-[#787575]">

@@ -46,7 +46,7 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
                 </div>
               </div>
               <div className="text-sm leading-5 font-medium">
-                <ShortBalance balance={tokenAmount} zeroDisplay={2} />
+                <ShortBalance balance={tokenAmount} zeroDisplay={6} />
               </div>
             </div>
           );

@@ -57,6 +57,10 @@ const ConfirmSend = () => {
         throw new Error("Failed pushing transaction");
       }
       setTxId(txId);
+      navigate(location.pathname, {
+        state: { ...location.state, isSending: true },
+        replace: true,
+      });
     } catch (e) {
       toast.error(e.message);
       console.error(e);
@@ -147,9 +151,6 @@ const ConfirmSend = () => {
             {isProgressing
               ? t("send.confirm_send.confirming")
               : t("send.confirm_send.confirm")}
-            {isProgressing && (
-              <ReactLoading type="spin" color="#FFF" width={16} height={16} />
-            )}
           </button>
         </div>
       </div>
