@@ -45,7 +45,9 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     undefined
   );
 
-  const [currentPrice, setCurrentPrice] = useState<number | undefined>();
+  const [currentPrice, setCurrentPrice] = useState<number | undefined>(
+    undefined
+  );
   const [changePercent24Hr, setChangePercent24Hr] = useState<
     number | undefined
   >();
@@ -99,7 +101,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     setInscriptions,
     apiController.getInscriptions,
     inscriptions,
-    "inscription_id"
+    "rawHex"
   );
 
   const forceUpdateInscriptions = useCallback(async () => {
@@ -119,7 +121,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
   const updateTokens = useCallback(async () => {
     if (!currentAccount?.id) return;
     const tokens = await apiController.getTokens(
-      ""
+      currentAccount.accounts[0].address
       // TODO: currentAccount.address
     );
     setTokens(tokens);
@@ -131,19 +133,11 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
       await Promise.allSettled([
         updateAccountBalance(),
         updateTransactions(force),
-        updateInscriptions(force),
         updateFeeRates(),
-        updateTokens(),
       ]);
       setLoading(false);
     },
-    [
-      updateAccountBalance,
-      updateTransactions,
-      updateInscriptions,
-      updateFeeRates,
-      updateTokens,
-    ]
+    [updateAccountBalance, updateTransactions, updateFeeRates, updateTokens]
   );
 
   const throttleUpdate = useDebounceCall(updateAll, 300);
@@ -177,18 +171,20 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
     if (
       inscriptions.length < 60 ||
-      inscriptionLocations.includes(`${inc.txid}:${inc.vout}:${inc.offset}`)
+      inscriptionLocations.includes(
+        `${inc.rawHex}:${inc.outpoint}:${inc.offset}`
+      )
     )
       return;
 
     const additionalInscriptions = await apiController.getPaginatedInscriptions(
       "",
       // TODO: currentAccount?.name,
-      `${inc.txid}:${inc.vout}:${inc.offset}`
+      `${inc.rawHex}:${inc.outpoint}:${inc.offset}`
     );
     setInscriptionLocations([
       ...inscriptionLocations,
-      `${inc.txid}:${inc.vout}:${inc.offset}`,
+      `${inc.rawHex}:${inc.outpoint}:${inc.offset}`,
     ]);
     if (!additionalInscriptions) return;
     if (additionalInscriptions.length > 0) {
@@ -236,13 +232,13 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
       );
       if (!isUpdated) {
         const txIdIndex = inscriptions.findIndex(
-          (f) => f.txid === inscriptionLocations[chainIndex]
+          (f) => f.rawHex === inscriptionLocations[chainIndex]
         );
         for (let i = 1; i <= 3; i++) {
           const inc = inscriptions[txIdIndex - i];
 
           isUpdated = await fetchAndUpdateInscriptions(
-            `${inc.txid}:${inc.vout}:${inc.offset}`,
+            `${inc.rawHex}:${inc.outpoint}:${inc.offset}`,
             txIdIndex - i
           );
           if (isUpdated) {
@@ -251,7 +247,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
               chainIndex,
               updatedInscriptionTxIds.length - 1
             );
-            updatedInscriptionTxIds.push(inscriptions[txIdIndex - i].txid);
+            updatedInscriptionTxIds.push(inscriptions[txIdIndex - i].rawHex);
             setInscriptionLocations(updatedInscriptionTxIds);
             return;
           }
@@ -286,7 +282,11 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
   const loadNativeCoinPrice = useCallback(async () => {
     try {
-      if (apiController && apiController.getNativeCoinPrice) {
+      if (
+        apiController &&
+        apiController.getNativeCoinPrice &&
+        currentPrice === undefined
+      ) {
         const data = await apiController.getNativeCoinPrice();
         setCurrentPrice(data.usd);
         setChangePercent24Hr(data.changePercent24Hr);
@@ -295,7 +295,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     } catch (e) {
       console.log("Load native coin price: ", e.message);
     }
-  }, [apiController, updateLastBlock]);
+  }, [apiController, updateLastBlock, currentPrice]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -309,9 +309,9 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
         updateAccountBalance(),
         updateTransactions(),
         updateLastBlock(),
-        inscriptionIntervalUpdate(),
+        // inscriptionIntervalUpdate(),
         updateFeeRates(),
-        updateTokens(),
+        // updateTokens(),
       ]);
     }, 10000);
     return () => {
@@ -321,9 +321,9 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     updateAccountBalance,
     updateTransactions,
     updateLastBlock,
-    inscriptionIntervalUpdate,
+    // inscriptionIntervalUpdate,
     updateFeeRates,
-    updateTokens,
+    // updateTokens,
     currentAccount?.id,
   ]);
 

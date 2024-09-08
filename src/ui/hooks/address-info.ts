@@ -9,6 +9,7 @@ import { isCkbNetwork as IsCKBNetwork } from "@/shared/networks";
 
 export const useGetCKBAddressInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
   const [addressInfo, setAddressInfo] = useState<CKBAddressInfo | undefined>(
@@ -23,6 +24,9 @@ export const useGetCKBAddressInfo = () => {
     if (addressInfo !== undefined) return;
 
     if (isLoading) return;
+
+    if (isLoaded && !addressInfo) return;
+
     setIsLoading(true);
 
     try {
@@ -45,7 +49,8 @@ export const useGetCKBAddressInfo = () => {
       console.error(e);
     }
     setIsLoading(false);
-  }, [isLoading, currentAccount]);
+    setIsLoaded(addressInfo !== undefined);
+  }, [isLoading, currentAccount, isLoaded]);
 
   useEffect(() => {
     if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {

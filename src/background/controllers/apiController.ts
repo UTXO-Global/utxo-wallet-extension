@@ -129,11 +129,6 @@ class ApiController implements IApiController {
 
   async getOrdUtxos(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (
-      networkData.slug === "btc_testnet_4" ||
-      networkData.slug === "btc_testnet"
-    )
-      return [];
     const data = await fetchEsplora<ApiOrdUTXO[]>({
       path: `${networkData.ordUrl}/address/${address}/ords`,
       headers: {
@@ -151,12 +146,19 @@ class ApiController implements IApiController {
 
   async getFees() {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    const data = await fetchEsplora({
-      path: `${networkData.esploraUrl}/fee-estimates`,
-    });
+    if (isBitcoinNetwork(networkData.network)) {
+      const data = await fetchEsplora({
+        path: `${networkData.esploraUrl}/fee-estimates`,
+      });
+      return {
+        slow: Number((data["6"] as number)?.toFixed(0)),
+        fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+      };
+    }
+
     return {
-      slow: Number((data["6"] as number)?.toFixed(0)),
-      fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+      slow: 1000,
+      fast: 2000,
     };
   }
 

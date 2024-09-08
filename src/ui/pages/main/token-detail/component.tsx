@@ -9,7 +9,7 @@ import s from "./styles.module.scss";
 import TransactionList from "@/ui/components/transactions-list";
 import { IcnCopy, IcnReceive, IcnSend } from "@/ui/components/icons";
 import toast from "react-hot-toast";
-import { isCkbNetwork } from "@/shared/networks";
+import { NETWORK_ICON, isCkbNetwork } from "@/shared/networks";
 import { t } from "i18next";
 import cn from "classnames";
 import Analytics from "@/ui/utils/gtm";
@@ -36,8 +36,11 @@ const TokenDetail = () => {
   const navigate = useNavigate();
   const { isLoading: addressInfoLoading, addressInfo } = useGetCKBAddressInfo();
 
-  const isCKBToken = useMemo(() => {
-    return type === "ckb" && typeHash === "ckb";
+  const isNativeToken = useMemo(() => {
+    return (
+      type === currentNetwork.coinSymbol &&
+      typeHash === currentNetwork.coinSymbol
+    );
   }, [type, typeHash]);
 
   const currentToken = useMemo(() => {
@@ -49,12 +52,15 @@ const TokenDetail = () => {
   }, [addressInfoLoading, addressInfo]);
 
   const getToken = async () => {
-    if (type === "ckb" && typeHash === "ckb") {
+    if (
+      type === currentNetwork.coinSymbol &&
+      typeHash === currentNetwork.coinSymbol
+    ) {
       setTokenInfo({
         attributes: {
-          symbol: "CKB",
-          full_name: "Nervos CKB",
-          icon_file: "/ckb.png",
+          symbol: currentNetwork.coinSymbol,
+          full_name: currentNetwork.coinName,
+          icon_file: NETWORK_ICON[currentNetwork.slug],
           decimal: "8",
         },
       });
@@ -92,7 +98,7 @@ const TokenDetail = () => {
   }, [currentAccount.ordinalBalance]);
 
   const tokenBalence = useMemo(() => {
-    if (isCKBToken) {
+    if (isNativeToken) {
       return currentAccount.balance ? Number(currentAccount.balance) : 0;
     }
 
@@ -147,7 +153,7 @@ const TokenDetail = () => {
     });
     navigate(path, {
       state: {
-        token: !isCKBToken ? tokenInfo : undefined,
+        token: !isNativeToken && tokenInfo ? tokenInfo : undefined,
       },
     });
   };
@@ -186,7 +192,7 @@ const TokenDetail = () => {
                 </span>
               )}
             </div>
-            {!isCKBToken && (
+            {!isNativeToken && tokenInfo && (
               <>
                 {tokenInfo.attributes.full_name?.length <= 10 && (
                   <div className="h-[21px] w-[1px] bg-grey-200" />
@@ -210,7 +216,7 @@ const TokenDetail = () => {
               </>
             )}
           </div>
-          {!isCKBToken && (
+          {!isNativeToken && (
             <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
               <p>{shortAddress(tokenInfo.attributes.type_hash, 5)}</p>
               <IcnCopy
@@ -240,7 +246,7 @@ const TokenDetail = () => {
               <ShortBalance balance={tokenBalence} zeroDisplay={18} />
             </div>
 
-            {isCKBToken && (
+            {isNativeToken && isCkbNetwork(currentNetwork.network) && (
               <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
                 <label className="text-base">
                   {t("wallet_page.occupied_balance")}

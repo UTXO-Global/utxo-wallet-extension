@@ -451,7 +451,7 @@ const TransactionList = ({
                                 balance={Math.abs(
                                   Number(amount.toString().replace(/,/g, ""))
                                 )}
-                                zeroDisplay={1}
+                                zeroDisplay={6}
                                 className="!text-sm !inline-block"
                               />
                             </span>
