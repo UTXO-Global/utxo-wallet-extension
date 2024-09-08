@@ -130,6 +130,7 @@
   },
   "new_account": {
     "max_length_error": "Maximum name length is 16",
+    "empty_name": "The wallet name should not be empty",
     "name_taken_error": "Name for this account is already taken",
     "account_created_message": "Created new account",
     "enter_name_label": "Enter The Name",
