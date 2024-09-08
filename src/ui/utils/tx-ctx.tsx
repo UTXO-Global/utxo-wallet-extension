@@ -21,6 +21,20 @@ import {
   useGetCurrentNetwork,
 } from "../states/walletState";
 
+const LS = {
+  getItem: async (key: string) => {
+    return (await chrome.storage.local.get(key))[key];
+  },
+  setItem: async (key: string, val: string) => {
+    return await chrome.storage.local.set({ [key]: val });
+  },
+  removeItems: async (key: string) => {
+    return await chrome.storage.local.remove([key]);
+  },
+};
+
+const NATIVE_COIN_PRICES_KEY = "utxoCoinPrices";
+
 const useTransactionManager = (): TransactionManagerContextType | undefined => {
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
@@ -280,22 +294,69 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     forceUpdateInscriptions,
   ]);
 
+  const getNativeCoinPricesFromLS = async (symbol: string) => {
+    const prices = await LS.getItem(NATIVE_COIN_PRICES_KEY);
+    if (!prices || typeof prices !== "object") {
+      return undefined;
+    }
+
+    if (!prices[symbol]) return undefined;
+
+    if (!prices[symbol]["expired"]) return undefined;
+
+    if (prices[symbol]["expired"] < new Date().getTime()) return undefined;
+
+    return {
+      usd: Number(prices[symbol]["usd"]),
+      changePercent24Hr: Number(prices[symbol]["changePercent24Hr"]),
+    };
+  };
+
+  const setNativeCoinPricesToLS = async (
+    symbol: string,
+    price: number,
+    changePercent24Hr: number
+  ) => {
+    let prices = await LS.getItem(NATIVE_COIN_PRICES_KEY);
+    if (!prices || typeof prices !== "object") {
+      prices = {};
+    }
+
+    prices[symbol] = {
+      expired: new Date().getTime() + 120000, // 60s or 60000ms
+      usd: Number(price),
+      changePercent24Hr: Number(changePercent24Hr),
+    };
+
+    await LS.setItem(NATIVE_COIN_PRICES_KEY, prices);
+  };
+
   const loadNativeCoinPrice = useCallback(async () => {
     try {
+      let pricesFromCache = await getNativeCoinPricesFromLS(
+        currentNetwork.coinSymbol
+      );
+
       if (
+        !pricesFromCache &&
         apiController &&
-        apiController.getNativeCoinPrice &&
-        currentPrice === undefined
+        apiController.getNativeCoinPrice
       ) {
-        const data = await apiController.getNativeCoinPrice();
-        setCurrentPrice(data.usd);
-        setChangePercent24Hr(data.changePercent24Hr);
+        pricesFromCache = await apiController.getNativeCoinPrice();
         await updateLastBlock();
+        await setNativeCoinPricesToLS(
+          currentNetwork.coinSymbol,
+          pricesFromCache.usd,
+          pricesFromCache.changePercent24Hr
+        );
       }
+
+      setCurrentPrice(pricesFromCache?.usd || 0);
+      setChangePercent24Hr(pricesFromCache?.changePercent24Hr || 0);
     } catch (e) {
       console.log("Load native coin price: ", e.message);
     }
-  }, [apiController, updateLastBlock, currentPrice]);
+  }, [apiController, updateLastBlock, currentNetwork]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
