@@ -85,6 +85,7 @@
   },
   "new_account": {
     "max_length_error": "Максимальная длина имени - 16",
+    "empty_name": "Имя кошелька не должно быть пустым",
     "name_taken_error": "Имя для этого аккаунта уже занято",
     "account_created_message": "Новый аккаунт создан",
     "enter_name_label": "Введите имя:",

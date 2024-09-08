@@ -37,6 +37,7 @@ const NewAccount = () => {
 
   const createNewAcc = async ({ name }: FormType) => {
     if (name.length > 16) return toast.error(t("new_account.max_length_error"));
+    if (name.length == 0) return toast.error(t("new_account.empty_name"));
     if (nameAlreadyExists(name))
       return toast.error(t("new_account.name_taken_error"));
     setLoading(true);

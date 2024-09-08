@@ -85,6 +85,7 @@
   },
   "new_account": {
     "max_length_error": "이름의 최대 길이는 16입니다",
+    "empty_name": "지갑 이름은 비워둘 수 없습니다",
     "name_taken_error": "이 계정의 이름은 이미 사용 중입니다",
     "account_created_message": "새 계정 생성",
     "enter_name_label": "이름 입력:",
