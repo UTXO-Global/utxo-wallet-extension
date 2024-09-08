@@ -15,7 +15,10 @@
     "connected_sites": "연결된 사이트",
     "expand_view": "보기 확대",
     "change_password": "비밀번호 변경",
-    "address_type": "주소 유형"
+    "address_type": "주소 유형",
+    "wallet": "지갑",
+    "help_n_support": "도움말 및 지원",
+    "become_a_partner": "파트너가 되세요"
   },
   "components": {
     "layout": {
@@ -118,9 +121,11 @@
       "from_address": "보내는 주소",
       "amount": "금액",
       "fee": "수수료",
+      "transaction_fee": "거래 수수료",
       "included": "포함",
       "not_included": "포함되지 않음",
-      "confirm": "확인"
+      "confirm": "확인",
+      "confirmation": "확인"
     },
     "create_send": {
       "minimum_amount_error": "최소 금액은 0.0001 BEL입니다",
@@ -142,6 +147,7 @@
       "continue": "계속",
       "fee_input": {
         "fast": "빠르게",
+        "standard": "기준",
         "slow": "느리게",
         "custom": "사용자 지정"
       },
@@ -208,7 +214,9 @@
   },
   "detailNFT": {
     "type": "유형",
+    "content_type": "콘텐츠 유형",
     "occupied": "가득차 있는",
-    "creator": "창조자"
+    "creator": "창조자",
+    "transfer": "옮기다"
   }
 }

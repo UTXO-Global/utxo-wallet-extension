@@ -9,10 +9,13 @@ import { shortAddress } from "@/shared/utils/transactions";
 import { browserTabsCreate } from "@/shared/utils/browser";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { formatNumber } from "@/shared/utils";
+import cn from "classnames";
+import { useNavigate } from "react-router-dom";
 
 const DetailNFT = () => {
   const { isLoading, detailNFT } = useGetDetailNFT();
   const currentNetwork = useGetCurrentNetwork();
+  const navigate = useNavigate();
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(detailNFT.type_script.args);
@@ -26,29 +29,61 @@ const DetailNFT = () => {
     });
   };
 
+  const onNextToTransfer = async () => {
+    if (!detailNFT) {
+      return;
+    }
+
+    try {
+      navigate(
+        `/pages/transfer-nft/${detailNFT.collection.sn}/${detailNFT.token_id}`,
+        {
+          state: {
+            nft: detailNFT,
+          },
+        }
+      );
+    } catch (e) {
+      console.log("Transfer: ", e);
+    }
+  };
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col justify-between">
       {isLoading ? (
         <div className="flex justify-center mt-10 py-6">
           <Loading type="spin" width={50} color="#ODODOD" />
         </div>
       ) : detailNFT ? (
         <>
-          <div className="h-[179px] bg-[#FAFAFA] flex justify-center items-center">
+          <div className="flex justify-center items-center p-4">
             <img
-              src={detailNFT.imageUrl}
+              src={detailNFT.imageUrl || "/nft-default.png"}
               alt={detailNFT.name}
-              className="h-full"
+              className={cn("rounded-lg mix-blend-multiply w-full", {
+                "py-16 !w-36": !detailNFT.imageUrl,
+              })}
             />
           </div>
-          <div className="p-4">
-            <div className="flex justify-between items-start">
+          <div className="px-4 flex-auto pb-4">
+            <div className="flex justify-between items-center">
               <div>
-                <p className="text-[20px] leading-[28px] font-medium text-primary">
-                  {detailNFT.collection.name || "<No Cluster>"}
-                </p>
-                <div className="text-[14px] leading-[18px] text-[#787575] mt-[2px] flex items-center gap-2">
-                  <p>{shortAddress(detailNFT.type_script.args, 14)}</p>
+                {!!detailNFT.collection.name && (
+                  <p className="text-[20px] leading-[28px] font-medium text-primary">
+                    {detailNFT.collection.name}
+                  </p>
+                )}
+
+                <div
+                  className={cn(
+                    "text-[14px] leading-[18px] text-[#787575] mt-[2px] flex items-center gap-1",
+                    {
+                      "!text-[20px] !leading-[28px] !font-medium !text-primary":
+                        !detailNFT.collection.name,
+                    }
+                  )}
+                >
+                  <p>{shortAddress(detailNFT.type_script.args, 8)}</p>
                   <IcnCopy
                     className="stroke-[#787575] transition-colors cursor-pointer w-4 h-4"
                     onClick={onCopy}
@@ -59,6 +94,14 @@ const DetailNFT = () => {
                 className="w-[18px] transition-colors hover:stroke-[#787575] cursor-pointer"
                 onClick={onViewExplorer}
               />
+            </div>
+            <div className="mt-4">
+              <button
+                className={cn("btn primary w-full")}
+                onClick={onNextToTransfer}
+              >
+                {t("detailNFT.transfer")}
+              </button>
             </div>
             <div className="mt-4 rounded-lg bg-[#FAFAFA] p-4 grid gap-4">
               <div className="flex justify-between">
@@ -77,6 +120,16 @@ const DetailNFT = () => {
                 </p>
               </div>
 
+              {!!detailNFT.contentType && (
+                <div className="flex justify-between">
+                  <p className="text-base font-medium text-[#787575]">
+                    {t("detailNFT.content_type")}
+                  </p>
+                  <p className="text-base font-medium text-primary text-right">
+                    {detailNFT.contentType}
+                  </p>
+                </div>
+              )}
               <div className="flex justify-between">
                 <div className="flex gap-1 items-center">
                   <p className="text-base font-medium text-[#787575]">
@@ -109,9 +162,13 @@ const DetailNFT = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <Tooltip anchorSelect=".occupied" place="top" className="!text-[12px] !leading-[16px] !bg-[#0d0d0d] !text-white !px-2 !py-[6px]">
-                    The amount of CKByte occupied <br /> on-chain, redeemable upon
-                    melt.
+                  <Tooltip
+                    anchorSelect=".occupied"
+                    place="top"
+                    className="!text-[12px] !leading-[16px] !bg-[#0d0d0d] !text-white !px-2 !py-[6px]"
+                  >
+                    The amount of CKByte occupied <br /> on-chain, redeemable
+                    upon melt.
                   </Tooltip>
                 </div>
 
@@ -126,7 +183,7 @@ const DetailNFT = () => {
                   {t("detailNFT.creator")}
                 </p>
                 <p className="text-base font-medium text-primary text-right">
-                  {detailNFT.collection.creator || "--"}
+                  {shortAddress(detailNFT.collection.creator || "--", 8)}
                 </p>
               </div>
             </div>

@@ -15,7 +15,10 @@
     "connected_sites": "Подключенные сайты",
     "expand_view": "Развернуть обзор",
     "change_password": "Сменить пароль",
-    "address_type": "Тип адреса"
+    "address_type": "Тип адреса",
+    "wallet": "Кошелек",
+    "help_n_support": "Помощь и поддержка",
+    "become_a_partner": "Стать партнером"
   },
   "components": {
     "layout": {
@@ -118,9 +121,11 @@
       "from_address": "С адреса",
       "amount": "Сумма",
       "fee": "Сбор",
+      "transaction_fee": "Комиссия за транзакцию",
       "included": "включено",
       "not_included": "не включено",
-      "confirm": "Подтвердить"
+      "confirm": "Подтвердить",
+      "confirmation": "Подтверждение"
     },
     "create_send": {
       "minimum_amount_error": "Минимальная сумма - 0.0001 BTC",
@@ -142,6 +147,7 @@
       "continue": "Продолжить",
       "fee_input": {
         "fast": "Быстро",
+        "standard": "Стандарт",
         "slow": "Медленно",
         "custom": "Свой вариант"
       },
@@ -208,7 +214,9 @@
   },
   "detailNFT": {
     "type": "Тип",
+    "content_type": "Тип контента",
     "occupied": "Занятый",
-    "creator": "Создатель"
+    "creator": "Создатель",
+    "transfer": "Передача"
   }
 }

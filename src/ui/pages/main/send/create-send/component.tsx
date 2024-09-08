@@ -99,11 +99,19 @@ const CreateSend = () => {
     if (!formData.address) return false;
     if (formData.address?.trim().length <= 0) return false;
 
-    if (Number(formData.amount) < 0.00001 && !inscriptionTransaction) {
+    if (Number(formData.amount) <= 0) {
       return false;
     }
 
-    if (Number(formData.amount) > (currentAccount?.balance ?? 0)) {
+    if (
+      Number(formData.amount) < 0.00001 &&
+      !inscriptionTransaction &&
+      !isTokenTransaction
+    ) {
+      return false;
+    }
+
+    if (Number(formData.amount) > (balance ?? 0)) {
       return false;
     }
 
@@ -120,7 +128,7 @@ const CreateSend = () => {
     }
 
     return true;
-  }, [formData]);
+  }, [formData, balance, isTokenTransaction, token]);
 
   const send = async ({
     address,
@@ -130,13 +138,17 @@ const CreateSend = () => {
   }: FormType) => {
     try {
       setLoading(true);
-      if (Number(amount) < 0.00001 && !inscriptionTransaction) {
+      if (
+        Number(amount) < 0.00001 &&
+        !inscriptionTransaction &&
+        !isTokenTransaction
+      ) {
         return toast.error(t("send.create_send.minimum_amount_error"));
       }
       if (address.trim().length <= 0) {
         return toast.error(t("send.create_send.address_error"));
       }
-      if (Number(amount) > (currentAccount?.balance ?? 0)) {
+      if (Number(amount) > (balance ?? 0)) {
         return toast.error(t("send.create_send.not_enough_money_error"));
       }
       if (typeof feeRate !== "number" || !feeRate || feeRate < 1) {
@@ -224,7 +236,7 @@ const CreateSend = () => {
   const onAmountChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData((prev) => ({
       ...prev,
-      amount: normalizeAmount(e.target.value),
+      amount: normalizeAmount(e.target.value, decimal),
     }));
     if (currentAccount?.balance > Number(e.target.value)) {
       setIncludeFeeLocked(false);
@@ -243,7 +255,10 @@ const CreateSend = () => {
     const isIncludeFee = !isTokenTransaction;
     setFormData((prev) => ({
       ...prev,
-      amount: balance.toString(),
+      amount: balance.toLocaleString("fullwide", {
+        useGrouping: false,
+        maximumFractionDigits: 100,
+      }),
       includeFeeInAmount: isIncludeFee,
     }));
   };

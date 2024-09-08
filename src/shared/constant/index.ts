@@ -34,3 +34,6 @@ export const FIREBASE_MESSAGING_SENDER_ID =
 export const FIREBASE_MEASUREMENT_ID = process.env.FIREBASE_MEASUREMENT_ID;
 export const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID;
 export const TOKEN_FILE_ICON_DEFAULT = "/coin.png";
+export const TELEGRAM_HELP_AND_SUPPORT = "https://t.me/utxoglobal/12";
+export const TELEGRAM_PARTNERSHIP = "https://t.me/utxoglobal/5";
+export const TELEGRAM_FEEDBACK = "https://t.me/utxoglobal/9";

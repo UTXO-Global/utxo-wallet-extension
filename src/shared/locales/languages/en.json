@@ -23,7 +23,9 @@
     "security_settings": "Security Settings",
     "address_type": "Address Type",
     "network": "Network",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "help_n_support": "Help & Support",
+    "become_a_partner": "Become a Partner"
   },
   "components": {
     "layout": {
@@ -170,9 +172,11 @@
       "from_address": "From Address",
       "amount": "Amount",
       "fee": "Fee",
+      "transaction_fee": "Transaction Fee",
       "included": "included",
       "not_included": "not included",
       "confirm": "Confirm",
+      "confirmation": "Confirmation",
       "inscription_id": "Inscription Id"
     },
     "create_send": {
@@ -196,6 +200,7 @@
       "fee_input": {
         "fast": "Fast",
         "slow": "Slow",
+        "standard": "Standard",
         "custom": "Custom"
       },
       "address_input": {
@@ -340,7 +345,9 @@
   },
   "detailNFT": {
     "type": "Type",
+    "content_type": "Content Type",
     "occupied": "Occupied",
-    "creator": "Creator"
+    "creator": "Creator",
+    "transfer": "Transfer"
   }
 }

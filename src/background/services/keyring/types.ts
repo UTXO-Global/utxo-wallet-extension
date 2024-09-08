@@ -1,5 +1,6 @@
 import type { ApiUTXO } from "@/shared/interfaces/api";
 import { ApiOrdUTXO } from "@/shared/interfaces/inscriptions";
+import { INFT } from "@/shared/interfaces/nft";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { Cell } from "@ckb-lumos/lumos";
 
@@ -36,6 +37,12 @@ export interface SendCkbToken extends SendBase {
 
 export interface SendOrd extends SendBase {
   utxos: ((ApiOrdUTXO & { isOrd?: boolean }) | ApiUTXO)[];
+}
+
+export interface TransferNFT {
+  toAddress: string;
+  feeRate: number;
+  nft: INFT;
 }
 
 interface BaseUserToSignInput {

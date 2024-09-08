@@ -1,4 +1,4 @@
-import type { Hex } from "@/background/services/keyring/types";
+import type { Hex, TransferNFT } from "@/background/services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { Inscription } from "@/shared/interfaces/inscriptions";
 import { ITransfer } from "@/shared/interfaces/token";
@@ -315,5 +315,51 @@ export function usePushCkbTxCallback() {
       }
     },
     [apiController]
+  );
+}
+
+export function useCreateNFTTxCallback() {
+  const currentAccount = useGetCurrentAccount();
+  const { selectedAccount, selectedWallet } = useWalletState((v) => ({
+    selectedAccount: v.selectedAccount,
+    selectedWallet: v.selectedWallet,
+  }));
+  const { apiController, keyringController } = useControllersState((v) => ({
+    apiController: v.apiController,
+    keyringController: v.keyringController,
+  }));
+  const { network } = useGetCurrentNetwork();
+
+  return useCallback(
+    async (data: TransferNFT) => {
+      if (selectedWallet === undefined || selectedAccount === undefined)
+        throw new Error("Failed to get current wallet or account");
+
+      if (!isCkbNetwork(network)) {
+        toast.error("Invalid network");
+        return {
+          rawtx: "",
+          fee: "",
+          fromAddresses: [],
+        };
+      }
+
+      const fromAddress = currentAccount.accounts[0].address;
+      const { tx, fee } = await keyringController.transferNFT({
+        ...data,
+      });
+      return {
+        rawtx: tx,
+        fee: fee,
+        fromAddresses: [fromAddress],
+      };
+    },
+    [
+      apiController,
+      currentAccount,
+      selectedAccount,
+      selectedWallet,
+      keyringController,
+    ]
   );
 }

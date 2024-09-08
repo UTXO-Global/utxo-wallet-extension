@@ -22,7 +22,7 @@ const ListNFTs = () => {
         <WalletPanel />
         {isCkbNetwork(currentNetwork.network) ? (
           <>
-            <div className="flex justify-between items-center sticky top-[66px] px-4 bg-white pt-[14px] pb-[12px]">
+            <div className="flex justify-between items-center sticky top-[65px] px-4 bg-white pt-[14px] pb-[12px] z-10">
               <div className="px-4 py-1 rounded-[100px] bg-[#F5F5F5] text-[14px] leading-[20px] text-[#787575] font-medium">
                 DOBs
               </div>

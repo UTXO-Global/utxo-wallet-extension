@@ -8,6 +8,8 @@ import {
   AGGRON4,
   LINA,
   nervosTestnetSlug,
+  DOBS_TESTNET_CONFIG,
+  DOBS_MAINNET_CONFIG,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -30,15 +32,20 @@ import type {
   SendCkbToken,
   SendCoin,
   SendOrd,
+  TransferNFT,
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
+import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
 import {
-  TransactionSkeletonType,
-  addCellDep,
-  createTransactionFromSkeleton,
-} from "@ckb-lumos/lumos/helpers";
+  calculateFeeByTransactionSkeleton,
+  generateTransferSporeAction,
+  getSporeScript,
+  injectCommonCobuildProof,
+  injectLiveSporeCell,
+  payFeeByOutput,
+} from "@spore-sdk/core";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -380,11 +387,6 @@ class KeyringService {
     const lumosConfig = isTestnet ? AGGRON4 : LINA;
 
     const indexer = network.network.indexer;
-    const cellProvider: TransactionSkeletonType["cellProvider"] = {
-      collector: (query) =>
-        indexer.collector({ type: "empty", data: "0x", ...query }),
-    };
-
     const fromScript = helpers.parseAddress(ckbAccount.address, {
       config: lumosConfig,
     });
@@ -407,6 +409,7 @@ class KeyringService {
     const cellCollector = indexer.collector({
       lock: fromScript,
       data: "0x",
+      type: "empty",
     });
 
     let xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
@@ -446,7 +449,7 @@ class KeyringService {
       throw new Error(`${data.token.attributes.symbol} insufficient balance`);
     }
 
-    let txSkeleton = helpers.TransactionSkeleton({ cellProvider });
+    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
 
     txSkeleton = addCellDep(txSkeleton, {
       outPoint: {
@@ -456,32 +459,34 @@ class KeyringService {
       depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
     });
 
-    for (const cell of tokensCell) {
-      txSkeleton = await commons.common.setupInputCell(txSkeleton, cell, null, {
-        config: lumosConfig,
-      });
-    }
+    txSkeleton = addCellDep(txSkeleton, {
+      outPoint: {
+        txHash: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.TX_HASH,
+        index: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.INDEX,
+      },
+      depType: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.DEP_TYPE,
+    });
 
-    txSkeleton = txSkeleton.update("outputs", (outputs) =>
-      outputs.update(0, (cell) => {
-        let recap = BI.from(cell!.cellOutput.capacity);
-        if (isAddressTypeJoy) {
-          recap = recap.add(joyCapacityAddMore);
-        }
-        return {
-          ...cell!,
-          cellOutput: {
-            ...cell!.cellOutput,
-            capacity: recap.toHexString(),
-            lock: toScript,
-            type: xUdtType,
-          },
-          data: ccc.hexFrom(
-            ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
-          ),
-        };
-      })
+    txSkeleton = txSkeleton.update("inputs", (inputs) =>
+      inputs.push(...tokensCell)
     );
+
+    txSkeleton = txSkeleton.update("outputs", (outputs) => {
+      let recap = BI.from(tokensCell[0].cellOutput.capacity);
+      if (isAddressTypeJoy) {
+        recap = recap.add(joyCapacityAddMore);
+      }
+      return outputs.push({
+        cellOutput: {
+          capacity: recap.toHexString(),
+          lock: toScript,
+          type: xUdtType,
+        },
+        data: ccc.hexFrom(
+          ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
+        ),
+      });
+    });
 
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
@@ -533,7 +538,7 @@ class KeyringService {
       inputs.push(...collectedCells)
     );
 
-    if (totalCapacity.gte(neededCapacity)) {
+    if (totalCapacity.gt(neededCapacity)) {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -558,6 +563,56 @@ class KeyringService {
       }
     );
 
+    const firstIndex = txSkeleton
+      .get("inputs")
+      .findIndex(
+        (input) =>
+          input.cellOutput.lock.codeHash === fromScript.codeHash &&
+          input.cellOutput.lock.hashType === fromScript.hashType &&
+          input.cellOutput.lock.args === fromScript.args
+      );
+
+    if (firstIndex !== -1) {
+      while (firstIndex >= txSkeleton.get("witnesses").size) {
+        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+          witnesses.push("0x")
+        );
+      }
+      let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
+      const newWitnessArgs: WitnessArgs = {
+        /* 65-byte zeros in hex */
+        lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      };
+
+      if (witness !== "0x") {
+        const witnessArgs = blockchain.WitnessArgs.unpack(
+          bytes.bytify(witness)
+        );
+        const lock = witnessArgs.lock;
+        if (
+          !!lock &&
+          !!newWitnessArgs.lock &&
+          !bytes.equal(lock, newWitnessArgs.lock)
+        ) {
+          throw new Error(
+            "Lock field in first witness is set aside for signature!"
+          );
+        }
+        const inputType = witnessArgs.inputType;
+        if (inputType) {
+          newWitnessArgs.inputType = inputType;
+        }
+        const outputType = witnessArgs.outputType;
+        if (outputType) {
+          newWitnessArgs.outputType = outputType;
+        }
+      }
+      witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.set(firstIndex, witness)
+      );
+    }
+
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
       config: lumosConfig,
     });
@@ -569,6 +624,124 @@ class KeyringService {
 
     return { tx: JSON.stringify(tx), fee: fee.toString() };
   }
+
+  transferNFT = async (
+    data: TransferNFT
+  ): Promise<{ tx: string; fee: string }> => {
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address) {
+      throw new Error("Error when trying to get the current account");
+    }
+
+    const ckbAccount = account.accounts[0];
+
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (!isCkbNetwork(network.network)) {
+      return { tx: "", fee: "0" };
+    }
+
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const lumosConfig = isTestnet ? AGGRON4 : LINA;
+    const sporeConfig = isTestnet ? DOBS_TESTNET_CONFIG : DOBS_MAINNET_CONFIG;
+
+    const fromScript = helpers.parseAddress(ckbAccount.address, {
+      config: lumosConfig,
+    });
+
+    const toScript = helpers.parseAddress(data.toAddress, {
+      config: lumosConfig,
+    });
+
+    const indexer = network.network.indexer;
+
+    // TransactionSkeleton
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: indexer,
+    });
+
+    const nftType = {
+      codeHash: data.nft.type_script.code_hash,
+      hashType: data.nft.type_script.hash_type,
+      args: data.nft.type_script.args,
+    } as Script;
+
+    const nftCollector = indexer.collector({
+      type: nftType,
+      lock: fromScript,
+    });
+
+    let nftCell: Cell | undefined;
+    for await (const cell of nftCollector.collect()) {
+      nftCell = cell;
+      break;
+    }
+
+    if (!nftCell) {
+      throw new Error(
+        "Owner do not have an NFT cell yet, please call mint first"
+      );
+    }
+
+    const sporeScript = getSporeScript(
+      sporeConfig,
+      "Spore",
+      nftCell.cellOutput.type!
+    );
+
+    const injectLiveSporeCellResult = await injectLiveSporeCell({
+      txSkeleton,
+      cell: nftCell,
+      addOutput: true,
+      updateOutput(cell) {
+        cell.cellOutput.lock = toScript;
+        return cell;
+      },
+      config: sporeConfig,
+    });
+
+    txSkeleton = injectLiveSporeCellResult.txSkeleton;
+
+    // Generate TransferSpore actions
+    const actionResult = generateTransferSporeAction({
+      txSkeleton,
+      inputIndex: injectLiveSporeCellResult.inputIndex,
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+    });
+
+    // Inject CobuildProof
+    if (sporeScript.behaviors?.cobuild) {
+      const injectCobuildProofResult = injectCommonCobuildProof({
+        txSkeleton: txSkeleton,
+        actions: actionResult.actions,
+      });
+      txSkeleton = injectCobuildProofResult.txSkeleton;
+    }
+
+    // Pay fee by the spore cell's capacity margin
+    txSkeleton = await payFeeByOutput({
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+      feeRate: data.feeRate,
+      txSkeleton,
+      config: sporeConfig,
+    });
+
+    const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
+
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
+      config: lumosConfig,
+    });
+
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
+    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
+
+    return {
+      tx: JSON.stringify(tx),
+      fee: fee.toString(),
+    };
+  };
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
     throw new Error("Not supported");
