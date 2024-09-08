@@ -7,6 +7,7 @@ import { payments as bitcoinPayments, payments } from "bitcoinjs-lib";
 import { getNetworkDataBySlug, isBitcoinNetwork } from "../networks";
 import { AddressType, NetworkSlug } from "../networks/types";
 import { formatNumber } from ".";
+import { BI } from "@ckb-lumos/lumos";
 
 export enum TxDirection {
   out = 0,
@@ -17,14 +18,36 @@ export const getTxDirection = (
   transaction: ITransaction,
   targetAddress: string
 ): TxDirection => {
-  const includesIn = transaction.vin
-    .map((i) => i.prevout?.scriptpubkey_address)
-    .includes(targetAddress);
+  const totalIn = transaction.vin.reduce(
+    (acc, cur) =>
+      cur.prevout.scriptpubkey_address === targetAddress
+        ? acc + cur.prevout.value
+        : acc,
+    0
+  );
 
-  if (includesIn) {
+  const totalOut = transaction.vout.reduce(
+    (acc, cur) =>
+      cur.scriptpubkey_address === targetAddress ? acc + cur.value : acc,
+    0
+  );
+
+  if (totalIn > totalOut) {
     return TxDirection.out;
   }
   return TxDirection.in;
+};
+
+export const isTxToken = (transaction: ITransaction) => {
+  if (transaction.vin.find((t) => t.extra_info !== undefined)) {
+    return true;
+  }
+
+  if (transaction.vout.find((t) => t.extra_info !== undefined)) {
+    return true;
+  }
+
+  return false;
 };
 
 export const getTransactionValue = (
@@ -65,6 +88,63 @@ export const getTransactionValue = (
   }
 
   return formatNumber(Math.abs(value), 2, 8);
+};
+
+export const getTransactionTokenValue = (
+  transaction: ITransaction,
+  targetAddress: string
+) => {
+  const direction = getTxDirection(transaction, targetAddress);
+  let value: number;
+  let symbol: string;
+  switch (direction) {
+    case TxDirection.in:
+      value = transaction.vout.reduce((acc, cur) => {
+        if (cur.scriptpubkey_address !== targetAddress || !cur.extra_info) {
+          return acc;
+        }
+
+        symbol = cur.extra_info.symbol;
+        return (
+          acc +
+          Number(cur.extra_info.amount || 0) /
+            10 ** Number(cur.extra_info.decimal)
+        );
+      }, 0);
+      break;
+    case TxDirection.out:
+      value =
+        transaction.vin.reduce((acc, cur) => {
+          if (
+            cur.prevout?.scriptpubkey_address !== targetAddress ||
+            !cur.extra_info
+          ) {
+            return acc;
+          }
+
+          symbol = cur.extra_info.symbol;
+          return (
+            acc -
+            Number(cur.extra_info.amount || 0) /
+              10 ** Number(cur.extra_info.decimal)
+          );
+        }, 0) +
+        transaction.vout.reduce((acc, cur) => {
+          if (cur.scriptpubkey_address !== targetAddress || !cur.extra_info) {
+            return acc;
+          }
+
+          symbol = cur.extra_info.symbol;
+          return (
+            acc +
+            Number(cur.extra_info.amount || 0) /
+              10 ** Number(cur.extra_info.decimal)
+          );
+        }, 0);
+      break;
+  }
+
+  return { amount: value, symbol: symbol };
 };
 
 export const isIncomeTx = (

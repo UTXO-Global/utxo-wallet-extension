@@ -115,7 +115,6 @@ class ProviderController {
       wallets: _wallets,
     });
 
-    sessionService.broadcastEvent("accountsChanged", _network);
     sessionService.broadcastEvent("networkChanged", _network);
     return _network;
   };

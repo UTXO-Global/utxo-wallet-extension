@@ -7,7 +7,7 @@ import {
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { t } from "i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,6 +21,14 @@ const ConfirmSend = () => {
   const navigate = useNavigate();
   const updateAddressBook = useUpdateAddressBook();
   const currentNetwork = useGetCurrentNetwork();
+
+  const symbol = useMemo(() => {
+    if (location.state.token) {
+      return location.state.token.attributes.symbol;
+    }
+
+    return currentNetwork.coinSymbol;
+  }, [location.state.token]);
 
   const confirmSend = async () => {
     setLoading(true);
@@ -62,16 +70,26 @@ const ConfirmSend = () => {
         }`
       ),
       value: `
-        <span style="font-size: 16px">${location.state.amount}</span>
-        <span style="font-size: 16px; color: #A69C8C">${currentNetwork.coinSymbol}</span>
+        <span style="font-size: 16px">${location.state.amount.toLocaleString(
+          "fullwide",
+          {
+            useGrouping: false,
+            maximumFractionDigits: 100,
+          }
+        )}</span>
+        <span style="font-size: 16px; color: #A69C8C">${symbol}</span>
       `,
     },
     {
       label: t("send.confirm_send.fee"),
       value: `
-        <div style="font-size: 16px">${
-          location.state.feeAmount / 10 ** 8
-        } <span style="color: #787575">(${
+        <div style="font-size: 16px">${(
+          location.state.feeAmount /
+          10 ** 8
+        ).toLocaleString("fullwide", {
+          useGrouping: false,
+          maximumFractionDigits: 8,
+        })} <span style="color: #787575">(${
         location.state.includeFeeInAmount
           ? t("send.confirm_send.included")
           : t("send.confirm_send.not_included")

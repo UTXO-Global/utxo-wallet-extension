@@ -3,6 +3,7 @@
     "transactions": "Transactions",
     "no_transactions": "No transations",
     "no_inscriptions": "You currently don't have any inscriptions",
+    "no_tokens": "You currently don't have any tokens",
     "receive": "Receive",
     "send": "Send",
     "nft": "NFT",
@@ -10,7 +11,7 @@
     "amount_in_inscriptions": "Ordinal balance",
     "swap": "Swap",
     "buy": "Buy",
-    "your_balance": "Your Balance",
+    "your_balance": "Your balance",
     "available_balance": "Available balance",
     "occupied_balance": "Occupied Balance"
   },
@@ -22,7 +23,9 @@
     "security_settings": "Security Settings",
     "address_type": "Address Type",
     "network": "Network",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "help_n_support": "Help & Support",
+    "become_a_partner": "Become a Partner"
   },
   "components": {
     "layout": {
@@ -55,7 +58,9 @@
       "mnemonic_confirmation": "Confirm Recovery Phrase",
       "mnemonic_confirm_desc": "Please Enter the Correct Wallet Seed or Click Back to Recreate the Wallet",
       "next": "Next",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "details": "Details",
+      "detailNFT": "Detail NFT"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -125,6 +130,7 @@
   },
   "new_account": {
     "max_length_error": "Maximum name length is 16",
+    "empty_name": "The wallet name should not be empty",
     "name_taken_error": "Name for this account is already taken",
     "account_created_message": "Created new account",
     "enter_name_label": "Enter The Name",
@@ -167,14 +173,17 @@
       "from_address": "From Address",
       "amount": "Amount",
       "fee": "Fee",
+      "transaction_fee": "Transaction Fee",
       "included": "included",
       "not_included": "not included",
       "confirm": "Confirm",
+      "confirmation": "Confirmation",
       "inscription_id": "Inscription Id"
     },
     "create_send": {
       "minimum_amount_error": "Minimum amount is 0.0001 BTC",
       "address_error": "Insert receiver's address",
+      "address_invalid": "Address invalid",
       "not_enough_money_error": "There's not enough money in your account",
       "not_enough_fee_error": "Increase the fee",
       "fee_is_text_error": "Fee should be integer",
@@ -192,6 +201,7 @@
       "fee_input": {
         "fast": "Fast",
         "slow": "Slow",
+        "standard": "Standard",
         "custom": "Custom"
       },
       "address_input": {
@@ -330,7 +340,15 @@
     "wif_private_key": "WIF Private Key:"
   },
   "explore": {
-    "feature": "Feature",
-    "recommended": "Recommended"
+    "feature": "Features",
+    "recommended": "Recommended",
+    "partners": "Partners"
+  },
+  "detailNFT": {
+    "type": "Type",
+    "content_type": "Content Type",
+    "occupied": "Occupied",
+    "creator": "Creator",
+    "transfer": "Transfer"
   }
 }

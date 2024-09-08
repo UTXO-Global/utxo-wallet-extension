@@ -26,9 +26,21 @@ const FAUCET_LINK = {
 const AccountPanel = () => {
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
-  const { currentPrice } = useTransactionManagerContext();
+  const { currentPrice, changePercent24Hr } = useTransactionManagerContext();
   const navigate = useNavigate();
   const [isShowReceive, setIsShowReceive] = useState<boolean>(false);
+
+  const ckbPrice = useMemo(() => {
+    return currentPrice ? Number(currentPrice) : 0;
+  }, [currentPrice]);
+
+  const ckbChange24h = useMemo(() => {
+    return changePercent24Hr ? Number(changePercent24Hr) : 0;
+  }, [changePercent24Hr]);
+
+  const ckbBalance = useMemo(() => {
+    return currentAccount.balance ? Number(currentAccount.balance) : 0;
+  }, [currentAccount.balance]);
 
   const panelNavs = useMemo(() => {
     return isCkbNetwork(currentNetwork.network)
@@ -123,7 +135,7 @@ const AccountPanel = () => {
               "btc_signet",
               "nervos_testnet",
             ].includes(currentNetwork.slug) ? (
-              <p className="text-[#FF4545] text-center mt-2 mb-6 text-lg font-normal">
+              <p className="text-[#FF4545] text-center mt-2 !mb-3 text-lg font-normal">
                 {currentNetwork.name} activated.{" "}
                 {isCkbTestnet ? (
                   <span
@@ -145,8 +157,8 @@ const AccountPanel = () => {
               </p>
             ) : null}
 
-            <div className="grid gap-1 min-h-[80px]">
-              <div className="text-[32px] leading-[35.2px] text-right flex flex-wrap items-center justify-center gap-1">
+            <div className="grid gap-3 my-6">
+              <div className="text-4xl font-medium leading-[39.6px] text-right flex flex-wrap items-center justify-center gap-1">
                 {currentAccount?.balance === undefined ? (
                   <Loading
                     type="spin"
@@ -157,35 +169,9 @@ const AccountPanel = () => {
                   />
                 ) : (
                   <span className="max-w-[310px] truncate">
-                    {formatNumber((currentAccount?.balance ?? 0) as any, 2, 8)}
+                    ${formatNumber(ckbBalance * ckbPrice, 2, 3)}
                   </span>
                 )}
-                <span>{currentNetwork.coinSymbol}</span>
-              </div>
-              <div className="text-center">
-                {currentAccount?.balance !== undefined
-                  ? currentPrice !== 0 &&
-                    currentPrice !== undefined && (
-                      <div className="text-[#787575] gap-[5px] font-normal text-lg leading-[25.2px] flex items-center justify-center">
-                        <IcnApproximate className="w-[9px]" /> $
-                        {(currentAccount.balance * currentPrice)?.toFixed(3)}
-                      </div>
-                    )
-                  : undefined}
-
-                {currentAccount?.ordinalBalance !== undefined &&
-                currentNetwork.ordUrl ? (
-                  <div className="text-[#787575] text-lg leading-[25.2px]">
-                    Ordinal Balance: {currentAccount.ordinalBalance}{" "}
-                    {currentNetwork.coinSymbol}
-                  </div>
-                ) : undefined}
-
-                {/*<div className="text-[#FF4545] gap-2 flex items-center justify-center !mt-2">
-                  <span className="text-lg font-normal">-$0.233</span>
-                  <span className="text-sm font-medium rounded py-[2px] px-1 bg-[#FF4545]/20">-0.12%</span>
-                </div>
-              */}
               </div>
             </div>
             <div

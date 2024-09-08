@@ -17,6 +17,13 @@ type CkbOutput = {
   generated_tx_hash: string;
   cell_index: string;
   address_hash: string;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    published: boolean;
+    symbol: string;
+    type_hash: string;
+  };
 };
 
 type CkbInput = {
@@ -24,6 +31,13 @@ type CkbInput = {
   capacity: string;
   cell_index: string;
   address_hash: string;
+  extra_info?: {
+    amount: string;
+    decimal: string;
+    published: boolean;
+    symbol: string;
+    type_hash: string;
+  };
 };
 
 type CkbTransaction = {
@@ -66,6 +80,7 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
         scriptsig: "",
         scriptsig_asm: "",
         is_coinbase: false,
+        extra_info: x.extra_info,
       })),
       vout: d.attributes.display_outputs.map((x) => ({
         value: parseFloat(x.capacity),
@@ -73,6 +88,7 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
         scriptpubkey: "",
         scriptpubkey_asm: "",
         scriptpubkey_type: "",
+        extra_info: x.extra_info,
       })),
       size: 0,
       weight: 0,
@@ -88,3 +104,68 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
   });
 }
 
+export type CKBAddressInfo = {
+  attributes: {
+    address_hash: string;
+    average_deposit_time: string;
+    balance: string;
+    balance_occupied: string;
+    bitcoin_address_hash: string;
+    dao_compensation: string;
+    dao_deposit: string;
+    interest: string;
+    is_special: string;
+    live_cells_count: string;
+    lock_info: any;
+    lock_script: {
+      args: string;
+      code_hash: string;
+      hash_type: string;
+    };
+    mined_blocks_count: string;
+    transactions_count: string;
+    udt_accounts: {
+      amount: string;
+      decimal: string;
+      symbol: string;
+      type_hash: string;
+      udt_icon_file: string;
+      udt_type: string;
+      udt_type_script: {
+        args: string;
+        code_hash: string;
+        hash_type: string;
+      };
+    }[];
+  };
+  type: string;
+  id: string;
+};
+
+export type CKBTokenInfo = {
+  type?: string;
+  id?: string;
+  attributes: {
+    symbol: string;
+    full_name: string;
+    icon_file: string;
+    decimal: string;
+    published?: string;
+    description?: string;
+    type_hash?: string;
+    type_script?: {
+      args: string;
+      code_hash: string;
+      hash_type: string;
+    };
+    issuer_address?: string;
+    udt_type?: string;
+    operator_website?: string;
+    email?: string;
+    total_amount?: string;
+    addresses_count?: string;
+    h24_ckb_transactions_count?: string;
+    created_at?: string;
+    xudt_tags?: string[];
+  };
+};

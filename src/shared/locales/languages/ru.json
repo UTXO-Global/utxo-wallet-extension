@@ -2,6 +2,7 @@
   "wallet_page": {
     "transactions": "Транзакции",
     "no_transactions": "Нет транзакций",
+    "no_tokens": "В настоящее время у вас нет токенов",
     "receive": "Получить",
     "send": "Отправить",
     "your_balance": "Ваш баланс",
@@ -14,7 +15,10 @@
     "connected_sites": "Подключенные сайты",
     "expand_view": "Развернуть обзор",
     "change_password": "Сменить пароль",
-    "address_type": "Тип адреса"
+    "address_type": "Тип адреса",
+    "wallet": "Кошелек",
+    "help_n_support": "Помощь и поддержка",
+    "become_a_partner": "Стать партнером"
   },
   "components": {
     "layout": {
@@ -37,7 +41,9 @@
       "mnemonic_confirmation": "Подтвердите фразу восстановления",
       "mnemonic_confirm_desc": "Введите правильный ключ кошелька или нажмите «Назад», чтобы заново создать кошелек.",
       "next": "следующий",
-      "confirm": "Подтверждать"
+      "confirm": "Подтверждать",
+      "details": "Подробнее",
+      "detailNFT": "Подробный НФТ"
     },
     "check_password": {
       "incorrect_password_error": "Неверный пароль",
@@ -79,6 +85,7 @@
   },
   "new_account": {
     "max_length_error": "Максимальная длина имени - 16",
+    "empty_name": "Имя кошелька не должно быть пустым",
     "name_taken_error": "Имя для этого аккаунта уже занято",
     "account_created_message": "Новый аккаунт создан",
     "enter_name_label": "Введите имя:",
@@ -115,13 +122,16 @@
       "from_address": "С адреса",
       "amount": "Сумма",
       "fee": "Сбор",
+      "transaction_fee": "Комиссия за транзакцию",
       "included": "включено",
       "not_included": "не включено",
-      "confirm": "Подтвердить"
+      "confirm": "Подтвердить",
+      "confirmation": "Подтверждение"
     },
     "create_send": {
       "minimum_amount_error": "Минимальная сумма - 0.0001 BTC",
       "address_error": "Введите адрес получателя",
+      "address_invalid": "Неверный адрес",
       "not_enough_money_error": "На вашем счету недостаточно средств",
       "not_enough_fee_error": "Увеличьте сбор",
       "fee_is_text_error": "Сбор должен быть числом",
@@ -138,6 +148,7 @@
       "continue": "Продолжить",
       "fee_input": {
         "fast": "Быстро",
+        "standard": "Стандарт",
         "slow": "Медленно",
         "custom": "Свой вариант"
       },
@@ -196,5 +207,17 @@
     "wallet": {
       "last_wallet_error": "Вы не можете удалить ваш последний кошелек"
     }
+  },
+  "explore": {
+    "feature": "Особенность",
+    "recommended": "Рекомендовано",
+    "partners": "Партнеры"
+  },
+  "detailNFT": {
+    "type": "Тип",
+    "content_type": "Тип контента",
+    "occupied": "Занятый",
+    "creator": "Создатель",
+    "transfer": "Передача"
   }
 }

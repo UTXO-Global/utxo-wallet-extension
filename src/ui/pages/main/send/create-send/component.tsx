@@ -32,6 +32,9 @@ import AddressInput from "./address-input";
 import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
+import ShortBalance from "@/ui/components/ShortBalance";
 
 export interface FormType {
   address: string;
@@ -63,17 +66,52 @@ const CreateSend = () => {
   );
   const [inscriptionTransaction, setInscriptionTransaction] =
     useState<boolean>(false);
+  const [isTokenTransaction, setIsTokenTransaction] = useState(false);
+  const [token, setToken] = useState<CKBTokenInfo | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const balance = useMemo(() => {
+    if (!currentAccount) return 0;
+    if (!isTokenTransaction) return currentAccount.balance;
+    if (token && currentAccount.coinBalances[token.attributes.type_hash]) {
+      return currentAccount.coinBalances[token.attributes.type_hash];
+    }
+    return 0;
+  }, [token, isTokenTransaction, currentAccount]);
+
+  const symbol = useMemo(() => {
+    if (token && isTokenTransaction) {
+      return token.attributes.symbol;
+    }
+
+    return currentNetwork.coinSymbol;
+  }, [token, isTokenTransaction, currentNetwork, currentAccount]);
+
+  const decimal = useMemo(() => {
+    if (token && isTokenTransaction) {
+      return Number(token.attributes.decimal);
+    }
+
+    return currentNetwork.decimal || 8;
+  }, [token, isTokenTransaction, currentNetwork, currentAccount]);
 
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
     if (formData.address?.trim().length <= 0) return false;
 
-    if (Number(formData.amount) < 0.00001 && !inscriptionTransaction) {
+    if (Number(formData.amount) <= 0) {
       return false;
     }
 
-    if (Number(formData.amount) > (currentAccount?.balance ?? 0)) {
+    if (
+      Number(formData.amount) < 0.00001 &&
+      !inscriptionTransaction &&
+      !isTokenTransaction
+    ) {
+      return false;
+    }
+
+    if (Number(formData.amount) > (balance ?? 0)) {
       return false;
     }
 
@@ -90,7 +128,7 @@ const CreateSend = () => {
     }
 
     return true;
-  }, [formData]);
+  }, [formData, balance, isTokenTransaction, token]);
 
   const send = async ({
     address,
@@ -100,13 +138,17 @@ const CreateSend = () => {
   }: FormType) => {
     try {
       setLoading(true);
-      if (Number(amount) < 0.00001 && !inscriptionTransaction) {
+      if (
+        Number(amount) < 0.00001 &&
+        !inscriptionTransaction &&
+        !isTokenTransaction
+      ) {
         return toast.error(t("send.create_send.minimum_amount_error"));
       }
       if (address.trim().length <= 0) {
         return toast.error(t("send.create_send.address_error"));
       }
-      if (Number(amount) > (currentAccount?.balance ?? 0)) {
+      if (Number(amount) > (balance ?? 0)) {
         return toast.error(t("send.create_send.not_enough_money_error"));
       }
       if (typeof feeRate !== "number" || !feeRate || feeRate < 1) {
@@ -119,9 +161,10 @@ const CreateSend = () => {
       const { fee, rawtx, fromAddresses } = !inscriptionTransaction
         ? await createTx(
             address,
-            Number((Number(amount) * 10 ** 8).toFixed(0)),
+            Number((Number(amount) * 10 ** decimal).toFixed(0)),
             feeRate,
-            includeFeeInAmount
+            includeFeeInAmount,
+            token
           )
         : await createOrdTx(address, feeRate, inscription);
 
@@ -149,11 +192,16 @@ const CreateSend = () => {
           hex: rawtx,
           save: isSaveAddress,
           inscriptionTransaction,
+          token: token,
         },
       });
     } catch (e) {
       console.error(e);
-      toast.error(t("send.create_send.default_error"));
+      if (e.message.includes(address)) {
+        toast.error(t("send.create_send.address_invalid"));
+      } else {
+        toast.error(e.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -177,12 +225,18 @@ const CreateSend = () => {
       setInscription(location.state);
       setInscriptionTransaction(true);
     }
+
+    if (location.state && location.state.token) {
+      setIsTokenTransaction(true);
+      setIncludeFeeLocked(true);
+      setToken(location.state.token);
+    }
   }, [location.state, setFormData, currentAccount?.balance]);
 
   const onAmountChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData((prev) => ({
       ...prev,
-      amount: normalizeAmount(e.target.value),
+      amount: normalizeAmount(e.target.value, decimal),
     }));
     if (currentAccount?.balance > Number(e.target.value)) {
       setIncludeFeeLocked(false);
@@ -197,18 +251,29 @@ const CreateSend = () => {
 
   const onMaxClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
+    setIncludeFeeLocked(true);
+    const isIncludeFee = !isTokenTransaction;
     setFormData((prev) => ({
       ...prev,
-      amount: currentAccount?.balance.toString(),
-      includeFeeInAmount: true,
+      amount: balance.toLocaleString("fullwide", {
+        useGrouping: false,
+        maximumFractionDigits: 100,
+      }),
+      includeFeeInAmount: isIncludeFee,
     }));
-    setIncludeFeeLocked(true);
   };
 
   return (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="pt-8 pb-3 flex items-center justify-center">
-        <img src={NETWORK_ICON[currentNetwork.slug]} className="w-10 h-10" />
+        <img
+          src={
+            isTokenTransaction
+              ? token?.attributes?.icon_file || TOKEN_FILE_ICON_DEFAULT
+              : NETWORK_ICON[currentNetwork.slug]
+          }
+          className="w-10 h-10"
+        />
       </div>
       <form
         id={formId}
@@ -248,23 +313,26 @@ const CreateSend = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex justify-between text-base font-medium">
-                <div>{t("wallet_page.available_balance")}:</div>
-                <div className="flex gap-2 items-center">
-                  <span>{formatNumber(currentAccount.balance, 2, 8)}</span>
-                  <span className="text-[#787575]">
-                    {currentNetwork.coinSymbol}
-                  </span>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between text-base font-medium">
+                  <div>{t("wallet_page.available_balance")}:</div>
+                  <div className="flex gap-2 items-center">
+                    <ShortBalance balance={balance} zeroDisplay={2} />
+
+                    <span>{symbol}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between text-base font-medium text-[#787575]">
-                <div>{t("wallet_page.occupied_balance")}:</div>
-                <div className="flex gap-2 items-center">
-                  <span>
-                    {formatNumber(currentAccount.ordinalBalance, 2, 8)}
-                  </span>
-                  <span>{currentNetwork.coinSymbol}</span>
-                </div>
+                {!isTokenTransaction && (
+                  <div className="flex justify-between text-base font-medium text-[#787575]">
+                    <div>{t("wallet_page.occupied_balance")}:</div>
+                    <div className="flex gap-2 items-center">
+                      <span>
+                        {formatNumber(currentAccount.ordinalBalance, 2, 8)}
+                      </span>
+                      <span>{symbol}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -316,9 +384,12 @@ const CreateSend = () => {
       ) : (
         <button
           type="submit"
-          className={
-            "btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100"
-          }
+          className={cn(
+            "btn primary mx-4 mb-4 standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100",
+            {
+              "hover:bg-none hover:border-transparent": !isValidForm,
+            }
+          )}
           form={formId}
           disabled={!isValidForm}
         >

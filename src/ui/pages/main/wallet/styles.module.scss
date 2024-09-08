@@ -1,8 +1,8 @@
 .walletDiv {
-  @apply w-full h-full flex-col justify-start max-standard:h-screen relative top-0 overflow-auto;
+  @apply w-full h-full flex-col justify-start max-standard:h-screen relative top-0 overflow-auto pb-4;
 
   .accPanel {
-    @apply flex flex-col mt-4 gap-5 pb-2;
+    @apply flex flex-col mt-4 gap-4;
 
     * {
       @apply m-0;

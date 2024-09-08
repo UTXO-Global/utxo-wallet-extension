@@ -1,27 +1,72 @@
-import s from "../styles.module.scss";
+import s from "./styles.module.scss";
 import {
   shortAddress,
   isIncomeTx,
   getTransactionValue,
+  getTransactionTokenValue,
+  isTxToken,
 } from "@/shared/utils/transactions";
 import { t } from "i18next";
 import { Link } from "react-router-dom";
-import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useControllersState } from "@/ui/states/controllerState";
+import { ITransaction } from "@/shared/interfaces/api";
+import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import ShortBalance from "../ShortBalance";
 
-const TransactionList = () => {
-  const { lastBlock, transactions, loadMoreTransactions } =
-    useTransactionManagerContext();
+const TransactionList = ({
+  className,
+  type,
+  typeHash,
+}: {
+  className?: string;
+  type?: string;
+  typeHash?: string;
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [lastBlock, setLastBlock] = useState(0);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const { ref, inView } = useInView();
   const currentNetwork = useGetCurrentNetwork();
+  const { apiController } = useControllersState((v) => ({
+    apiController: v.apiController,
+  }));
+
+  const isCKB = useMemo(() => {
+    return type === typeHash && type === undefined;
+  }, [type, typeHash]);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    if (inView) loadMoreTransactions();
-  }, [inView, loadMoreTransactions]);
+    const f = async () => {
+      const block = await apiController.getLastBlock();
+      setLastBlock(block);
+    };
+
+    f().catch((e) => {
+      console.log(e);
+    });
+  }, [apiController]);
+
+  useEffect(() => {
+    const f = async () => {
+      setLoading(true);
+      if (isBitcoinNetwork(currentNetwork.network)) {
+        setTransactions(await apiController.getTransactions());
+      } else if (isCkbNetwork(currentNetwork.network)) {
+        setTransactions(
+          await apiController.getCKBTransactions({ type, typeHash })
+        );
+      }
+      setLoading(false);
+    };
+
+    f().catch((e) => {
+      console.log(e);
+    });
+  }, [currentNetwork, type, typeHash]);
 
   if (!Array.isArray(transactions)) {
     return (
@@ -73,7 +118,7 @@ const TransactionList = () => {
     return results;
   }, [transactions]);
 
-  if (!txes.length) {
+  const NoTransaction = () => {
     return (
       <div className={s.noTransactions}>
         {t("wallet_page.no_transactions")}
@@ -308,7 +353,7 @@ const TransactionList = () => {
         </svg>
       </div>
     );
-  }
+  };
 
   const ICon = ({ isReceived = false }: { isReceived?: boolean }) => {
     return (
@@ -321,81 +366,110 @@ const TransactionList = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 px-4">
-      <div className="text-base font-medium py-2 sticky top-[65px] standard:top-0 z-10 bg-light-100">
+    <div
+      className={cn(
+        `flex flex-col gap-2 px-4 bg-white ${className ? className : ""}`
+      )}
+    >
+      <div className="text-base font-medium sticky top-[73px] standard:top-0 z-10 bg-light-100">
         Activities
       </div>
-      <div className="border border-grey-300 rounded-lg py-4 px-3 pb-2 standard:pb-[50px]">
-        <div className={s.transactionsDiv}>
-          {txes.map((item) => {
-            const currentDate = new Date().toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-            return (
-              <div
-                className="flex flex-col gap-2 w-full mb-2"
-                key={`tx-date-${item.key}`}
-              >
+
+      {!txes.length ? (
+        <NoTransaction />
+      ) : (
+        <div className="border border-grey-300 rounded-lg px-3 standard:pb-[50px] mt-2">
+          <div className={s.transactionsDiv}>
+            {txes.map((item) => {
+              const currentDate = new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+              return (
                 <div
-                  className={cn("text-sm font-normal w-full text-left", {
-                    "text-[#FF4545]": item.key === "unconfirmation",
-                  })}
+                  className="flex flex-col gap-2 w-full pt-3 pb-2"
+                  key={`tx-date-${item.key}`}
                 >
-                  {item.key === currentDate ? "Today" : item.title}
-                </div>
-                <div>
-                  {item.data.map((t, index) => {
-                    const isReceived = isIncomeTx(t, t.address);
-                    return (
-                      <Link
-                        className={s.transaction}
-                        key={index}
-                        to={`/pages/transaction-info/${t.txid}`}
-                        state={{
-                          transaction: t,
-                          lastBlock,
-                        }}
-                      >
-                        <div className="flex gap-2 items-center justify-between">
-                          <ICon isReceived={isReceived} />
-                          <div>
-                            <div className="text-lg">
-                              {isReceived ? "Received" : "Sent"}
-                            </div>
-                            <div className="text-[#787575] text-sm font-normal">
-                              {isReceived ? "From" : "To"}{" "}
-                              {shortAddress(t.txid)}
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="font-normal text-sm flex items-center gap-1"
-                          style={{
-                            color: isReceived ? "#09C148" : "#FF4545",
+                  <div
+                    className={cn("text-sm font-normal w-full text-left", {
+                      "text-[#FF4545]": item.key === "unconfirmation",
+                    })}
+                  >
+                    {item.key === currentDate ? "Today" : item.title}
+                  </div>
+                  <div className="">
+                    {item.data.map((t, index) => {
+                      const isReceived = isIncomeTx(t, t.address);
+                      let amount = "",
+                        symbol = currentNetwork.coinSymbol;
+                      if (isTxToken(t)) {
+                        const v = getTransactionTokenValue(t, t.address);
+                        amount = v.amount.toString();
+                        symbol = v.symbol;
+                      } else {
+                        amount = getTransactionValue(t, t.address, 5);
+                      }
+
+                      return (
+                        <Link
+                          className={s.transaction}
+                          key={index}
+                          to={`/pages/transaction-info/${t.txid}`}
+                          state={{
+                            transaction: t,
+                            lastBlock,
                           }}
                         >
-                          <span className="w-[80px] truncate block text-right">
-                            {isReceived ? "+" : "-"}
-                            {getTransactionValue(t, t.address, 5)
-                              .toString()
-                              .replace(/\.?0+$/, "")}
-                          </span>
-                          <span className="text-primary flex-1">
-                            {`${currentNetwork.coinSymbol}`}
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="flex gap-2 items-center justify-between">
+                            <ICon isReceived={isReceived} />
+                            <div>
+                              <div className="text-base">
+                                {isReceived ? "Received" : "Sent"}
+                              </div>
+                              <div className="text-[#787575] text-sm font-normal">
+                                {isReceived ? "From" : "To"}{" "}
+                                {isReceived
+                                  ? shortAddress(
+                                      t.vin[0].prevout.scriptpubkey_address
+                                    )
+                                  : shortAddress(
+                                      t.vout[0].scriptpubkey_address
+                                    )}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className="font-normal text-sm flex items-center gap-1"
+                            style={{
+                              color: isReceived ? "#09C148" : "#FF4545",
+                            }}
+                          >
+                            <span className="w-[110px] truncate block text-right">
+                              {isReceived ? "+" : "-"}
+                              <ShortBalance
+                                balance={Math.abs(
+                                  Number(amount.toString().replace(/,/g, ""))
+                                )}
+                                zeroDisplay={6}
+                                className="!text-sm !inline-block"
+                              />
+                            </span>
+                            <span className="text-primary flex-1">
+                              {`${symbol || currentNetwork.coinSymbol}`}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <div ref={ref}></div>
+              );
+            })}
+            <div ref={ref}></div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -6,16 +6,18 @@ import {
   isBitcoinNetwork,
   isCkbNetwork,
   AGGRON4,
+  LINA,
   nervosTestnetSlug,
+  DOBS_TESTNET_CONFIG,
+  DOBS_MAINNET_CONFIG,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
 import { getScriptForAddress } from "@/shared/utils/transactions";
-import { blockchain } from "@ckb-lumos/base";
+import { Script, blockchain } from "@ckb-lumos/base";
 import { ScriptValue } from "@ckb-lumos/base/lib/values";
 import { bytes } from "@ckb-lumos/codec";
 import { BI, Cell, commons, helpers, WitnessArgs } from "@ckb-lumos/lumos";
-import { predefined } from "@ckb-lumos/config-manager";
 import { Psbt } from "bitcoinjs-lib";
 import { HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
 import { KeyringServiceError } from "./consts";
@@ -27,11 +29,23 @@ import type {
   PublicKeyUserToSignInput,
   SendBtcCoin,
   SendCkbCoin,
+  SendCkbToken,
   SendCoin,
   SendOrd,
+  TransferNFT,
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
+import { ccc } from "@ckb-ccc/core";
+import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
+import {
+  calculateFeeByTransactionSkeleton,
+  generateTransferSporeAction,
+  getSporeScript,
+  injectCommonCobuildProof,
+  injectLiveSporeCell,
+  payFeeByOutput,
+} from "@spore-sdk/core";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -136,7 +150,7 @@ class KeyringService {
     const network = getNetworkDataBySlug(networkSlug);
     const isTestnet = nervosTestnetSlug.includes(network.slug);
     const txSkeleton = commons.common.prepareSigningEntries(params.tx, {
-      config: isTestnet ? AGGRON4 : predefined.LINA,
+      config: isTestnet ? AGGRON4 : LINA,
     });
 
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
@@ -356,6 +370,378 @@ class KeyringService {
       throw Error("Invalid network");
     }
   }
+
+  async sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }> {
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address)
+      throw new Error("Error when trying to get the current account");
+
+    const ckbAccount = account.accounts[0];
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (!isCkbNetwork(network.network)) {
+      throw new Error("Network invalid");
+    }
+
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const lumosConfig = isTestnet ? AGGRON4 : LINA;
+
+    const indexer = network.network.indexer;
+    const fromScript = helpers.parseAddress(ckbAccount.address, {
+      config: lumosConfig,
+    });
+
+    const toScript = helpers.parseAddress(data.to, {
+      config: lumosConfig,
+    });
+
+    const xUdtType = {
+      codeHash: lumosConfig.SCRIPTS.XUDT.CODE_HASH,
+      hashType: "type",
+      args: data.token.attributes.type_script.args,
+    } as Script;
+
+    const xudtCollector = indexer.collector({
+      type: xUdtType,
+      lock: fromScript,
+    });
+
+    const cellCollector = indexer.collector({
+      lock: fromScript,
+      data: "0x",
+      type: "empty",
+    });
+
+    let xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
+
+    const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
+    const joyCapacityAddMore = "200000000"; // 2 ckb
+
+    if (isAddressTypeJoy) {
+      xUDTCapacity = xUDTCapacity.add(joyCapacityAddMore);
+    }
+
+    let collectedCells: Cell[] = [];
+    let neededCapacity = xUDTCapacity;
+    let totalCapacity = BI.from(0);
+
+    let tokensCell: Cell[] = [];
+    const totalTokenBalanceNeeed = BI.from(data.amount);
+    let totalTokenBalance = BI.from(0);
+
+    for await (const cell of xudtCollector.collect()) {
+      const balNum = ccc.numFromBytes(cell.data);
+      totalTokenBalance = totalTokenBalance.add(BI.from(balNum));
+      tokensCell.push(cell);
+
+      if (totalTokenBalance.gte(totalTokenBalanceNeeed)) {
+        break;
+      }
+    }
+
+    if (tokensCell.length === 0) {
+      throw new Error(
+        "Owner do not have an xUDT cell yet, please call mint first"
+      );
+    }
+
+    if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
+      throw new Error(`${data.token.attributes.symbol} insufficient balance`);
+    }
+
+    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
+
+    txSkeleton = addCellDep(txSkeleton, {
+      outPoint: {
+        txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
+        index: lumosConfig.SCRIPTS.XUDT.INDEX,
+      },
+      depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
+    });
+
+    txSkeleton = addCellDep(txSkeleton, {
+      outPoint: {
+        txHash: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.TX_HASH,
+        index: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.INDEX,
+      },
+      depType: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.DEP_TYPE,
+    });
+
+    txSkeleton = txSkeleton.update("inputs", (inputs) =>
+      inputs.push(...tokensCell)
+    );
+
+    txSkeleton = txSkeleton.update("outputs", (outputs) => {
+      let recap = BI.from(tokensCell[0].cellOutput.capacity);
+      if (isAddressTypeJoy) {
+        recap = recap.add(joyCapacityAddMore);
+      }
+      return outputs.push({
+        cellOutput: {
+          capacity: recap.toHexString(),
+          lock: toScript,
+          type: xUdtType,
+        },
+        data: ccc.hexFrom(
+          ccc.numLeToBytes(totalTokenBalanceNeeed.toBigInt(), 16)
+        ),
+      });
+    });
+
+    const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
+    if (diff.gt(BI.from(0))) {
+      neededCapacity = neededCapacity.add(xUDTCapacity);
+      if (isAddressTypeJoy) {
+        neededCapacity = neededCapacity.add(joyCapacityAddMore);
+      }
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: xUDTCapacity.toHexString(),
+            lock: fromScript,
+            type: xUdtType,
+          },
+          data: ccc.hexFrom(ccc.numLeToBytes(diff.toBigInt(), 16)),
+        })
+      );
+    }
+
+    for await (const cell of cellCollector.collect()) {
+      if (cell.data !== "0x") {
+        continue;
+      }
+
+      if (
+        txSkeleton.inputs.some(
+          (input) =>
+            input.outPoint.txHash === cell.outPoint.txHash &&
+            input.outPoint.index === cell.outPoint.index
+        )
+      ) {
+        continue;
+      }
+      collectedCells.push(cell);
+      totalCapacity = totalCapacity.add(BI.from(cell.cellOutput.capacity));
+      if (isAddressTypeJoy) {
+        totalCapacity = totalCapacity.add(joyCapacityAddMore);
+      }
+      if (totalCapacity.gte(neededCapacity)) {
+        break;
+      }
+    }
+
+    if (totalCapacity.lt(neededCapacity)) {
+      throw new Error(`CKB: insufficient balance`);
+    }
+
+    txSkeleton = txSkeleton.update("inputs", (inputs) =>
+      inputs.push(...collectedCells)
+    );
+
+    if (totalCapacity.gt(neededCapacity)) {
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: totalCapacity.sub(neededCapacity).toHexString(),
+            lock: fromScript,
+          },
+          data: "0x",
+        })
+      );
+    }
+
+    const cccTransaction = ccc.Transaction.fromLumosSkeleton(txSkeleton);
+    const fee = cccTransaction.estimateFee(data.feeRate);
+
+    txSkeleton = await commons.common.payFee(
+      txSkeleton,
+      [ckbAccount.address],
+      fee,
+      undefined,
+      {
+        config: lumosConfig,
+      }
+    );
+
+    const firstIndex = txSkeleton
+      .get("inputs")
+      .findIndex(
+        (input) =>
+          input.cellOutput.lock.codeHash === fromScript.codeHash &&
+          input.cellOutput.lock.hashType === fromScript.hashType &&
+          input.cellOutput.lock.args === fromScript.args
+      );
+
+    if (firstIndex !== -1) {
+      while (firstIndex >= txSkeleton.get("witnesses").size) {
+        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+          witnesses.push("0x")
+        );
+      }
+      let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
+      const newWitnessArgs: WitnessArgs = {
+        /* 65-byte zeros in hex */
+        lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      };
+
+      if (witness !== "0x") {
+        const witnessArgs = blockchain.WitnessArgs.unpack(
+          bytes.bytify(witness)
+        );
+        const lock = witnessArgs.lock;
+        if (
+          !!lock &&
+          !!newWitnessArgs.lock &&
+          !bytes.equal(lock, newWitnessArgs.lock)
+        ) {
+          throw new Error(
+            "Lock field in first witness is set aside for signature!"
+          );
+        }
+        const inputType = witnessArgs.inputType;
+        if (inputType) {
+          newWitnessArgs.inputType = inputType;
+        }
+        const outputType = witnessArgs.outputType;
+        if (outputType) {
+          newWitnessArgs.outputType = outputType;
+        }
+      }
+      witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.set(firstIndex, witness)
+      );
+    }
+
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
+      config: lumosConfig,
+    });
+
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
+    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
+
+    return { tx: JSON.stringify(tx), fee: fee.toString() };
+  }
+
+  transferNFT = async (
+    data: TransferNFT
+  ): Promise<{ tx: string; fee: string }> => {
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address) {
+      throw new Error("Error when trying to get the current account");
+    }
+
+    const ckbAccount = account.accounts[0];
+
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (!isCkbNetwork(network.network)) {
+      return { tx: "", fee: "0" };
+    }
+
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const lumosConfig = isTestnet ? AGGRON4 : LINA;
+    const sporeConfig = isTestnet ? DOBS_TESTNET_CONFIG : DOBS_MAINNET_CONFIG;
+
+    const fromScript = helpers.parseAddress(ckbAccount.address, {
+      config: lumosConfig,
+    });
+
+    const toScript = helpers.parseAddress(data.toAddress, {
+      config: lumosConfig,
+    });
+
+    const indexer = network.network.indexer;
+
+    // TransactionSkeleton
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: indexer,
+    });
+
+    const nftType = {
+      codeHash: data.nft.type_script.code_hash,
+      hashType: data.nft.type_script.hash_type,
+      args: data.nft.type_script.args,
+    } as Script;
+
+    const nftCollector = indexer.collector({
+      type: nftType,
+      lock: fromScript,
+    });
+
+    let nftCell: Cell | undefined;
+    for await (const cell of nftCollector.collect()) {
+      nftCell = cell;
+      break;
+    }
+
+    if (!nftCell) {
+      throw new Error(
+        "Owner do not have an NFT cell yet, please call mint first"
+      );
+    }
+
+    const sporeScript = getSporeScript(
+      sporeConfig,
+      "Spore",
+      nftCell.cellOutput.type!
+    );
+
+    const injectLiveSporeCellResult = await injectLiveSporeCell({
+      txSkeleton,
+      cell: nftCell,
+      addOutput: true,
+      updateOutput(cell) {
+        cell.cellOutput.lock = toScript;
+        return cell;
+      },
+      config: sporeConfig,
+    });
+
+    txSkeleton = injectLiveSporeCellResult.txSkeleton;
+
+    // Generate TransferSpore actions
+    const actionResult = generateTransferSporeAction({
+      txSkeleton,
+      inputIndex: injectLiveSporeCellResult.inputIndex,
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+    });
+
+    // Inject CobuildProof
+    if (sporeScript.behaviors?.cobuild) {
+      const injectCobuildProofResult = injectCommonCobuildProof({
+        txSkeleton: txSkeleton,
+        actions: actionResult.actions,
+      });
+      txSkeleton = injectCobuildProofResult.txSkeleton;
+    }
+
+    // Pay fee by the spore cell's capacity margin
+    txSkeleton = await payFeeByOutput({
+      outputIndex: injectLiveSporeCellResult.outputIndex,
+      feeRate: data.feeRate,
+      txSkeleton,
+      config: sporeConfig,
+    });
+
+    const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
+
+    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
+      config: lumosConfig,
+    });
+
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
+    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
+
+    return {
+      tx: JSON.stringify(tx),
+      fee: fee.toString(),
+    };
+  };
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
     throw new Error("Not supported");

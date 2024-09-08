@@ -3,7 +3,12 @@ import { ApiOrdUTXO } from "@/shared/interfaces/inscriptions";
 import { NetworkSlug } from "@/shared/networks/types";
 import { Psbt } from "bitcoinjs-lib";
 import { keyringService } from "../services";
-import type { SendCoin, SendOrd } from "../services/keyring/types";
+import type {
+  SendCkbToken,
+  SendCoin,
+  SendOrd,
+  TransferNFT,
+} from "../services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 
 export interface IKeyringController {
@@ -20,6 +25,8 @@ export interface IKeyringController {
     data: string;
   }): Promise<string>;
   sendCoin(data: SendCoin): Promise<string>;
+  sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }>;
+  transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }>;
   sendOrd(data: Omit<SendOrd, "amount">): Promise<string>;
   exportPublicKey(address: string): Promise<string>;
   serializeKeyringById(index: number): Promise<any>;
@@ -103,6 +110,14 @@ class KeyringController implements IKeyringController {
    */
   async sendCoin(data: SendCoin): Promise<string> {
     return await keyringService.sendCoin(data);
+  }
+
+  async sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }> {
+    return await keyringService.sendToken(data);
+  }
+
+  async transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }> {
+    return await keyringService.transferNFT(data);
   }
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {

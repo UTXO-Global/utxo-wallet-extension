@@ -3,6 +3,8 @@ import { copy } from "esbuild-plugin-copy";
 import { polyfillNode } from "esbuild-plugin-polyfill-node";
 import { nodeModulesPolyfillPlugin } from "esbuild-plugins-node-modules-polyfill";
 import { postcssModules, sassPlugin } from "esbuild-sass-plugin";
+import { dynamicImport } from "esbuild-plugin-dynamic-import";
+
 import svgPlugin from "esbuild-svg";
 import postcss from "postcss";
 import path from "path";
@@ -126,6 +128,7 @@ const buildOptions: BuildOptions = {
   platform: "browser",
   sourcemap: Bun.argv.includes("--sourcemap") || Bun.argv.includes("-s"),
   plugins: [
+    dynamicImport(),
     dotenvPlugin(),
     svgPlugin({
       typescript: true,
@@ -191,7 +194,6 @@ const makeArchive = () => {
 };
 
 if (isDev) {
-  console.log("");
   const ctx = await context(buildOptions);
   await ctx.watch();
 } else {

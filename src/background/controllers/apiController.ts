@@ -22,6 +22,7 @@ export interface IApiController {
     | {
         cardinalBalance: number;
         ordinalBalance: number;
+        coinBalances: { [key: string]: any };
       }
     | undefined
   >;
@@ -31,6 +32,13 @@ export interface IApiController {
   pushTx(rawTx: string): Promise<{ txid: string } | undefined>;
   pushCkbTx(rawTx: string): Promise<{ txid: string } | undefined>;
   getTransactions(): Promise<ITransaction[] | undefined>;
+  getCKBTransactions({
+    type,
+    typeHash,
+  }: {
+    type?: string;
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined>;
   getPaginatedTransactions(
     address: string,
     txid: string
@@ -39,7 +47,7 @@ export interface IApiController {
     address: string,
     location: string
   ): Promise<Inscription[] | undefined>;
-  getNativeCoinPrice(): Promise<{ usd: number }>;
+  getNativeCoinPrice(): Promise<{ usd: number; changePercent24Hr: number }>;
   getLastBlock(): Promise<number>;
   getFees(): Promise<{ fast: number; slow: number }>;
   getInscriptions(address: string): Promise<Inscription[] | undefined>;
@@ -94,12 +102,14 @@ class ApiController implements IApiController {
       return {
         cardinalBalance: balance - ordinalBalance,
         ordinalBalance,
+        coinBalances: {},
       };
     } else if (isCkbNetwork(networkData.network)) {
       const balances = await balanceOf(networkData.slug, address);
       return {
         cardinalBalance: balances.balance.toNumber(),
         ordinalBalance: balances.balance_occupied.toNumber(),
+        coinBalances: balances.udtBalances,
       };
     }
   }
@@ -119,11 +129,6 @@ class ApiController implements IApiController {
 
   async getOrdUtxos(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (
-      networkData.slug === "btc_testnet_4" ||
-      networkData.slug === "btc_testnet"
-    )
-      return [];
     const data = await fetchEsplora<ApiOrdUTXO[]>({
       path: `${networkData.ordUrl}/address/${address}/ords`,
       headers: {
@@ -141,12 +146,19 @@ class ApiController implements IApiController {
 
   async getFees() {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    const data = await fetchEsplora({
-      path: `${networkData.esploraUrl}/fee-estimates`,
-    });
+    if (isBitcoinNetwork(networkData.network)) {
+      const data = await fetchEsplora({
+        path: `${networkData.esploraUrl}/fee-estimates`,
+      });
+      return {
+        slow: Number((data["6"] as number)?.toFixed(0)),
+        fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+      };
+    }
+
     return {
-      slow: Number((data["6"] as number)?.toFixed(0)),
-      fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+      slow: 1000,
+      fast: 2000,
     };
   }
 
@@ -190,21 +202,35 @@ class ApiController implements IApiController {
         })
       );
       return data.flat();
-    } else if (isCkbNetwork(networkData.network)) {
-      // TODO: add pagination
-      const res = await fetchEsplora<CkbTransactionResponse>({
-        path: `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`,
-        headers: {
-          "content-type": "application/vnd.api+json",
-          accept: "application/vnd.api+json",
-        },
-      });
-
-      return toITransactions(res).map((z) => ({
-        ...z,
-        address: accounts[0].address,
-      }));
     }
+  }
+
+  async getCKBTransactions({
+    type,
+    typeHash,
+  }: {
+    type?: string;
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const accounts = storageService.currentAccount.accounts;
+
+    let apiURL = `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`;
+    if (!!type && !!typeHash) {
+      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${accounts[0].address}`;
+    }
+
+    const res = await fetchEsplora<CkbTransactionResponse>({
+      path: apiURL,
+      headers: {
+        "content-type": "application/vnd.api+json",
+        accept: "application/vnd.api+json",
+      },
+    });
+    return toITransactions(res).map((z) => ({
+      ...z,
+      address: accounts[0].address,
+    }));
   }
 
   async getInscriptions(address: string): Promise<Inscription[] | undefined> {
@@ -263,30 +289,34 @@ class ApiController implements IApiController {
     }
   }
 
-  async getNativeCoinPrice(): Promise<{ usd: number }> {
+  async getNativeCoinPrice(): Promise<{
+    usd: number;
+    changePercent24Hr: number;
+  }> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    switch (networkData.slug) {
-      case "btc":
-        return {
-          usd: (
-            await fetchEsplora<any>({
-              path: `https://api.coincap.io/v2/assets/bitcoin`,
-            })
-          ).data.priceUsd,
-        };
-      case "nervos":
-        return {
-          usd: (
-            await fetchEsplora<any>({
-              path: `https://api.coincap.io/v2/assets/nervos-network`,
-            })
-          ).data.priceUsd,
-        };
-      default:
-        return {
-          usd: 0,
-        };
+    const slug = networkData.parentSlug || networkData.slug;
+    let apiFetchPrice = "";
+    if (slug === "btc") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
+    } else if (slug === "nervos") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
     }
+
+    if (!apiFetchPrice) {
+      return {
+        usd: 0,
+        changePercent24Hr: 0,
+      };
+    }
+
+    const { data } = await fetchEsplora<any>({
+      path: apiFetchPrice,
+    });
+
+    return {
+      usd: data.priceUsd || 0,
+      changePercent24Hr: data.changePercent24Hr || 0,
+    };
   }
 
   async getDiscovery(): Promise<Inscription[] | undefined> {

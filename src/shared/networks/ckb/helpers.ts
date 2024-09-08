@@ -3,6 +3,7 @@ import { parseAddress } from "@ckb-lumos/lumos/helpers";
 import { CKBHasher } from "@ckb-lumos/lumos/utils";
 import { NetworkConfig } from "./offckb.config";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
+import { CKBAddressInfo } from "./types";
 
 export function publicKeyToBlake160(publicKey: string): string {
   const blake160: string = new CKBHasher()
@@ -77,7 +78,6 @@ export async function callCKBRPC(
   });
 
   const r = await response.json();
-  console.log("r", r, r.result);
 
   return await r.result;
 }
@@ -85,7 +85,13 @@ export async function callCKBRPC(
 export async function balanceOf(
   networkSlug: string,
   address: string
-): Promise<{ balance: BI; balance_occupied: BI }> {
+): Promise<{
+  balance: BI;
+  balance_occupied: BI;
+  udtBalances: {
+    [key: string]: { balance: number; decimal: number; balanceB: string };
+  };
+}> {
   try {
     const res = await fetch(
       `${ckbExplorerApi(networkSlug)}/v1/addresses/${address}`,
@@ -97,10 +103,24 @@ export async function balanceOf(
       }
     );
     const { data } = await res.json();
+    const addressInfo = data[0] as CKBAddressInfo;
+    const udtBalances = {};
+    addressInfo.attributes.udt_accounts.forEach((a) => {
+      try {
+        udtBalances[a.type_hash] = {
+          balance: Number(a.amount) / 10 ** Number(a.decimal),
+          decimal: Number(a.decimal),
+          balanceB: a.amount,
+        };
+      } catch (e) {
+        console.log(e);
+      }
+    });
 
     return {
-      balance: BI.from(data[0].attributes.balance),
-      balance_occupied: BI.from(data[0].attributes.balance_occupied),
+      balance: BI.from(addressInfo.attributes.balance),
+      balance_occupied: BI.from(addressInfo.attributes.balance_occupied),
+      udtBalances: udtBalances,
     };
   } catch (e) {
     console.log(e);
@@ -108,5 +128,6 @@ export async function balanceOf(
   return {
     balance: BI.from(0),
     balance_occupied: BI.from(0),
+    udtBalances: {},
   };
 }

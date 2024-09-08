@@ -51,10 +51,57 @@ export const pickKeysFromObj = <
   ) as Pick<T, K>;
 };
 
-export const formatNumber = (number: number, minPrecision = 2, maxPrecision = 2) => {
+export const formatNumber = (
+  number: number,
+  minPrecision = 2,
+  maxPrecision = 2
+) => {
   const options = {
     minimumFractionDigits: minPrecision,
     maximumFractionDigits: maxPrecision,
+  };
+  return number.toLocaleString(undefined, options);
+};
+
+export const analyzeSmallNumber = (num: number, zeroCount: number) => {
+  const numberString = num.toLocaleString("fullwide", {
+    useGrouping: false,
+    maximumFractionDigits: 100,
+  });
+  const [integerPart, decimalPart] = numberString.split(".");
+  if (Number(integerPart) > 0) {
+    return {
+      first: `${integerPart}`,
+      last: decimalPart?.slice(0, 4),
+      zeroes: 0,
+    };
   }
-  return number.toLocaleString(undefined, options)
-}
+
+  if (!decimalPart) {
+    return {
+      first: `${integerPart}`,
+      last: "",
+      zeroes: 0,
+    };
+  }
+
+  let zeroes = 0;
+  for (let i = 0; i < decimalPart.length; i++) {
+    if (decimalPart[i] !== "0") break;
+    zeroes++;
+  }
+
+  if (zeroes <= zeroCount) {
+    return {
+      first: `${integerPart}`,
+      last: decimalPart.slice(0, zeroes + 2),
+      zeroes: 0,
+    };
+  }
+
+  return {
+    first: `0.${"0".repeat(zeroCount)}`,
+    last: decimalPart.slice(zeroes, zeroes + 3),
+    zeroes: zeroes - zeroCount,
+  };
+};

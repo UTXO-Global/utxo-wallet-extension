@@ -14,16 +14,17 @@ module.exports = {
         38: "9.5rem",
         38.1: "9.6875rem",
         "100vh-72px": "calc(100vh - 72px)",
-        "100vh-100px": "calc(100vh - 100px)"
+        "100vh-100px": "calc(100vh - 100px)",
       },
       colors: {
         light: {
-          100: "#FFFFFF"
+          100: "#FFFFFF",
         },
         grey: {
           100: "#ABA8A1",
           200: "#EBECEC",
-          300: "#F5F5F5"
+          300: "#F5F5F5",
+          400: "#FAFAFA",
         },
         bg: "#18100C",
         "input-bg": "#3d3d3d95",
@@ -39,16 +40,16 @@ module.exports = {
         "light-purple-2": "#382C20",
         "purple-4": "#A69C8C",
         "purple-3": "#4E4132",
-        "dark-purple": "#261D13"
+        "dark-purple": "#261D13",
       },
       screens: {
-        "standard": "355px",
-        "sm": "640px",
-        "md": "768px",
-        "lg": "1024px",
-        "xl": "1280px",
-        "2xl": "1536px"
-      }
+        standard: "355px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+      },
     },
   },
   plugins: [],

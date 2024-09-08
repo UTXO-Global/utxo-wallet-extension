@@ -57,7 +57,6 @@ class PushEventHandlers {
 
   networkChanged = ({ network }) => {
     this.connect({});
-
     if (network !== this.provider._network) {
       this.provider._network = network;
       this._emit("networkChanged", network);

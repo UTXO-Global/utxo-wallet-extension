@@ -12,7 +12,6 @@ import AccountDetail from "./main/about-account";
 import WalletDetail from "./main/about-wallet/component";
 import AddressType from "./main/address-type";
 import ConnectedSites from "./main/connected-sites";
-import Home from "./main/home";
 import InscriptionDetails from "./main/inscription-details";
 import Inscriptions from "./main/inscriptions";
 import Language from "./main/language";
@@ -41,6 +40,13 @@ import SwitchNetwork from "./provider/switch-network/component";
 import SwitchChain from "./provider/switch-chain/component";
 import SignTransaction from "./provider/sign-transaction";
 import ConfirmMnemonic from "./main/new-wallet/new-mnemonic/confirm-mnemonic";
+import Home from "./main/home";
+import TokenDetail from "./main/token-detail";
+import ListNFTs from "./main/nfts/component";
+import DetailNFT from "./main/detail-nft";
+import Activities from "./main/activities";
+import TransferNft from "./main/transfer-nft";
+import ConfirmTransferNft from "./main/transfer-nft/confirm-transfer-nft";
 
 export const guestRouter = createHashRouter([
   {
@@ -60,9 +66,21 @@ export const authenticatedRouter = createHashRouter([
     element: <Wallet />,
   },
   {
+    path: "nfts",
+    element: <ListNFTs />,
+  },
+  {
+    path: "activities",
+    element: <Activities />,
+  },
+  {
     path: "pages",
     element: <PagesLayout />,
     children: [
+      {
+        path: "tokens/:type/:typeHash",
+        element: <TokenDetail />,
+      },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },
       { path: "address-type/:accId", element: <AddressType /> },
@@ -91,6 +109,9 @@ export const authenticatedRouter = createHashRouter([
       { path: "inscription-details", element: <InscriptionDetails /> },
       { path: "inscriptions", element: <Inscriptions /> },
       { path: "explore", element: <Explore /> },
+      { path: "detail-nft/:collection/:nftId", element: <DetailNFT /> },
+      { path: "transfer-nft/:collection/:nftId", element: <TransferNft /> },
+      { path: "confirm-transfer-nft", element: <ConfirmTransferNft /> },
     ],
   },
   {

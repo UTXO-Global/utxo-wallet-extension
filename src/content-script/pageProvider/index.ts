@@ -55,7 +55,6 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.setMaxListeners(maxListeners);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.initialize();
-    this._pushEventHandlers = new PushEventHandlers(this);
   }
 
   initialize = async () => {
@@ -146,7 +145,7 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   private _handleBackgroundMessage = ({ event, data }) => {
     if (!this._pushEventHandlers[event]) {
-      return;
+      return; // Ignore unexpected events
     }
 
     this._pushEventHandlers[event](data);
@@ -155,7 +154,8 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   _request = async (data: any) => {
     const origin = window.top?.location.origin;
-    if (!this._isValidURL(origin)) {
+    const sanitizedOrigin = DOMPurify.sanitize(origin);
+    if (!this._isValidURL(sanitizedOrigin)) {
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
       );

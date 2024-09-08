@@ -1,9 +1,5 @@
 .address {
-  @apply px-2 py-2 rounded-xl bg-grey-300 select-none hover:bg-grey-200 transition-colors;
-}
-
-.remove {
-  @apply p-2 rounded-xl bg-input-bg hover:bg-red-500 transition-colors;
+  @apply h-8 leading-8 text-[#787575] text-sm font-normal;
 }
 
 .empty {
