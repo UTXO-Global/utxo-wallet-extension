@@ -307,8 +307,8 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     if (prices[symbol]["expired"] < new Date().getTime()) return undefined;
 
     return {
-      usd: prices[symbol]["price"],
-      changePercent24Hr: prices[symbol]["changePercent24Hr"],
+      usd: Number(prices[symbol]["usd"]),
+      changePercent24Hr: Number(prices[symbol]["changePercent24Hr"]),
     };
   };
 
@@ -324,8 +324,8 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
     prices[symbol] = {
       expired: new Date().getTime() + 120000, // 60s or 60000ms
-      usd: price,
-      changePercent24Hr: changePercent24Hr,
+      usd: Number(price),
+      changePercent24Hr: Number(changePercent24Hr),
     };
 
     await LS.setItem(NATIVE_COIN_PRICES_KEY, prices);
@@ -338,11 +338,12 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
       );
 
       if (
-        !!pricesFromCache &&
+        !pricesFromCache &&
         apiController &&
         apiController.getNativeCoinPrice
       ) {
         pricesFromCache = await apiController.getNativeCoinPrice();
+        await updateLastBlock();
         await setNativeCoinPricesToLS(
           currentNetwork.coinSymbol,
           pricesFromCache.usd,
@@ -352,11 +353,10 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
       setCurrentPrice(pricesFromCache?.usd || 0);
       setChangePercent24Hr(pricesFromCache?.changePercent24Hr || 0);
-      await updateLastBlock();
     } catch (e) {
       console.log("Load native coin price: ", e.message);
     }
-  }, [apiController, updateLastBlock, currentPrice]);
+  }, [apiController, updateLastBlock, currentNetwork]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
