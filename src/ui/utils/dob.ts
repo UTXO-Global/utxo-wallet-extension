@@ -38,7 +38,6 @@ export const getExtraDetailSpore = async (
   const res = await getSporeContent(txHash, outputIndex, network);
   if (!res) return;
 
-  let url = "";
   if (IMAGE_CONTENT_TYPE.includes(res.msg.contentType.toLowerCase())) {
     const buffer = hexStringToUint8Array(res.msg.content.toString().slice(2));
     const blob = new Blob([buffer], { type: res.msg.contentType });

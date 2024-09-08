@@ -127,7 +127,7 @@
       "not_included": "포함되지 않음",
       "confirm": "확인",
       "confirmation": "확인",
-      "confirming": "확인 중"
+      "confirming": "확인 중..."
     },
     "create_send": {
       "minimum_amount_error": "최소 금액은 0.0001 BEL입니다",

@@ -9,7 +9,6 @@ import cn from "classnames";
 import { t } from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import ReactLoading from "react-loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 
@@ -147,9 +146,6 @@ const ConfirmSend = () => {
             {isProgressing
               ? t("send.confirm_send.confirming")
               : t("send.confirm_send.confirm")}
-            {isProgressing && (
-              <ReactLoading type="spin" color="#FFF" width={16} height={16} />
-            )}
           </button>
         </div>
       </div>

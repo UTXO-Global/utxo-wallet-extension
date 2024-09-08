@@ -8,7 +8,6 @@ import { useUpdateAddressBook } from "@/ui/hooks/app";
 import { usePushCkbTxCallback } from "@/ui/hooks/transactions";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import ReactLoading from "react-loading";
 
 export default function ConfirmTransferNFT() {
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
@@ -132,9 +131,6 @@ export default function ConfirmTransferNFT() {
         {isProgressing
           ? t("send.confirm_send.confirming")
           : t("send.confirm_send.confirm")}
-        {isProgressing && (
-          <ReactLoading type="spin" color="#FFF" width={16} height={16} />
-        )}
       </button>
     </div>
   );

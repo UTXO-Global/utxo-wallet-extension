@@ -149,6 +149,7 @@ export const DOBS_TESTNET_CONFIG: SporeConfig = {
     ...predefinedSporeConfigs.Testnet.scripts,
     Spore: {
       versions: [
+        // eslint-disable-next-line no-unsafe-optional-chaining
         ...predefinedSporeConfigs.Testnet.scripts?.Spore.versions,
         {
           tags: ["v2", "preview"],

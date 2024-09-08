@@ -177,7 +177,7 @@
       "included": "included",
       "not_included": "not included",
       "confirm": "Confirm",
-      "confirming": "Confirming",
+      "confirming": "Confirming...",
       "confirmation": "Confirmation",
       "inscription_id": "Inscription Id"
     },

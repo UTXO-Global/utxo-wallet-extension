@@ -116,7 +116,7 @@ const Explorer = () => {
               <a
                 className="text-white text-xs leading-[18px] font-medium bg-primary p-2 rounded flex justify-center items-center gap-1 cursor-pointer"
                 href={TELEGRAM_PARTNERSHIP}
-                target="_blank"
+                target="_blank" rel="noreferrer"
               >
                 <svg
                   width="16"
