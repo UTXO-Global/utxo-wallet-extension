@@ -387,11 +387,6 @@ class KeyringService {
     const lumosConfig = isTestnet ? AGGRON4 : LINA;
 
     const indexer = network.network.indexer;
-    const cellProvider: TransactionSkeletonType["cellProvider"] = {
-      collector: (query) =>
-        indexer.collector({ type: "empty", data: "0x", ...query }),
-    };
-
     const fromScript = helpers.parseAddress(ckbAccount.address, {
       config: lumosConfig,
     });
@@ -414,6 +409,7 @@ class KeyringService {
     const cellCollector = indexer.collector({
       lock: fromScript,
       data: "0x",
+      type: "empty",
     });
 
     let xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
@@ -453,7 +449,7 @@ class KeyringService {
       throw new Error(`${data.token.attributes.symbol} insufficient balance`);
     }
 
-    let txSkeleton = helpers.TransactionSkeleton({ cellProvider });
+    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
 
     txSkeleton = addCellDep(txSkeleton, {
       outPoint: {
