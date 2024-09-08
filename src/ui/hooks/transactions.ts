@@ -159,7 +159,7 @@ export function useCreateTxCallback() {
             const selectedUtxo = totalUtxos.find(
               (utxo) =>
                 utxo.txid ===
-                  Buffer.from(input.hash).reverse().toString("hex") &&
+                Buffer.from(input.hash).reverse().toString("hex") &&
                 utxo.vout === input.index
             );
             return selectedUtxo.address;
@@ -169,11 +169,11 @@ export function useCreateTxCallback() {
         return token
           ? await ckbSendToken(toAddress, toAmount, token, 3600)
           : await ckbSendNativeCoin(
-              toAddress,
-              toAmount,
-              feeRate,
-              receiverToPayFee
-            );
+            toAddress,
+            toAmount,
+            feeRate,
+            receiverToPayFee
+          );
       } else {
         toast.error("Invalid network");
       }
@@ -349,10 +349,10 @@ export function usePushCkbTxCallback() {
 
           const { data } = await res.json();
           setIsSent(data.attributes?.tx_status === "committed");
-        }, 11000);
+        }, 2000);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     return () => clearInterval(interval);
