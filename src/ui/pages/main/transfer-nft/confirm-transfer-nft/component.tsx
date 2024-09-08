@@ -8,7 +8,6 @@ import { useUpdateAddressBook } from "@/ui/hooks/app";
 import { usePushCkbTxCallback } from "@/ui/hooks/transactions";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import ReactLoading from "react-loading";
 
 export default function ConfirmTransferNFT() {
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();

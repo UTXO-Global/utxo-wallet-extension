@@ -264,7 +264,7 @@ export const useUpdateCurrentAccountBalance = () => {
     async (address?: string) => {
       let groupCardinalAccountBalance = 0;
       let groupOrdinalAccountBalance = 0;
-      let tokenBalances = {};
+      const tokenBalances = {};
       for (const account of currentAccount.accounts) {
         const balance = await apiController.getAccountBalance(
           address ? address : account?.address ?? ""
@@ -383,8 +383,8 @@ export const useSwitchNetwork = () => {
               ? ""
               : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
                 CKB_NEURON_HD_PATH
-              ? CKB_NEURON_HD_PATH
-              : "";
+                ? CKB_NEURON_HD_PATH
+                : "";
 
           const networkGroupAccount =
             await walletController.createDefaultGroupAccount(

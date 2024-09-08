@@ -421,11 +421,11 @@ class KeyringService {
       xUDTCapacity = xUDTCapacity.add(joyCapacityAddMore);
     }
 
-    let collectedCells: Cell[] = [];
+    const collectedCells: Cell[] = [];
     let neededCapacity = xUDTCapacity;
     let totalCapacity = BI.from(0);
 
-    let tokensCell: Cell[] = [];
+    const tokensCell: Cell[] = [];
     const totalTokenBalanceNeeed = BI.from(data.amount);
     let totalTokenBalance = BI.from(0);
 

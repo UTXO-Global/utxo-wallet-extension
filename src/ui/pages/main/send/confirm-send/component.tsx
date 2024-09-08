@@ -9,7 +9,6 @@ import cn from "classnames";
 import { t } from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import ReactLoading from "react-loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 
