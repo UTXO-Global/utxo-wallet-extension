@@ -7,20 +7,31 @@ import {
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { t } from "i18next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import ReactLoading from "react-loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
+import Loading from "react-loading";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 const ConfirmSend = () => {
   const location = useLocation();
-  const pushTx = usePushBitcoinTxCallback();
-  const pushCkbTx = usePushCkbTxCallback();
+  const { pushBtcTx, isSent: isBTCSent } = usePushBitcoinTxCallback();
+  const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
+  const [txId, setTxId] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const updateAddressBook = useUpdateAddressBook();
   const currentNetwork = useGetCurrentNetwork();
+  const { trottledUpdate } = useTransactionManagerContext();
+
+  const isSent = useMemo(() => {
+    return isBitcoinNetwork(currentNetwork.network) ? isBTCSent : isCkbSent;
+  }, [currentNetwork, isBTCSent, isCkbSent]);
+
+  const isProgressing = useMemo(() => {
+    return loading || (!!txId && !isSent);
+  }, [isSent, loading, txId]);
 
   const symbol = useMemo(() => {
     if (location.state.token) {
@@ -35,24 +46,36 @@ const ConfirmSend = () => {
     try {
       let txId = "";
       if (isBitcoinNetwork(currentNetwork.network)) {
-        txId = (await pushTx(location.state.hex)).txid;
+        txId = (await pushBtcTx(location.state.hex)).txid;
       } else if (isCkbNetwork(currentNetwork.network)) {
         txId = (await pushCkbTx(location.state.hex)).txid;
       }
 
-      if (!txId) throw new Error("Failed pushing transaction");
-
-      navigate(`/pages/finalle-send/${txId}`);
-
       if (location.state.save) {
         await updateAddressBook(location.state.toAddress);
       }
+
+      if (!txId) {
+        throw new Error("Failed pushing transaction");
+      }
+      setTxId(txId);
+      navigate(location.pathname, {
+        state: { ...location.state, isSending: true },
+        replace: true,
+      });
     } catch (e) {
       toast.error(e.message);
       console.error(e);
       navigate(-1);
     }
   };
+
+  useEffect(() => {
+    if (!!txId && isSent) {
+      trottledUpdate(true);
+      navigate(`/pages/finalle-send/${txId}`);
+    }
+  }, [confirmSend, isSent, txId]);
 
   const fields = [
     {
@@ -102,8 +125,8 @@ const ConfirmSend = () => {
   ];
 
   return (
-    <div className={s.wrapper}>
-      {!loading ? (
+    <>
+      <div className={s.wrapper}>
         <div className={s.container}>
           <div className={s.container}>
             {fields.map((i) => (
@@ -117,17 +140,30 @@ const ConfirmSend = () => {
               </div>
             ))}
           </div>
-          <button
-            className={cn("btn primary", s.confirmBtn)}
-            onClick={confirmSend}
-          >
-            {t("send.confirm_send.confirm")}
-          </button>
+          {isProgressing ? (
+            <div className="flex justify-center w-full">
+              <Loading color="#ODODOD" type="bubbles" />
+            </div>
+          ) : (
+            <button
+              className={cn(
+                "btn primary flex items-center justify-center gap-1",
+                s.confirmBtn,
+                {
+                  "hover:bg-none hover:border-transparent": isProgressing,
+                }
+              )}
+              onClick={confirmSend}
+              disabled={isProgressing}
+            >
+              {isProgressing
+                ? t("send.confirm_send.confirming")
+                : t("send.confirm_send.confirm")}
+            </button>
+          )}
         </div>
-      ) : (
-        <ReactLoading type="spin" color="#ODODOD" />
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

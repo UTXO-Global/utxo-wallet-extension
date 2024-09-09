@@ -88,8 +88,12 @@ const TokenDetail = () => {
   };
 
   const ckbBalance = useMemo(() => {
-    return currentAccount.balance ? Number(currentAccount.balance) : 0;
-  }, [currentAccount.balance]);
+    const bal =
+      Number(currentAccount.balance || 0) -
+      Number(currentAccount.ordinalBalance || 0);
+
+    return bal > 0 ? bal : 0;
+  }, [currentAccount]);
 
   const ckbOccupiedBalance = useMemo(() => {
     return currentAccount.ordinalBalance
@@ -99,7 +103,7 @@ const TokenDetail = () => {
 
   const tokenBalence = useMemo(() => {
     if (isNativeToken) {
-      return currentAccount.balance ? Number(currentAccount.balance) : 0;
+      return ckbBalance;
     }
 
     if (!currentToken) return 0;

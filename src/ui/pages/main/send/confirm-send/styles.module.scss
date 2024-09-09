@@ -15,7 +15,7 @@
 }
 
 .wrapper {
-  @apply h-full py-4 flex items-center justify-center px-4;
+  @apply h-full py-4 flex items-center justify-center px-4 relative;
 }
 
 .container {

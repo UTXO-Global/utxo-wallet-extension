@@ -126,7 +126,8 @@
       "included": "включено",
       "not_included": "не включено",
       "confirm": "Подтвердить",
-      "confirmation": "Подтверждение"
+      "confirmation": "Подтверждение",
+      "confirming": "подтверждающий..."
     },
     "create_send": {
       "minimum_amount_error": "Минимальная сумма - 0.0001 BTC",

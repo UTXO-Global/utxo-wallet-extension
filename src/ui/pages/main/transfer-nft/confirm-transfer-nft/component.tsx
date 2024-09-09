@@ -6,16 +6,25 @@ import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
 import { useUpdateAddressBook } from "@/ui/hooks/app";
 import { usePushCkbTxCallback } from "@/ui/hooks/transactions";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import Loading from "react-loading";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 export default function ConfirmTransferNFT() {
-  const pushCkbTx = usePushCkbTxCallback();
+  const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
   const [loading, setLoading] = useState(false);
+  const [txId, setTxId] = useState<string | undefined>(undefined);
   const updateAddressBook = useUpdateAddressBook();
   const location = useLocation();
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
+  const { trottledUpdate } = useTransactionManagerContext();
+
+  const isProgressing = useMemo(() => {
+    return loading || (!!txId && !isCkbSent);
+  }, [isCkbSent, loading, txId]);
+
   const fields = [
     {
       label: t("send.confirm_send.to_addrses"),
@@ -50,19 +59,31 @@ export default function ConfirmTransferNFT() {
         txId = (await pushCkbTx(location.state.hex)).txid;
       }
 
-      if (!txId) throw new Error("Failed pushing transaction");
-
-      navigate(`/pages/finalle-send/${txId}`);
-
       if (location.state.save) {
         await updateAddressBook(location.state.toAddress);
       }
+
+      if (!txId) {
+        throw new Error("Failed pushing transaction");
+      }
+      setTxId(txId);
+      navigate(location.pathname, {
+        state: { ...location.state, isSending: true },
+        replace: true,
+      });
     } catch (e) {
       toast.error(e.message);
       console.error(e);
       navigate(-1);
     }
   };
+
+  useEffect(() => {
+    if (!!txId && isCkbSent) {
+      trottledUpdate(true);
+      navigate(`/pages/finalle-send/${txId}`);
+    }
+  }, [onConfirm, isCkbSent, txId]);
 
   return (
     <div className="w-full h-full flex flex-col justify-between">
@@ -104,12 +125,27 @@ export default function ConfirmTransferNFT() {
           </div>
         </div>
       </div>
-      <button
-        className={cn("btn primary mb-4 mx-4 standard:m-6 standard:mb-3")}
-        onClick={onConfirm}
-      >
-        {t("send.confirm_send.confirm")}
-      </button>
+
+      {isProgressing ? (
+        <div className="flex justify-center w-full">
+          <Loading color="#ODODOD" type="bubbles" />
+        </div>
+      ) : (
+        <button
+          className={cn(
+            "btn primary flex items-center justify-center gap-1 mb-4 mx-4 standard:m-6 standard:mb-3",
+            {
+              "hover:bg-none hover:border-transparent": isProgressing,
+            }
+          )}
+          onClick={onConfirm}
+          disabled={isProgressing}
+        >
+          {isProgressing
+            ? t("send.confirm_send.confirming")
+            : t("send.confirm_send.confirm")}
+        </button>
+      )}
     </div>
   );
 }
