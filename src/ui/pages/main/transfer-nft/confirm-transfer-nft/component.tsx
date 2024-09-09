@@ -9,6 +9,7 @@ import { usePushCkbTxCallback } from "@/ui/hooks/transactions";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 export default function ConfirmTransferNFT() {
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
@@ -18,6 +19,7 @@ export default function ConfirmTransferNFT() {
   const location = useLocation();
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
+  const { trottledUpdate } = useTransactionManagerContext();
 
   const isProgressing = useMemo(() => {
     return loading || (!!txId && !isCkbSent);
@@ -78,6 +80,7 @@ export default function ConfirmTransferNFT() {
 
   useEffect(() => {
     if (!!txId && isCkbSent) {
+      trottledUpdate(true);
       navigate(`/pages/finalle-send/${txId}`);
     }
   }, [onConfirm, isCkbSent, txId]);

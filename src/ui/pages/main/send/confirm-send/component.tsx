@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import Loading from "react-loading";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 const ConfirmSend = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const ConfirmSend = () => {
   const navigate = useNavigate();
   const updateAddressBook = useUpdateAddressBook();
   const currentNetwork = useGetCurrentNetwork();
+  const { trottledUpdate } = useTransactionManagerContext();
 
   const isSent = useMemo(() => {
     return isBitcoinNetwork(currentNetwork.network) ? isBTCSent : isCkbSent;
@@ -70,6 +72,7 @@ const ConfirmSend = () => {
 
   useEffect(() => {
     if (!!txId && isSent) {
+      trottledUpdate(true);
       navigate(`/pages/finalle-send/${txId}`);
     }
   }, [confirmSend, isSent, txId]);

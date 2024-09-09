@@ -732,6 +732,8 @@ class KeyringService {
       config: lumosConfig,
     });
 
+    console.log("txSkeleton", txSkeleton);
+
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
