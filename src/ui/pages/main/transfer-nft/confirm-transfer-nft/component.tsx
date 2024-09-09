@@ -8,6 +8,7 @@ import { useUpdateAddressBook } from "@/ui/hooks/app";
 import { usePushCkbTxCallback } from "@/ui/hooks/transactions";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import Loading from "react-loading";
 
 export default function ConfirmTransferNFT() {
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
@@ -122,20 +123,26 @@ export default function ConfirmTransferNFT() {
         </div>
       </div>
 
-      <button
-        className={cn(
-          "btn primary flex items-center justify-center gap-1 mb-4 mx-4 standard:m-6 standard:mb-3",
-          {
-            "hover:bg-none hover:border-transparent": isProgressing,
-          }
-        )}
-        onClick={onConfirm}
-        disabled={isProgressing}
-      >
-        {isProgressing
-          ? t("send.confirm_send.confirming")
-          : t("send.confirm_send.confirm")}
-      </button>
+      {isProgressing ? (
+        <div className="flex justify-center w-full">
+          <Loading color="#ODODOD" type="bubbles" />
+        </div>
+      ) : (
+        <button
+          className={cn(
+            "btn primary flex items-center justify-center gap-1 mb-4 mx-4 standard:m-6 standard:mb-3",
+            {
+              "hover:bg-none hover:border-transparent": isProgressing,
+            }
+          )}
+          onClick={onConfirm}
+          disabled={isProgressing}
+        >
+          {isProgressing
+            ? t("send.confirm_send.confirming")
+            : t("send.confirm_send.confirm")}
+        </button>
+      )}
     </div>
   );
 }

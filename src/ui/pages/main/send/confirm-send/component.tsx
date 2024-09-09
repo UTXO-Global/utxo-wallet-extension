@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
+import Loading from "react-loading";
 
 const ConfirmSend = () => {
   const location = useLocation();
@@ -136,21 +137,27 @@ const ConfirmSend = () => {
               </div>
             ))}
           </div>
-          <button
-            className={cn(
-              "btn primary flex items-center justify-center gap-1",
-              s.confirmBtn,
-              {
-                "hover:bg-none hover:border-transparent": isProgressing,
-              }
-            )}
-            onClick={confirmSend}
-            disabled={isProgressing}
-          >
-            {isProgressing
-              ? t("send.confirm_send.confirming")
-              : t("send.confirm_send.confirm")}
-          </button>
+          {isProgressing ? (
+            <div className="flex justify-center w-full">
+              <Loading color="#ODODOD" type="bubbles" />
+            </div>
+          ) : (
+            <button
+              className={cn(
+                "btn primary flex items-center justify-center gap-1",
+                s.confirmBtn,
+                {
+                  "hover:bg-none hover:border-transparent": isProgressing,
+                }
+              )}
+              onClick={confirmSend}
+              disabled={isProgressing}
+            >
+              {isProgressing
+                ? t("send.confirm_send.confirming")
+                : t("send.confirm_send.confirm")}
+            </button>
+          )}
         </div>
       </div>
     </>
