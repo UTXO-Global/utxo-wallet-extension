@@ -4,10 +4,16 @@ import * as ecc from "@bitcoinerlab/secp256k1";
 import Big from "big.js";
 import * as bitcoinjs from "bitcoinjs-lib";
 import { payments as bitcoinPayments, payments } from "bitcoinjs-lib";
-import { getNetworkDataBySlug, isBitcoinNetwork } from "../networks";
+import {
+  getNetworkDataBySlug,
+  isBitcoinNetwork,
+  AGGRON4,
+  LINA,
+} from "../networks";
 import { AddressType, NetworkSlug } from "../networks/types";
 import { formatNumber } from ".";
-import { BI } from "@ckb-lumos/lumos";
+import { BI, helpers } from "@ckb-lumos/lumos";
+import { ccc } from "@ckb-ccc/core";
 
 export enum TxDirection {
   out = 0,
@@ -235,3 +241,16 @@ export function toFixed(x: number): string {
   }
   return x.toString();
 }
+
+export const ckbMinTransfer = (address: string, isTestnet: boolean) => {
+  const lumosConfig = isTestnet ? AGGRON4 : LINA;
+
+  const toScript = helpers.parseAddress(address, {
+    config: lumosConfig,
+  });
+
+  const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
+
+  if (isAddressTypeJoy) return 63;
+  return 61;
+};

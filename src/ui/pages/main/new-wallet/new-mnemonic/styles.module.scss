@@ -8,7 +8,7 @@
 
 .savePhrase,
 .saveToClipboard {
-  @apply flex items-center w-full justify-center cursor-pointer select-none;
+  @apply flex items-center w-full justify-center cursor-pointer select-none text-[#787575];
 }
 
 .continueWrapper {
