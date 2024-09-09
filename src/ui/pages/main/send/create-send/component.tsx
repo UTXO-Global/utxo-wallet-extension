@@ -70,14 +70,22 @@ const CreateSend = () => {
   const [token, setToken] = useState<CKBTokenInfo | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const availableCKBBalance = useMemo(() => {
+    const bal =
+      Number(currentAccount.balance || 0) -
+      Number(currentAccount.ordinalBalance || 0);
+
+    return bal > 0 ? bal : 0;
+  }, [currentAccount]);
+
   const balance = useMemo(() => {
     if (!currentAccount) return 0;
-    if (!isTokenTransaction) return currentAccount.balance;
+    if (!isTokenTransaction) return availableCKBBalance;
     if (token && currentAccount.coinBalances[token.attributes.type_hash]) {
       return currentAccount.coinBalances[token.attributes.type_hash];
     }
     return 0;
-  }, [token, isTokenTransaction, currentAccount]);
+  }, [token, isTokenTransaction, currentAccount, availableCKBBalance]);
 
   const symbol = useMemo(() => {
     if (token && isTokenTransaction) {
@@ -317,8 +325,7 @@ const CreateSend = () => {
                 <div className="flex justify-between text-base font-medium">
                   <div>{t("wallet_page.available_balance")}:</div>
                   <div className="flex gap-2 items-center">
-                    <ShortBalance balance={balance} zeroDisplay={2} />
-
+                    <ShortBalance balance={balance} zeroDisplay={6} />
                     <span>{symbol}</span>
                   </div>
                 </div>

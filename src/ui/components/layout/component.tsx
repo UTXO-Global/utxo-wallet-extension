@@ -150,15 +150,6 @@ export default function PagesLayout() {
         route: "/pages/tokens/@",
         title: t("components.layout.details"),
       },
-      {
-        route: "/pages/detail-nft/@",
-        title: t("components.layout.detailNFT"),
-      },
-      { route: "/pages/transfer-nft/@", title: t("detailNFT.transfer") },
-      {
-        route: "/pages/confirm-transfer-nft",
-        title: t("send.confirm_send.confirmation"),
-      },
     ],
     [currentAccount?.name]
   );
@@ -197,13 +188,15 @@ export default function PagesLayout() {
           title: t("components.layout.send"),
         },
         {
-          backAction: () => {
-            navigate("/pages/create-send", {
-              state: currentRoute.state,
-            });
-          },
           route: "/pages/confirm-send",
           title: t("components.layout.send"),
+          backAction: () => {
+            if (!!currentRoute.state.isSending) {
+              navigate("/home");
+            } else {
+              navigate(-1);
+            }
+          },
         },
         {
           route: "/pages/inscription-details",
@@ -232,6 +225,31 @@ export default function PagesLayout() {
           },
           backAction: () => {
             navigate("/home");
+          },
+        },
+        {
+          route: "/pages/transfer-nft/@",
+          title: t("detailNFT.transfer"),
+          backAction: () => {
+            navigate("/nfts");
+          },
+        },
+        {
+          route: "/pages/confirm-transfer-nft",
+          title: t("send.confirm_send.confirmation"),
+          backAction: () => {
+            if (!!currentRoute.state.isSending) {
+              navigate("/nfts");
+            } else {
+              navigate(-1);
+            }
+          },
+        },
+        {
+          route: "/pages/detail-nft/@",
+          title: t("components.layout.detailNFT"),
+          backAction: () => {
+            navigate("/nfts");
           },
         },
       ] as IRouteTitle[],
