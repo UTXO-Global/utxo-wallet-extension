@@ -3,7 +3,7 @@ import { ApiUTXO } from "@/shared/interfaces/api";
 import { Inscription } from "@/shared/interfaces/inscriptions";
 import { ITransfer } from "@/shared/interfaces/token";
 import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
-import { tidoshisToAmount } from "@/shared/utils/transactions";
+import { ckbMinTransfer, tidoshisToAmount } from "@/shared/utils/transactions";
 import { BI } from "@ckb-lumos/lumos";
 import { Psbt } from "bitcoinjs-lib";
 import { t } from "i18next";
@@ -45,6 +45,7 @@ export function useCreateTxCallback() {
     // additional 0.001 ckb for tx fee
     // the tx fee could calculated by tx size
     // TODO: this is just a simple example
+    const _ckbMinTransfer = ckbMinTransfer(toAddress);
     const fixedFee = 100000;
     const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount;
     const neededCapacity = BI.from(_toAmount).add(fixedFee);
@@ -57,11 +58,12 @@ export function useCreateTxCallback() {
           _toAmount
         )} ${t("hooks.transaction.insufficient_balance_2")}`
       );
-    } else if (BI.from(_toAmount).lt(BI.from("6100000000"))) {
-      toast.error("Must be at least 61 CKB");
-      throw new Error(
-        `every cell's capacity must be at least 61 CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
-      );
+    } else if (BI.from(_toAmount).lt(BI.from(_ckbMinTransfer * 10 ** 8))) {
+      // toast.error(`Must be at least ${_ckbMinTransfer} CKB`);
+      // throw new Error(
+      //   `every cell's capacity must be at least ${_ckbMinTransfer} CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
+      // );
+      throw new Error(`Must be at least ${_ckbMinTransfer} CKB`);
     }
 
     const tx = await keyringController.sendCoin({

@@ -235,3 +235,14 @@ export function toFixed(x: number): string {
   }
   return x.toString();
 }
+
+export const ckbMinTransfer = (address: string) => {
+  switch (address.length) {
+    case 100:
+      return 63;
+    case 97:
+      return 61;
+    default:
+      return 61;
+  }
+};
