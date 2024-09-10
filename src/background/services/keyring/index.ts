@@ -397,7 +397,7 @@ class KeyringService {
 
     const xUdtType = {
       codeHash: lumosConfig.SCRIPTS.XUDT.CODE_HASH,
-      hashType: "type",
+      hashType: lumosConfig.SCRIPTS.XUDT.HASH_TYPE,
       args: data.token.attributes.type_script.args,
     } as Script;
 
@@ -411,19 +411,6 @@ class KeyringService {
       data: "0x",
       type: "empty",
     });
-
-    let xUDTCapacity = helpers.minimalScriptCapacityCompatible(xUdtType);
-
-    const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
-    const joyCapacityAddMore = "200000000"; // 2 ckb
-
-    if (isAddressTypeJoy) {
-      xUDTCapacity = xUDTCapacity.add(joyCapacityAddMore);
-    }
-
-    const collectedCells: Cell[] = [];
-    let neededCapacity = xUDTCapacity;
-    let totalCapacity = BI.from(0);
 
     const tokensCell: Cell[] = [];
     const totalTokenBalanceNeeed = BI.from(data.amount);
@@ -444,6 +431,14 @@ class KeyringService {
         "Owner do not have an xUDT cell yet, please call mint first"
       );
     }
+
+    const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
+    const joyCapacityAddMore = 2_0000_0000; // 2 ckb
+
+    const collectedCells: Cell[] = [];
+    let neededCapacity = BI.from(0);
+    let totalCapacity = BI.from(0);
+    let xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
 
     if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
       throw new Error(`${data.token.attributes.symbol} insufficient balance`);
@@ -490,7 +485,7 @@ class KeyringService {
 
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
-      neededCapacity = neededCapacity.add(xUDTCapacity);
+      neededCapacity = neededCapacity.add(tokensCell[0].cellOutput.capacity);
       if (isAddressTypeJoy) {
         neededCapacity = neededCapacity.add(joyCapacityAddMore);
       }
@@ -505,6 +500,10 @@ class KeyringService {
         })
       );
     }
+
+    const cccTransaction = ccc.Transaction.fromLumosSkeleton(txSkeleton);
+    const fee = cccTransaction.estimateFee(data.feeRate);
+    neededCapacity = neededCapacity.add(BI.from(fee));
 
     for await (const cell of cellCollector.collect()) {
       if (cell.data !== "0x") {
@@ -549,19 +548,6 @@ class KeyringService {
         })
       );
     }
-
-    const cccTransaction = ccc.Transaction.fromLumosSkeleton(txSkeleton);
-    const fee = cccTransaction.estimateFee(data.feeRate);
-
-    txSkeleton = await commons.common.payFee(
-      txSkeleton,
-      [ckbAccount.address],
-      fee,
-      undefined,
-      {
-        config: lumosConfig,
-      }
-    );
 
     const firstIndex = txSkeleton
       .get("inputs")

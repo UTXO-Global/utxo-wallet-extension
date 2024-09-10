@@ -164,7 +164,7 @@ export function useCreateTxCallback() {
             const selectedUtxo = totalUtxos.find(
               (utxo) =>
                 utxo.txid ===
-                  Buffer.from(input.hash).reverse().toString("hex") &&
+                Buffer.from(input.hash).reverse().toString("hex") &&
                 utxo.vout === input.index
             );
             return selectedUtxo.address;
@@ -174,11 +174,11 @@ export function useCreateTxCallback() {
         return token
           ? await ckbSendToken(toAddress, toAmount, token, 3600)
           : await ckbSendNativeCoin(
-              toAddress,
-              toAmount,
-              feeRate,
-              receiverToPayFee
-            );
+            toAddress,
+            toAmount,
+            feeRate,
+            receiverToPayFee
+          );
       } else {
         toast.error("Invalid network");
       }
@@ -289,17 +289,14 @@ export const useSendTransferTokens = () => {
 };
 
 export function usePushBitcoinTxCallback() {
-  const [isSent, setIsSent] = useState(false);
-  const [txId, setTxId] = useState<string | undefined>(undefined);
   const { apiController } = useControllersState((v) => ({
     apiController: v.apiController,
   }));
 
-  const pushBtcTx = useCallback(
+  return useCallback(
     async (rawtx: string) => {
       try {
         const txid = await apiController.pushTx(rawtx);
-        setTxId(txid.txid);
         return txid;
       } catch (e) {
         console.error(e);
@@ -307,19 +304,6 @@ export function usePushBitcoinTxCallback() {
     },
     [apiController]
   );
-
-  useEffect(() => {
-    let t: NodeJS.Timeout;
-    if (!!txId) {
-      t = setTimeout(() => {
-        setIsSent(true);
-      }, 10000);
-    }
-
-    return () => clearTimeout(t);
-  }, [txId]);
-
-  return { pushBtcTx, isSent };
 }
 
 export function usePushCkbTxCallback() {
@@ -354,7 +338,7 @@ export function usePushCkbTxCallback() {
 
           const { data } = await res.json();
           setIsSent(data.attributes?.tx_status === "committed");
-        }, 2000);
+        }, 1500); //1.5s
       }
     } catch (e) {
       console.error(e);
