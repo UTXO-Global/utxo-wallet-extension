@@ -16,7 +16,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 const ConfirmSend = () => {
   const location = useLocation();
-  const { pushBtcTx, isSent: isBTCSent } = usePushBitcoinTxCallback();
+  const pushTx = usePushBitcoinTxCallback();
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
   const [txId, setTxId] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -26,8 +26,8 @@ const ConfirmSend = () => {
   const { trottledUpdate } = useTransactionManagerContext();
 
   const isSent = useMemo(() => {
-    return isBitcoinNetwork(currentNetwork.network) ? isBTCSent : isCkbSent;
-  }, [currentNetwork, isBTCSent, isCkbSent]);
+    return isBitcoinNetwork(currentNetwork.network) ? true : isCkbSent;
+  }, [currentNetwork, isCkbSent]);
 
   const isProgressing = useMemo(() => {
     return loading || (!!txId && !isSent);
@@ -46,7 +46,7 @@ const ConfirmSend = () => {
     try {
       let txId = "";
       if (isBitcoinNetwork(currentNetwork.network)) {
-        txId = (await pushBtcTx(location.state.hex)).txid;
+        txId = (await pushTx(location.state.hex)).txid;
       } else if (isCkbNetwork(currentNetwork.network)) {
         txId = (await pushCkbTx(location.state.hex)).txid;
       }
