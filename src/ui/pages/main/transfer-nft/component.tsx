@@ -150,9 +150,7 @@ export default function TransferNFT() {
                 <img
                   src={detailNFT.imageUrl || "/nft-default.png"}
                   alt={detailNFT.name}
-                  className={cn(
-                    "rounded max-w-[120px] h-full mix-blend-multiply p-2"
-                  )}
+                  className={cn("rounded h-[60px] mix-blend-multiply p-2")}
                 />
               </div>
               <div className="w-full flex flex-col justify-start items-start gap-4 py-4">
