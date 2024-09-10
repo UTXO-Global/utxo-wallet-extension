@@ -7,7 +7,7 @@ import { t } from "i18next";
 import Loading from "react-loading";
 import { shortAddress } from "@/shared/utils/transactions";
 import AddressInput from "../send/create-send/address-input";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddressBookModal from "../send/create-send/address-book-modal";
 import Switch from "@/ui/components/switch";
 import ShortBalance from "@/ui/components/ShortBalance";
@@ -43,7 +43,8 @@ const feeRates = [
 
 export default function TransferNFT() {
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
-  const { isLoading, detailNFT } = useGetDetailNFT();
+  const [mounted, setMounted] = useState(false);
+  const { isLoading, detailNFT } = useGetDetailNFT(mounted);
 
   const [isSaveAddress, setIsSaveAddress] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormTransferNFTType>({
@@ -119,6 +120,10 @@ export default function TransferNFT() {
     }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col justify-between">
       {isLoading ? (
@@ -147,11 +152,15 @@ export default function TransferNFT() {
                     {shortAddress(detailNFT.type_script.args, 5)}
                   </div>
                 </div>
-                <img
-                  src={detailNFT.imageUrl || "/nft-default.png"}
-                  alt={detailNFT.name}
-                  className={cn("rounded h-[60px] mix-blend-multiply p-2")}
-                />
+                {detailNFT.loading ? (
+                  <Loading type="bubbles" color="#ODODOD" width={50} />
+                ) : (
+                  <img
+                    src={detailNFT.imageUrl || "/nft-default.png"}
+                    alt={detailNFT.name}
+                    className={cn("rounded h-[60px] mix-blend-multiply p-2")}
+                  />
+                )}
               </div>
               <div className="w-full flex flex-col justify-start items-start gap-4 py-4">
                 <div className="form-field">

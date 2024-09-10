@@ -6,7 +6,6 @@ import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
 import { Config, createConfig } from "@ckb-lumos/lumos/config";
 import { SporeConfig, predefinedSporeConfigs } from "@spore-sdk/core";
-import cluster from "cluster";
 
 export const defaultNetwork = CKB_TESTNET;
 

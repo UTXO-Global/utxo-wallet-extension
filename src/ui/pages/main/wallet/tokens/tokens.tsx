@@ -1,9 +1,6 @@
 import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
-import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
-import { BI } from "@ckb-lumos/lumos";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
-import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 
 export default function Tokens({ tokens }: { tokens: any[] }) {

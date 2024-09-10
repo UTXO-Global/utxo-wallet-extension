@@ -6,7 +6,7 @@ import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { BI } from "@ckb-lumos/lumos";
 
-export default function TokenTabs({ active }: { active?: string }) {
+export default function TokenTabs() {
   const [tokens, setTokens] = useState<any[]>([]);
   const { isLoading, addressInfo } = useGetCKBAddressInfo();
   const currentNetwork = useGetCurrentNetwork();

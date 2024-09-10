@@ -39,6 +39,7 @@ import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
 import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
 import {
+  assembleTransferSporeAction,
   calculateFeeByTransactionSkeleton,
   generateTransferSporeAction,
   getSporeScript,
@@ -720,21 +721,12 @@ class KeyringService {
       );
     }
 
-    // Check can pay fee with capacity margin
-    const minimalCellCapacity = helpers.minimalCellCapacityCompatible(output);
-    const outputCapacity = BI.from(output.cellOutput.capacity);
-    const capacityMargin = outputCapacity.sub(minimalCellCapacity);
     const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
-
-    console.log("fee", fee);
-    console.log("capacityMargin", capacityMargin);
-
-    //const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
-
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
       config: lumosConfig,
     });
 
+    console.log("skeleton", txSkeleton);
     const message = txSkeleton.get("signingEntries").get(0)!.message;
     const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
     const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);

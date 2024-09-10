@@ -9,12 +9,19 @@ import BottomPanel from "../wallet/bottom-panel";
 import NftCard from "@/ui/components/nft-card";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { isCkbNetwork } from "@/shared/networks";
+import { useEffect, useState } from "react";
 
 const ListNFTs = () => {
-  const { isLoading, nfts, setPage, isNext, isPrev, page } = useGetMyNFTs();
+  const [loading, setLoading] = useState(false);
+  const { isLoading, nfts, setPage, isNext, isPrev, page } =
+    useGetMyNFTs(loading);
   const navigate = useNavigate();
 
   const currentNetwork = useGetCurrentNetwork();
+
+  useEffect(() => {
+    setLoading(true);
+  }, []);
 
   return (
     <div className="w-full h-full top-0 relative">
