@@ -726,7 +726,24 @@ class KeyringService {
       config: sporeConfig,
     });
 
+    let outputs = txSkeleton.get("outputs");
+    const output = outputs.get(injectLiveSporeCellResult.outputIndex);
+    if (!output) {
+      throw new Error(
+        `Cannot pay fee by Transaction.outputs[${injectLiveSporeCellResult.outputIndex}] because it does not exist`
+      );
+    }
+
+    // Check can pay fee with capacity margin
+    const minimalCellCapacity = helpers.minimalCellCapacityCompatible(output);
+    const outputCapacity = BI.from(output.cellOutput.capacity);
+    const capacityMargin = outputCapacity.sub(minimalCellCapacity);
     const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
+
+    console.log("fee", fee);
+    console.log("capacityMargin", capacityMargin);
+
+    //const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
 
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
       config: lumosConfig,

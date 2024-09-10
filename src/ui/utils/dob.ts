@@ -1,4 +1,8 @@
-import { unpackToRawSporeData } from "@spore-sdk/core";
+import {
+  bufferToRawString,
+  bytifyRawString,
+  unpackToRawSporeData,
+} from "@spore-sdk/core";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { hexStringToUint8Array } from "./helpers";
 import { NetworkData } from "@/shared/networks/types";
@@ -26,8 +30,7 @@ export async function getSporeContent(
     return alert("cell not found, please retry later");
   }
   const data = cell.data.content;
-  const msg = unpackToRawSporeData(data);
-  return { msg, capacity: cell.output.capacity };
+  return { content: data, capacity: cell.output.capacity };
 }
 
 export const getExtraDetailSpore = async (
@@ -38,25 +41,18 @@ export const getExtraDetailSpore = async (
   const res = await getSporeContent(txHash, outputIndex, network);
   if (!res) return;
 
-  if (IMAGE_CONTENT_TYPE.includes(res.msg.contentType.toLowerCase())) {
-    const buffer = hexStringToUint8Array(res.msg.content.toString().slice(2));
-    const blob = new Blob([buffer], { type: res.msg.contentType });
-    return {
-      url: URL.createObjectURL(blob),
-      capacity: res.capacity,
-      contentType: res.msg.contentType,
-    };
-  }
-
-  return { capacity: res.capacity };
+  console.log(getURLFromHex(res.content));
+  return { capacity: res.capacity, ...getURLFromHex(res.content) };
 };
 
 export const getURLFromHex = (dataHex: string) => {
   const msg = unpackToRawSporeData(dataHex);
-  if (IMAGE_CONTENT_TYPE.includes(msg.contentType.toLowerCase())) {
+  console.log(msg);
+  const contentType = msg.contentType.toLowerCase();
+  if (IMAGE_CONTENT_TYPE.includes(contentType)) {
     const buffer = hexStringToUint8Array(msg.content.toString().slice(2));
-    const blob = new Blob([buffer], { type: msg.contentType });
-    return { url: URL.createObjectURL(blob), contentType: msg.contentType };
+    const blob = new Blob([buffer], { type: contentType });
+    return { url: URL.createObjectURL(blob), contentType: contentType };
   }
   return { contentType: msg.contentType };
 };
