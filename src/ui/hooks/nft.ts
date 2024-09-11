@@ -103,8 +103,8 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
             };
           }
         });
+        setNFTs(_nfts);
       });
-      setNFTs(_nfts);
     }
   }, [nfts, dob0Ids, isLoading]);
 
