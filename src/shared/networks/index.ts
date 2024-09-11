@@ -181,7 +181,16 @@ export const LINA: Config = createConfig({
       INDEX: "0x0",
       DEP_TYPE: "depGroup",
       SHORT_ID: 1,
-    }
+    },
+    XUDT: {
+      CODE_HASH:
+        "0x50bd8d6680b8b9cf98b73f3c08faf8b2a21914311954118ad6609be6e78a1b95",
+      HASH_TYPE: "data1",
+      TX_HASH:
+        "0xc07844ce21b38e4b071dd0e1ee3b0e27afd8d7532491327f39b786343f558ab7",
+      INDEX: "0x0",
+      DEP_TYPE: "code",
+    },
   },
 });
 
@@ -208,6 +217,58 @@ export const DOBS_TESTNET_CONFIG: SporeConfig = {
             outPoint: {
               txHash:
                 "0x06995b9fc19461a2bf9933e57b69af47a20bf0a5bc6c0ffcb85567a2c733f0a1",
+              index: "0x0",
+            },
+            depType: "code",
+          },
+          behaviors: {
+            lockProxy: true,
+            cobuild: true,
+          },
+        },
+      ],
+    },
+    Cluster: {
+      versions: [
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        ...predefinedSporeConfigs.Testnet.scripts?.Cluster.versions,
+        {
+          tags: ["v2", "preview"],
+          script: {
+            codeHash:
+              "0x7366a61534fa7c7e6225ecc0d828ea3b5366adec2b58206f2ee84995fe030075",
+            hashType: "data1",
+          },
+          cellDep: {
+            outPoint: {
+              txHash:
+                "0xfbceb70b2e683ef3a97865bb88e082e3e5366ee195a9c826e3c07d1026792fcd",
+              index: "0x0",
+            },
+            depType: "code",
+          },
+          behaviors: {
+            lockProxy: true,
+            cobuild: true,
+          },
+        },
+      ],
+    },
+    ClusterProxy: {
+      versions: [
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        ...predefinedSporeConfigs.Testnet.scripts?.ClusterProxy.versions,
+        {
+          tags: ["v2", "preview"],
+          script: {
+            codeHash:
+              "0xbe8b9ce3d05a32c4bb26fe71cd5fc1407ce91e3a8b9e8719be2ab072cef1454b",
+            hashType: "data1",
+          },
+          cellDep: {
+            outPoint: {
+              txHash:
+                "0x0231ea581bbc38965e10a2659da326ae840c038a9d0d6849f458b51d94870104",
               index: "0x0",
             },
             depType: "code",

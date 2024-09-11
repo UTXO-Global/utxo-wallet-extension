@@ -206,7 +206,10 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/create-send",
-          title: `${t("components.layout.send")} ${currentNetwork?.coinSymbol}`,
+          title: `${t("components.layout.send")} ${
+            currentRoute.state?.token?.attributes.symbol ||
+            currentNetwork?.coinSymbol
+          }`,
           backAction: () => {
             navigate("/home");
           },

@@ -31,4 +31,5 @@ export interface INFT {
   capacity: number;
   name: string;
   contentType?: string;
+  loading: boolean;
 }

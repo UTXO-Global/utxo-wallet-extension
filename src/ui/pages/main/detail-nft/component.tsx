@@ -11,9 +11,11 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { formatNumber } from "@/shared/utils";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 
 const DetailNFT = () => {
-  const { isLoading, detailNFT } = useGetDetailNFT();
+  const [mounted, setMounted] = useState(false);
+  const { isLoading, detailNFT } = useGetDetailNFT(mounted);
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
 
@@ -48,6 +50,10 @@ const DetailNFT = () => {
     }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col justify-between">
       {isLoading ? (
@@ -57,13 +63,17 @@ const DetailNFT = () => {
       ) : detailNFT ? (
         <>
           <div className="flex justify-center items-center p-4">
-            <img
-              src={detailNFT.imageUrl || "/nft-default.png"}
-              alt={detailNFT.name}
-              className={cn("rounded-lg mix-blend-multiply w-full", {
-                "py-16 !w-36": !detailNFT.imageUrl,
-              })}
-            />
+            {detailNFT.loading ? (
+              <Loading type="bubbles" color="#ODODOD" width={50} />
+            ) : (
+              <img
+                src={detailNFT.imageUrl || "/nft-default.png"}
+                alt={detailNFT.name}
+                className={cn("rounded-lg mix-blend-multiply w-full", {
+                  "py-16 !w-36": !detailNFT.imageUrl,
+                })}
+              />
+            )}
           </div>
           <div className="px-4 flex-auto pb-4">
             <div className="flex justify-between items-center">

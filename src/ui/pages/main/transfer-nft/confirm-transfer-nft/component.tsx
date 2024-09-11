@@ -115,13 +115,15 @@ export default function ConfirmTransferNFT() {
                 {shortAddress(location.state.nft.type_script.args, 5)}
               </div>
             </div>
-            <img
-              src={location.state.nft.imageUrl || "/nft-default.png"}
-              alt={location.state.nft.name}
-              className={cn(
-                "rounded max-w-[120px] h-full mix-blend-multiply p-2"
-              )}
-            />
+            {location.state.nft.loading ? (
+              <Loading type="bubbles" color="#ODODOD" width={50} />
+            ) : (
+              <img
+                src={location.state.nft.imageUrl || "/nft-default.png"}
+                alt={location.state.nft.name}
+                className={cn("rounded h-[60px] mix-blend-multiply p-2")}
+              />
+            )}
           </div>
         </div>
       </div>

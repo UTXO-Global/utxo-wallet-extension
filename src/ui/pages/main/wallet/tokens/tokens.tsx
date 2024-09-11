@@ -1,9 +1,6 @@
 import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
-import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
-import { BI } from "@ckb-lumos/lumos";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
-import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 
 export default function Tokens({ tokens }: { tokens: any[] }) {
@@ -29,10 +26,10 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
                 navigate(`/pages/tokens/${token.udt_type}/${token.type_hash}`)
               }
             >
-              <div className="flex gap-[10px]">
+              <div className="flex gap-[10px] justify-center items-center">
                 <img
                   src={token.udt_icon_file || TOKEN_FILE_ICON_DEFAULT}
-                  className="w-9 h-9 rounded-full"
+                  className="h-9 rounded-full"
                 />
                 <div className="flex flex-col gap-1">
                   <div className="font-medium text-base leading-6">

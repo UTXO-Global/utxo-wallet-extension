@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getExtraDetailSpore, getURLFromHex } from "../utils/dob";
+import { getDob0Imgs, getExtraDetailSpore, getURLFromHex } from "../utils/dob";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
@@ -10,11 +10,12 @@ import { isCkbNetwork } from "@/shared/networks";
 import { INFT } from "@/shared/interfaces/nft";
 import { ckbExplorerApi } from "../utils/helpers";
 
-export const useGetMyNFTs = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export const useGetMyNFTs = (isProgess?: boolean) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [nfts, setNFTs] = useState<INFT[]>([]);
+  const [dob0Ids, setDob0Ids] = useState<string[]>([]);
 
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
@@ -56,10 +57,19 @@ export const useGetMyNFTs = () => {
             data.data[index].cell.data
           );
 
+          const nftId = data.data[index].type_script.args;
+
+          if (contentType === "dob/0") {
+            if (!dob0Ids.includes(nftId)) {
+              setDob0Ids((prev) => [...prev, nftId]);
+            }
+          }
+
           _nfts.push({
             ...data.data[index],
             imageUrl,
             contentType,
+            loading: contentType === "dob/0",
           });
         }
         setNFTs(_nfts);
@@ -73,8 +83,30 @@ export const useGetMyNFTs = () => {
   );
 
   useEffect(() => {
-    getMyNFTs(true);
-  }, [getMyNFTs]);
+    if (nfts.length === 0 && !isLoading && isProgess) {
+      getMyNFTs(true);
+    }
+  }, [getMyNFTs, nfts, isLoading, isProgess]);
+
+  useEffect(() => {
+    const _nfts = nfts;
+    if (dob0Ids.length > 0 && _nfts.length > 0 && !isLoading) {
+      getDob0Imgs(dob0Ids).then((res) => {
+        Object.keys(res).forEach((id) => {
+          const idx = nfts.findIndex((nft) => nft.type_script.args === id);
+          if (idx > -1) {
+            _nfts[idx] = {
+              ...nfts[idx],
+              imageUrl: res[id].url,
+              contentType: res[id].contentType,
+              loading: false,
+            };
+          }
+        });
+      });
+      setNFTs(_nfts);
+    }
+  }, [nfts, dob0Ids, isLoading]);
 
   return {
     nfts,
@@ -86,7 +118,7 @@ export const useGetMyNFTs = () => {
   };
 };
 
-export const useGetDetailNFT = () => {
+export const useGetDetailNFT = (isLoadNFT: boolean) => {
   const { collection, nftId } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [detailNFT, setDetailNFT] = useState<INFT | undefined>(undefined);
@@ -121,6 +153,7 @@ export const useGetDetailNFT = () => {
         imageUrl,
         capacity,
         contentType,
+        loading: contentType === "dob/0",
       });
     } catch (e) {
       console.error(e);
@@ -130,8 +163,27 @@ export const useGetDetailNFT = () => {
   };
 
   useEffect(() => {
-    getDetailNFT();
-  }, []);
+    if (isLoadNFT) {
+      getDetailNFT();
+    }
+  }, [collection, nftId, isLoadNFT]);
+
+  useEffect(() => {
+    if (detailNFT?.loading && detailNFT.contentType === "dob/0") {
+      getDob0Imgs([detailNFT.type_script.args]).then((res) => {
+        const updatedDetailNFT = { ...detailNFT };
+        if (res[detailNFT.type_script.args]) {
+          updatedDetailNFT.imageUrl = res[detailNFT.type_script.args].url;
+          updatedDetailNFT.contentType =
+            res[detailNFT.type_script.args].contentType;
+        }
+        setDetailNFT({
+          ...updatedDetailNFT,
+          loading: false,
+        });
+      });
+    }
+  }, [detailNFT]);
 
   return {
     detailNFT,
