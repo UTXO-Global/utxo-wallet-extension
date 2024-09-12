@@ -60,7 +60,6 @@
     "koa-compose": "4.1.0",
     "light-bolt11-decoder": "^3.1.1",
     "lodash": "^4.17.21",
-    "node-fetch": "^3.3.2",
     "qr-code-styling": "1.6.0-rc.1",
     "rc-progress": "4.0.0",
     "react": "18.3.1",

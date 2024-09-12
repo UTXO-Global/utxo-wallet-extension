@@ -52,7 +52,6 @@ export const customizedFetch: typeof fetch = (
 ) => {
   return globalThis.fetch(request, {
     ...init,
-    keepalive: true,
   });
 };
 
