@@ -6,7 +6,7 @@ import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "../states/walletState";
-import { isCkbNetwork } from "@/shared/networks";
+import { DOB_PROTOCOL_VERSIONS, isCkbNetwork } from "@/shared/networks";
 import { INFT } from "@/shared/interfaces/nft";
 import { ckbExplorerApi } from "../utils/helpers";
 
@@ -54,12 +54,13 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
         const _nfts = [];
         for (let index = 0; index < data.data.length; index++) {
           const { url: imageUrl, contentType } = getURLFromHex(
-            data.data[index].cell.data
+            data.data[index].cell.data,
+            currentNetwork
           );
 
           const nftId = data.data[index].type_script.args;
 
-          if (contentType === "dob/0") {
+          if (DOB_PROTOCOL_VERSIONS.includes(contentType)) {
             if (!dob0Ids.includes(nftId)) {
               setDob0Ids((prev) => [...prev, nftId]);
             }
@@ -69,7 +70,7 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
             ...data.data[index],
             imageUrl,
             contentType,
-            loading: contentType === "dob/0",
+            loading: DOB_PROTOCOL_VERSIONS.includes(contentType),
           });
         }
         setNFTs(_nfts);
@@ -83,15 +84,15 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
   );
 
   useEffect(() => {
-    if (nfts.length === 0 && !isLoading && isProgess) {
+    if (nfts.length === 0 && isProgess) {
       getMyNFTs(true);
     }
-  }, [getMyNFTs, nfts, isLoading, isProgess]);
+  }, [getMyNFTs, isProgess]);
 
   useEffect(() => {
     const _nfts = nfts;
     if (dob0Ids.length > 0 && _nfts.length > 0 && !isLoading) {
-      getDob0Imgs(dob0Ids).then((res) => {
+      getDob0Imgs(dob0Ids, currentNetwork).then((res) => {
         Object.keys(res).forEach((id) => {
           const idx = nfts.findIndex((nft) => nft.type_script.args === id);
           if (idx > -1) {
@@ -153,7 +154,7 @@ export const useGetDetailNFT = (isLoadNFT: boolean) => {
         imageUrl,
         capacity,
         contentType,
-        loading: contentType === "dob/0",
+        loading: DOB_PROTOCOL_VERSIONS.includes(contentType),
       });
     } catch (e) {
       console.error(e);
@@ -169,8 +170,11 @@ export const useGetDetailNFT = (isLoadNFT: boolean) => {
   }, [collection, nftId, isLoadNFT]);
 
   useEffect(() => {
-    if (detailNFT?.loading && detailNFT.contentType === "dob/0") {
-      getDob0Imgs([detailNFT.type_script.args]).then((res) => {
+    if (
+      detailNFT?.loading &&
+      DOB_PROTOCOL_VERSIONS.includes(detailNFT.contentType)
+    ) {
+      getDob0Imgs([detailNFT.type_script.args], currentNetwork).then((res) => {
         const updatedDetailNFT = { ...detailNFT };
         if (res[detailNFT.type_script.args]) {
           updatedDetailNFT.imageUrl = res[detailNFT.type_script.args].url;

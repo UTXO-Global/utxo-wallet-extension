@@ -293,3 +293,5 @@ export const DOBS_MAINNET_CONFIG: SporeConfig = {
     ...predefinedSporeConfigs.Mainnet.scripts,
   },
 };
+
+export const DOB_PROTOCOL_VERSIONS = ["dob/0", "dob/1"];

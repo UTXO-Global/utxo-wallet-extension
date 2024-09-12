@@ -1,12 +1,14 @@
-import {
-  bufferToRawString,
-  bytifyRawString,
-  unpackToRawSporeData,
-} from "@spore-sdk/core";
+import { unpackToRawSporeData } from "@spore-sdk/core";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { hexStringToUint8Array } from "./helpers";
 import { NetworkData } from "@/shared/networks/types";
 import LS from "./ls";
+import {
+  renderByDobDecodeResponse,
+  svgToBase64,
+  config as dobRenderConfig,
+  renderByTokenKey,
+} from "@nervina-labs/dob-render";
 
 const IMAGE_CONTENT_TYPE = [
   "image/apng",
@@ -42,10 +44,10 @@ export const getExtraDetailSpore = async (
   const res = await getSporeContent(txHash, outputIndex, network);
   if (!res) return;
 
-  return { capacity: res.capacity, ...getURLFromHex(res.content) };
+  return { capacity: res.capacity, ...getURLFromHex(res.content, network) };
 };
 
-export const getURLFromHex = (dataHex: string) => {
+export const getURLFromHex = (dataHex: string, network: NetworkData) => {
   const msg = unpackToRawSporeData(dataHex);
   const contentType = msg.contentType.toLowerCase();
   if (IMAGE_CONTENT_TYPE.includes(contentType)) {
@@ -56,7 +58,7 @@ export const getURLFromHex = (dataHex: string) => {
   return { contentType: msg.contentType };
 };
 
-export const getDob0Imgs = async (ids: string[]) => {
+export const getDob0Imgs = async (ids: string[], _network: NetworkData) => {
   if (ids.length === 0) return {};
   const keyCache = "__NFTS__";
   const nftsCache = (JSON.parse((await LS.getItem(keyCache)) || "{}") ||
@@ -66,42 +68,27 @@ export const getDob0Imgs = async (ids: string[]) => {
 
   const nftIds = ids.filter((id) => !Object.keys(nftsCache).includes(id));
   if (nftIds.length === 0) return nftsCache;
-
-  const apiURL = "https://dobs-api.magickbase.com/api/dobs/0";
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  const { dobs } = await (
-    await fetch(apiURL, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({ ids: nftIds.join(",") }),
-    })
-  ).json();
-
   const res: { [key: string]: { url: string; contentType: string } } = {
     ...nftsCache,
   };
+
   await Promise.all(
     nftIds.map(async (id, index) => {
-      if (!dobs[index] || ["undefined", "null"].includes(dobs[index])) {
-        res[id] = { contentType: undefined, url: undefined };
-        await Promise.resolve(id);
-      } else {
-        const joyIdAPI = `https://api.joy.id/api/v1/wallet/dob_imgs?uri=${dobs[index]["prev.bg"]}`;
-        const dobImg = await (await fetch(joyIdAPI)).json();
-        const buffer = hexStringToUint8Array(dobImg.content.toString());
-        const blob = new Blob([buffer], { type: dobImg.content_type });
-        const base64data = await new Promise((resolve, reject) => {
-          var reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-        });
-
+      try {
+        const tokenKey = id.startsWith("0x") ? id.slice(2) : id;
+        const data = await renderByTokenKey(tokenKey);
+        const url = await svgToBase64(data);
         res[id] = {
-          url: base64data.toString(),
-          contentType: dobImg.content_type,
+          url: await svgToBase64(data),
+          contentType: "image/svg+xml",
         };
+      } catch (e) {
+        res[id] = {
+          url: undefined,
+          contentType: undefined,
+        };
+        console.log(id, e);
+        await Promise.resolve(id);
       }
     })
   );
