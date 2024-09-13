@@ -82,7 +82,7 @@ const CreateSend = () => {
     if (!currentAccount) return 0;
     if (!isTokenTransaction) return availableCKBBalance;
     if (token && currentAccount.coinBalances[token.attributes.type_hash]) {
-      return currentAccount.coinBalances[token.attributes.type_hash];
+      return currentAccount.coinBalances[token.attributes.type_hash] || 0;
     }
     return 0;
   }, [token, isTokenTransaction, currentAccount, availableCKBBalance]);
@@ -226,8 +226,7 @@ const CreateSend = () => {
       if (location.state.save) {
         setIsSaveAddress(true);
       }
-      if (currentAccount?.balance <= location.state.amount)
-        setIncludeFeeLocked(true);
+      if (balance <= location.state.amount) setIncludeFeeLocked(true);
     }
     if (location.state && location.state.inscription_id) {
       setInscription(location.state);
@@ -239,14 +238,14 @@ const CreateSend = () => {
       setIncludeFeeLocked(true);
       setToken(location.state.token);
     }
-  }, [location.state, setFormData, currentAccount?.balance]);
+  }, [location.state, setFormData, balance]);
 
   const onAmountChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData((prev) => ({
       ...prev,
       amount: normalizeAmount(e.target.value, decimal),
     }));
-    if (currentAccount?.balance > Number(e.target.value)) {
+    if (balance > Number(e.target.value)) {
       setIncludeFeeLocked(false);
     } else {
       setIncludeFeeLocked(true);
@@ -263,7 +262,7 @@ const CreateSend = () => {
     const isIncludeFee = !isTokenTransaction;
     setFormData((prev) => ({
       ...prev,
-      amount: balance.toLocaleString("fullwide", {
+      amount: balance?.toLocaleString("fullwide", {
         useGrouping: false,
         maximumFractionDigits: 100,
       }),
