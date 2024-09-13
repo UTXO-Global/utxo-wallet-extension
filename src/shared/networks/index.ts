@@ -179,7 +179,7 @@ export const LINA: Config = createConfig({
       TX_HASH:
         "0x0a13d8d9c83c3374196ee43d4f0116dac497b0fec3e71c04f7cb7780abc455d8",
       INDEX: "0x0",
-      DEP_TYPE: "depGroup",
+      DEP_TYPE: "code",
       SHORT_ID: 1,
     },
     XUDT: {
