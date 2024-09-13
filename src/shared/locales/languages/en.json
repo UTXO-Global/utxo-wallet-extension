@@ -3,7 +3,7 @@
     "transactions": "Transactions",
     "no_transactions": "No transations",
     "no_inscriptions": "You currently don't have any inscriptions",
-    "no_tokens": "You currently don't have any tokens",
+    "no_tokens": "No Tokens Available",
     "receive": "Receive",
     "send": "Send",
     "nft": "NFT",
@@ -11,7 +11,7 @@
     "amount_in_inscriptions": "Ordinal balance",
     "swap": "Swap",
     "buy": "Buy",
-    "your_balance": "Your balance",
+    "your_balance": "Your Balance",
     "available_balance": "Available balance",
     "occupied_balance": "Occupied Balance"
   },
@@ -60,7 +60,7 @@
       "next": "Next",
       "confirm": "Confirm",
       "details": "Details",
-      "detailNFT": "Detail NFT"
+      "detailNFT": "NFT Details"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -135,7 +135,7 @@
     "account_created_message": "Created new account",
     "enter_name_label": "Enter The Name",
     "address_type": "Address Type",
-    "create_new_account": "Create an account"
+    "create_new_account": "Create An Account"
   },
   "new_wallet": {
     "new_mnemonic_label": "New mnemonic",

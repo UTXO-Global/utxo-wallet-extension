@@ -5,13 +5,24 @@ import ShortBalance from "@/ui/components/ShortBalance";
 
 export default function Tokens({ tokens }: { tokens: any[] }) {
   const navigate = useNavigate();
+  const NoTokens = () => {
+    return (
+      <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
+        {t("wallet_page.no_tokens")}
+        <img src="/no-tokens.png" />
+      </div>
+    );
+  };
+
+  if (tokens.length === 0) {
+    return (
+      <div className="px-4 py-3 text-sm text-grey-100">
+        <NoTokens />
+      </div>
+    );
+  }
   return (
     <div className="rounded-lg border border-grey-300 last:*:border-b-0">
-      {tokens.length === 0 && (
-        <div className="px-4 py-3 text-sm text-grey-100">
-          {t("wallet_page.no_tokens")}
-        </div>
-      )}
       {tokens.length > 0 &&
         tokens.map((token, index) => {
           const tokenAmount =

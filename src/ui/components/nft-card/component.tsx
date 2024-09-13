@@ -4,10 +4,7 @@ import Loading from "react-loading";
 
 const NftCard = ({ nft }: { nft: any }) => {
   return (
-    <div
-      className="rounded-lg border border-grey-300 group cursor-pointer relative h-full flex flex-col justify-between"
-      style={{ boxShadow: "0px 2.52px 12.59px 0px #0000000D" }}
-    >
+    <div className="rounded-lg border border-grey-300 group cursor-pointer relative h-full flex flex-col justify-between">
       <div className="flex justify-center items-center h-full min-h-[154px]">
         {nft.loading ? (
           <Loading type="bubbles" color="#ODODOD" width={50} />
