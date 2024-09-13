@@ -48,11 +48,11 @@
   }
 
   >h3 {
-    @apply text-sm mb-4 font-medium pl-2;
+    @apply font-medium;
   }
 
   &Container {
-    @apply flex flex-col gap-5 pt-5;
+    @apply flex flex-col gap-5;
   }
 }
 

@@ -184,14 +184,14 @@ const TokenDetail = () => {
                 tokenInfo.attributes.full_name?.length > 10,
             })}
           >
-            <div>
+            <div className="flex items-center gap-[2px]">
               <strong className="font-bold text-xl leading-6">
                 {!!tokenInfo.attributes.symbol
                   ? tokenInfo.attributes.symbol
                   : "Unnamed"}
-              </strong>{" "}
+              </strong>
               {!!tokenInfo.attributes.full_name && (
-                <span className="text-base font-normal leading-[18px]">
+                <span className="text-base font-normal leading-6">
                   ({tokenInfo.attributes.full_name})
                 </span>
               )}

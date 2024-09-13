@@ -144,17 +144,15 @@ const TableItem: FC<ITableItem> = ({ items, currentAddress, label }) => {
 
   return (
     <div className={s.table}>
-      <h3>{label}:</h3>
+      <h3 className="text-base font-medium text-primary">{label}:</h3>
       <div className={s.tableList}>
         {items.map((i, idx) => (
-          <div key={`${currentId}${idx}`} className={s.tableGroup}>
+          <div
+            key={`${currentId}${idx}`}
+            className="bg-grey-300 p-4 flex items-center justify-between border border-grey-200 rounded-lg"
+          >
             <div
-              className={cn(
-                {
-                  [s.active]: i.scriptpubkey_address === currentAddress,
-                },
-                s.tableFirst
-              )}
+              className="text-[#787575] text-base font-medium"
               onClick={async () => {
                 await navigator.clipboard.writeText(i.scriptpubkey_address);
                 toast.success(t("transaction_info.copied"));
@@ -163,7 +161,7 @@ const TableItem: FC<ITableItem> = ({ items, currentAddress, label }) => {
             >
               {shortAddress(i.scriptpubkey_address, addressLength(i.value))}
             </div>
-            <div className={s.tableSecond}>
+            <div className="text-primary text-base">
               {(i.value / 10 ** 8).toFixed(2)}
             </div>
           </div>
