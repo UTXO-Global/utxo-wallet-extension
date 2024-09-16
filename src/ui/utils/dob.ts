@@ -74,7 +74,7 @@ export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
 
   if (isTestnet) {
     dobRenderConfig.setDobDecodeServerURL(
-      "https://dob-decoder-standalone-server.onrender.com"
+      "https://dob-decoder-testnet.onrender.com"
     );
   } else {
     dobRenderConfig.setDobDecodeServerURL("https://dob-decoder.rgbpp.io");
