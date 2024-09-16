@@ -22,8 +22,8 @@ export default function NativeToken() {
   }, [changePercent24Hr]);
 
   const nativeCoinBalance = useMemo(() => {
-    return currentAccount.balance ? Number(currentAccount.balance) : 0;
-  }, [currentAccount.balance]);
+    return currentAccount?.balance ? Number(currentAccount.balance) : 0;
+  }, [currentAccount?.balance]);
 
   const navigate = useNavigate();
 

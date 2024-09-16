@@ -5,6 +5,7 @@ import { NetworkData } from "@/shared/networks/types";
 import LS from "./ls";
 import {
   renderByDobDecodeResponse,
+  renderImageSvg,
   svgToBase64,
   config as dobRenderConfig,
   renderByTokenKey,
@@ -58,7 +59,7 @@ export const getURLFromHex = (dataHex: string, network: NetworkData) => {
   return { contentType: msg.contentType };
 };
 
-export const getDob0Imgs = async (ids: string[], _network: NetworkData) => {
+export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
   if (ids.length === 0) return {};
   const keyCache = "__NFTS__";
   const nftsCache = (JSON.parse((await LS.getItem(keyCache)) || "{}") ||
@@ -68,16 +69,26 @@ export const getDob0Imgs = async (ids: string[], _network: NetworkData) => {
 
   const nftIds = ids.filter((id) => !Object.keys(nftsCache).includes(id));
   if (nftIds.length === 0) return nftsCache;
+
+  const isTestnet = network.slug === "nervos_testnet";
+
+  if (isTestnet) {
+    dobRenderConfig.setDobDecodeServerURL(
+      "https://dob-decoder-standalone-server.onrender.com"
+    );
+  } else {
+    dobRenderConfig.setDobDecodeServerURL("https://dob-decoder.rgbpp.io");
+  }
+
   const res: { [key: string]: { url: string; contentType: string } } = {
     ...nftsCache,
   };
 
   await Promise.all(
-    nftIds.map(async (id, index) => {
+    nftIds.map(async (id) => {
       try {
         const tokenKey = id.startsWith("0x") ? id.slice(2) : id;
         const data = await renderByTokenKey(tokenKey);
-        const url = await svgToBase64(data);
         res[id] = {
           url: await svgToBase64(data),
           contentType: "image/svg+xml",
@@ -87,7 +98,6 @@ export const getDob0Imgs = async (ids: string[], _network: NetworkData) => {
           url: undefined,
           contentType: undefined,
         };
-        console.log(id, e);
         await Promise.resolve(id);
       }
     })
