@@ -52,6 +52,9 @@ const RestorePrivKey = () => {
         }
       }
 
+      privKey =
+        privKey.indexOf("0x") === 0 ? privKey.replace("0x", "") : privKey;
+
       await createNewWallet({
         payload: privKey,
         walletType: "simple",
