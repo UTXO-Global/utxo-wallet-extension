@@ -1,141 +1,255 @@
 import { isCkbNetwork } from "@/shared/networks";
 import cn from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import { t } from "i18next";
 import { IcnApproximate } from "@/ui/components/icons";
 import { Tooltip } from "react-tooltip";
+import { useMemo, useState } from "react";
+import { formatNumber } from "@/shared/utils";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+import { Client, Collector, Pool } from "@utxoswap/swap-sdk-js";
+import { useControllersState } from "@/ui/states/controllerState";
+import Loading from "react-loading";
 
 export default function UTXOReviewOrder() {
+  const [isProgressing, setIsProgressing] = useState(false);
   const navigate = useNavigate();
+  const { currentPrice } = useTransactionManagerContext();
   const currentNetwork = useGetCurrentNetwork();
+  const currentAccount = useGetCurrentAccount();
+  const { apiController, keyringController } = useControllersState((v) => ({
+    apiController: v.apiController,
+    keyringController: v.keyringController,
+  }));
+
+  const collector = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Collector({ ckbIndexerUrl: currentNetwork.network.rpc_url });
+    }
+    return undefined;
+  }, [currentNetwork]);
+
+  const client = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Client(
+        currentNetwork.slug === "nervos",
+        currentNetwork.network.utxoAPIKey
+      );
+    }
+    return undefined;
+  }, [currentNetwork]);
+
   const location = useLocation();
-  const fields = [
-    {
-      id: "reviewPrice",
-      title: t("components.swap.price"),
-      value: (
-        <>
-          1 CKB <IcnApproximate className="w-[9px] h-[7px]" /> 0.51 USDC
-        </>
-      ),
-    },
-    {
-      id: "reviewFees",
-      title: t("components.swap.fees"),
-      value: <>0.001 CKB</>,
-      tooltip: t("components.swap.tooltip.fees"),
-    },
-    {
-      id: "reviewMaxSlippage",
-      title: t("components.swap.maxSlippage"),
-      value: <>0.5%</>,
-      tooltip: t("components.swap.tooltip.maxSlippage"),
-    },
-  ];
+  const fields = useMemo(() => {
+    const state = location.state;
+    if (!state) return [];
+    return [
+      {
+        id: "reviewPrice",
+        title: t("components.swap.price"),
+        value: (
+          <>
+            1 {state.poolInfo?.assetX?.symbol}{" "}
+            <IcnApproximate className="w-[9px] h-[7px]" />{" "}
+            {state.price?.toLocaleString("fullwide", {
+              useGrouping: false,
+              maximumFractionDigits: 100,
+            })}{" "}
+            {state.poolInfo?.assetY?.symbol}
+          </>
+        ),
+      },
+      {
+        id: "reviewFees",
+        title: t("components.swap.fees"),
+        value: <>{state.fees} CKB</>,
+        tooltip: t("components.swap.tooltip.fees"),
+      },
+      {
+        id: "reviewMaxSlippage",
+        title: t("components.swap.maxSlippage"),
+        value: <>{state.slippage}%</>,
+        tooltip: t("components.swap.tooltip.maxSlippage"),
+      },
+    ];
+  }, [location.state]);
+
+  const signTxFunc = async (rawTx: CKBComponents.RawTransactionToSign) => {
+    try {
+      const signed = await keyringController.signCkbTransaction(
+        currentAccount.accounts[0].address,
+        currentNetwork.slug,
+        rawTx,
+        currentAccount.accounts[0].hdPath
+      );
+
+      console.log("signed", signed);
+      return signed as CKBComponents.RawTransaction;
+    } catch (e) {
+      console.error(e);
+    }
+    return undefined;
+  };
+
+  const pool = useMemo(() => {
+    return new Pool({
+      tokens: [
+        location.state?.poolInfo?.assetX,
+        location.state?.poolInfo?.assetY,
+      ],
+      ckbAddress: currentAccount?.accounts[0].address,
+      collector,
+      client,
+      poolInfo: location.state?.poolInfo,
+    });
+  }, [location.state]);
+
+  const onSwap = async () => {
+    setIsProgressing(true);
+    try {
+      pool.calculateOutputAmountAndPriceImpactWithExactInput(
+        `${location.state?.inputAmount}`
+      );
+
+      const txHash = await pool.swapWithExactInput(
+        signTxFunc,
+        location.state?.slippage?.toString() || "0.5",
+        5000
+      );
+
+      navigate(`/pages/swap/swap-success/${txHash}`, {
+        state: { ...location.state, txId: txHash },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    setIsProgressing(false);
+  };
 
   return (
     <div className="w-full h-full top-0 relative">
-      {isCkbNetwork(currentNetwork.network) ? (
-        <>
-          <div className="px-4 py-2">
-            <div className="bg-grey-300 rounded-t-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
-              <div className="flex gap-2 items-center p-2 pb-0">
-                <div className="w-10 h-10">
-                  <img
-                    src="/ckb.png"
-                    className="w-full rounded-full object-cover object-center"
-                  />
-                </div>
-                <div className="flex flex-col gap-0 flex-grow">
-                  <div className="text-[#787575] text-base font-medium">
-                    You Pay
+      <div className={cn("standard:h-[calc(100dvh_-_140px)]")}>
+        {isCkbNetwork(currentNetwork.network) ? (
+          <>
+            <div className="px-4 py-2">
+              <div className="bg-grey-300 rounded-t-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
+                <div className="flex gap-2 items-center p-2 pb-0">
+                  <div className="w-10 h-10">
+                    <img
+                      src={location.state.poolInfo?.assetX?.logo || "/coin.png"}
+                      className="w-full rounded-full object-cover object-center"
+                    />
                   </div>
-                  <div className="text-[22px] leading-7 text-black font-medium">
-                    <div>100,000 CKB</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-2 bg-grey-300 rounded-b-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
-              <div className="flex gap-2 items-center p-2 pb-0">
-                <div className="w-10 h-10">
-                  <img
-                    src="/ckb.png"
-                    className="w-full rounded-full object-cover object-center"
-                  />
-                </div>
-                <div className="flex flex-col gap-0 flex-grow">
-                  <div className="text-[#787575] text-base font-medium flex items-center justify-between">
-                    <span>You Receive</span>
-                    <span>$841.77</span>
-                  </div>
-                  <div className="text-[22px] leading-7 text-black font-medium">
-                    <div>100,000 CKB</div>
+                  <div className="flex flex-col gap-0 flex-grow">
+                    <div className="text-[#787575] text-base font-medium">
+                      You Pay
+                    </div>
+                    <div className="text-[22px] leading-7 text-black font-medium">
+                      <div>
+                        {formatNumber(location.state?.inputAmount)}{" "}
+                        {location.state.poolInfo?.assetX?.symbol}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-grey-300 rounded-lg py-3 px-4 mt-2">
-              {fields.map((f, i) => (
-                <div
-                  className="flex items-center justify-between pt-2 pb-4 border-b border-grey-200"
-                  key={`field-${f.id}-${i}`}
+              <div className="mt-2 bg-grey-300 rounded-b-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
+                <div className="flex gap-2 items-center p-2 pb-0">
+                  <div className="w-10 h-10">
+                    <img
+                      src={location.state.poolInfo?.assetY?.logo || "/coin.png"}
+                      className="w-full rounded-full object-cover object-center"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-0 flex-grow">
+                    <div className="text-[#787575] text-base font-medium flex items-center justify-between">
+                      <span>You Receive</span>
+                      <span>
+                        $
+                        {formatNumber(
+                          Number(location.state?.inputAmount | 0) *
+                            currentPrice,
+                          2,
+                          3
+                        )}
+                      </span>
+                    </div>
+                    <div className="text-[22px] leading-7 text-black font-medium">
+                      <div>
+                        {formatNumber(location.state?.outputAmount, 2, 5)}{" "}
+                        {location.state.poolInfo?.assetY?.symbol}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-grey-300 rounded-lg py-3 px-4 mt-2">
+                {fields.map((f, i) => (
+                  <div
+                    className="flex items-center justify-between pt-2 pb-4 border-b border-grey-200"
+                    key={`field-${f.id}-${i}`}
+                  >
+                    <span className="text-primary text-base font-medium flex gap-1 items-center">
+                      {f.title}
+                      {!!f.tooltip ? (
+                        <>
+                          <IcnInfo className={f.id} />
+                          <Tooltip
+                            anchorSelect={`.${f.id}`}
+                            place="top"
+                            className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[180px] !tracking-[0.1px] !rounded-lg"
+                          >
+                            {f.tooltip}
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </span>
+                    <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
+                      {f.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="absolute left-0 bottom-0 w-full px-4 pb-4 pt-2 z-10">
+              {isProgressing ? (
+                <div className="flex justify-center w-full">
+                  <Loading color="#ODODOD" type="bubbles" />
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className={cn(
+                    "btn primary disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
+                    {
+                      "hover:bg-none hover:border-transparent": false,
+                    }
+                  )}
+                  disabled={false}
+                  onClick={onSwap}
                 >
-                  <span className="text-primary text-base font-medium flex gap-1 items-center">
-                    {f.title}
-                    {!!f.tooltip ? (
-                      <>
-                        <IcnInfo className={f.id} />
-                        <Tooltip
-                          anchorSelect={`.${f.id}`}
-                          place="top"
-                          className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[180px] !tracking-[0.1px] !rounded-lg"
-                        >
-                          {f.tooltip}
-                        </Tooltip>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                  </span>
-                  <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
-                    {f.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="absolute bottom-0 w-full px-4 pb-4 pt-2">
-            <button
-              type="submit"
-              className={cn(
-                "btn primary standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
-                {
-                  "hover:bg-none hover:border-transparent": false,
-                }
+                  {t("components.layout.swap")}
+                </button>
               )}
-              disabled={false}
-              onClick={() =>
-                navigate("/pages/swap/swap-success", {
-                  state: location.state,
-                })
-              }
-            >
-              {t("components.layout.swap")}
-            </button>
+            </div>
+          </>
+        ) : (
+          <div className="py-20 flex flex-col items-center justify-center">
+            <img src="/feature.png" alt="feature" className="w-[180px]" />
+            <p className="text-base font-normal text-center text-[#ABA8A1] mt-4">
+              {`The feature is not supported yet!`}
+            </p>
           </div>
-        </>
-      ) : (
-        <div className="py-20 flex flex-col items-center justify-center">
-          <img src="/feature.png" alt="feature" className="w-[180px]" />
-          <p className="text-base font-normal text-center text-[#ABA8A1] mt-4">
-            {`The feature is not supported yet!`}
-          </p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

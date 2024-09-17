@@ -2,12 +2,15 @@ import { browserTabsCreate } from "@/shared/utils/browser";
 import { isCkbNetwork } from "@/shared/networks";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import s from "./styles.module.scss";
+import { formatNumber } from "@/shared/utils";
 
 const UTXOFinalSwap = () => {
+  const location = useLocation();
   const { txId } = useParams();
   const currentNetwork = useGetCurrentNetwork();
+  console.log(location.state);
 
   const onClick = async () => {
     await browserTabsCreate({
@@ -61,8 +64,14 @@ const UTXOFinalSwap = () => {
         </svg>
         <h3 className={s.result}>{t("components.swap.swapSuccess")}!</h3>
         <div className="flex gap-2 p-3 items-center justify-center bg-grey-300 rounded-full">
-          <img src="/ckb.png" className="w-5 h-5 rounded-full object-cover" />
-          <span className="text-sm leading-5 font-medium">100,000 CKB</span>
+          <img
+            src={location.state?.poolInfo?.assetX?.logo || "/coin.png"}
+            className="w-5 h-5 rounded-full object-cover"
+          />
+          <span className="text-sm leading-5 font-medium">
+            {formatNumber(location.state?.inputAmount)}{" "}
+            {location.state?.poolInfo?.assetX?.symbol}
+          </span>
           <svg
             width="12"
             height="12"
@@ -78,8 +87,14 @@ const UTXOFinalSwap = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <img src="/ckb.png" className="w-5 h-5 rounded-full object-cover" />
-          <span className="text-sm leading-5 font-medium">100,000 USDC</span>
+          <img
+            src={location.state?.poolInfo?.assetY?.logo || "/coin.png"}
+            className="w-5 h-5 rounded-full object-cover"
+          />
+          <span className="text-sm leading-5 font-medium">
+            {formatNumber(location.state?.outputAmount)}{" "}
+            {location.state?.poolInfo?.assetY?.symbol}
+          </span>
         </div>
       </div>
 

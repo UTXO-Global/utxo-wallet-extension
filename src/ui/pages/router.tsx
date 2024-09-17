@@ -99,7 +99,7 @@ export const authenticatedRouter = createHashRouter([
         element: <UTXOReviewOrder />,
       },
       {
-        path: "swap/swap-success",
+        path: "swap/swap-success/:txId",
         element: <UTXOFinalSwap />,
       },
       {

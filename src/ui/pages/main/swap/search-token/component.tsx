@@ -1,13 +1,16 @@
 import { isCkbNetwork } from "@/shared/networks";
 import WalletPanel from "../wallet-panel";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import { t } from "i18next";
 import cn from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import Loading from "react-loading";
-import { Client, PoolInfo } from "@utxoswap/swap-sdk-js";
+import { Client, Collector, Pool, PoolInfo } from "@utxoswap/swap-sdk-js";
 
 const IcnSearch = ({ className }: { className?: string }) => {
   return (
@@ -32,6 +35,7 @@ export default function UTXOSwapSearchToken() {
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const currentNetwork = useGetCurrentNetwork();
+  const currentAccount = useGetCurrentAccount();
   const navigate = useNavigate();
   const keySearch = useMemo(() => {
     if (location.state?.searchKey) {
@@ -39,6 +43,13 @@ export default function UTXOSwapSearchToken() {
     }
     return "0x0000000000000000000000000000000000000000000000000000000000000000"; // CKB
   }, []);
+
+  const collector = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Collector({ ckbIndexerUrl: currentNetwork.network.rpc_url });
+    }
+    return undefined;
+  }, [currentNetwork]);
 
   const client = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -128,16 +139,16 @@ export default function UTXOSwapSearchToken() {
                       className={cn(
                         "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
                         {
-                          "bg-grey-200":
+                          "!bg-grey-200":
                             t.assetY.typeScript.args ===
-                            location.state?.token?.typeScript.args,
+                            location.state?.poolInfo?.assetY?.typeScript.args,
                         }
                       )}
                       onClick={() =>
                         navigate("/swap", {
                           state: {
                             ...location.state,
-                            token: t.assetY,
+                            poolInfo: t,
                           },
                         })
                       }
@@ -175,7 +186,7 @@ export default function UTXOSwapSearchToken() {
               className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
               onClick={() =>
                 navigate("/swap", {
-                  state: location.state,
+                  state: { ...location.state },
                 })
               }
             >
