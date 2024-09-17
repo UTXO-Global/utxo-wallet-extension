@@ -268,7 +268,7 @@ export default function PagesLayout() {
           },
         },
         {
-          route: "/pages/swap/swap-success",
+          route: "/pages/swap/swap-success/@",
           title: t("components.layout.swap"),
           backAction: () => {
             navigate("/home");

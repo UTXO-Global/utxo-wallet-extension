@@ -102,6 +102,6 @@ export const analyzeSmallNumber = (num: number, zeroCount: number) => {
   return {
     first: `0.00`,
     last: decimalPart.slice(zeroes, zeroes + 3),
-    zeroes: zeroes - 2,
+    zeroes: zeroes - zeroCount,
   };
 };

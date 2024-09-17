@@ -3,14 +3,174 @@ import cn from "classnames";
 import BottomPanel from "../wallet/bottom-panel";
 import WalletPanel from "./wallet-panel";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import { t } from "i18next";
 import { IcnApproximate, IcnChevronDown } from "@/ui/components/icons";
+import { MouseEventHandler, useEffect, useMemo, useState } from "react";
+import {
+  CKB_TYPE_HASH,
+  Client,
+  Collector,
+  Pool,
+  PoolInfo,
+} from "@utxoswap/swap-sdk-js";
+import { formatNumber } from "@/shared/utils";
+import ShortBalance from "@/ui/components/ShortBalance";
+import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+
+const MIN_CAPACITY = 63;
 
 export default function UtxoSwap() {
   const navigate = useNavigate();
   const currentNetwork = useGetCurrentNetwork();
+  const currentAccount = useGetCurrentAccount();
   const location = useLocation();
+  const [typeHashDefault, setTypeHashDefault] = useState(CKB_TYPE_HASH);
+  const [pool, setPool] = useState<Pool>(undefined);
+  const [poolInfo, setPoolInfo] = useState<PoolInfo>(undefined);
+  const [assetXAmount, setAssetXAmount] = useState("");
+  const { currentPrice } = useTransactionManagerContext();
+
+  const ckbPrice = useMemo(() => {
+    return currentPrice ? Number(currentPrice) : 0;
+  }, [currentPrice]);
+
+  const availableCKBBalance = useMemo(() => {
+    const bal =
+      Number(currentAccount.balance || 0) -
+      Number(currentAccount.ordinalBalance || 0) -
+      0.00001;
+
+    return bal > 0 ? bal : 0;
+  }, [currentAccount]);
+
+  const onMaxClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setAssetXAmount(
+      new Intl.NumberFormat("en-EN", {
+        maximumFractionDigits: 8,
+        minimumFractionDigits: 8,
+      }).format(availableCKBBalance)
+    );
+  };
+
+  const inputAmount = useMemo(() => {
+    if (!!assetXAmount) {
+      return Number(assetXAmount.replaceAll(",", ""));
+    }
+    return 0;
+  }, [assetXAmount]);
+
+  const outputAmount = useMemo(() => {
+    if (pool) {
+      const _inputAmount = Number(inputAmount);
+      const { output } = pool.calculateOutputAmountAndPriceImpactWithExactInput(
+        _inputAmount.toString()
+      );
+      return Number(output);
+    }
+
+    return 0;
+  }, [pool, poolInfo, inputAmount]);
+
+  const currentState = useMemo(() => {
+    return {
+      ...location.state,
+      searchKey: typeHashDefault,
+      poolInfo,
+      inputAmount,
+      outputAmount,
+      price: inputAmount > 0 ? outputAmount / inputAmount : 0,
+      slippage: 0.5,
+      fees: 0.00001,
+    };
+  }, [
+    typeHashDefault,
+    pool,
+    location.state,
+    inputAmount,
+    outputAmount,
+    poolInfo,
+  ]);
+
+  const isValidForm = useMemo(() => {
+    if (inputAmount > availableCKBBalance) return false;
+    if (inputAmount < MIN_CAPACITY) return false;
+    if (!poolInfo) return false;
+    return true;
+  }, [availableCKBBalance, inputAmount, outputAmount]);
+
+  const collector = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Collector({ ckbIndexerUrl: currentNetwork.network.rpc_url });
+    }
+    return undefined;
+  }, [currentNetwork]);
+
+  const client = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Client(
+        currentNetwork.slug === "nervos",
+        currentNetwork.network.utxoAPIKey
+      );
+    }
+    return undefined;
+  }, [currentNetwork]);
+
+  useEffect(() => {
+    const getPoolDefault = async () => {
+      try {
+        const { list: pools } = await client.getPoolsByToken({
+          pageNo: 0,
+          pageSize: 1,
+          searchKey: typeHashDefault,
+        });
+
+        if (pools && pools.length > 0) {
+          setPool(
+            new Pool({
+              tokens: [pools[0].assetX, pools[0].assetY],
+              ckbAddress: currentAccount.accounts[0].address,
+              collector,
+              client,
+              poolInfo: pools[0],
+            })
+          );
+          setPoolInfo(pools[0]);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    let t: NodeJS.Timeout;
+    if (location.state?.poolInfo && pool?.tokens !== location.state?.poolInfo) {
+      setPool(
+        new Pool({
+          tokens: [
+            location.state?.poolInfo.assetX,
+            location.state?.poolInfo.assetY,
+          ],
+          ckbAddress: currentAccount.accounts[0].address,
+          collector,
+          client,
+          poolInfo: location.state?.poolInfo,
+        })
+      );
+      setPoolInfo(location.state?.poolInfo);
+    } else if (client && typeHashDefault && !pool) {
+      t = setTimeout(() => {
+        getPoolDefault();
+      }, 1000);
+    }
+
+    return () => {
+      clearTimeout(t);
+    };
+  }, [client, typeHashDefault, location.state]);
 
   return (
     <div className="w-full h-full top-0 relative">
@@ -23,25 +183,52 @@ export default function UtxoSwap() {
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
                     <img
-                      src="/ckb.png"
+                      src={pool?.tokens[0].logo}
                       className="w-full rounded-full object-cover object-center"
                     />
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
-                    <div className="text-black text-base font-medium">CKB</div>
+                    <div className="text-black text-base font-medium">
+                      {pool?.tokens[0].symbol}
+                    </div>
                     <div className="flex justify-between w-full items-center text-base text-[#787575] font-normal">
                       <span>{t("components.swap.balance")}:</span>
-                      <div>100,000</div>
+                      <ShortBalance
+                        balance={Number(availableCKBBalance)}
+                        zeroDisplay={6}
+                        className="!text-base"
+                      />
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between px-2 gap-2">
                   <input
-                    className="text-black text-2xl leading-[30px] bg-transparent font-medium outline-none placeholder:text-grey-100 flex-grow"
+                    className={cn(
+                      "text-black text-2xl leading-[30px] bg-transparent font-medium outline-none placeholder:text-grey-100 flex-grow",
+                      {
+                        "!text-[#FF4545]":
+                          inputAmount < MIN_CAPACITY ||
+                          inputAmount > availableCKBBalance,
+                      }
+                    )}
                     placeholder="0"
                     autoFocus
+                    value={assetXAmount}
+                    onChange={(e) => {
+                      const reg = /^(\d+(\.\d{0,})?)?$/;
+                      const numeric = e.target.value.replace(/,/g, "");
+
+                      if (reg.test(numeric)) {
+                        setAssetXAmount(
+                          new Intl.NumberFormat("en-EN").format(Number(numeric))
+                        );
+                      }
+                    }}
                   />
-                  <button className="text-black text-base font-medium cursor-pointer">
+                  <button
+                    className="text-black text-base font-medium cursor-pointer"
+                    onClick={onMaxClick}
+                  >
                     {t("components.swap.max")}
                   </button>
                 </div>
@@ -56,17 +243,19 @@ export default function UtxoSwap() {
                 <div
                   className="flex justify-between items-center p-2 bg-grey-400/80 rounded-lg cursor-pointer"
                   onClick={() =>
-                    navigate("/swap/search-token", { state: location.state })
+                    navigate("/swap/search-token", { state: currentState })
                   }
                 >
                   <div className="flex gap-2 items-center">
                     <div className="w-10 h-10">
                       <img
-                        src="/ckb.png"
+                        src={pool?.tokens[1].logo || "/coin.png"}
                         className="w-full rounded-full object-cover object-center"
                       />
                     </div>
-                    <div className="text-black text-base font-medium">USDC</div>
+                    <div className="text-black text-base font-medium">
+                      {pool?.tokens[1].symbol}
+                    </div>
                   </div>
 
                   <div className="p-2">
@@ -74,12 +263,17 @@ export default function UtxoSwap() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between px-2 gap-2 text-2xl leading-[30px]">
-                  <input
-                    className="text-black text-2xl leading-[30px] bg-transparent font-medium outline-none placeholder:text-grey-100 flex-grow"
-                    placeholder="0"
-                    autoFocus
-                  />
-                  <div className="font-medium text-base text-[#787575]">$0</div>
+                  <div
+                    className={cn(
+                      "text-black text-2xl leading-[30px] bg-transparent font-medium outline-none min-w-[100px] flex-grow",
+                      { "text-grey-100": outputAmount <= 0 }
+                    )}
+                  >
+                    {formatNumber(outputAmount, 2, 5)}
+                  </div>
+                  <div className="font-medium text-base text-[#787575]">
+                    ${formatNumber(inputAmount * ckbPrice, 2, 3)}
+                  </div>
                 </div>
               </div>
               <div className="mt-1 bg-grey-300 p-4 flex items-center justify-between rounded-lg">
@@ -87,27 +281,40 @@ export default function UtxoSwap() {
                   {t("components.swap.price")}
                 </span>
                 <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
-                  1 CKB <IcnApproximate className="w-[9px] h-[7px]" /> 0.51 USDC
+                  {`1 ${poolInfo?.assetX.symbol}`}{" "}
+                  <IcnApproximate className="w-[9px] h-[7px]" />{" "}
+                  {inputAmount > 0 ? (
+                    <ShortBalance
+                      balance={outputAmount / inputAmount}
+                      zeroDisplay={6}
+                      className="!text-sm"
+                    />
+                  ) : (
+                    <span>0</span>
+                  )}{" "}
+                  {poolInfo?.assetY.symbol}
                 </div>
               </div>
             </div>
-            <div className="absolute bottom-0 w-full px-4 pb-4 pt-2">
+            <div className="absolute bottom-0 left-0 w-full px-4 pb-4 pt-2 standard:bottom-12">
               <button
                 type="submit"
                 className={cn(
-                  "btn primary standard:m-6 standard:mb-3 disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
+                  "btn primary disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
                   {
-                    "hover:bg-none hover:border-transparent": false,
+                    "hover:bg-none hover:border-transparent": !isValidForm,
                   }
                 )}
-                disabled={false}
+                disabled={!isValidForm}
                 onClick={() =>
                   navigate("/pages/swap/review-order", {
-                    state: location.state,
+                    state: { ...currentState },
                   })
                 }
               >
-                {t("send.create_send.continue")}
+                {inputAmount > availableCKBBalance
+                  ? t("components.swap.insufficient_balance")
+                  : t("send.create_send.continue")}
               </button>
             </div>
           </>
