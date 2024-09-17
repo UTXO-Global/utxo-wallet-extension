@@ -6,6 +6,7 @@ import {
   IcnGlobal,
   IcnImage,
   IcnThunder,
+  IcnSwap,
 } from "@/ui/components/icons";
 
 const BottomPanel = () => {
@@ -32,20 +33,25 @@ const BottomPanel = () => {
           className={cn(
             `w-6 h-6 transition-all fill-[#ABA8A1] group-hover:fill-primary`,
             {
-              "!fill-primary": currentRoute.pathname === "/pages/todo-1",
+              "!fill-primary": currentRoute.pathname === "/nfts",
             }
           )}
         />
       ),
     },
-    // {
-    //   path: "/pages/swap",
-    //   icon: <IcnSwap
-    //     className={cn(`w-6 h-6 transition-all stroke-[#ABA8A1] group-hover:stroke-primary`, {
-    //       "!stroke-primary": currentRoute.pathname === "/pages/swap",
-    //     })}
-    //   />
-    // },
+    {
+      path: "/swap",
+      icon: (
+        <IcnSwap
+          className={cn(
+            `w-6 h-6 transition-all stroke-[#ABA8A1] group-hover:stroke-primary`,
+            {
+              "!stroke-primary": currentRoute.pathname === "/swap",
+            }
+          )}
+        />
+      ),
+    },
     {
       path: "/activities",
       icon: (
