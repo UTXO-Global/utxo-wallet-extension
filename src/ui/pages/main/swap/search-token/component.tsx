@@ -4,11 +4,10 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import cn from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { ckbExplorerApi } from "@/ui/utils/helpers";
-import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { useEffect, useMemo, useState } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import Loading from "react-loading";
+import { Client, PoolInfo } from "@utxoswap/swap-sdk-js";
 
 const IcnSearch = ({ className }: { className?: string }) => {
   return (
@@ -29,55 +28,70 @@ const IcnSearch = ({ className }: { className?: string }) => {
 };
 export default function UTXOSwapSearchToken() {
   const location = useLocation();
-  const [tokens, setTokens] = useState<CKBTokenInfo[]>([]);
+  const [pools, setPools] = useState<PoolInfo[]>([]);
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSearched, setIsSearched] = useState(false);
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
-  const searchToken = async () => {
-    setIsLoading(true);
-    setIsSearched(false);
-    try {
-      const res = await fetch(
-        `${ckbExplorerApi(
-          currentNetwork.slug
-        )}/v1/xudts?symbol=${textSearch.toLowerCase()}&page=1&page_size=100`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.api+json",
-          },
-        }
+  const keySearch = useMemo(() => {
+    if (location.state?.searchKey) {
+      return location.state.searchKey;
+    }
+    return "0x0000000000000000000000000000000000000000000000000000000000000000"; // CKB
+  }, []);
+
+  const client = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network)) {
+      return new Client(
+        currentNetwork.slug === "nervos",
+        currentNetwork.network.utxoAPIKey
       );
-      const { data } = await res.json();
-      if (data && data.length > 0) {
-        setTokens(data as CKBTokenInfo[]);
+    }
+    return undefined;
+  }, [currentNetwork]);
+
+  const tokens = useMemo(() => {
+    if (pools.length === 0) return [];
+    if (!textSearch) return pools;
+
+    return pools.filter(
+      (p) =>
+        p.assetY.symbol
+          .toLowerCase()
+          .includes(textSearch.toLowerCase().trim()) ||
+        p.assetY.name.toLowerCase().includes(textSearch.toLowerCase().trim())
+    );
+  }, [pools, textSearch]);
+
+  const loadTokens = async () => {
+    setIsLoading(true);
+    try {
+      const { list: pools } = await client.getPoolsByToken({
+        pageNo: 0,
+        pageSize: 200,
+        searchKey: keySearch,
+      });
+
+      if (pools && pools.length > 0) {
+        setPools(pools);
       }
     } catch (e) {
       console.error(e);
-      setTokens([]);
-    }
-
-    if (location.state?.token) {
-      setTokens((prev) => [{ ...location.state.token }, ...prev]);
     }
     setIsLoading(false);
-    setIsSearched(true);
   };
 
   useEffect(() => {
-    if (location.state?.token && tokens.length === 0) {
-      setTokens((prev) => [{ ...location.state.token }, ...prev]);
-    }
-  }, [location.state]);
-
-  useEffect(() => {
     const t = setTimeout(() => {
-      searchToken();
+      if (pools.length === 0) {
+        loadTokens();
+      }
     }, 1000);
-    return () => clearTimeout(t);
-  }, [textSearch]);
+
+    return () => {
+      clearTimeout(t);
+    };
+  }, [pools, isLoading]);
 
   return (
     <div className="w-full h-full relative">
@@ -110,43 +124,42 @@ export default function UTXOSwapSearchToken() {
               {tokens.length > 0
                 ? tokens.map((t, i) => (
                     <div
-                      key={`token-${t.id}-${i}`}
+                      key={`token-${t.batchId}-${i}`}
                       className={cn(
                         "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
                         {
                           "bg-grey-200":
-                            t.attributes.type_script?.args ===
-                            location.state?.token?.attributes.type_script?.args,
+                            t.assetY.typeScript.args ===
+                            location.state?.token?.typeScript.args,
                         }
                       )}
                       onClick={() =>
                         navigate("/swap", {
                           state: {
                             ...location.state,
-                            token: t,
+                            token: t.assetY,
                           },
                         })
                       }
                     >
                       <div className="w-10 h-10">
                         <img
-                          src={t.attributes.icon_file || "/coin.png"}
+                          src={t.assetY.logo || "/coin.png"}
                           className="w-full rounded-full object-cover object-center"
                         />
                       </div>
                       <div className="flex flex-col gap-0 flex-grow">
                         <div className="text-primary text-base font-medium">
-                          {t.attributes.symbol}{" "}
-                          {!!t.attributes.full_name &&
-                            `(${t.attributes.full_name})`}
+                          {t.assetY.symbol}{" "}
+                          {!!t.assetY.name && `(${t.assetY.name})`}
                         </div>
                         <div className="text-sm leading-[18px] text-[#787575] font-normal">
-                          {shortAddress(t.attributes.type_script?.args, 7)}
+                          {shortAddress(t.assetY.typeScript?.args, 7)}
                         </div>
                       </div>
                     </div>
                   ))
-                : isSearched && (
+                : !isLoading && (
                     <div className="px-4 py-3 text-sm text-grey-100">
                       <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
                         {t("components.swap.noAssetsAvailable")}
