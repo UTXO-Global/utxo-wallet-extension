@@ -1,0 +1,183 @@
+import { isCkbNetwork } from "@/shared/networks";
+import WalletPanel from "../wallet-panel";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import { t } from "i18next";
+import cn from "classnames";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { ckbExplorerApi } from "@/ui/utils/helpers";
+import { CKBTokenInfo } from "@/shared/networks/ckb/types";
+import { shortAddress } from "@/shared/utils/transactions";
+import Loading from "react-loading";
+
+const IcnSearch = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className ? className : "")}
+    >
+      <path
+        d="M15.4995 14H14.7095L14.4295 13.73C15.0544 13.0039 15.5112 12.1487 15.767 11.2256C16.0229 10.3024 16.0715 9.33413 15.9095 8.38998C15.4395 5.60998 13.1195 3.38997 10.3195 3.04997C9.3351 2.92544 8.33527 3.02775 7.39651 3.34906C6.45775 3.67038 5.60493 4.20219 4.90332 4.90381C4.20171 5.60542 3.66989 6.45824 3.34858 7.397C3.02726 8.33576 2.92495 9.33559 3.04949 10.32C3.38949 13.12 5.60949 15.44 8.38949 15.91C9.33364 16.072 10.3019 16.0234 11.2251 15.7675C12.1483 15.5117 13.0035 15.0549 13.7295 14.43L13.9995 14.71V15.5L18.2495 19.75C18.6595 20.16 19.3295 20.16 19.7395 19.75C20.1495 19.34 20.1495 18.67 19.7395 18.26L15.4995 14ZM9.49949 14C7.00949 14 4.99949 11.99 4.99949 9.49997C4.99949 7.00997 7.00949 4.99997 9.49949 4.99997C11.9895 4.99997 13.9995 7.00997 13.9995 9.49997C13.9995 11.99 11.9895 14 9.49949 14Z"
+        fill="#ABA8A1"
+      />
+    </svg>
+  );
+};
+export default function UTXOSwapSearchToken() {
+  const location = useLocation();
+  const [tokens, setTokens] = useState<CKBTokenInfo[]>([]);
+  const [textSearch, setTextSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSearched, setIsSearched] = useState(false);
+  const currentNetwork = useGetCurrentNetwork();
+  const navigate = useNavigate();
+  const searchToken = async () => {
+    setIsLoading(true);
+    setIsSearched(false);
+    try {
+      const res = await fetch(
+        `${ckbExplorerApi(
+          currentNetwork.slug
+        )}/v1/xudts?symbol=${textSearch.toLowerCase()}&page=1&page_size=100`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/vnd.api+json",
+          },
+        }
+      );
+      const { data } = await res.json();
+      if (data && data.length > 0) {
+        setTokens(data as CKBTokenInfo[]);
+      }
+    } catch (e) {
+      console.error(e);
+      setTokens([]);
+    }
+
+    if (location.state?.token) {
+      setTokens((prev) => [{ ...location.state.token }, ...prev]);
+    }
+    setIsLoading(false);
+    setIsSearched(true);
+  };
+
+  useEffect(() => {
+    if (location.state?.token && tokens.length === 0) {
+      setTokens((prev) => [{ ...location.state.token }, ...prev]);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      searchToken();
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [textSearch]);
+
+  return (
+    <div className="w-full h-full relative">
+      <WalletPanel />
+      {isCkbNetwork(currentNetwork.network) ? (
+        <>
+          <div className="p-4">
+            <div className="border border-grey-200 rounded-lg py-[10px] px-4 bg-grey-300 flex gap-1">
+              <IcnSearch className="w-6 h-6" />
+              <input
+                placeholder="Search..."
+                className="flex-grow placeholder:text-grey-100 text-base font-normal bg-transparent text-grey-100"
+                type="text"
+                onChange={(e) => setTextSearch(e.target.value)}
+                value={textSearch}
+              />
+            </div>
+            <div className="flex flex-col gap-2 mt-2 pb-[80px]">
+              {isLoading && (
+                <div className="flex justify-center mt-4">
+                  <Loading
+                    type="spin"
+                    color="#ODODOD"
+                    width={"3rem"}
+                    height={"3rem"}
+                    className="react-loading pr-2"
+                  />
+                </div>
+              )}
+              {tokens.length > 0
+                ? tokens.map((t, i) => (
+                    <div
+                      key={`token-${t.id}-${i}`}
+                      className={cn(
+                        "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
+                        {
+                          "bg-grey-200":
+                            t.attributes.type_script?.args ===
+                            location.state?.token?.attributes.type_script?.args,
+                        }
+                      )}
+                      onClick={() =>
+                        navigate("/swap", {
+                          state: {
+                            ...location.state,
+                            token: t,
+                          },
+                        })
+                      }
+                    >
+                      <div className="w-10 h-10">
+                        <img
+                          src={t.attributes.icon_file || "/coin.png"}
+                          className="w-full rounded-full object-cover object-center"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-0 flex-grow">
+                        <div className="text-primary text-base font-medium">
+                          {t.attributes.symbol}{" "}
+                          {!!t.attributes.full_name &&
+                            `(${t.attributes.full_name})`}
+                        </div>
+                        <div className="text-sm leading-[18px] text-[#787575] font-normal">
+                          {shortAddress(t.attributes.type_script?.args, 7)}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                : isSearched && (
+                    <div className="px-4 py-3 text-sm text-grey-100">
+                      <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
+                        {t("components.swap.noAssetsAvailable")}
+                        <img src="/no-tokens.png" />
+                      </div>
+                    </div>
+                  )}
+            </div>
+          </div>
+          <div className="fixed bottom-0 w-full px-4 pb-4 pt-2 bg-white">
+            <button
+              type="submit"
+              className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
+              onClick={() =>
+                navigate("/swap", {
+                  state: location.state,
+                })
+              }
+            >
+              {t("components.swap.close")}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="py-20 flex flex-col items-center justify-center">
+          <img src="/feature.png" alt="feature" className="w-[180px]" />
+          <p className="text-base font-normal text-center text-[#ABA8A1] mt-4">
+            {`The feature is not supported yet!`}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

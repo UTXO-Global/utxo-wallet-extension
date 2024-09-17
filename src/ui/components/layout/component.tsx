@@ -150,6 +150,18 @@ export default function PagesLayout() {
         route: "/pages/tokens/@",
         title: t("components.layout.details"),
       },
+      {
+        route: "/pages/swap/slippage-settings",
+        title: t("components.swap.slippageSettings"),
+      },
+      {
+        route: "/pages/swap/search-token",
+        title: t("components.swap.searchToken"),
+      },
+      {
+        route: "/pages/swap/review-order",
+        title: t("components.swap.reviewOrder"),
+      },
     ],
     [currentAccount?.name]
   );
@@ -253,6 +265,13 @@ export default function PagesLayout() {
           title: t("components.layout.detailNFT"),
           backAction: () => {
             navigate("/nfts");
+          },
+        },
+        {
+          route: "/pages/swap/swap-success",
+          title: t("components.layout.swap"),
+          backAction: () => {
+            navigate("/home");
           },
         },
       ] as IRouteTitle[],

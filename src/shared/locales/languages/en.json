@@ -60,7 +60,9 @@
       "next": "Next",
       "confirm": "Confirm",
       "details": "Details",
-      "detailNFT": "NFT Details"
+      "detailNFT": "NFT Details",
+      "search": "Search",
+      "swap": "Swap"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -106,6 +108,24 @@
       "create_transfer": "Mint transfer",
       "send": "Send",
       "no_transfers": "No transfers"
+    },
+    "swap": {
+      "slippageSettings": "Slippage Settings",
+      "searchToken": "Search Token",
+      "maxSlippage": "Max Slippage",
+      "swapSuccess": "Swap Success",
+      "reviewOrder": "Review Order",
+      "noAssetsAvailable": "No Assets Available",
+      "fees": "Fees",
+      "tooltip": {
+        "fees": "The fee paid during the trade, primarily to liquidity",
+        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade"
+      },
+      "max": "Max",
+      "balance": "Balance",
+      "price": "Price",
+      "insufficient_balance": "Insufficient balance",
+      "close": "Close"
     }
   },
   "change_password": {
