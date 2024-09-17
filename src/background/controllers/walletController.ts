@@ -238,7 +238,7 @@ class WalletController implements IWalletController {
       throw new Error("No supported on simple key");
     }
     const network = getNetworkDataBySlug(networkSlug);
-    const newGAccountIndex = wallet.accounts.length;
+    const newGAccountIndex = wallet.accounts.filter(z => z.network === networkSlug).length;
 
     // Unisat bitcoin network testnet, mainnet, signet has same hdpath (as mainnet)
     let addressTypes = network.addressTypes;
