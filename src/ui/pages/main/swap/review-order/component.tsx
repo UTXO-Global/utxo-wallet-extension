@@ -87,7 +87,6 @@ export default function UTXOReviewOrder() {
         currentAccount.accounts[0].hdPath
       );
 
-      console.log("signed", signed);
       return signed as CKBComponents.RawTransaction;
     } catch (e) {
       console.error(e);
