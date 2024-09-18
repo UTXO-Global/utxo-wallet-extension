@@ -4,11 +4,17 @@ import { hexStringToUint8Array } from "./helpers";
 import { NetworkData } from "@/shared/networks/types";
 import LS from "./ls";
 import {
-  renderByDobDecodeResponse,
-  renderImageSvg,
   svgToBase64,
   config as dobRenderConfig,
-  renderByTokenKey,
+  DobDecodeResponse,
+  RenderProps,
+  DobDecodeResult,
+  RenderOutput,
+  traitsParser,
+  renderImageSvg as rootRenderImageSvg,
+  renderTextParamsParser,
+  renderTextSvg,
+  ParsedTrait,
 } from "@nervina-labs/dob-render";
 
 const IMAGE_CONTENT_TYPE = [
@@ -19,6 +25,19 @@ const IMAGE_CONTENT_TYPE = [
   "image/png",
   "image/svg+xml",
   "image/webp",
+];
+
+const IMAGE_EXT = [
+  "avif",
+  "apng",
+  "gif",
+  "jpeg",
+  "jpg",
+  "png",
+  "svg",
+  "svg+xml",
+  "webp",
+  "tiff",
 ];
 export async function getSporeContent(
   txHash: string,
@@ -89,10 +108,17 @@ export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
       try {
         const tokenKey = id.startsWith("0x") ? id.slice(2) : id;
         const data = await renderByTokenKey(tokenKey);
-        res[id] = {
-          url: await svgToBase64(data),
-          contentType: "image/svg+xml",
-        };
+        if (isImageURL(data)) {
+          res[id] = {
+            url: data,
+            contentType: `image/${data.split(".").at(-1)}`,
+          };
+        } else {
+          res[id] = {
+            url: await svgToBase64(data),
+            contentType: "image/svg+xml",
+          };
+        }
       } catch (e) {
         res[id] = {
           url: undefined,
@@ -106,3 +132,73 @@ export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
   await LS.setItem(keyCache, JSON.stringify(res));
   return res;
 };
+
+export async function renderByTokenKey(tokenKey: string) {
+  const dobDecodeResponse = await dobDecode(tokenKey);
+  return renderByDobDecodeResponse(dobDecodeResponse.result);
+}
+
+function renderByDobDecodeResponse(
+  dob0Data: DobDecodeResult | string,
+  props?: Pick<RenderProps, "font"> & {
+    outputType?: "svg";
+  }
+) {
+  if (typeof dob0Data === "string") {
+    dob0Data = JSON.parse(dob0Data) as DobDecodeResult;
+  }
+  if (typeof dob0Data.render_output === "string") {
+    dob0Data.render_output = JSON.parse(
+      dob0Data.render_output
+    ) as RenderOutput[];
+  }
+  const { traits, indexVarRegister } = traitsParser(dob0Data.render_output);
+  for (const trait of traits) {
+    if (trait.name === "prev.type" && trait.value === "image") {
+      return renderImageSvg(traits);
+    }
+  }
+  const renderOptions = renderTextParamsParser(traits, indexVarRegister);
+  return renderTextSvg({ ...renderOptions, font: props?.font });
+}
+
+async function dobDecode(tokenKey: string): Promise<DobDecodeResponse> {
+  const response = await fetch(dobRenderConfig.dobDecodeServerURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: 2,
+      jsonrpc: "2.0",
+      method: "dob_decode",
+      params: [tokenKey],
+    }),
+  });
+  return response.json();
+}
+
+async function renderImageSvg(traits: ParsedTrait[]): Promise<string> {
+  const prevBg = traits.find((trait) => trait.name === "prev.bg");
+  if (
+    prevBg?.value &&
+    typeof prevBg.value === "string" &&
+    isImageURL(prevBg?.value)
+  ) {
+    return prevBg.value;
+  }
+
+  return rootRenderImageSvg(traits);
+}
+
+function isImageURL(url: string) {
+  if (!url.startsWith("https://") && !url.startsWith("http://")) {
+    return false;
+  }
+  const domainPart = url.split(".");
+  const ext = domainPart[domainPart.length - 1];
+  if (!IMAGE_EXT.includes(ext.toLowerCase())) {
+    return false;
+  }
+  return true;
+}
