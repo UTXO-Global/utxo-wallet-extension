@@ -1,5 +1,5 @@
 .transactionInfoDiv {
-  @apply h-full w-full flex items-center justify-center break-all px-4 pt-6 flex-col;
+  @apply h-full w-full flex items-center justify-center break-all px-4 pt-4 flex-col;
 
   .transaction {
     @apply flex flex-col w-full break-all h-full;
@@ -10,16 +10,16 @@
   @apply mb-4;
 
   .transactionP {
-    @apply break-all text-sm font-light block mb-2;
+    @apply break-all text-base font-medium block mb-1;
   }
 
   span {
-    @apply text-sm block px-4 py-2 bg-grey-300 rounded-xl;
+    @apply block p-4 text-base font-medium text-[#787575] rounded-xl bg-grey-300;
   }
 }
 
 .explorerBtn {
-  @apply px-5 py-2 rounded-xl font-medium bg-primary text-text text-sm mb-6 max-standard:w-full;
+  @apply px-5 py-2 h-12 flex items-center justify-center rounded-xl font-medium bg-primary text-text text-sm mb-4 max-standard:w-full;
 }
 
 .summary {

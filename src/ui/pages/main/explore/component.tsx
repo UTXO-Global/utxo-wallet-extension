@@ -114,9 +114,10 @@ const Explorer = () => {
                 {t("explore.partners")}
               </p>
               <a
-                className="text-white text-xs leading-[18px] font-medium bg-primary p-2 rounded flex justify-center items-center gap-1 cursor-pointer"
+                className="text-white text-xs leading-[18px] font-medium bg-primary hover:bg-[#2C2C2C] p-2 rounded flex justify-center items-center gap-1 cursor-pointer"
                 href={TELEGRAM_PARTNERSHIP}
-                target="_blank" rel="noreferrer"
+                target="_blank"
+                rel="noreferrer"
               >
                 <svg
                   width="16"

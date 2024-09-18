@@ -307,22 +307,29 @@ const CreateSend = () => {
                 <span className="font-medium text-base">
                   {t("send.create_send.amount")}
                 </span>
-                <div className="flex gap-2 items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300">
-                  <input
-                    type="number"
-                    placeholder={t("send.create_send.enter_amount")}
-                    className="w-full bg-transparent p-4 text-base font-normal"
-                    value={formData.amount}
-                    onChange={onAmountChange}
-                  />
-                  <button className={s.maxAmount} onClick={onMaxClick}>
+                <div className="flex gap-2 items-center justify-between bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300">
+                  <div className="flex-grow">
+                    <input
+                      type="number"
+                      placeholder={t("send.create_send.enter_amount")}
+                      className="w-full bg-transparent p-4 text-base font-normal"
+                      value={formData.amount}
+                      onChange={onAmountChange}
+                    />
+                  </div>
+                  <button
+                    className={cn(`${s.maxAmount} w-[55px]`)}
+                    onClick={onMaxClick}
+                  >
                     {t("send.create_send.max_amount")}
                   </button>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-base font-medium">
-                  <div>{t("wallet_page.available_balance")}:</div>
+                  <div className="capitalize">
+                    {t("wallet_page.available_balance")}:
+                  </div>
                   <div className="flex gap-2 items-center">
                     <ShortBalance balance={balance} zeroDisplay={6} />
                     <span>{symbol}</span>
@@ -330,7 +337,9 @@ const CreateSend = () => {
                 </div>
                 {!isTokenTransaction && (
                   <div className="flex justify-between text-base font-medium text-[#787575]">
-                    <div>{t("wallet_page.occupied_balance")}:</div>
+                    <div className="capitalize">
+                      {t("wallet_page.occupied_balance")}:
+                    </div>
                     <div className="flex gap-2 items-center">
                       <span>
                         {formatNumber(currentAccount.ordinalBalance, 2, 8)}
