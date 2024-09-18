@@ -75,7 +75,7 @@ const ListNFTs = () => {
               <div className="flex flex-col items-center justify-center mt-10">
                 <img src="/no-nfts.png" alt="no nfts" className="w-[140px]" />
                 <p className="text-base font-normal text-center text-[#ABA8A1] mt-4">
-                  {`You don't have any NFT yet!`}
+                  {`You don't have any DoB yet!`}
                 </p>
               </div>
             ) : (
