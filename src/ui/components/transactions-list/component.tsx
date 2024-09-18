@@ -371,7 +371,7 @@ const TransactionList = ({
         `flex flex-col gap-2 px-4 bg-white ${className ? className : ""}`
       )}
     >
-      <div className="text-base font-medium sticky top-[66px] standard:top-0 z-10 bg-light-100">
+      <div className="text-base font-medium sticky top-[65px] standard:top-0 z-10 bg-light-100">
         Activities
       </div>
 

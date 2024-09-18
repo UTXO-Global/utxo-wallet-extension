@@ -13,7 +13,7 @@
     "buy": "Buy",
     "your_balance": "Your Balance",
     "available_balance": "Available balance",
-    "occupied_balance": "Occupied Balance"
+    "occupied_balance": "Occupied balance"
   },
   "settings": {
     "language": "Language",
@@ -135,7 +135,7 @@
     "account_created_message": "Created new account",
     "enter_name_label": "Enter The Name",
     "address_type": "Address Type",
-    "create_new_account": "Create An Account"
+    "create_new_account": "Create an account"
   },
   "new_wallet": {
     "new_mnemonic_label": "New mnemonic",
