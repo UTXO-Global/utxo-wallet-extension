@@ -87,7 +87,7 @@ export default function ConfirmTransferNFT() {
 
   return (
     <div className="w-full h-full flex flex-col justify-between">
-      <div className="p-4">
+      <div className="p-4 pb-16">
         <div className="w-full flex flex-col justify-start items-start gap-4 py-4">
           {fields.map((i) => (
             <div key={i.label} className="w-full">
@@ -128,26 +128,28 @@ export default function ConfirmTransferNFT() {
         </div>
       </div>
 
-      {isProgressing ? (
-        <div className="flex justify-center w-full">
-          <Loading color="#ODODOD" type="bubbles" />
-        </div>
-      ) : (
-        <button
-          className={cn(
-            "btn primary flex items-center justify-center gap-1 mb-4 mx-4 standard:m-6 standard:mb-3",
-            {
-              "hover:bg-none hover:border-transparent": isProgressing,
-            }
-          )}
-          onClick={onConfirm}
-          disabled={isProgressing}
-        >
-          {isProgressing
-            ? t("send.confirm_send.confirming")
-            : t("send.confirm_send.confirm")}
-        </button>
-      )}
+      <div className="absolute left-0 bottom-0 w-full px-4 pb-4 pt-2 z-10">
+        {isProgressing ? (
+          <div className="flex justify-center w-full">
+            <Loading color="#ODODOD" type="bubbles" />
+          </div>
+        ) : (
+          <button
+            className={cn(
+              "btn primary disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
+              {
+                "hover:bg-none hover:border-transparent": isProgressing,
+              }
+            )}
+            onClick={onConfirm}
+            disabled={isProgressing}
+          >
+            {isProgressing
+              ? t("send.confirm_send.confirming")
+              : t("send.confirm_send.confirm")}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

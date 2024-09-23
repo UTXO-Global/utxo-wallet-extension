@@ -74,7 +74,7 @@ const NewAccount = () => {
         })}
       />
 
-      <button className="btn primary" type="submit">
+      <button className="btn primary capitalize" type="submit">
         {t("new_account.create_new_account")}
       </button>
     </form>
