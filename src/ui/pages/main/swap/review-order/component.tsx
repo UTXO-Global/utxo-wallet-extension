@@ -57,7 +57,7 @@ export default function UTXOReviewOrder() {
             <IcnApproximate className="w-[9px] h-[7px]" />{" "}
             {state.price?.toLocaleString("fullwide", {
               useGrouping: false,
-              maximumFractionDigits: 100,
+              maximumFractionDigits: 8,
             })}{" "}
             {state.poolInfo?.assetY?.symbol}
           </>
@@ -96,16 +96,13 @@ export default function UTXOReviewOrder() {
 
   const pool = useMemo(() => {
     return new Pool({
-      tokens: [
-        location.state?.poolInfo?.assetX,
-        location.state?.poolInfo?.assetY,
-      ],
+      tokens: [location.state?.tokens[0], location.state?.tokens[1]],
       ckbAddress: currentAccount?.accounts[0].address,
       collector,
       client,
       poolInfo: location.state?.poolInfo,
     });
-  }, [location.state]);
+  }, [location.state, currentAccount]);
 
   const onSwap = async () => {
     setIsProgressing(true);
@@ -116,7 +113,7 @@ export default function UTXOReviewOrder() {
 
       const txHash = await pool.swapWithExactInput(
         signTxFunc,
-        location.state?.slippage?.toString() || "0.5",
+        `${location.state?.slippage?.toString() || "0.5"}`,
         5000
       );
 
@@ -139,7 +136,7 @@ export default function UTXOReviewOrder() {
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
                     <img
-                      src={location.state.poolInfo?.assetX?.logo || "/coin.png"}
+                      src={location.state?.tokens[0]?.logo || "/coin.png"}
                       className="w-full rounded-full object-cover object-center"
                     />
                   </div>
@@ -150,7 +147,7 @@ export default function UTXOReviewOrder() {
                     <div className="text-[22px] leading-7 text-black font-medium">
                       <div>
                         {formatNumber(location.state?.inputAmount)}{" "}
-                        {location.state.poolInfo?.assetX?.symbol}
+                        {location.state?.tokens[0]?.symbol}
                       </div>
                     </div>
                   </div>
@@ -161,7 +158,7 @@ export default function UTXOReviewOrder() {
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
                     <img
-                      src={location.state.poolInfo?.assetY?.logo || "/coin.png"}
+                      src={location.state?.tokens[1]?.logo || "/coin.png"}
                       className="w-full rounded-full object-cover object-center"
                     />
                   </div>
@@ -180,8 +177,8 @@ export default function UTXOReviewOrder() {
                     </div>
                     <div className="text-[22px] leading-7 text-black font-medium">
                       <div>
-                        {formatNumber(location.state?.outputAmount, 2, 5)}{" "}
-                        {location.state.poolInfo?.assetY?.symbol}
+                        {formatNumber(location.state?.outputAmount.value, 2, 5)}{" "}
+                        {location.state?.tokens[1]?.symbol}
                       </div>
                     </div>
                   </div>

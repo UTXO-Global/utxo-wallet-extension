@@ -42,7 +42,11 @@ export default function UTXOSwapSearchToken() {
       return location.state.searchKey;
     }
     return "0x0000000000000000000000000000000000000000000000000000000000000000"; // CKB
-  }, []);
+  }, [location.state]);
+
+  const isFrom = useMemo(() => {
+    return !!location.state.isFrom;
+  }, [location.state]);
 
   const collector = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -133,43 +137,65 @@ export default function UTXOSwapSearchToken() {
                 </div>
               )}
               {tokens.length > 0
-                ? tokens.map((t, i) => (
-                    <div
-                      key={`token-${t.batchId}-${i}`}
-                      className={cn(
-                        "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
-                        {
-                          "!bg-grey-200":
-                            t.assetY.typeScript.args ===
-                            location.state?.poolInfo?.assetY?.typeScript.args,
+                ? tokens.map((t, i) => {
+                    const isAssetXMatched = t.assetX.typeHash === keySearch;
+                    const assetX =
+                      (isFrom && isAssetXMatched) ||
+                      (!isFrom && !isAssetXMatched)
+                        ? t.assetY
+                        : t.assetX;
+
+                    const assetY =
+                      t.assetY.typeHash === assetX.typeHash
+                        ? t.assetX
+                        : t.assetY;
+
+                    const assetDisplay = isFrom ? assetX : assetY;
+
+                    return (
+                      <div
+                        key={`token-${t.batchId}-${i}`}
+                        className={cn(
+                          "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
+                          {
+                            "!bg-grey-200":
+                              assetDisplay?.typeScript?.args ===
+                              (isFrom
+                                ? location.state?.poolInfo?.assetX?.typeScript
+                                    ?.args
+                                : location.state?.poolInfo?.assetY?.typeScript
+                                    ?.args),
+                          }
+                        )}
+                        onClick={() =>
+                          navigate("/swap", {
+                            state: {
+                              ...location.state,
+                              poolInfo: {
+                                ...t,
+                              },
+                            },
+                          })
                         }
-                      )}
-                      onClick={() =>
-                        navigate("/swap", {
-                          state: {
-                            ...location.state,
-                            poolInfo: t,
-                          },
-                        })
-                      }
-                    >
-                      <div className="w-10 h-10">
-                        <img
-                          src={t.assetY.logo || "/coin.png"}
-                          className="w-full rounded-full object-cover object-center"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-0 flex-grow">
-                        <div className="text-primary text-base font-medium">
-                          {t.assetY.symbol}{" "}
-                          {!!t.assetY.name && `(${t.assetY.name})`}
+                      >
+                        <div className="w-10 h-10">
+                          <img
+                            src={assetDisplay.logo || "/coin.png"}
+                            className="w-full rounded-full object-cover object-center"
+                          />
                         </div>
-                        <div className="text-sm leading-[18px] text-[#787575] font-normal">
-                          {shortAddress(t.assetY.typeScript?.args, 7)}
+                        <div className="flex flex-col gap-0 flex-grow">
+                          <div className="text-primary text-base font-medium">
+                            {assetDisplay.symbol}{" "}
+                            {!!assetDisplay.name && `(${assetDisplay.name})`}
+                          </div>
+                          <div className="text-sm leading-[18px] text-[#787575] font-normal">
+                            {shortAddress(assetDisplay.typeScript?.args, 7)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 : !isLoading && (
                     <div className="px-4 py-3 text-sm text-grey-100">
                       <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">

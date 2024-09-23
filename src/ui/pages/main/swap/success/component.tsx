@@ -92,7 +92,7 @@ const UTXOFinalSwap = () => {
             className="w-5 h-5 rounded-full object-cover"
           />
           <span className="text-sm leading-5 font-medium">
-            {formatNumber(location.state?.outputAmount)}{" "}
+            {formatNumber(location.state?.outputAmount.value)}{" "}
             {location.state?.poolInfo?.assetY?.symbol}
           </span>
         </div>
