@@ -37,7 +37,9 @@ const SwitchWallet = () => {
             )}
             onClick={async () => {
               await switchWallet(i);
-              navigate("/home");
+              setTimeout(() => {
+                navigate("/home");
+              }, 100);
             }}
           >
             <div className="cursor-pointer">

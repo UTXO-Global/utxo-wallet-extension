@@ -183,13 +183,18 @@ export const convertCKBTransactionToSkeleton = async (
         );
       }
 
+      const outputData =
+        txInput?.transaction?.outputs_data[
+          Number(input.previousOutput.index)
+        ] || "0x";
+
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
         inputs.push({
           outPoint: {
             txHash: input.previousOutput.txHash,
             index: input.previousOutput.index,
           },
-          data: input.outputData ? input.outputData : "0x",
+          data: outputData,
           cellOutput: {
             capacity: cellOutput.capacity,
             lock: {
@@ -239,6 +244,8 @@ export const convertCKBTransactionToSkeleton = async (
         input.cellOutput.lock.args === fromScript.args
     );
 
+  console.log("first index", firstIndex);
+
   if (firstIndex !== -1) {
     while (firstIndex >= txSkeleton.get("witnesses").size) {
       txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
@@ -247,8 +254,7 @@ export const convertCKBTransactionToSkeleton = async (
     }
     let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
     const newWitnessArgs: WitnessArgs = {
-      /* 65-byte zeros in hex */
-      lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      lock: `0x${"00".repeat(65)}`,
     };
 
     if (witness !== "0x") {

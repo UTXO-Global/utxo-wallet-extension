@@ -69,11 +69,25 @@ function getNewHdPathFromAddressType(
   return hdPathPrefix + "/" + newIndex.toString();
 }
 
+function getIndexFromHdPath(hdPath: string): number {
+  const _hdPath = hdPath.split("/");
+  return Number(_hdPath[_hdPath.length - 1]);
+}
+
+function getNewGAccountIndex(
+  accounts: IGroupAccount[],
+  network: NetworkSlug
+): number {
+  const _accounts = accounts.filter((z) => z.network === network);
+  const _lastIndex = getIndexFromHdPath(_accounts[_accounts.length - 1].accounts[0].hdPath);
+  return _lastIndex + 1;
+}
+
 async function _createDefaultGroupAccount({
   networkSlug,
   key,
   walletId,
-  hdPath
+  hdPath,
 }: {
   networkSlug: NetworkSlug;
   key?: Keyring<Json>;
@@ -171,7 +185,7 @@ class WalletController implements IWalletController {
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
-      hdPath: props.hdPath
+      hdPath: props.hdPath,
     });
 
     return {
@@ -238,7 +252,7 @@ class WalletController implements IWalletController {
       throw new Error("No supported on simple key");
     }
     const network = getNetworkDataBySlug(networkSlug);
-    const newGAccountIndex = wallet.accounts.filter(z => z.network === networkSlug).length;
+    const newGAccountIndex = getNewGAccountIndex(wallet.accounts, networkSlug)
 
     // Unisat bitcoin network testnet, mainnet, signet has same hdpath (as mainnet)
     let addressTypes = network.addressTypes;
@@ -278,7 +292,7 @@ class WalletController implements IWalletController {
   async createDefaultGroupAccount(
     networkSlug: NetworkSlug,
     walletId?: number,
-    hdPath?: string,
+    hdPath?: string
   ): Promise<IGroupAccount> {
     return _createDefaultGroupAccount({ networkSlug, walletId, hdPath });
   }

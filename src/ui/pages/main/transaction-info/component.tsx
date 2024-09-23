@@ -60,7 +60,7 @@ const TransactionInfo = () => {
             <div className={s.group}>
               <p className={s.transactionP}>{t("transaction_info.txid")}</p>
 
-              <span>{tx.txid}</span>
+              <span className="!text-sm">{tx.txid}</span>
             </div>
             <div className={s.group}>
               <p className={s.transactionP}>

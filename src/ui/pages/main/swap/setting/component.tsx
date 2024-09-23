@@ -3,11 +3,14 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { t } from "i18next";
+import { useState } from "react";
 
 export default function UTXOSwapSetting() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentNetwork = useGetCurrentNetwork();
+  const [slippage, setSlippage] = useState(location.state?.slippage || 0.5);
+  const [isAuto, setIsAuto] = useState(!!location.state?.isSlippageAuto);
 
   return (
     <div className="w-full h-full top-0 relative">
@@ -27,15 +30,20 @@ export default function UTXOSwapSetting() {
             <div className="flex gap-0 bg-[#FAFAFA] rounded-2xl text-grey-100">
               <button
                 className={cn("py-[6px] px-5", {
-                  "bg-grey-200 text-primary rounded-full": true,
+                  "bg-grey-200 text-primary rounded-full": isAuto,
                 })}
+                onClick={() => {
+                  setIsAuto(true);
+                  setSlippage(0.5);
+                }}
               >
                 Auto
               </button>
               <button
                 className={cn("py-[6px] px-5 rounded-full", {
-                  "bg-grey-200 text-primary": false,
+                  "bg-grey-200 text-primary": !isAuto,
                 })}
+                onClick={() => setIsAuto(false)}
               >
                 Custom
               </button>
@@ -43,10 +51,14 @@ export default function UTXOSwapSetting() {
             <div className="bg-grey-300 py-[6px] px-4 w-[66px] flex justify-center items-center rounded-full">
               <input
                 type="text"
-                value="0.5"
+                value={slippage}
                 className="flex-grow w-8 text-center bg-transparent"
-                disabled
-                readOnly
+                placeholder="0.5"
+                disabled={isAuto}
+                readOnly={isAuto}
+                onChange={(e) => {
+                  setSlippage(e.target.value);
+                }}
               />
               <span>%</span>
             </div>
@@ -59,7 +71,11 @@ export default function UTXOSwapSetting() {
           className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
           onClick={() =>
             navigate("/swap", {
-              state: location.state,
+              state: {
+                ...location.state,
+                slippage: slippage,
+                isSlippageAuto: isAuto,
+              },
             })
           }
         >

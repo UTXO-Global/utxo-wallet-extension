@@ -16,92 +16,36 @@ import {
   Collector,
   Pool,
   PoolInfo,
+  Token,
 } from "@utxoswap/swap-sdk-js";
 import { formatNumber } from "@/shared/utils";
 import ShortBalance from "@/ui/components/ShortBalance";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 
 const MIN_CAPACITY = 63;
+const MIN_PRICE_IMPACT = -80;
+const PRICE_IMPACT_WARNING = -5;
 
 export default function UtxoSwap() {
   const navigate = useNavigate();
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
   const location = useLocation();
+
   const [typeHashDefault, setTypeHashDefault] = useState(CKB_TYPE_HASH);
+  const [tokens, setTokens] = useState<[Token, Token]>();
   const [pool, setPool] = useState<Pool>(undefined);
   const [poolInfo, setPoolInfo] = useState<PoolInfo>(undefined);
+
   const [assetXAmount, setAssetXAmount] = useState("");
+  const [slippage, setSlippage] = useState(0.5);
+  const [isSlippageAuto, setIsSlippageAuto] = useState(true);
   const { currentPrice } = useTransactionManagerContext();
-
-  const ckbPrice = useMemo(() => {
-    return currentPrice ? Number(currentPrice) : 0;
-  }, [currentPrice]);
-
-  const availableCKBBalance = useMemo(() => {
-    const bal =
-      Number(currentAccount.balance || 0) -
-      Number(currentAccount.ordinalBalance || 0) -
-      0.00001;
-
-    return bal > 0 ? bal : 0;
-  }, [currentAccount]);
-
-  const onMaxClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    setAssetXAmount(
-      new Intl.NumberFormat("en-EN", {
-        maximumFractionDigits: 8,
-        minimumFractionDigits: 8,
-      }).format(availableCKBBalance)
-    );
-  };
-
-  const inputAmount = useMemo(() => {
-    if (!!assetXAmount) {
-      return Number(assetXAmount.replaceAll(",", ""));
-    }
-    return 0;
-  }, [assetXAmount]);
-
-  const outputAmount = useMemo(() => {
-    if (pool) {
-      const _inputAmount = Number(inputAmount);
-      const { output } = pool.calculateOutputAmountAndPriceImpactWithExactInput(
-        _inputAmount.toString()
-      );
-      return Number(output);
-    }
-
-    return 0;
-  }, [pool, poolInfo, inputAmount]);
-
-  const currentState = useMemo(() => {
-    return {
-      ...location.state,
-      searchKey: typeHashDefault,
-      poolInfo,
-      inputAmount,
-      outputAmount,
-      price: inputAmount > 0 ? outputAmount / inputAmount : 0,
-      slippage: 0.5,
-      fees: 0.00001,
-    };
-  }, [
-    typeHashDefault,
-    pool,
-    location.state,
-    inputAmount,
-    outputAmount,
-    poolInfo,
-  ]);
-
-  const isValidForm = useMemo(() => {
-    if (inputAmount > availableCKBBalance) return false;
-    if (inputAmount < MIN_CAPACITY) return false;
-    if (!poolInfo) return false;
-    return true;
-  }, [availableCKBBalance, inputAmount, outputAmount]);
+  const [isReverse, setIsReverse] = useState(
+    location.state?.isReverse !== undefined
+      ? !!location.state?.isReverse
+      : false
+  );
 
   const collector = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -120,46 +64,133 @@ export default function UtxoSwap() {
     return undefined;
   }, [currentNetwork]);
 
-  useEffect(() => {
-    const getPoolDefault = async () => {
-      try {
-        const { list: pools } = await client.getPoolsByToken({
-          pageNo: 0,
-          pageSize: 1,
-          searchKey: typeHashDefault,
-        });
+  const ckbPrice = useMemo(() => {
+    return currentPrice ? Number(currentPrice) : 0;
+  }, [currentPrice]);
 
-        if (pools && pools.length > 0) {
-          setPool(
-            new Pool({
-              tokens: [pools[0].assetX, pools[0].assetY],
-              ckbAddress: currentAccount.accounts[0].address,
-              collector,
-              client,
-              poolInfo: pools[0],
-            })
-          );
-          setPoolInfo(pools[0]);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+  const availableCKBBalance = useMemo(() => {
+    const bal =
+      Number(currentAccount.balance || 0) -
+      Number(currentAccount.ordinalBalance || 0) -
+      0.00001;
+
+    return bal > 0 ? bal : 0;
+  }, [currentAccount]);
+
+  const getBalanceToken = (typeHash: string) => {
+    if (typeHash === CKB_TYPE_HASH) return availableCKBBalance;
+    if (currentAccount.coinBalances[typeHash]) {
+      return currentAccount.coinBalances[typeHash] || 0;
+    }
+
+    return 0;
+  };
+
+  const onMaxClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setAssetXAmount(
+      new Intl.NumberFormat("en-EN", {
+        maximumFractionDigits: 8,
+        minimumFractionDigits: 8,
+      }).format(Number(tokens ? tokens[0]?.balance : 0))
+    );
+  };
+
+  const inputAmount = useMemo(() => {
+    if (!!assetXAmount) {
+      return Number(assetXAmount.replaceAll(",", ""));
+    }
+    return 0;
+  }, [assetXAmount]);
+
+  const outputAmount = useMemo(() => {
+    if (pool) {
+      const _inputAmount = Number(inputAmount);
+      const { output, priceImpact, buyPrice } =
+        pool.calculateOutputAmountAndPriceImpactWithExactInput(
+          _inputAmount.toString()
+        );
+
+      return {
+        value: Number(output),
+        priceImpact: Number(priceImpact) * 100,
+        buyPrice: Number(buyPrice),
+      };
+    }
+
+    return { value: 0, priceImpact: 0, buyPrice: 0 };
+  }, [pool, poolInfo, inputAmount]);
+
+  const currentState = useMemo(() => {
+    return {
+      ...location.state,
+      tokens: tokens,
+      searchKey: typeHashDefault,
+      poolInfo,
+      inputAmount,
+      outputAmount,
+      price: outputAmount.buyPrice,
+      slippage: slippage,
+      isSlippageAuto: isSlippageAuto,
+      fees: 0.0001,
     };
+  }, [
+    typeHashDefault,
+    tokens,
+    pool,
+    location.state,
+    inputAmount,
+    outputAmount,
+    poolInfo,
+    slippage,
+    isSlippageAuto,
+  ]);
 
-    let t: NodeJS.Timeout;
-    if (location.state?.poolInfo && pool?.tokens !== location.state?.poolInfo) {
+  const getPoolDefault = async () => {
+    try {
+      const { list: pools } = await client.getPoolsByToken({
+        pageNo: 0,
+        pageSize: 1,
+        searchKey: typeHashDefault,
+      });
+
+      if (pools && pools.length > 0) {
+        setPoolInfo(pools[0]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const isValidForm = useMemo(() => {
+    if (inputAmount > availableCKBBalance) return false;
+    if (!poolInfo) return false;
+    if (outputAmount.priceImpact < MIN_PRICE_IMPACT) return false;
+    return true;
+  }, [availableCKBBalance, inputAmount, outputAmount]);
+
+  useEffect(() => {
+    if (poolInfo) {
+      const newTokens: [Token, Token] = isReverse
+        ? [poolInfo.assetY, poolInfo.assetX]
+        : [poolInfo.assetX, poolInfo.assetY];
+
+      setTokens(newTokens);
       setPool(
         new Pool({
-          tokens: [
-            location.state?.poolInfo.assetX,
-            location.state?.poolInfo.assetY,
-          ],
+          tokens: newTokens,
           ckbAddress: currentAccount.accounts[0].address,
           collector,
           client,
-          poolInfo: location.state?.poolInfo,
+          poolInfo: poolInfo,
         })
       );
+    }
+  }, [poolInfo, isReverse]);
+
+  useEffect(() => {
+    let t: NodeJS.Timeout;
+    if (location.state?.poolInfo) {
       setPoolInfo(location.state?.poolInfo);
     } else if (client && typeHashDefault && !pool) {
       t = setTimeout(() => {
@@ -170,17 +201,40 @@ export default function UtxoSwap() {
     return () => {
       clearTimeout(t);
     };
-  }, [client, typeHashDefault, location.state]);
+  }, [client, typeHashDefault, location.state?.poolInfo]);
+
+  useEffect(() => {
+    if (location.state?.isSlippageAuto !== undefined) {
+      setIsSlippageAuto(location.state?.isSlippageAuto);
+    }
+
+    if (location.state?.slippage !== undefined) {
+      setSlippage(location.state?.slippage);
+    }
+  }, [location.state]);
 
   return (
     <div className="w-full h-full top-0 relative">
       <div className="!h-100vh-72px standard:!h-100vh-100px overflow-auto relative">
-        <WalletPanel />
+        <WalletPanel state={currentState} />
         {isCkbNetwork(currentNetwork.network) ? (
           <>
             <div className="px-4 py-2">
               <div className="bg-grey-300 rounded-t-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
-                <div className="flex gap-2 items-center p-2 pb-0">
+                <div
+                  className="flex gap-2 items-center justify-between p-2 pb-0 cursor-pointer"
+                  onClick={() =>
+                    navigate("/swap/search-token", {
+                      state: {
+                        ...currentState,
+                        searchKey: poolInfo
+                          ? poolInfo.assetY?.typeHash
+                          : typeHashDefault,
+                        isFrom: true,
+                      },
+                    })
+                  }
+                >
                   <div className="w-10 h-10">
                     <img
                       src={pool?.tokens[0].logo}
@@ -188,15 +242,20 @@ export default function UtxoSwap() {
                     />
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
-                    <div className="text-black text-base font-medium">
-                      {pool?.tokens[0].symbol}
+                    <div className="text-black text-base font-medium flex justify-between items-center leading-5">
+                      <div>{pool?.tokens[0].symbol}</div>
+                      <div>
+                        <IcnChevronDown className="w-4 h-4" />
+                      </div>
                     </div>
-                    <div className="flex justify-between w-full items-center text-base text-[#787575] font-normal">
+                    <div className="flex gap-[2px] w-full items-center text-base text-[#787575] font-normal leading-5">
                       <span>{t("components.swap.balance")}:</span>
                       <ShortBalance
-                        balance={Number(availableCKBBalance)}
+                        balance={Number(
+                          getBalanceToken(tokens ? tokens[0].typeHash : "")
+                        )}
                         zeroDisplay={6}
-                        className="!text-base"
+                        className="!text-base !leading-5"
                       />
                     </div>
                   </div>
@@ -207,12 +266,11 @@ export default function UtxoSwap() {
                       "text-black text-2xl leading-[30px] bg-transparent font-medium outline-none placeholder:text-grey-100 flex-grow",
                       {
                         "!text-[#FF4545]":
-                          inputAmount < MIN_CAPACITY ||
-                          inputAmount > availableCKBBalance,
+                          inputAmount > Number(tokens ? tokens[0].balance : 0),
                       }
                     )}
                     placeholder="0"
-                    autoFocus
+                    autoFocus={true}
                     value={assetXAmount}
                     onChange={(e) => {
                       const reg = /^(\d+(\.\d{0,})?)?$/;
@@ -234,65 +292,100 @@ export default function UtxoSwap() {
                 </div>
 
                 <div className="absolute -bottom-4 flex w-full items-center justify-center">
-                  <button className="w-8 h-8 rounded-full">
+                  <button
+                    className="w-8 h-8 rounded-full"
+                    onClick={() => {
+                      setIsReverse(!isReverse);
+                    }}
+                  >
                     <IcnSwapDirect />
                   </button>
                 </div>
               </div>
               <div className="mt-[2px] bg-grey-400 hover:bg-grey-300 p-2 !pb-4 rounded-b-lg flex flex-col gap-2">
                 <div
-                  className="flex justify-between items-center p-2 bg-grey-400/80 rounded-lg cursor-pointer"
+                  className="flex justify-between items-center p-2 bg-[#EBECEC]/80 rounded-lg cursor-pointer"
                   onClick={() =>
-                    navigate("/swap/search-token", { state: currentState })
+                    navigate("/swap/search-token", {
+                      state: {
+                        ...currentState,
+                        searchKey: poolInfo
+                          ? poolInfo.assetX?.typeHash
+                          : typeHashDefault,
+                        isFrom: false,
+                      },
+                    })
                   }
                 >
                   <div className="flex gap-2 items-center">
                     <div className="w-10 h-10">
                       <img
-                        src={pool?.tokens[1].logo || "/coin.png"}
+                        src={tokens ? tokens[1].logo : "/coin.png"}
                         className="w-full rounded-full object-cover object-center"
                       />
                     </div>
                     <div className="text-black text-base font-medium">
-                      {pool?.tokens[1].symbol}
+                      {tokens ? tokens[1].symbol : ""}{" "}
                     </div>
                   </div>
 
-                  <div className="p-2">
+                  <div>
                     <IcnChevronDown className="w-4 h-4" />
                   </div>
                 </div>
                 <div className="flex items-center justify-between px-2 gap-2 text-2xl leading-[30px]">
-                  <div
+                  <input
                     className={cn(
-                      "text-black text-2xl leading-[30px] bg-transparent font-medium outline-none min-w-[100px] flex-grow",
-                      { "text-grey-100": outputAmount <= 0 }
+                      "text-black text-2xl leading-[30px] bg-transparent font-medium outline-none w-[180px] flex-grow placeholder:text-grey-100"
                     )}
-                  >
-                    {formatNumber(outputAmount, 2, 5)}
-                  </div>
+                    value={formatNumber(outputAmount.value, 2, 5)}
+                    readOnly
+                  />
                   <div className="font-medium text-base text-[#787575]">
                     ${formatNumber(inputAmount * ckbPrice, 2, 3)}
                   </div>
                 </div>
               </div>
-              <div className="mt-1 bg-grey-300 p-4 flex items-center justify-between rounded-lg">
-                <span className="text-primary text-base font-medium">
-                  {t("components.swap.price")}
-                </span>
-                <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
-                  {`1 ${poolInfo?.assetX.symbol}`}{" "}
-                  <IcnApproximate className="w-[9px] h-[7px]" />{" "}
-                  {inputAmount > 0 ? (
-                    <ShortBalance
-                      balance={outputAmount / inputAmount}
-                      zeroDisplay={6}
-                      className="!text-sm"
-                    />
-                  ) : (
-                    <span>0</span>
-                  )}{" "}
-                  {poolInfo?.assetY.symbol}
+              <div className="mt-1 bg-grey-300 p-4 flex flex-col gap-2">
+                <div className="flex items-center justify-between rounded-lg">
+                  <span className="text-primary text-base font-medium">
+                    {t("components.swap.price")}
+                  </span>
+                  <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
+                    <div className=" whitespace-nowrap">
+                      1 {tokens ? tokens[0].symbol : ""}
+                    </div>
+                    <IcnApproximate className="w-[9px] h-[7px]" />{" "}
+                    {outputAmount.buyPrice > 0 ? (
+                      <ShortBalance
+                        balance={outputAmount.buyPrice}
+                        zeroDisplay={6}
+                        className="!text-sm"
+                      />
+                    ) : (
+                      <span>0</span>
+                    )}{" "}
+                    {tokens ? tokens[1].symbol : ""}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between rounded-lg">
+                  <span className="text-primary text-base font-medium">
+                    Price impact
+                  </span>
+                  <div
+                    className={cn(
+                      "text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]",
+                      {
+                        "!text-[#FCCD13]":
+                          outputAmount.priceImpact < 0 &&
+                          outputAmount.priceImpact >= PRICE_IMPACT_WARNING,
+                        "!text-[#FF4545]":
+                          outputAmount.priceImpact < PRICE_IMPACT_WARNING,
+                      }
+                    )}
+                  >
+                    {outputAmount?.priceImpact.toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -314,6 +407,8 @@ export default function UtxoSwap() {
               >
                 {inputAmount > availableCKBBalance
                   ? t("components.swap.insufficient_balance")
+                  : outputAmount.priceImpact < MIN_PRICE_IMPACT
+                  ? "Price Impact Too Hight"
                   : t("send.create_send.continue")}
               </button>
             </div>

@@ -97,6 +97,7 @@ const RestorePrivKey = () => {
             setSelected={(name) => {
               setSelectedWayToRestore(name);
             }}
+            className="capitalize"
           />
           <PasswordInput
             showSeparateLabel={false}

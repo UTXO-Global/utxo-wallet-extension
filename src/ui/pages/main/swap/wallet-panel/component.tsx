@@ -5,14 +5,19 @@ import {
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import Analytics from "@/ui/utils/gtm";
-import { useState } from "react";
 import { IcnChevronDown } from "@/ui/components/icons";
+import { useMemo } from "react";
 
-const WalletPanel = () => {
+const WalletPanel = ({ state }: { state?: any }) => {
   const currentWallet = useGetCurrentWallet();
   const currentAccount = useGetCurrentAccount();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const localState = useMemo(() => {
+    if (state) return state;
+    return location.state;
+  }, [state, location.state]);
 
   const _navigate = (path: string, name: string, label: string) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -20,7 +25,7 @@ const WalletPanel = () => {
       action: "click",
       label,
     });
-    navigate(path, { state: location.state });
+    navigate(path, { state: localState });
   };
 
   return (
@@ -65,7 +70,7 @@ const WalletPanel = () => {
         >
           <IcnSlippageSettings />
           <span className="text-sm leading-5 font-medium text-primary">
-            0.5%
+            {localState?.slippage}%
           </span>
         </div>
       </div>
