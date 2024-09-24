@@ -10,7 +10,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import Loading from "react-loading";
-import { Client, Collector, Pool, PoolInfo } from "@utxoswap/swap-sdk-js";
+import {
+  CKB_TYPE_HASH,
+  Client,
+  Collector,
+  Pool,
+  PoolInfo,
+} from "@utxoswap/swap-sdk-js";
 
 const IcnSearch = ({ className }: { className?: string }) => {
   return (
@@ -36,15 +42,31 @@ export default function UTXOSwapSearchToken() {
   const [isLoading, setIsLoading] = useState(true);
   const currentNetwork = useGetCurrentNetwork();
   const navigate = useNavigate();
-  const keySearch = useMemo(() => {
-    if (location.state?.searchKey) {
-      return location.state.searchKey;
-    }
-    return "0x0000000000000000000000000000000000000000000000000000000000000000"; // CKB
+
+  const isChangeAssetX = useMemo(() => {
+    return location.state?.isChangeAssetX !== undefined
+      ? !!location.state?.isChangeAssetX
+      : false;
   }, [location.state]);
 
-  const isFrom = useMemo(() => {
-    return !!location.state.isFrom;
+  const typeHashSearch = useMemo(() => {
+    if (isChangeAssetX) {
+      return location.state?.assetY
+        ? location.state.assetY.typeHash
+        : CKB_TYPE_HASH;
+    } else {
+      return location.state?.assetX
+        ? location.state.assetX.typeHash
+        : CKB_TYPE_HASH;
+    }
+  }, [location.state, isChangeAssetX]);
+
+  const assetX = useMemo(() => {
+    return location.state?.assetX;
+  }, [location.state]);
+
+  const assetY = useMemo(() => {
+    return location.state?.assetY;
   }, [location.state]);
 
   const client = useMemo(() => {
@@ -76,7 +98,7 @@ export default function UTXOSwapSearchToken() {
       const { list: pools } = await client.getPoolsByToken({
         pageNo: 0,
         pageSize: 200,
-        searchKey: keySearch,
+        searchKey: typeHashSearch,
       });
 
       if (pools && pools.length > 0) {
@@ -130,19 +152,26 @@ export default function UTXOSwapSearchToken() {
               )}
               {tokens.length > 0
                 ? tokens.map((t, i) => {
-                    const isAssetXMatched = t.assetX.typeHash === keySearch;
-                    const assetX =
-                      (isFrom && isAssetXMatched) ||
-                      (!isFrom && !isAssetXMatched)
-                        ? t.assetY
-                        : t.assetX;
+                    let aX = undefined;
+                    let aY = undefined;
+                    if (isChangeAssetX) {
+                      aY =
+                        t.assetX.typeHash === assetY?.typeHash
+                          ? t.assetX
+                          : t.assetY;
+                      aX =
+                        t.assetY.typeHash === aY.typeHash ? t.assetX : t.assetY;
+                    } else {
+                      aX =
+                        t.assetX.typeHash === assetX?.typeHash
+                          ? t.assetX
+                          : t.assetY;
+                      aY =
+                        t.assetX.typeHash === aX.typeHash ? t.assetY : t.assetX;
+                    }
 
-                    const assetY =
-                      t.assetY.typeHash === assetX.typeHash
-                        ? t.assetX
-                        : t.assetY;
-
-                    const assetDisplay = isFrom ? assetX : assetY;
+                    const assetDisplay =
+                      aX.typeHash === typeHashSearch ? aY : aX;
 
                     return (
                       <div
@@ -152,11 +181,9 @@ export default function UTXOSwapSearchToken() {
                           {
                             "!bg-grey-200":
                               assetDisplay?.typeScript?.args ===
-                              (isFrom
-                                ? location.state?.poolInfo?.assetX?.typeScript
-                                    ?.args
-                                : location.state?.poolInfo?.assetY?.typeScript
-                                    ?.args),
+                              (isChangeAssetX
+                                ? aY?.typeScript?.args
+                                : aX?.typeScript?.args),
                           }
                         )}
                         onClick={() =>
@@ -166,6 +193,7 @@ export default function UTXOSwapSearchToken() {
                               poolInfo: {
                                 ...t,
                               },
+                              tokens: [aX, aY],
                             },
                           })
                         }

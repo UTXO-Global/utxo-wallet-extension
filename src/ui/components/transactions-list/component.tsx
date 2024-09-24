@@ -392,7 +392,6 @@ const TransactionList = ({
         <div className="border border-grey-300 rounded-lg px-3 standard:pb-[50px] mt-2">
           <div className={s.transactionsDiv}>
             {txes.map((item) => {
-              console.log(item);
               const currentDate = new Date().toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -422,8 +421,6 @@ const TransactionList = ({
                       } else {
                         amount = getTransactionValue(t, t.address, 5);
                       }
-
-                      console.log(t, isTxToken(t), amount);
 
                       return (
                         <Link

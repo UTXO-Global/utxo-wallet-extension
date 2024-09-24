@@ -21,6 +21,7 @@ import {
 import { formatNumber } from "@/shared/utils";
 import ShortBalance from "@/ui/components/ShortBalance";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+import { apiController } from "@/background/controllers";
 
 const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
@@ -32,6 +33,12 @@ const ckbToken: Token = {
   symbol: "CKB",
   typeHash: CKB_TYPE_HASH,
   logo: "/ckb.png",
+};
+
+const nativeTypeHash = {
+  [CKB_TYPE_HASH]: "ckb",
+  "0xe6396293287fefb9f26d98eb0318fe80890908f0849226ad0c8cab2d62f1e351": "btc", // BTC Testnet
+  "0x3cd44aecea36e0a27e671f1fc79e65add7bf2f0e8b368389dc810ec81c63fa57": "btc", // BTC mainnet
 };
 
 export default function UtxoSwap() {
@@ -52,7 +59,11 @@ export default function UtxoSwap() {
       : false
   );
 
-  const { currentPrice } = useTransactionManagerContext();
+  const { currentPrice, getCoinPrice } = useTransactionManagerContext();
+  const [prices, setPrices] = useState<{ typeHash: string; price: number }>({
+    typeHash: "",
+    price: 0,
+  });
 
   const [tokens, setTokens] = useState<[Token, Token]>(
     !location.state?.isReverse ? [ckbToken, undefined] : [undefined, ckbToken]
@@ -89,10 +100,6 @@ export default function UtxoSwap() {
     return undefined;
   }, [currentNetwork]);
 
-  const ckbPrice = useMemo(() => {
-    return currentPrice ? Number(currentPrice) : 0;
-  }, [currentPrice]);
-
   const availableCKBBalance = useMemo(() => {
     const bal =
       Number(currentAccount.balance || 0) -
@@ -126,6 +133,20 @@ export default function UtxoSwap() {
 
     return { value: 0, priceImpact: 0, buyPrice: 0 };
   }, [pool, poolInfo, inputAmount]);
+
+  const totalOutputUsd = useMemo(() => {
+    if (!!prices.typeHash && prices.price > 0) {
+      if (assetX?.typeHash === prices.typeHash) {
+        return prices.price * inputAmount;
+      }
+
+      if (assetY?.typeHash === prices.typeHash) {
+        return prices.price * outputAmount.value;
+      }
+    }
+
+    return 0;
+  }, [assetX, assetY, prices, inputAmount, outputAmount]);
 
   const isShowPrice = useMemo(() => {
     return assetX && assetY && inputAmount > 0 && outputAmount.value > 0;
@@ -234,15 +255,20 @@ export default function UtxoSwap() {
         location.state.poolInfo.assetY.typeHash !== poolInfo?.assetY?.typeHash
       ) {
         setPoolInfo(location.state?.poolInfo);
-        const newTokens: [Token, Token] = isReverse
-          ? [location.state?.poolInfo?.assetY, location.state?.poolInfo?.assetX]
-          : [
-              location.state?.poolInfo?.assetX,
-              location.state?.poolInfo?.assetY,
-            ];
-
-        setTokens(newTokens);
       }
+    }
+
+    if (
+      location.state?.tokens !== undefined &&
+      typeof location.state?.tokens === "object" &&
+      location.state?.tokens.length === 2
+    ) {
+      const newTokens: [Token, Token] = [
+        location.state?.tokens[0],
+        location.state?.tokens[1],
+      ];
+
+      setTokens(newTokens);
     }
 
     if (location.state?.isSlippageAuto !== undefined) {
@@ -252,7 +278,29 @@ export default function UtxoSwap() {
     if (location.state?.slippage !== undefined) {
       setSlippage(location.state?.slippage);
     }
-  }, [location.state, isReverse]);
+  }, [location.state]);
+
+  useEffect(() => {
+    const f = async () => {
+      let typeHash = "";
+      if (nativeTypeHash[assetX?.typeHash]) {
+        typeHash = assetX?.typeHash;
+      } else if (nativeTypeHash[assetY?.typeHash]) {
+        typeHash = assetY?.typeHash;
+      }
+
+      if (!!typeHash) {
+        const price = await getCoinPrice(nativeTypeHash[typeHash]);
+        setPrices((prev) => {
+          return { ...prev, typeHash: typeHash, price: price.usd };
+        });
+      }
+    };
+
+    f().catch((e) => {
+      console.log(e);
+    });
+  }, [tokens]);
 
   const SelectToken = ({ state }: { state: any }) => {
     return (
@@ -275,8 +323,9 @@ export default function UtxoSwap() {
   const SwapFrom = () => {
     const state = {
       ...currentState,
-      searchKey: assetY ? assetY.typeHash : "",
-      isFrom: true,
+      assetX: assetX || ckbToken,
+      assetY: assetY,
+      isChangeAssetX: true,
     };
     return (
       <div className="bg-grey-300 p-2 !pb-4 rounded-t-lg flex flex-col gap-2 relative">
@@ -357,8 +406,9 @@ export default function UtxoSwap() {
   const SwapTo = () => {
     const state = {
       ...currentState,
-      searchKey: assetX ? assetX.typeHash : "",
-      isFrom: false,
+      assetX: assetX || ckbToken,
+      assetY: assetY,
+      isChangeAssetX: false,
     };
 
     return (
@@ -401,7 +451,7 @@ export default function UtxoSwap() {
             readOnly
           />
           <div className="font-medium text-base text-[#787575]">
-            ${formatNumber(inputAmount * ckbPrice, 2, 3)}
+            ${formatNumber(totalOutputUsd, 2, 3)}
           </div>
         </div>
       </div>
