@@ -60,6 +60,7 @@ export interface Vin {
   is_coinbase: boolean;
   sequence: number;
   inner_redeemscript_asm?: string;
+  address_hash?: string;
   extra_info?: {
     amount: string;
     decimal: string;
@@ -82,6 +83,7 @@ export interface Vout {
   scriptpubkey_type: string;
   scriptpubkey_address: string;
   value: number;
+  address_hash?: string;
   extra_info?: {
     amount: string;
     decimal: string;

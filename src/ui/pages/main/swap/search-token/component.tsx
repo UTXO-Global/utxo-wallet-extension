@@ -35,7 +35,6 @@ export default function UTXOSwapSearchToken() {
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const currentNetwork = useGetCurrentNetwork();
-  const currentAccount = useGetCurrentAccount();
   const navigate = useNavigate();
   const keySearch = useMemo(() => {
     if (location.state?.searchKey) {
@@ -47,13 +46,6 @@ export default function UTXOSwapSearchToken() {
   const isFrom = useMemo(() => {
     return !!location.state.isFrom;
   }, [location.state]);
-
-  const collector = useMemo(() => {
-    if (isCkbNetwork(currentNetwork.network)) {
-      return new Collector({ ckbIndexerUrl: currentNetwork.network.rpc_url });
-    }
-    return undefined;
-  }, [currentNetwork]);
 
   const client = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -156,7 +148,7 @@ export default function UTXOSwapSearchToken() {
                       <div
                         key={`token-${t.batchId}-${i}`}
                         className={cn(
-                          "flex gap-2 items-center py-2 px-3 bg-grey-400 rounded-lg cursor-pointer hover:bg-grey-200",
+                          "flex gap-2 items-center py-4 px-3 bg-grey-300 rounded-lg cursor-pointer hover:bg-grey-200",
                           {
                             "!bg-grey-200":
                               assetDisplay?.typeScript?.args ===
@@ -185,7 +177,7 @@ export default function UTXOSwapSearchToken() {
                           />
                         </div>
                         <div className="flex flex-col gap-0 flex-grow">
-                          <div className="text-primary text-base font-medium">
+                          <div className="text-primary text-base font-medium leading-6">
                             {assetDisplay.symbol}{" "}
                             {!!assetDisplay.name && `(${assetDisplay.name})`}
                           </div>

@@ -17,12 +17,16 @@ export default function ShortBalance({
   }, [balance, zeroDisplay]);
 
   return (
-    <div className={cn(`text-lg ${!!className ? className : ""}`)}>
+    <div className={cn(`text-lg ${!!className ? className : ""} ${balance}`)}>
       <span>
-        {Number(amountAnalyze.first) > 1
+        {Number(amountAnalyze.first) > 0
           ? `${formatNumber(Number(amountAnalyze.first), 0, 2)}`
           : amountAnalyze.first}
-        {!!amountAnalyze.last && !amountAnalyze.first.includes(".") ? "." : ""}
+        {!!amountAnalyze.last &&
+        amountAnalyze.last &&
+        !amountAnalyze.first.includes(".")
+          ? "."
+          : ""}
       </span>
       {amountAnalyze.zeroes > 0 && (
         <span className="align-sub text-xs">{amountAnalyze.zeroes}</span>
