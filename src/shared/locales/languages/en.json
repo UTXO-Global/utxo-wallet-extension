@@ -110,7 +110,7 @@
       "no_transfers": "No transfers"
     },
     "swap": {
-      "slippageSettings": "Slippage Settings",
+      "slippageSettings": "Slippage settings",
       "searchToken": "Search Token",
       "maxSlippage": "Max Slippage",
       "swapSuccess": "Swap Success",
@@ -119,13 +119,21 @@
       "fees": "Fees",
       "tooltip": {
         "fees": "The fee paid during the trade, primarily to liquidity",
-        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade"
+        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
+        "priceImpack": "The difference between the market and estimated prices due to trade volume"
       },
       "max": "Max",
       "balance": "Balance",
       "price": "Price",
       "insufficient_balance": "Insufficient balance",
-      "close": "Close"
+      "close": "Close",
+      "priceImpact": "Price impact",
+      "selectToken": "Select token",
+      "youPay": "You Pay",
+      "youReceive": "You Receive",
+      "slippageSettingDesc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
+      "auto": "Auto",
+      "custom": "Custom"
     }
   },
   "change_password": {

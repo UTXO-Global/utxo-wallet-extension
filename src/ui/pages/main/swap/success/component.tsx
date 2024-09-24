@@ -5,12 +5,26 @@ import { t } from "i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
+import { useMemo } from "react";
 
 const UTXOFinalSwap = () => {
   const location = useLocation();
   const { txId } = useParams();
   const currentNetwork = useGetCurrentNetwork();
-  console.log(location.state);
+
+  const assetX = useMemo(() => {
+    if (location.state?.tokens && location.state?.tokens?.length > 0) {
+      return location.state?.tokens[0];
+    }
+    return undefined;
+  }, [location.state?.tokens]);
+
+  const assetY = useMemo(() => {
+    if (location.state?.tokens && location.state?.tokens?.length > 1) {
+      return location.state?.tokens[1];
+    }
+    return undefined;
+  }, [location.state?.tokens]);
 
   const onClick = async () => {
     await browserTabsCreate({
@@ -65,12 +79,15 @@ const UTXOFinalSwap = () => {
         <h3 className={s.result}>{t("components.swap.swapSuccess")}!</h3>
         <div className="flex gap-2 p-3 items-center justify-center bg-grey-300 rounded-full">
           <img
-            src={location.state?.poolInfo?.assetX?.logo || "/coin.png"}
+            src={(assetX && assetX.logo) || "/coin.png"}
             className="w-5 h-5 rounded-full object-cover"
           />
           <span className="text-sm leading-5 font-medium">
-            {formatNumber(location.state?.inputAmount)}{" "}
-            {location.state?.poolInfo?.assetX?.symbol}
+            {location.state?.inputAmount.toLocaleString("fullwide", {
+              useGrouping: false,
+              maximumFractionDigits: 8,
+            })}{" "}
+            {assetX?.symbol}
           </span>
           <svg
             width="12"
@@ -88,12 +105,15 @@ const UTXOFinalSwap = () => {
             />
           </svg>
           <img
-            src={location.state?.poolInfo?.assetY?.logo || "/coin.png"}
+            src={assetY?.logo || "/coin.png"}
             className="w-5 h-5 rounded-full object-cover"
           />
           <span className="text-sm leading-5 font-medium">
-            {formatNumber(location.state?.outputAmount.value)}{" "}
-            {location.state?.poolInfo?.assetY?.symbol}
+            {location.state?.outputAmount.value.toLocaleString("fullwide", {
+              useGrouping: false,
+              maximumFractionDigits: 8,
+            })}{" "}
+            {assetY?.symbol}
           </span>
         </div>
       </div>

@@ -18,12 +18,11 @@ export default function UTXOSwapSetting() {
         <div className="px-8 py-[34px] gap-[34px] flex flex-col items-center justify-center text-center">
           <div className="flex flex-col items-center justify-center">
             <IcnSwapSetting className="w-20 h-20 rounded-full" />
-            <div className="mt-6 text-2xl leading-7 font-medium text-primary">
-              Slippage Settings
+            <div className="mt-6 text-2xl leading-7 font-medium text-primary capitalize">
+              {t("components.swap.slippageSettings")}
             </div>
             <div className="mt-4 text-sm leading-[18px] font-normal text-[#787575]">
-              Your transaction will fail if the price changes more than the
-              slippage. Too high of a value will result in an unfavorable trade.
+              {t("components.swap.slippageSettingDesc")}
             </div>
           </div>
           <div className="flex items-center px-[10px] gap-2">
@@ -37,7 +36,7 @@ export default function UTXOSwapSetting() {
                   setSlippage(0.5);
                 }}
               >
-                Auto
+                {t("components.swap.auto")}
               </button>
               <button
                 className={cn("py-[6px] px-5 rounded-full", {
@@ -45,7 +44,7 @@ export default function UTXOSwapSetting() {
                 })}
                 onClick={() => setIsAuto(false)}
               >
-                Custom
+                {t("components.swap.custom")}
               </button>
             </div>
             <div className="bg-grey-300 py-[6px] px-4 w-[66px] flex justify-center items-center rounded-full">

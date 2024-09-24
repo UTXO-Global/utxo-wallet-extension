@@ -14,6 +14,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { Client, Collector, Pool } from "@utxoswap/swap-sdk-js";
 import { useControllersState } from "@/ui/states/controllerState";
 import Loading from "react-loading";
+import toast from "react-hot-toast";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -62,6 +63,12 @@ export default function UTXOReviewOrder() {
             {state.poolInfo?.assetY?.symbol}
           </>
         ),
+      },
+      {
+        id: "reviewPriceImpack",
+        title: t("components.swap.priceImpact"),
+        value: <>{state.outputAmount.priceImpact.toFixed(3)}%</>,
+        tooltip: t("components.swap.tooltip.priceImpack"),
       },
       {
         id: "reviewFees",
@@ -121,7 +128,7 @@ export default function UTXOReviewOrder() {
         state: { ...location.state, txId: txHash },
       });
     } catch (e) {
-      console.error(e);
+      toast.error((e as any)?.message ?? "Unknown error");
     }
     setIsProgressing(false);
   };
@@ -142,7 +149,7 @@ export default function UTXOReviewOrder() {
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium">
-                      You Pay
+                      {t("components.swap.youPay")}
                     </div>
                     <div className="text-[22px] leading-7 text-black font-medium">
                       <div>
@@ -164,7 +171,7 @@ export default function UTXOReviewOrder() {
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium flex items-center justify-between">
-                      <span>You Receive</span>
+                      <span>{t("components.swap.youReceive")}</span>
                       <span>
                         $
                         {formatNumber(
@@ -188,7 +195,7 @@ export default function UTXOReviewOrder() {
               <div className="bg-grey-300 rounded-lg py-3 px-4 mt-2">
                 {fields.map((f, i) => (
                   <div
-                    className="flex items-center justify-between pt-2 pb-4 border-b border-grey-200"
+                    className="flex items-center justify-between pt-2 pb-3 border-b border-grey-200 last:border-b-0 last:!pb-2"
                     key={`field-${f.id}-${i}`}
                   >
                     <span className="text-primary text-base font-medium flex gap-1 items-center">
