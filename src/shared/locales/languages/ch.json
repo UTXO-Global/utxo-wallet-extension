@@ -43,14 +43,16 @@
       "about_account": "关于账户",
       "about_wallet": "关于钱包",
       "explorer": "探索",
-      "restore_wallet": "Restore Wallet",
-      "receive": "Receive",
+      "restore_wallet": "恢复钱包",
+      "receive": "收到",
       "mnemonic_confirmation": "確認恢復短語",
       "mnemonic_confirm_desc": "请输入正确的钱包种子或单击“返回”重新创建钱包",
       "next": "下一個",
       "confirm": "確認",
       "details": "详细",
-      "detailNFT": "详情 NFT"
+      "detailNFT": "详情 NFT",
+      "search": "搜索",
+      "swap": "交换"
     },
     "check_password": {
       "incorrect_password_error": "密码错误",
@@ -71,6 +73,31 @@
     },
     "card": {
       "close": "关闭"
+    },
+    "swap": {
+      "slippageSettings": "滑点设置",
+      "searchToken": "搜索代币",
+      "maxSlippage": "最大滑点",
+      "swapSuccess": "交换成功",
+      "reviewOrder": "查看订单",
+      "noAssetsAvailable": "无可用资产",
+      "tooltip": {
+        "fees": "交易期间支付的费用，主要用于流动性",
+        "maxSlippage": "您愿意在交易中容忍的价格变化的最大百分比",
+        "priceImpack": "由于交易量导致的市场价格与预估价格之间的差异"
+      },
+      "max": "最高",
+      "balance": "余额",
+      "price": "价格",
+      "insufficient_balance": "余额不足",
+      "close": "关闭",
+      "priceImpact": "价格影响",
+      "selectToken": "选择代币",
+      "youPay": "您支付",
+      "youReceive": "您收到",
+      "slippageSettingDesc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
+      "auto": "自动",
+      "custom": "自定义"
     }
   },
   "change_password": {
@@ -86,7 +113,7 @@
     "password": "密码",
     "confirm_password": "确认密码",
     "create_password": "创建密码",
-    "sub_title": "Enter A Password To Protect Your Wallet!"
+    "sub_title": "输入密码来保护您的钱包"
   },
   "login": {
     "password": "密码",

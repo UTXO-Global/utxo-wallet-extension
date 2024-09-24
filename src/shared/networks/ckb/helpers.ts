@@ -1,9 +1,13 @@
-import { BI, Cell } from "@ckb-lumos/lumos";
+import { BI, Cell, WitnessArgs, helpers } from "@ckb-lumos/lumos";
 import { parseAddress } from "@ckb-lumos/lumos/helpers";
 import { CKBHasher } from "@ckb-lumos/lumos/utils";
 import { NetworkConfig } from "./offckb.config";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import { CKBAddressInfo } from "./types";
+import { getNetworkDataBySlug, isCkbNetwork } from "..";
+import { NetworkSlug } from "../types";
+import { blockchain } from "@ckb-lumos/base";
+import { bytes } from "@ckb-lumos/codec";
 
 export function publicKeyToBlake160(publicKey: string): string {
   const blake160: string = new CKBHasher()
@@ -130,3 +134,155 @@ export async function balanceOf(
     udtBalances: {},
   };
 }
+
+export const convertCKBTransactionToSkeleton = async (
+  address: string,
+  networkSlug: NetworkSlug,
+  rawTx: any
+) => {
+  const network = getNetworkDataBySlug(networkSlug);
+  if (!isCkbNetwork(network.network)) {
+    throw new Error("Error when trying to get the current account");
+  }
+
+  const fromScript = helpers.parseAddress(address, {
+    config: network.network.lumosConfig,
+  });
+
+  const networkConfig = network.network as NetworkConfig;
+  let txSkeleton = helpers.TransactionSkeleton();
+  if (rawTx.cellDeps && rawTx.cellDeps.length > 0) {
+    rawTx.cellDeps?.forEach((cellDep: any) => {
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+        cellDeps.push(cellDep)
+      );
+    });
+  }
+
+  if (!rawTx.inputs) {
+    throw new Error("Error when trying to get inputs");
+  }
+
+  await Promise.all(
+    rawTx.inputs.map(async (input: any) => {
+      if (!input.previousOutput) {
+        throw new Error("Error when trying to get the previous output");
+      }
+
+      const txInput = await callCKBRPC(
+        networkConfig.rpc_url,
+        "get_transaction",
+        [input.previousOutput.txHash]
+      );
+      const cellOutput =
+        txInput?.transaction?.outputs[Number(input.previousOutput.index)];
+
+      if (!cellOutput) {
+        throw new Error(
+          `Error when trying to get the cell output ${input.previousOutput.txHash}`
+        );
+      }
+
+      const outputData =
+        txInput?.transaction?.outputs_data[
+          Number(input.previousOutput.index)
+        ] || "0x";
+
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.push({
+          outPoint: {
+            txHash: input.previousOutput.txHash,
+            index: input.previousOutput.index,
+          },
+          data: outputData,
+          cellOutput: {
+            capacity: cellOutput.capacity,
+            lock: {
+              codeHash: cellOutput.lock?.code_hash,
+              hashType: cellOutput.lock?.hash_type,
+              args: cellOutput.lock?.args,
+            },
+            type: cellOutput.type,
+          },
+        })
+      );
+    })
+  );
+
+  const outputsData = rawTx.outputsData || [];
+  rawTx.outputs?.forEach((output: any, index: number) => {
+    txSkeleton = txSkeleton.update("outputs", (outputs) =>
+      outputs.push({
+        cellOutput: {
+          capacity: output.capacity,
+          lock: output.lock,
+          type: output.type || null,
+        },
+        data: outputsData[index] || "0x",
+      })
+    );
+  });
+
+  rawTx.headerDeps?.forEach((headerDep: any) => {
+    txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
+      headerDeps.push(headerDep)
+    );
+  });
+
+  rawTx.witnesses?.forEach((witness: any) => {
+    txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+      witnesses.push(witness)
+    );
+  });
+
+  const firstIndex = txSkeleton
+    .get("inputs")
+    .findIndex(
+      (input) =>
+        input.cellOutput.lock.codeHash === fromScript.codeHash &&
+        input.cellOutput.lock.hashType === fromScript.hashType &&
+        input.cellOutput.lock.args === fromScript.args
+    );
+
+  console.log("first index", firstIndex);
+
+  if (firstIndex !== -1) {
+    while (firstIndex >= txSkeleton.get("witnesses").size) {
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.push("0x")
+      );
+    }
+    let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
+    const newWitnessArgs: WitnessArgs = {
+      lock: `0x${"00".repeat(65)}`,
+    };
+
+    if (witness !== "0x") {
+      const witnessArgs = blockchain.WitnessArgs.unpack(bytes.bytify(witness));
+      const lock = witnessArgs.lock;
+      if (
+        !!lock &&
+        !!newWitnessArgs.lock &&
+        !bytes.equal(lock, newWitnessArgs.lock)
+      ) {
+        throw new Error(
+          "Lock field in first witness is set aside for signature!"
+        );
+      }
+      const inputType = witnessArgs.inputType;
+      if (inputType) {
+        newWitnessArgs.inputType = inputType;
+      }
+      const outputType = witnessArgs.outputType;
+      if (outputType) {
+        newWitnessArgs.outputType = outputType;
+      }
+    }
+    witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
+    txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+      witnesses.set(firstIndex, witness)
+    );
+  }
+
+  return txSkeleton;
+};

@@ -43,7 +43,9 @@
       "next": "다음",
       "confirm": "확인하다",
       "details": "세부 사항",
-      "detailNFT": "세부 NFT"
+      "detailNFT": "세부 NFT",
+      "search": "검색",
+      "swap": "스왑"
     },
     "check_password": {
       "incorrect_password_error": "잘못된 비밀번호",
@@ -63,6 +65,31 @@
     },
     "card": {
       "close": "닫기"
+    },
+    "swap": {
+      "slippageSettings": "슬리피지 설정",
+      "searchToken": "토큰 검색",
+      "maxSlippage": "최대 슬리피지",
+      "swapSuccess": "스왑 성공",
+      "reviewOrder": "주문 검토",
+      "noAssetsAvailable": "사용 가능한 자산 없음",
+      "tooltip": {
+        "fees": "거래 중 지불한 수수료, 주로 유동성",
+        "maxSlippage": "거래에서 허용할 수 있는 최대 가격 변화 비율",
+        "priceImpack": "거래량으로 인한 시장 가격과 추정 가격의 차이"
+      },
+      "max": "최대",
+      "balance": "잔액",
+      "price": "가격",
+      "insufficient_balance": "잔액이 부족합니다",
+      "close": "닫기",
+      "priceImpact": "가격 영향",
+      "selectToken": "토큰 선택",
+      "youPay": "지불",
+      "youReceive": "수신",
+      "slippageSettingDesc": "가격이 슬리피지보다 더 많이 변하면 거래가 실패합니다. 값이 너무 높으면 불리한 거래가 발생합니다",
+      "auto": "자동",
+      "custom": "사용자 정의"
     }
   },
   "change_password": {
