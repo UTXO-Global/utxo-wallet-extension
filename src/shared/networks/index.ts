@@ -7,7 +7,7 @@ import { predefined } from "@ckb-lumos/config-manager";
 import { Config, createConfig } from "@ckb-lumos/lumos/config";
 import { SporeConfig, predefinedSporeConfigs } from "@spore-sdk/core";
 
-export const defaultNetwork = CKB_TESTNET;
+export const defaultNetwork = CKB_MAINNET;
 
 export const btcTestnetSlug = ["btc_testnet", "btc_testnet_4", "btc_signet"];
 export const nervosTestnetSlug = ["nervos_testnet"];
