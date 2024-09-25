@@ -118,11 +118,6 @@
       "noAssetsAvailable": "No Assets Available",
       "fees": "Fees",
       "fee": "Fee",
-      "tooltip": {
-        "fees": "The fee paid during the trade, primarily to liquidity",
-        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
-        "priceImpack": "The difference between the market and estimated prices due to trade volume"
-      },
       "max": "Max",
       "balance": "Balance",
       "price": "Price",
@@ -135,7 +130,17 @@
       "slippageSettingDesc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
       "auto": "Auto",
       "custom": "Custom",
-      "priceImpactTooHight": "Price impact too hight"
+      "priceImpactTooHight": "Price impact too hight",
+      "tooltip": {
+        "fees": "The fee paid during the trade, primarily to liquidity",
+        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
+        "priceImpack": "The difference between the market and estimated prices due to trade volume"
+      },
+      "errors": {
+        "minSlippage": "",
+        "maxSlippage": "",
+        "midSlippage": ""
+      }
     }
   },
   "change_password": {

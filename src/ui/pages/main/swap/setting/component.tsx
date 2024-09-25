@@ -3,7 +3,11 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { t } from "i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { BellIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+const MAX_SLIPPAGE = 30;
+const MIN_SLIPPAGE = 0.5;
+const MID_SLIPPAGE = 5;
 
 export default function UTXOSwapSetting() {
   const navigate = useNavigate();
@@ -11,6 +15,53 @@ export default function UTXOSwapSetting() {
   const currentNetwork = useGetCurrentNetwork();
   const [slippage, setSlippage] = useState(location.state?.slippage || 0.5);
   const [isAuto, setIsAuto] = useState(!!location.state?.isSlippageAuto);
+
+  const SlippageWarning = () => {
+    const slippageNumber = Number(slippage);
+    if (slippageNumber < MIN_SLIPPAGE) {
+      return (
+        <div className="text-[#787575] bg-[#FFF0F0] p-3 rounded-xl text-sm flex items-center gap-2">
+          <div className="w-6">
+            <ExclamationTriangleIcon />
+          </div>
+          <span className="text-left flex-grow w-[calc(100%_-_24px)]">
+            Please enter a value greater than {MIN_SLIPPAGE}
+          </span>
+        </div>
+      );
+    }
+
+    if (slippageNumber > MID_SLIPPAGE && slippageNumber < MAX_SLIPPAGE) {
+      return (
+        <div className="text-[#787575] bg-[#FFF2E5] p-3 rounded-xl text-sm flex items-center gap-2">
+          <div className="w-6">
+            <BellIcon />
+          </div>
+          <span className="text-left flex-grow w-[calc(100%_-_24px)]">
+            Your transaction may be frontrun and result in an unfavorable trade.
+          </span>
+        </div>
+      );
+    }
+    if (slippageNumber > MAX_SLIPPAGE) {
+      return (
+        <div className="text-[#787575] bg-[#FFF0F0] p-3 rounded-xl text-sm flex items-center gap-2">
+          <div className="w-6">
+            <ExclamationTriangleIcon className="" />
+          </div>
+          <span className="text-left flex-grow w-[calc(100%_-_24px)]">
+            High slippage may result in an unfavorable trade. <br />
+            Please enter a value less than {MAX_SLIPPAGE}
+          </span>
+        </div>
+      );
+    }
+    return <></>;
+  };
+
+  const isSlippageValid = useMemo(() => {
+    return Number(slippage) >= MIN_SLIPPAGE && Number(slippage) <= MAX_SLIPPAGE;
+  }, [slippage]);
 
   return (
     <div className="w-full h-full top-0 relative">
@@ -78,12 +129,16 @@ export default function UTXOSwapSetting() {
               <span>%</span>
             </div>
           </div>
+          <div className="-mt-[18px]">
+            <SlippageWarning />
+          </div>
         </div>
       )}
       <div className="fixed bottom-0 w-full px-4 pb-4 pt-2 bg-white">
         <button
           type="submit"
           className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
+          disabled={!isSlippageValid}
           onClick={() =>
             navigate("/swap", {
               state: {

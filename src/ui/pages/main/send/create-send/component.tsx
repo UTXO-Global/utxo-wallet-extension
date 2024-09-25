@@ -33,8 +33,8 @@ import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
-import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import ShortBalance from "@/ui/components/ShortBalance";
+import TextAvatar from "@/ui/components/text-avatar/component";
 
 export interface FormType {
   address: string;
@@ -273,14 +273,15 @@ const CreateSend = () => {
   return (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="pt-8 pb-3 flex items-center justify-center">
-        <img
-          src={
-            isTokenTransaction
-              ? token?.attributes?.icon_file || TOKEN_FILE_ICON_DEFAULT
-              : NETWORK_ICON[currentNetwork.slug]
-          }
-          className="w-10 h-10"
-        />
+        {isTokenTransaction ? (
+          !!token?.attributes?.icon_file ? (
+            <img src={token?.attributes?.icon_file} className="w-10 h-10" />
+          ) : (
+            <TextAvatar text={token?.attributes?.symbol} />
+          )
+        ) : (
+          <img src={NETWORK_ICON[currentNetwork.slug]} className="w-10 h-10" />
+        )}
       </div>
       <form
         id={formId}

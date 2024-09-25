@@ -465,6 +465,7 @@ const TransactionList = ({
                                   Number(amount.toString().replace(/,/g, ""))
                                 )}
                                 zeroDisplay={6}
+                                isDot={true}
                                 className="!text-sm !inline-block"
                               />
                             </span>
