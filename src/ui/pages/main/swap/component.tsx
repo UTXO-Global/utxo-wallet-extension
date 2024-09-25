@@ -25,6 +25,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { apiController } from "@/background/controllers";
 import { Tooltip } from "react-tooltip";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
+import TextAvatar from "@/ui/components/text-avatar";
 
 const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
@@ -345,10 +346,14 @@ export default function UtxoSwap() {
             onClick={() => navigate("/swap/search-token", { state })}
           >
             <div className="w-10 h-10">
-              <img
-                src={assetX && assetX.logo ? assetX.logo : "/coin.png"}
-                className="w-full rounded-full object-cover object-center"
-              />
+              {!!assetX.logo ? (
+                <img
+                  src={assetX.logo}
+                  className="w-full rounded-full object-cover object-center"
+                />
+              ) : (
+                <TextAvatar text={assetX.symbol} />
+              )}
             </div>
             <div className="flex gap-0 flex-grow justify-between items-center">
               <div className="text-black text-base leading-[22px] font-medium flex flex-col items-start">
@@ -430,10 +435,14 @@ export default function UtxoSwap() {
           >
             <div className="flex gap-2 items-center">
               <div className="w-10 h-10">
-                <img
-                  src={assetY ? assetY.logo : "/coin.png"}
-                  className="w-full rounded-full object-cover object-center"
-                />
+                {!!assetY?.logo ? (
+                  <img
+                    src={assetY.logo}
+                    className="w-full rounded-full object-cover object-center"
+                  />
+                ) : (
+                  <TextAvatar text={assetY?.symbol} className="w-10 h-10" />
+                )}
               </div>
               <div className="text-black text-base font-medium">
                 {assetY ? assetY.symbol : ""}{" "}
