@@ -15,6 +15,7 @@ import { Client, Collector, Pool } from "@utxoswap/swap-sdk-js";
 import { useControllersState } from "@/ui/states/controllerState";
 import Loading from "react-loading";
 import toast from "react-hot-toast";
+import TextAvatar from "@/ui/components/text-avatar/component";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -150,10 +151,17 @@ export default function UTXOReviewOrder() {
               <div className="bg-grey-300 rounded-t-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
-                    <img
-                      src={location.state?.tokens[0]?.logo || "/coin.png"}
-                      className="w-full rounded-full object-cover object-center"
-                    />
+                    {!!location.state?.tokens[0]?.logo ? (
+                      <img
+                        src={location.state?.tokens[0]?.logo}
+                        className="w-full rounded-full object-cover object-center"
+                      />
+                    ) : (
+                      <TextAvatar
+                        text={location.state?.tokens[0]?.symbol}
+                        className="w-10 h-10"
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium">
@@ -172,10 +180,17 @@ export default function UTXOReviewOrder() {
               <div className="mt-2 bg-grey-300 rounded-b-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
-                    <img
-                      src={location.state?.tokens[1]?.logo || "/coin.png"}
-                      className="w-full rounded-full object-cover object-center"
-                    />
+                    {!!location.state?.tokens[1]?.logo ? (
+                      <img
+                        src={location.state?.tokens[1]?.logo}
+                        className="w-full rounded-full object-cover object-center"
+                      />
+                    ) : (
+                      <TextAvatar
+                        text={location.state?.tokens[1]?.symbol}
+                        className="w-10 h-10"
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium flex items-center justify-between">
@@ -200,7 +215,7 @@ export default function UTXOReviewOrder() {
                 </div>
               </div>
 
-              <div className="bg-grey-300 rounded-lg py-3 px-4 mt-2">
+              <div className="bg-grey-300 rounded-lg py-2 px-4 mt-2">
                 {fields.map((f, i) => (
                   <div
                     className="flex items-center justify-between pt-2 pb-3 border-b border-grey-200 last:border-b-0 last:!pb-2"

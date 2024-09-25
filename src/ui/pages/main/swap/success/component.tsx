@@ -6,6 +6,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
 import { useMemo } from "react";
+import TextAvatar from "@/ui/components/text-avatar";
 
 const UTXOFinalSwap = () => {
   const location = useLocation();
@@ -77,24 +78,31 @@ const UTXOFinalSwap = () => {
           </g>
         </svg>
         <h3 className={s.result}>{t("components.swap.swapSuccess")}!</h3>
-        <div className="flex gap-2 p-3 items-center justify-center bg-grey-300 rounded-full">
-          <img
-            src={(assetX && assetX.logo) || "/coin.png"}
-            className="w-5 h-5 rounded-full object-cover"
-          />
-          <span className="text-sm leading-5 font-medium">
-            {location.state?.inputAmount.toLocaleString("fullwide", {
-              useGrouping: false,
-              maximumFractionDigits: 8,
-            })}{" "}
-            {assetX?.symbol}
-          </span>
+        <div className="w-full flex flex-col gap-2 p-3 items-center justify-center bg-grey-300 rounded-lg">
+          <div className="flex  items-center justify-center gap-2">
+            {!!assetX?.logo ? (
+              <img
+                src={assetX.logo}
+                className="w-8 h-8 rounded-full object-cover object-center"
+              />
+            ) : (
+              <TextAvatar text={assetX?.symbol} className="w-8 h-8" />
+            )}
+            <span className="text-base leading-6 font-medium">
+              {location.state?.inputAmount.toLocaleString("fullwide", {
+                useGrouping: false,
+                maximumFractionDigits: 8,
+              })}{" "}
+              {assetX?.symbol}
+            </span>
+          </div>
           <svg
             width="12"
             height="12"
             viewBox="0 0 12 12"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className=" rotate-90"
           >
             <path
               d="M1.5 6L10.5 6M10.5 6L6.25 1.75M10.5 6L6.25 10.25"
@@ -104,24 +112,30 @@ const UTXOFinalSwap = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <img
-            src={assetY?.logo || "/coin.png"}
-            className="w-5 h-5 rounded-full object-cover"
-          />
-          <span className="text-sm leading-5 font-medium">
-            {location.state?.outputAmount.value.toLocaleString("fullwide", {
-              useGrouping: false,
-              maximumFractionDigits: 8,
-            })}{" "}
-            {assetY?.symbol}
-          </span>
+          <div className="flex  items-center justify-center gap-2">
+            {!!assetY?.logo ? (
+              <img
+                src={assetY.logo}
+                className="w-8 h-8 rounded-full object-cover object-center"
+              />
+            ) : (
+              <TextAvatar text={assetY?.symbol} className="w-8 h-8 text-base" />
+            )}
+            <span className="text-base leading-6 font-medium">
+              {location.state?.outputAmount.value.toLocaleString("fullwide", {
+                useGrouping: false,
+                maximumFractionDigits: 8,
+              })}{" "}
+              {assetY?.symbol}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className={s.btnContainer}>
         <Link
           to={"/home"}
-          className="btn primary flex-3 !bg-transparent !text-primary"
+          className="btn primary flex-3 !bg-transparent !text-primary hover:!bg-grey-200 hover:!border-[#4E4132]"
         >
           {t("send.finalle_send.back")}
         </Link>

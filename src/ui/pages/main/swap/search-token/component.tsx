@@ -125,10 +125,12 @@ export default function UTXOSwapSearchToken() {
 
   return (
     <div className="w-full h-full relative">
-      <WalletPanel />
+      <div className="fixed top-0 left-0 w-full">
+        <WalletPanel />
+      </div>
       {isCkbNetwork(currentNetwork.network) ? (
         <>
-          <div className="p-4">
+          <div className="px-4 pt-4 pb-2 bg-white fixed top-[65px] w-full">
             <div className="border border-grey-200 rounded-lg py-[10px] px-4 bg-grey-300 flex gap-1">
               <IcnSearch className="w-6 h-6" />
               <input
@@ -139,7 +141,9 @@ export default function UTXOSwapSearchToken() {
                 value={textSearch}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-2 pb-[80px]">
+          </div>
+          <div className="px-4 pb-[80px] overflow-auto mt-[135px]">
+            <div className="flex flex-col gap-2">
               {isLoading && (
                 <div className="flex justify-center mt-4">
                   <Loading

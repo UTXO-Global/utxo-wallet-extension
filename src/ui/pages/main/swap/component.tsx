@@ -210,10 +210,10 @@ export default function UtxoSwap() {
     if (tokens[0] === undefined || tokens[1] === undefined) return false;
     if (!pool) return false;
     if (!poolInfo) return false;
-    if (inputAmount > availableCKBBalance) return false;
+    if (inputAmount > getBalanceToken(assetX?.typeHash)) return false;
     if (outputAmount.priceImpact < MIN_PRICE_IMPACT) return false;
     return true;
-  }, [availableCKBBalance, inputAmount, outputAmount, tokens, pool]);
+  }, [inputAmount, outputAmount, tokens, pool, assetX]);
 
   const changeAssetXAmount = (e: any) => {
     const reg = /^\d*\.?\d*$/;
@@ -258,9 +258,9 @@ export default function UtxoSwap() {
   useEffect(() => {
     if (location.state?.poolInfo !== undefined) {
       if (
-        location.state.poolInfo.assetX.typeHash !==
+        location.state.poolInfo.assetX?.typeHash !==
           poolInfo?.assetX?.typeHash ||
-        location.state.poolInfo.assetY.typeHash !== poolInfo?.assetY?.typeHash
+        location.state.poolInfo.assetY?.typeHash !== poolInfo?.assetY?.typeHash
       ) {
         setPoolInfo(location.state?.poolInfo);
       }
@@ -378,7 +378,7 @@ export default function UtxoSwap() {
               "text-black text-2xl leading-6 h-6 bg-transparent font-medium outline-none placeholder:text-grey-100 flex-grow",
               {
                 "!text-[#FF4545]":
-                  inputAmount > Number(assetX ? assetX.balance : 0),
+                  inputAmount > getBalanceToken(assetX?.typeHash),
               }
             )}
             placeholder="0"
@@ -542,7 +542,7 @@ export default function UtxoSwap() {
                     })
                   }
                 >
-                  {inputAmount > availableCKBBalance
+                  {inputAmount > getBalanceToken(assetX?.typeHash)
                     ? t("components.swap.insufficient_balance")
                     : outputAmount.priceImpact < MIN_PRICE_IMPACT
                     ? t("components.swap.priceImpactTooHight")
