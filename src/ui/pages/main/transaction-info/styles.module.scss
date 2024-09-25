@@ -31,6 +31,8 @@
 }
 
 .table {
+  @apply relative;
+
   &Group {
     @apply flex gap-2 w-full items-center;
   }
@@ -52,7 +54,7 @@
   }
 
   &Container {
-    @apply flex flex-col gap-5;
+    @apply flex flex-col gap-5 max-h-[450px] overflow-y-auto;
   }
 }
 

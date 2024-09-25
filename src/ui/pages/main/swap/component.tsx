@@ -23,6 +23,8 @@ import { formatNumber } from "@/shared/utils";
 import ShortBalance from "@/ui/components/ShortBalance";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { apiController } from "@/background/controllers";
+import { Tooltip } from "react-tooltip";
+import IcnInfo from "@/ui/components/icons/IcnInfo";
 
 const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
@@ -401,7 +403,7 @@ export default function UtxoSwap() {
               const newToken: [Token, Token] = [tokens[1], tokens[0]];
               setTokens(newToken);
               setIsReverse(!isReverse);
-              setAssetXAmount("");
+              setAssetXAmount(outputAmount.value.toString());
             }}
           >
             <IcnSwapDirect className="w-10 h-10" />
@@ -468,9 +470,9 @@ export default function UtxoSwap() {
 
   const Prices = () => {
     return (
-      <div className="mt-1 bg-grey-300 py-3 px-4 flex flex-col gap-2 rounded-lg">
-        <div className="flex items-center justify-between border-b border-b-grey-200 py-2">
-          <span className="text-primary text-base font-medium">
+      <div className="mt-1 bg-grey-300 py-3 px-4 flex flex-col rounded-lg">
+        <div className="flex items-center justify-between border-b border-b-grey-200 py-2 pb-3">
+          <span className="text-primary text-base font-medium capitalize">
             {t("components.swap.price")}
           </span>
           <div className="text-[#787575] text-sm leading-[18px] font-normal flex items-center gap-[2px]">
@@ -490,10 +492,20 @@ export default function UtxoSwap() {
             {assetY ? assetY.symbol : ""}
           </div>
         </div>
-        <div className="flex items-center justify-between py-2">
-          <span className="text-primary text-base font-medium capitalize">
-            {t("components.swap.priceImpact")}
-          </span>
+        <div className="flex items-center justify-between py-2 pt-3">
+          <div className="text-primary text-base font-medium flex gap-1 items-center">
+            <span className="text-primary text-base font-medium capitalize">
+              {t("components.swap.priceImpact")}
+            </span>
+            <IcnInfo className={"priceImpact"} />
+            <Tooltip
+              anchorSelect={`.priceImpact`}
+              place="top"
+              className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[180px] !tracking-[0.1px] !rounded-lg"
+            >
+              {t("components.swap.tooltip.priceImpack")}
+            </Tooltip>
+          </div>
           <div
             className={cn(
               "text-[#787575] text-sm leading-[18px] font-normal flex items-center gap-[2px]",
@@ -508,6 +520,28 @@ export default function UtxoSwap() {
             )}
           >
             {outputAmount.priceImpact.toFixed(2)}%
+          </div>
+        </div>
+        <div className="flex items-center justify-between py-2 pt-3">
+          <div className="text-primary text-base font-medium flex gap-1 items-center">
+            <span className="text-primary text-base font-medium capitalize">
+              {t("components.swap.fee")}
+            </span>
+            <IcnInfo className={"fee"} />
+            <Tooltip
+              anchorSelect={`.fee`}
+              place="top"
+              className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[180px] !tracking-[0.1px] !rounded-lg"
+            >
+              {t("components.swap.tooltip.fees")}
+            </Tooltip>
+          </div>
+          <div
+            className={cn(
+              "text-[#787575] text-sm leading-[18px] font-normal flex items-center gap-[2px]"
+            )}
+          >
+            {fee}%
           </div>
         </div>
       </div>
