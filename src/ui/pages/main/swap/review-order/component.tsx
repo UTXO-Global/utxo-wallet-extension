@@ -72,8 +72,16 @@ export default function UTXOReviewOrder() {
       },
       {
         id: "reviewFees",
-        title: t("components.swap.fees"),
-        value: <>{state.fees} CKB</>,
+        title: t("components.swap.fee"),
+        value: (
+          <>
+            {state.fee.toLocaleString("fullwide", {
+              useGrouping: false,
+              maximumFractionDigits: 100,
+            })}{" "}
+            {state.poolInfo?.assetX?.symbol}
+          </>
+        ),
         tooltip: t("components.swap.tooltip.fees"),
       },
       {
@@ -198,8 +206,8 @@ export default function UTXOReviewOrder() {
                     className="flex items-center justify-between pt-2 pb-3 border-b border-grey-200 last:border-b-0 last:!pb-2"
                     key={`field-${f.id}-${i}`}
                   >
-                    <span className="text-primary text-base font-medium flex gap-1 items-center">
-                      {f.title}
+                    <div className="text-primary text-base font-medium flex gap-1 items-center">
+                      <span className="capitalize">{f.title}</span>
                       {!!f.tooltip ? (
                         <>
                           <IcnInfo className={f.id} />
@@ -214,7 +222,7 @@ export default function UTXOReviewOrder() {
                       ) : (
                         <></>
                       )}
-                    </span>
+                    </div>
                     <div className="text-[#787575] text-sm leading-[18px] font-normal rounded-lg flex items-center gap-[2px]">
                       {f.value}
                     </div>

@@ -81,6 +81,8 @@
       "swapSuccess": "交换成功",
       "reviewOrder": "查看订单",
       "noAssetsAvailable": "无可用资产",
+      "fees": "費用",
+      "fee": "費用",
       "tooltip": {
         "fees": "交易期间支付的费用，主要用于流动性",
         "maxSlippage": "您愿意在交易中容忍的价格变化的最大百分比",
@@ -97,7 +99,8 @@
       "youReceive": "您收到",
       "slippageSettingDesc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
       "auto": "自动",
-      "custom": "自定义"
+      "custom": "自定义",
+      "priceImpactTooHight": "价格影响过高"
     }
   },
   "change_password": {

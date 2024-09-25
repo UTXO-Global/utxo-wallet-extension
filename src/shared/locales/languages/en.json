@@ -114,9 +114,10 @@
       "searchToken": "Search Token",
       "maxSlippage": "Max Slippage",
       "swapSuccess": "Swap Success",
-      "reviewOrder": "Review Order",
+      "reviewOrder": "Review order",
       "noAssetsAvailable": "No Assets Available",
       "fees": "Fees",
+      "fee": "Fee",
       "tooltip": {
         "fees": "The fee paid during the trade, primarily to liquidity",
         "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
@@ -133,7 +134,8 @@
       "youReceive": "You Receive",
       "slippageSettingDesc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
       "auto": "Auto",
-      "custom": "Custom"
+      "custom": "Custom",
+      "priceImpactTooHight": "Price impact too hight"
     }
   },
   "change_password": {

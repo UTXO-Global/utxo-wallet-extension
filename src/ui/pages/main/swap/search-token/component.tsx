@@ -17,6 +17,7 @@ import {
   Pool,
   PoolInfo,
 } from "@utxoswap/swap-sdk-js";
+import TextAvatar from "@/ui/components/text-avatar";
 
 const IcnSearch = ({ className }: { className?: string }) => {
   return (
@@ -199,10 +200,14 @@ export default function UTXOSwapSearchToken() {
                         }
                       >
                         <div className="w-10 h-10">
-                          <img
-                            src={assetDisplay.logo || "/coin.png"}
-                            className="w-full rounded-full object-cover object-center"
-                          />
+                          {!!assetDisplay.logo ? (
+                            <img
+                              src={assetDisplay.logo}
+                              className="w-full rounded-full object-cover object-center"
+                            />
+                          ) : (
+                            <TextAvatar text={`${assetDisplay.symbol}`} />
+                          )}
                         </div>
                         <div className="flex flex-col gap-0 flex-grow">
                           <div className="text-primary text-base font-medium leading-6">

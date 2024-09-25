@@ -56,7 +56,23 @@ export default function UTXOSwapSetting() {
                 disabled={isAuto}
                 readOnly={isAuto}
                 onChange={(e) => {
-                  setSlippage(e.target.value);
+                  const reg = /^\d*\.?\d*$/;
+                  let numeric = e.target.value.replace(/,/g, "");
+
+                  if (
+                    numeric.startsWith("0") &&
+                    numeric !== "0" &&
+                    !numeric.startsWith("0.")
+                  ) {
+                    numeric = numeric.replace(/^0+/, "0");
+                  }
+
+                  if (
+                    (reg.test(numeric) || numeric === "") &&
+                    Number(numeric) <= 100
+                  ) {
+                    setSlippage(numeric);
+                  }
                 }}
               />
               <span>%</span>
@@ -72,7 +88,10 @@ export default function UTXOSwapSetting() {
             navigate("/swap", {
               state: {
                 ...location.state,
-                slippage: slippage,
+                slippage: Number(slippage).toLocaleString("fullwide", {
+                  useGrouping: false,
+                  maximumFractionDigits: 2,
+                }),
                 isSlippageAuto: isAuto,
               },
             })

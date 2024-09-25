@@ -14,6 +14,7 @@ import {
   CKB_TYPE_HASH,
   Client,
   Collector,
+  DEFAULT_FEE_DENOMINATOR,
   Pool,
   PoolInfo,
   Token,
@@ -32,7 +33,7 @@ const ckbToken: Token = {
   name: "CKB",
   symbol: "CKB",
   typeHash: CKB_TYPE_HASH,
-  logo: "/ckb.png",
+  logo: "https://storage.utxoswap.xyz/images/ckb.png",
 };
 
 const nativeTypeHash = {
@@ -59,7 +60,7 @@ export default function UtxoSwap() {
       : false
   );
 
-  const { currentPrice, getCoinPrice } = useTransactionManagerContext();
+  const { getCoinPrice } = useTransactionManagerContext();
   const [prices, setPrices] = useState<{ typeHash: string; price: number }>({
     typeHash: "",
     price: 0,
@@ -135,6 +136,7 @@ export default function UtxoSwap() {
   }, [pool, poolInfo, inputAmount]);
 
   const totalOutputUsd = useMemo(() => {
+    if (outputAmount.value === 0 || inputAmount === 0) return 0;
     if (!!prices.typeHash && prices.price > 0) {
       if (assetX?.typeHash === prices.typeHash) {
         return prices.price * inputAmount;
@@ -147,6 +149,11 @@ export default function UtxoSwap() {
 
     return 0;
   }, [assetX, assetY, prices, inputAmount, outputAmount]);
+
+  const fee = useMemo(() => {
+    const rate = poolInfo ? poolInfo.feeRate : 30;
+    return (rate / DEFAULT_FEE_DENOMINATOR) * inputAmount;
+  }, [poolInfo, inputAmount]);
 
   const isShowPrice = useMemo(() => {
     return assetX && assetY && inputAmount > 0 && outputAmount.value > 0;
@@ -183,7 +190,8 @@ export default function UtxoSwap() {
       slippage: slippage,
       isSlippageAuto: isSlippageAuto,
       isReverse: isReverse,
-      fees: 0.0001,
+      networkFee: 0.0001,
+      fee: fee,
     };
   }, [
     tokens,
@@ -386,9 +394,9 @@ export default function UtxoSwap() {
           </button>
         </div>
 
-        <div className="absolute -bottom-4 flex w-full items-center justify-center">
+        <div className="absolute -bottom-5 flex w-full items-center justify-center">
           <button
-            className="w-8 h-8 rounded-full group"
+            className="w-10 h-10 rounded-full group"
             onClick={() => {
               const newToken: [Token, Token] = [tokens[1], tokens[0]];
               setTokens(newToken);
@@ -396,7 +404,7 @@ export default function UtxoSwap() {
               setAssetXAmount("");
             }}
           >
-            <IcnSwapDirect />
+            <IcnSwapDirect className="w-10 h-10" />
           </button>
         </div>
       </div>
@@ -483,7 +491,7 @@ export default function UtxoSwap() {
           </div>
         </div>
         <div className="flex items-center justify-between py-2">
-          <span className="text-primary text-base font-medium">
+          <span className="text-primary text-base font-medium capitalize">
             {t("components.swap.priceImpact")}
           </span>
           <div
@@ -518,27 +526,29 @@ export default function UtxoSwap() {
               {isShowPrice && <Prices />}
             </div>
             <div className="absolute bottom-0 left-0 w-full px-4 pb-4 pt-2 standard:bottom-12">
-              <button
-                type="submit"
-                className={cn(
-                  "btn primary disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full",
-                  {
-                    "hover:bg-none hover:border-transparent": !isValidForm,
+              {isShowPrice && (
+                <button
+                  type="submit"
+                  className={cn(
+                    "btn primary disabled:bg-[#D1D1D1] disabled:text-grey-100 w-full capitalize",
+                    {
+                      "hover:bg-none hover:border-transparent": !isValidForm,
+                    }
+                  )}
+                  disabled={!isValidForm}
+                  onClick={() =>
+                    navigate("/pages/swap/review-order", {
+                      state: { ...currentState },
+                    })
                   }
-                )}
-                disabled={!isValidForm}
-                onClick={() =>
-                  navigate("/pages/swap/review-order", {
-                    state: { ...currentState },
-                  })
-                }
-              >
-                {inputAmount > availableCKBBalance
-                  ? t("components.swap.insufficient_balance")
-                  : outputAmount.priceImpact < MIN_PRICE_IMPACT
-                  ? "Price Impact Too Hight"
-                  : t("send.create_send.continue")}
-              </button>
+                >
+                  {inputAmount > availableCKBBalance
+                    ? t("components.swap.insufficient_balance")
+                    : outputAmount.priceImpact < MIN_PRICE_IMPACT
+                    ? t("components.swap.priceImpactTooHight")
+                    : t("components.swap.reviewOrder")}
+                </button>
+              )}
             </div>
           </>
         ) : (

@@ -19,10 +19,10 @@ import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
-import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import { shortAddress } from "@/shared/utils/transactions";
 import { BI } from "@ckb-lumos/lumos";
 import ShortBalance from "@/ui/components/ShortBalance";
+import TextAvatar from "@/ui/components/text-avatar/component";
 
 const TokenDetail = () => {
   const { type, typeHash } = useParams();
@@ -173,10 +173,15 @@ const TokenDetail = () => {
   return (
     <>
       <div className="flex gap-4 items-center bg-grey-400 p-4 pb-0 w-full">
-        <img
-          src={tokenInfo.attributes.icon_file || TOKEN_FILE_ICON_DEFAULT}
-          className="w-16 h-16"
-        />
+        {!!tokenInfo.attributes.icon_file ? (
+          <img src={tokenInfo.attributes.icon_file} className="w-16 h-16" />
+        ) : (
+          <TextAvatar
+            len={2}
+            text={tokenInfo.attributes.symbol}
+            className="!w-16 !h-16 !text-3xl"
+          />
+        )}
         <div className="flex flex-col gap-1">
           <div
             className={cn("text-primary flex gap-1 items-center", {
