@@ -209,7 +209,7 @@ const TableItem: FC<ITableItem> = ({ items, currentAddress, label }) => {
             >
               {shortAddress(i.address, 12)}
             </div>
-            <div className="text-primary text-base">
+            <div className="text-primary text-sm">
               {formatNumber(i.value, 3, 8)} {i.symbol}
             </div>
           </div>

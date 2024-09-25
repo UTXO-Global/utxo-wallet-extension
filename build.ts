@@ -117,7 +117,7 @@ const buildOptions: BuildOptions = {
     ui: "src/ui/index.tsx",
   },
   outdir: chrome ? "dist/chrome" : "dist/firefox",
-  minify: false,
+  minify: true,
   bundle: true,
   logLevel: "info",
   define: {
@@ -126,7 +126,7 @@ const buildOptions: BuildOptions = {
   },
   target: ["es2020"],
   platform: "browser",
-  sourcemap: Bun.argv.includes("--sourcemap") || Bun.argv.includes("-s"),
+  sourcemap: false,
   plugins: [
     dynamicImport(),
     dotenvPlugin(),
