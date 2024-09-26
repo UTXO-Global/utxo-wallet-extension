@@ -479,8 +479,8 @@ export default function UtxoSwap() {
 
   const Prices = () => {
     return (
-      <div className="mt-1 bg-grey-300 py-3 px-4 flex flex-col rounded-lg">
-        <div className="flex items-center justify-between border-b border-b-grey-200 py-2 pb-3">
+      <div className="mt-1 bg-grey-300 py-2 px-4 flex flex-col rounded-lg">
+        <div className="flex items-center justify-between border-b border-b-grey-200 pt-2 pb-3">
           <span className="text-primary text-base font-medium capitalize">
             {t("components.swap.price")}
           </span>
@@ -501,7 +501,7 @@ export default function UtxoSwap() {
             {assetY ? assetY.symbol : ""}
           </div>
         </div>
-        <div className="flex items-center justify-between py-2 pt-3">
+        <div className="flex items-center justify-between border-b border-b-grey-200 pt-2 pb-3">
           <div className="text-primary text-base font-medium flex gap-1 items-center">
             <span className="text-primary text-base font-medium capitalize">
               {t("components.swap.priceImpact")}
@@ -531,7 +531,7 @@ export default function UtxoSwap() {
             {outputAmount.priceImpact.toFixed(2)}%
           </div>
         </div>
-        <div className="flex items-center justify-between py-2 pt-3">
+        <div className="flex items-center justify-between py-2">
           <div className="text-primary text-base font-medium flex gap-1 items-center">
             <span className="text-primary text-base font-medium capitalize">
               {t("components.swap.fee")}

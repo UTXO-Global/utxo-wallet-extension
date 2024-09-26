@@ -148,7 +148,7 @@ export default function UTXOReviewOrder() {
       <div className={cn("standard:h-[calc(100dvh_-_140px)]")}>
         {isCkbNetwork(currentNetwork.network) ? (
           <>
-            <div className="px-4 py-2">
+            <div className="p-4">
               <div className="bg-grey-300 rounded-t-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
@@ -178,7 +178,7 @@ export default function UTXOReviewOrder() {
                 </div>
               </div>
 
-              <div className="mt-2 bg-grey-300 rounded-b-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
+              <div className="mt-[2px] bg-grey-300 rounded-b-lg pt-2 pb-4 px-2 flex flex-col gap-2 relative">
                 <div className="flex gap-2 items-center p-2 pb-0">
                   <div className="w-10 h-10">
                     {!!location.state?.tokens[1]?.logo ? (
