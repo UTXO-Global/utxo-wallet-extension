@@ -30,7 +30,7 @@ export default function NativeToken() {
   return (
     <div className="px-4 mt-2">
       <div
-        className="py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer border border-grey-300"
+        className="py-2 px-4 rounded-lg flex justify-between items-center cursor-pointer border border-grey-300 bg-white hover:bg-grey-300"
         onClick={() =>
           navigate(
             `/pages/tokens/${currentNetwork.coinSymbol}/${currentNetwork.coinSymbol}`

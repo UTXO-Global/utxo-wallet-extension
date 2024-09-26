@@ -403,7 +403,7 @@ export default function UtxoSwap() {
 
         <div className="absolute -bottom-5 flex w-full items-center justify-center">
           <button
-            className="w-10 h-10 rounded-full group"
+            className="w-9 h-9 rounded-full group"
             onClick={() => {
               const newToken: [Token, Token] = [tokens[1], tokens[0]];
               setTokens(newToken);
@@ -411,7 +411,7 @@ export default function UtxoSwap() {
               setAssetXAmount(outputAmount.value.toString());
             }}
           >
-            <IcnSwapDirect className="w-10 h-10" />
+            <IcnSwapDirect className="w-9 h-9" />
           </button>
         </div>
       </div>

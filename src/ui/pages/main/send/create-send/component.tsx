@@ -327,23 +327,27 @@ const CreateSend = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <div className="flex justify-between text-base font-medium">
+                <div className="flex justify-between text-base font-medium items-center">
                   <div className="capitalize">
                     {t("wallet_page.available_balance")}:
                   </div>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-1 items-center max-w-44">
                     <ShortBalance balance={balance} zeroDisplay={6} />
                     <span>{symbol}</span>
                   </div>
                 </div>
                 {!isTokenTransaction && (
-                  <div className="flex justify-between text-base font-medium text-[#787575]">
+                  <div className="flex justify-between text-base font-medium text-[#787575] items-center">
                     <div className="capitalize">
                       {t("wallet_page.occupied_balance")}:
                     </div>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-1 items-center max-w-44">
                       <span>
-                        {formatNumber(currentAccount.ordinalBalance, 2, 8)}
+                        <ShortBalance
+                          balance={currentAccount.ordinalBalance}
+                          zeroDisplay={6}
+                          className="!text-base !font-medium !text-[#787575]"
+                        />
                       </span>
                       <span>{symbol}</span>
                     </div>

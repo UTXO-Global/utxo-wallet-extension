@@ -19,7 +19,7 @@
 }
 
 .explorerBtn {
-  @apply px-5 py-2 h-12 flex items-center justify-center rounded-xl font-medium bg-primary text-text text-sm mb-4 max-standard:w-full;
+  @apply px-5 py-2 h-12 flex items-center justify-center rounded-xl font-medium bg-primary text-text text-sm mb-4 max-standard:w-full capitalize;
 }
 
 .summary {

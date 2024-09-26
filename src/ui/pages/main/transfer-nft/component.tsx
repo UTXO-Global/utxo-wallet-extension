@@ -202,14 +202,15 @@ export default function TransferNFT() {
                     ))}
                   </div>
                 </div>
-                <div className="flex justify-between text-base font-medium w-full">
+                <div className="flex justify-between items-center text-base font-medium w-full">
                   <div className="capitalize">
                     {t("wallet_page.available_balance")}:
                   </div>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-1 items-center max-w-44">
                     <ShortBalance
                       balance={currentAccount.balance}
                       zeroDisplay={6}
+                      isDot={true}
                     />
 
                     <span className="text-[#787575]">

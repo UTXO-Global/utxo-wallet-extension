@@ -34,7 +34,7 @@ const Select: FC<Props> = ({
               }
             )}
           >
-            <span className="block truncate">{label}</span>
+            <span className="block truncate capitalize">{label}</span>
             <div className="flex gap-1 items-center">
               <span>{selected.name}</span>
               <ChevronDownIcon className={cn(`h-4 w-4 text-[#787575]`, {})} />

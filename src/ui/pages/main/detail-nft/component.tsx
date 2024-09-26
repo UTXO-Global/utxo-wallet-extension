@@ -135,7 +135,7 @@ const DetailNFT = () => {
                   <p className="text-base font-medium text-[#787575]">
                     {t("detailNFT.content_type")}
                   </p>
-                  <p className="text-base font-medium text-primary text-right">
+                  <p className="text-base font-medium text-primary text-right capitalize">
                     {detailNFT.contentType}
                   </p>
                 </div>

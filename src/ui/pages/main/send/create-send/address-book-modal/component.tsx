@@ -37,7 +37,7 @@ const AddressBookModal: FC<Props> = ({ isOpen, onClose, setAddress }) => {
       onClose={onClose}
       open={isOpen}
       title={t("send.create_send.address_book.address_book")}
-      className="!px-0"
+      className="!px-0 capitalize"
     >
       {!addressBook.length ? (
         <div className={s.empty}>

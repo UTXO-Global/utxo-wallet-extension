@@ -182,14 +182,7 @@ export default function UTXOSwapSearchToken() {
                       <div
                         key={`token-${t.batchId}-${i}`}
                         className={cn(
-                          "flex gap-2 items-center py-4 px-3 bg-grey-300 rounded-lg cursor-pointer hover:bg-grey-200",
-                          {
-                            "!bg-grey-200":
-                              assetDisplay?.typeScript?.args ===
-                              (isChangeAssetX
-                                ? aY?.typeScript?.args
-                                : aX?.typeScript?.args),
-                          }
+                          "flex gap-2 items-center py-4 px-3 bg-grey-300 rounded-lg cursor-pointer hover:bg-grey-200"
                         )}
                         onClick={() =>
                           navigate("/swap", {

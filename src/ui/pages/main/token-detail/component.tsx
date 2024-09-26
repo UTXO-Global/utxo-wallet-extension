@@ -258,7 +258,7 @@ const TokenDetail = () => {
             </div>
 
             {isNativeToken && isCkbNetwork(currentNetwork.network) && (
-              <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575]">
+              <div className="font-medium leading-6 flex gap-4 justify-between items-center text-[#787575] capitalize">
                 <label className="text-base">
                   {t("wallet_page.occupied_balance")}
                 </label>
@@ -304,8 +304,8 @@ const TokenDetail = () => {
           </div>
           <TransactionList
             className="mt-4 mb-4 !px-0 !z-5"
-            type={type !== "ckb" ? type : undefined}
-            typeHash={typeHash !== "ckb" ? typeHash : undefined}
+            type={type.toLowerCase() !== "ckb" ? type : undefined}
+            typeHash={typeHash.toLowerCase() !== "ckb" ? typeHash : undefined}
           />
         </div>
         <ReceiveAddress

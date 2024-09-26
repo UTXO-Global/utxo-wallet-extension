@@ -2,19 +2,23 @@ import terser from "@rollup/plugin-terser";
 
 export default (command) => {
   const isFirefox = command.environment === "firefox";
-  let inputFile = "./dist/chrome/ui.js";
-  let outputFile = "./dist/chrome/ui.js";
+  let inputFile = {
+    ui: "./dist/chrome/ui.js",
+    background: "./dist/chrome/background.js",
+  };
 
   if (isFirefox) {
-    inputFile = "./dist/firefox/ui.js";
-    outputFile = "./dist/firefox/ui.js";
+    inputFile = {
+      ui: "./dist/firefox/ui.js",
+      background: "./dist/firefox/background.js",
+    };
   }
 
   return {
     type: "module",
     input: inputFile,
     output: {
-      file: outputFile,
+      dir: `dist/${isFirefox ? "firefox" : "chrome"}`,
       format: "cjs",
       minifyInternalExports: command.minifyInternalExports,
       compact: command.compact,

@@ -9,7 +9,9 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
     return (
       <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
         {t("wallet_page.no_tokens")}
-        <img src="/no-tokens.png" />
+        <div>
+          <img src="/no-tokens.png" className="h-[30px]" />
+        </div>
       </div>
     );
   };
