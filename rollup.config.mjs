@@ -1,7 +1,6 @@
 import terser from "@rollup/plugin-terser";
 
 export default (command) => {
-  console.log(command);
   const isFirefox = command.environment === "firefox";
   let inputFile = "./dist/chrome/ui.js";
   let outputFile = "./dist/chrome/ui.js";
