@@ -3,7 +3,7 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { t } from "i18next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BellIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 const MAX_SLIPPAGE = 30;
 const MIN_SLIPPAGE = 0.5;
@@ -15,6 +15,7 @@ export default function UTXOSwapSetting() {
   const currentNetwork = useGetCurrentNetwork();
   const [slippage, setSlippage] = useState(location.state?.slippage || 0.5);
   const [isAuto, setIsAuto] = useState(!!location.state?.isSlippageAuto);
+  const inputRef = useRef<HTMLInputElement>();
 
   const SlippageWarning = () => {
     const slippageNumber = Number(slippage);
@@ -63,6 +64,12 @@ export default function UTXOSwapSetting() {
     return Number(slippage) >= MIN_SLIPPAGE && Number(slippage) <= MAX_SLIPPAGE;
   }, [slippage]);
 
+  useEffect(() => {
+    if (!isAuto && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAuto]);
+
   return (
     <div className="w-full h-full top-0 relative">
       {isCkbNetwork(currentNetwork.network) && (
@@ -100,6 +107,7 @@ export default function UTXOSwapSetting() {
             </div>
             <div className="bg-grey-300 py-[6px] px-4 w-[66px] flex justify-center items-center rounded-full">
               <input
+                ref={inputRef}
                 type="text"
                 value={slippage}
                 className="flex-grow w-8 text-center bg-transparent"
