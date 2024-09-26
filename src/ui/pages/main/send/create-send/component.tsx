@@ -331,8 +331,14 @@ const CreateSend = () => {
                   <div className="capitalize">
                     {t("wallet_page.available_balance")}:
                   </div>
-                  <div className="flex gap-1 items-center max-w-44">
-                    <ShortBalance balance={balance} zeroDisplay={6} />
+                  <div className="flex items-center">
+                    <div className="w-36 text-right">
+                      <ShortBalance
+                        balance={balance}
+                        zeroDisplay={6}
+                        isDot={true}
+                      />
+                    </div>
                     <span>{symbol}</span>
                   </div>
                 </div>
@@ -341,14 +347,15 @@ const CreateSend = () => {
                     <div className="capitalize">
                       {t("wallet_page.occupied_balance")}:
                     </div>
-                    <div className="flex gap-1 items-center max-w-44">
-                      <span>
+                    <div className="flex items-center">
+                      <div className="w-36 text-right">
                         <ShortBalance
                           balance={currentAccount.ordinalBalance}
                           zeroDisplay={6}
                           className="!text-base !font-medium !text-[#787575]"
+                          isDot={true}
                         />
-                      </span>
+                      </div>
                       <span>{symbol}</span>
                     </div>
                   </div>

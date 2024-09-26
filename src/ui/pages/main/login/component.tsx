@@ -72,7 +72,7 @@ const Login = () => {
         className="w-full flex flex-col gap-6"
         onSubmit={handleSubmit(login)}
       >
-        <div className="w-full justify-center flex form-title mb-4">
+        <div className="w-full justify-center flex form-title mb-4 capitalize">
           {t("login.welcome_back")}
         </div>
         <PasswordInput
