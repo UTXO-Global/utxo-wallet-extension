@@ -11,13 +11,13 @@ export default function TextAvatar({
 }) {
   const background = useMemo(() => {
     let hash = 0;
-    for (let i = 0; i < text.length; i++) {
+    for (let i = 0; i < text?.length; i++) {
       hash = text.charCodeAt(i) + ((hash << 5) - hash);
     }
 
     var color = (hash & 0x00ffffff).toString(16).toUpperCase();
 
-    return "00000".substring(0, 6 - color.length) + color;
+    return "00000".substring(0, 6 - color?.length) + color;
   }, [text]);
 
   const textColor = useMemo(() => {

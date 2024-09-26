@@ -117,7 +117,7 @@ const buildOptions: BuildOptions = {
     ui: "src/ui/index.tsx",
   },
   outdir: chrome ? "dist/chrome" : "dist/firefox",
-  minify: true,
+  minify: false,
   bundle: true,
   logLevel: "info",
   define: {
@@ -126,7 +126,7 @@ const buildOptions: BuildOptions = {
   },
   target: ["es2020"],
   platform: "browser",
-  sourcemap: false,
+  sourcemap: Bun.argv.includes("--sourcemap") || Bun.argv.includes("-s"),
   plugins: [
     dynamicImport(),
     dotenvPlugin(),
@@ -178,7 +178,7 @@ const makeArchive = () => {
   Bun.spawnSync({
     cmd: [
       "zip",
-      "-r",
+      "-r9",
       `../${chrome ? "chrome" : "firefox"}-${
         process.env.npm_package_version
       }.zip`,

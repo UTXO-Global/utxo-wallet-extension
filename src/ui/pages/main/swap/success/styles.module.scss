@@ -1,5 +1,5 @@
 .container {
-  @apply text-sm flex-col h-full flex justify-between items-center px-6 w-full pb-3 w-full;
+  @apply text-sm flex-col h-full flex justify-between items-center px-6 pb-3 w-full;
 }
 
 .btn {
@@ -18,7 +18,7 @@
   @apply text-center font-medium text-xl;
 
   &Container {
-    @apply flex flex-col gap-4 justify-center items-center mb-16 mt-36 w-full;
+    @apply flex flex-col gap-4 justify-center items-center mb-16 mt-[174px] w-full;
   }
 
   &Icon {

@@ -140,7 +140,7 @@ const UTXOFinalSwap = () => {
           {t("send.finalle_send.back")}
         </Link>
         <button className="btn primary flex-3" onClick={onClick}>
-          {t("send.finalle_send.explorer")}
+          {t("components.layout.explorer")}
         </button>
       </div>
     </div>
