@@ -67,8 +67,8 @@
       "close": "Закрыть"
     },
     "swap": {
-      "slippageSettings": "Настройки проскальзывания",
-      "searchToken": "Поиск токена",
+      "slippage_settings": "Настройки проскальзывания",
+      "search_token": "Поиск токена",
       "maxSlippage": "Макс. проскальзывание",
       "swapSuccess": "Успешность свопа",
       "reviewOrder": "Просмотр ордера",

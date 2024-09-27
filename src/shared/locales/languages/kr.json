@@ -67,8 +67,8 @@
       "close": "닫기"
     },
     "swap": {
-      "slippageSettings": "슬리피지 설정",
-      "searchToken": "토큰 검색",
+      "slippage_settings": "슬리피지 설정",
+      "search_token": "토큰 검색",
       "maxSlippage": "최대 슬리피지",
       "swapSuccess": "스왑 성공",
       "reviewOrder": "주문 검토",

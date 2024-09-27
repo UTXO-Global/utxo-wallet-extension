@@ -77,7 +77,7 @@ export default function UTXOSwapSetting() {
           <div className="flex flex-col items-center justify-center">
             <IcnSwapSetting className="w-20 h-20 rounded-full" />
             <div className="mt-6 text-2xl leading-7 font-medium text-primary capitalize">
-              {t("components.swap.slippageSettings")}
+              {t("components.swap.slippage_settings")}
             </div>
             <div className="mt-4 text-sm leading-[18px] font-normal text-[#787575]">
               {t("components.swap.slippage_setting_desc")}

@@ -110,8 +110,8 @@
       "no_transfers": "No transfers"
     },
     "swap": {
-      "slippageSettings": "Slippage settings",
-      "searchToken": "Search Token",
+      "slippage_settings": "Slippage settings",
+      "search_token": "Search Token",
       "maxSlippage": "Max Slippage",
       "swapSuccess": "Swap Success",
       "reviewOrder": "Review order",

@@ -75,8 +75,8 @@
       "close": "关闭"
     },
     "swap": {
-      "slippageSettings": "滑点设置",
-      "searchToken": "搜索代币",
+      "slippage_settings": "滑点设置",
+      "search_token": "搜索代币",
       "maxSlippage": "最大滑点",
       "swapSuccess": "交换成功",
       "reviewOrder": "查看订单",

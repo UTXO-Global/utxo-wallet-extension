@@ -152,11 +152,11 @@ export default function PagesLayout() {
       },
       {
         route: "/pages/swap/slippage-settings",
-        title: t("components.swap.slippageSettings"),
+        title: t("components.swap.slippage_settings"),
       },
       {
         route: "/pages/swap/search-token",
-        title: t("components.swap.searchToken"),
+        title: t("components.swap.search_token"),
       },
       {
         route: "/pages/swap/review-order",
