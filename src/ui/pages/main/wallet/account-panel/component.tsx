@@ -68,16 +68,6 @@ const AccountPanel = () => {
         title: t("wallet_page.send"),
       },
     ];
-
-    /*if (isCKB) {
-      navs.push({
-        navPath: "/swap",
-        navName: "pf_swap",
-        navLabel: "Swap",
-        icon: <IcnSwap />,
-        title: t("wallet_page.swap"),
-      });
-    }*/
     return navs;
   }, [currentAccount.accounts, currentNetwork.network]);
 
