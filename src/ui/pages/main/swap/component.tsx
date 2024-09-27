@@ -588,7 +588,7 @@ export default function UtxoSwap() {
                   {inputAmount > getBalanceToken(assetX?.typeHash)
                     ? t("components.swap.insufficient_balance")
                     : outputAmount.priceImpact < MIN_PRICE_IMPACT
-                    ? t("components.swap.priceImpactTooHight")
+                    ? t("components.swap.priceImpactTooHigh")
                     : t("components.swap.reviewOrder")}
                 </button>
               )}
