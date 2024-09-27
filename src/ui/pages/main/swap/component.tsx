@@ -589,7 +589,7 @@ export default function UtxoSwap() {
                     ? t("components.swap.insufficient_balance")
                     : outputAmount.priceImpact < MIN_PRICE_IMPACT
                     ? t("components.swap.price_impact_too_high")
-                    : t("components.swap.reviewOrder")}
+                    : t("components.swap.review_order")}
                 </button>
               )}
             </div>

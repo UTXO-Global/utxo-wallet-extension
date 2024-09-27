@@ -77,15 +77,15 @@
     "swap": {
       "slippage_settings": "滑点设置",
       "search_token": "搜索代币",
-      "maxSlippage": "最大滑点",
-      "swapSuccess": "交换成功",
-      "reviewOrder": "查看订单",
+      "max_slippage": "最大滑点",
+      "swap_success": "交换成功",
+      "review_order": "查看订单",
       "noAssetsAvailable": "无可用资产",
       "fees": "費用",
       "fee": "費用",
       "tooltip": {
         "fees": "交易期间支付的费用，主要用于流动性",
-        "maxSlippage": "您愿意在交易中容忍的价格变化的最大百分比",
+        "max_slippage": "您愿意在交易中容忍的价格变化的最大百分比",
         "price_impact": "由于交易量导致的市场价格与预估价格之间的差异"
       },
       "max": "最高",

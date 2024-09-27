@@ -160,7 +160,7 @@ export default function PagesLayout() {
       },
       {
         route: "/pages/swap/review-order",
-        title: t("components.swap.reviewOrder"),
+        title: t("components.swap.review_order"),
       },
     ],
     [currentAccount?.name]

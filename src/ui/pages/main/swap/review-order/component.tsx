@@ -88,9 +88,9 @@ export default function UTXOReviewOrder() {
       },
       {
         id: "reviewMaxSlippage",
-        title: t("components.swap.maxSlippage"),
+        title: t("components.swap.max_slippage"),
         value: <>{state.slippage}%</>,
-        tooltip: t("components.swap.tooltip.maxSlippage"),
+        tooltip: t("components.swap.tooltip.max_slippage"),
       },
     ];
   }, [location.state]);

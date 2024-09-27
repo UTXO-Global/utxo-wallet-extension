@@ -77,7 +77,7 @@ const UTXOFinalSwap = () => {
             />
           </g>
         </svg>
-        <h3 className={s.result}>{t("components.swap.swapSuccess")}!</h3>
+        <h3 className={s.result}>{t("components.swap.swap_success")}!</h3>
         <div className="w-full flex flex-col gap-2 p-3 items-center justify-center bg-grey-300 rounded-lg">
           <div className="flex  items-center justify-center gap-2">
             {!!assetX?.logo ? (

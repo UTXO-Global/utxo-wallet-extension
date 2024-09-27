@@ -112,9 +112,9 @@
     "swap": {
       "slippage_settings": "Slippage settings",
       "search_token": "Search Token",
-      "maxSlippage": "Max Slippage",
-      "swapSuccess": "Swap Success",
-      "reviewOrder": "Review order",
+      "max_slippage": "Max Slippage",
+      "swap_success": "Swap Success",
+      "review_order": "Review order",
       "noAssetsAvailable": "No Assets Available",
       "fees": "Fees",
       "fee": "Fee",
@@ -133,12 +133,12 @@
       "price_impact_too_high": "Price impact is too high",
       "tooltip": {
         "fees": "The fee paid during the trade, primarily to liquidity",
-        "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
+        "max_slippage": "The maximum percentage of price change you are willing to tolerate in the trade",
         "price_impact": "The difference between the market and estimated prices due to trade volume"
       },
       "errors": {
         "minSlippage": "",
-        "maxSlippage": "",
+        "max_slippage": "",
         "midSlippage": ""
       }
     }
