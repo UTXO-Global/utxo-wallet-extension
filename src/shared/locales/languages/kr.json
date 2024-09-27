@@ -72,7 +72,7 @@
       "max_slippage": "최대 슬리피지",
       "swap_success": "스왑 성공",
       "review_order": "주문 검토",
-      "noAssetsAvailable": "사용 가능한 자산 없음",
+      "no_assets_available": "사용 가능한 자산 없음",
       "fees": "수수료",
       "fee": "수수료",
       "tooltip": {

@@ -221,7 +221,7 @@ export default function UTXOSwapSearchToken() {
                 : !isLoading && (
                     <div className="px-4 py-3 text-sm text-grey-100">
                       <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
-                        {t("components.swap.noAssetsAvailable")}
+                        {t("components.swap.no_assets_available")}
                         <img src="/no-tokens.png" />
                       </div>
                     </div>

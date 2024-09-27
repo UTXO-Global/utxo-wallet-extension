@@ -72,7 +72,7 @@
       "max_slippage": "Макс. проскальзывание",
       "swap_success": "Успешность свопа",
       "review_order": "Просмотр ордера",
-      "noAssetsAvailable": "Нет доступных активов",
+      "no_assets_available": "Нет доступных активов",
       "fees": "сборы",
       "fee": "сбор",
       "tooltip": {

@@ -115,7 +115,7 @@
       "max_slippage": "Max Slippage",
       "swap_success": "Swap Success",
       "review_order": "Review order",
-      "noAssetsAvailable": "No Assets Available",
+      "no_assets_available": "No Assets Available",
       "fees": "Fees",
       "fee": "Fee",
       "max": "Max",
