@@ -50,7 +50,7 @@
       "next": "下一個",
       "confirm": "確認",
       "details": "详细",
-      "detailNFT": "详情 NFT",
+      "detail_NFT": "详情 NFT",
       "search": "搜索",
       "swap": "交换"
     },
@@ -294,7 +294,7 @@
     "allow_switch_chain": "允许本站切换外链",
     "switch_chain": "开关链"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "类型",
     "content_type": "内容类型",
     "occupied": "占领",

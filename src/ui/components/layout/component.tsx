@@ -244,7 +244,7 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/transfer-nft/@",
-          title: t("detailNFT.transfer"),
+          title: t("detail_NFT.transfer"),
           backAction: () => {
             navigate("/nfts");
           },
@@ -262,7 +262,7 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/detail-nft/@",
-          title: t("components.layout.detailNFT"),
+          title: t("components.layout.detail_NFT"),
           backAction: () => {
             navigate("/nfts");
           },

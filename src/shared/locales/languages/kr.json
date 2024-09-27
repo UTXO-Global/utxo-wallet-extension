@@ -43,7 +43,7 @@
       "next": "다음",
       "confirm": "확인하다",
       "details": "세부 사항",
-      "detailNFT": "세부 NFT",
+      "detail_NFT": "세부 NFT",
       "search": "검색",
       "swap": "스왑"
     },
@@ -244,7 +244,7 @@
     "recommended": "추천",
     "partners": "파트너"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "유형",
     "content_type": "콘텐츠 유형",
     "occupied": "가득차 있는",

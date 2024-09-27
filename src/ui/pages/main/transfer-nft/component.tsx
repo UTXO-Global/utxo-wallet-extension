@@ -13,7 +13,7 @@ import Switch from "@/ui/components/switch";
 import ShortBalance from "@/ui/components/ShortBalance";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
-import { Script, helpers } from "@ckb-lumos/lumos";
+import { helpers } from "@ckb-lumos/lumos";
 import { AGGRON4, LINA } from "@/shared/networks";
 import toast from "react-hot-toast";
 import { useCreateNFTTxCallback } from "@/ui/hooks/transactions";

@@ -1,7 +1,5 @@
 import { createHashRouter, Navigate } from "react-router-dom";
-
 import Wallet from "@/ui/pages/main/wallet";
-
 import PagesLayout from "@/ui/components/layout";
 import CreatePassword from "@/ui/pages/main/create-password";
 import Login from "@/ui/pages/main/login";

@@ -43,7 +43,7 @@
       "next": "следующий",
       "confirm": "Подтверждать",
       "details": "Подробнее",
-      "detailNFT": "Подробный НФТ",
+      "detail_NFT": "Подробный НФТ",
       "search": "Поиск",
       "swap": "Своп"
     },
@@ -244,7 +244,7 @@
     "recommended": "Рекомендовано",
     "partners": "Партнеры"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "Тип",
     "content_type": "Тип контента",
     "occupied": "Занятый",

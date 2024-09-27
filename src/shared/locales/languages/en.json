@@ -60,7 +60,7 @@
       "next": "Next",
       "confirm": "Confirm",
       "details": "Details",
-      "detailNFT": "NFT Details",
+      "detail_NFT": "NFT Details",
       "search": "Search",
       "swap": "Swap"
     },
@@ -380,7 +380,7 @@
     "recommended": "Recommended",
     "partners": "Partners"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "Type",
     "content_type": "Content Type",
     "occupied": "Occupied",
