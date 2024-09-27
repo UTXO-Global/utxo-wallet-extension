@@ -92,7 +92,7 @@
       "slippageSettingDesc": "가격이 슬리피지보다 더 많이 변하면 거래가 실패합니다. 값이 너무 높으면 불리한 거래가 발생합니다",
       "auto": "자동",
       "custom": "사용자 정의",
-      "priceImpactTooHight": "가격 영향이 너무 크다"
+      "priceImpactTooHigh": "가격 영향이 너무 크다"
     }
   },
   "change_password": {

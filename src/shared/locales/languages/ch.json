@@ -100,7 +100,7 @@
       "slippageSettingDesc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
       "auto": "自动",
       "custom": "自定义",
-      "priceImpactTooHight": "价格影响过高"
+      "priceImpactTooHigh": "价格影响过高"
     }
   },
   "change_password": {
