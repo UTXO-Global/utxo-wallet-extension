@@ -24,6 +24,13 @@ import { BI } from "@ckb-lumos/lumos";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
 
+const COIN_NATIVE_NAME = {
+  CKB: "Nervos CKB",
+  BTC: "Bitcoin",
+  tBTC: "Bitcoin Testnet",
+  sBTC: "Bitcoin Signet",
+};
+
 const TokenDetail = () => {
   const { type, typeHash } = useParams();
   const [isShowReceive, setIsShowReceive] = useState<boolean>(false);
@@ -59,7 +66,7 @@ const TokenDetail = () => {
       setTokenInfo({
         attributes: {
           symbol: currentNetwork.coinSymbol,
-          full_name: currentNetwork.coinName,
+          full_name: COIN_NATIVE_NAME[currentNetwork.coinSymbol],
           icon_file: NETWORK_ICON[currentNetwork.slug],
           decimal: "8",
         },
@@ -172,7 +179,7 @@ const TokenDetail = () => {
 
   return (
     <>
-      <div className="flex gap-4 items-center bg-grey-400 p-4 pb-0 w-full">
+      <div className="flex gap-4 items-center bg-grey-400 px-4 py-2 w-full h-[92px]">
         {!!tokenInfo.attributes.icon_file ? (
           <img src={tokenInfo.attributes.icon_file} className="w-16 h-16" />
         ) : (
@@ -190,13 +197,13 @@ const TokenDetail = () => {
             })}
           >
             <div className="flex items-center gap-1">
-              <strong className="font-bold text-xl leading-6">
+              <strong className="font-bold text-xl leading-[25px]">
                 {!!tokenInfo.attributes.symbol
                   ? tokenInfo.attributes.symbol
                   : "Unnamed"}
               </strong>
               {!!tokenInfo.attributes.full_name && (
-                <div className="text-base font-normal leading-6 flex gap-[3px] items-center">
+                <div className="text-base font-normal leading-[25px] flex gap-[3px] items-center">
                   <span className="-mt-[3px]">(</span>
                   <span>{tokenInfo.attributes.full_name}</span>{" "}
                   <span className="-mt-[3px]">)</span>
@@ -204,7 +211,11 @@ const TokenDetail = () => {
               )}
             </div>
             {!isNativeToken && tokenInfo && (
-              <>
+              <div
+                className={cn("pb-[1px]", {
+                  "mt-1": tokenInfo.attributes.full_name?.length > 10,
+                })}
+              >
                 {tokenInfo.attributes.full_name?.length <= 10 && (
                   <div className="h-[21px] w-[1px] bg-grey-200" />
                 )}
@@ -224,12 +235,12 @@ const TokenDetail = () => {
                     </label>
                   )}
                 </div>
-              </>
+              </div>
             )}
           </div>
           {!isNativeToken && (
             <div className="text-sm font-normal leading-[18px] text-[#787575] flex gap-2">
-              <p>{shortAddress(tokenInfo.attributes.type_hash, 5)}</p>
+              <p>{shortAddress(tokenInfo.attributes.type_hash, 8)}</p>
               <IcnCopy
                 className="w-4 h-4 right-2 transition-colors stroke-[#787575] hover:stroke-primary cursor-pointer"
                 onClick={() => {
