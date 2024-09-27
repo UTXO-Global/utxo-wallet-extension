@@ -359,7 +359,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
   const loadNativeCoinPrice = useCallback(async () => {
     try {
-      let pricesFromCache = await getCoinPrice(currentNetwork.coinSymbol);
+      const pricesFromCache = await getCoinPrice(currentNetwork.coinSymbol);
       setCurrentPrice(pricesFromCache?.usd || 0);
       setChangePercent24Hr(pricesFromCache?.changePercent24Hr || 0);
     } catch (e) {

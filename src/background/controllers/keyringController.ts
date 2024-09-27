@@ -155,7 +155,7 @@ class KeyringController implements IKeyringController {
     tx: any,
     hdPath: string
   ): Promise<Transaction> {
-    let txSkeleton = await convertCKBTransactionToSkeleton(
+    const txSkeleton = await convertCKBTransactionToSkeleton(
       fromAddress,
       networkSlug,
       tx

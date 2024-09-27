@@ -112,9 +112,9 @@ export default function UTXOSwapSearchToken() {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const t = setTimeout(async () => {
       if (pools.length === 0) {
-        loadTokens();
+        await loadTokens();
       }
     }, 1000);
 

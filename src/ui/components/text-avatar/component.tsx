@@ -15,18 +15,18 @@ export default function TextAvatar({
       hash = text.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    var color = (hash & 0x00ffffff).toString(16).toUpperCase();
+    const color = (hash & 0x00ffffff).toString(16).toUpperCase();
 
     return "00000".substring(0, 6 - color?.length) + color;
   }, [text]);
 
   const textColor = useMemo(() => {
-    var rgb = parseInt(background, 16);
-    var r = (rgb >> 16) & 0xff;
-    var g = (rgb >> 8) & 0xff;
-    var b = (rgb >> 0) & 0xff;
+    const rgb = parseInt(background, 16);
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >> 8) & 0xff;
+    const b = (rgb >> 0) & 0xff;
 
-    var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
     return luma < 186 ? "#FFF" : "#000";
   }, [background]);
