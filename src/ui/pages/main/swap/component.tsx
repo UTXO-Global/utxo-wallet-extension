@@ -323,7 +323,7 @@ export default function UtxoSwap() {
           onClick={() => navigate("/swap/search-token", { state })}
         >
           <div className="capitalize text-sm leading-5 text-black font-medium">
-            {t("components.swap.selectToken")}
+            {t("components.swap.select_token")}
           </div>
           <IcnChevronDown className="w-3 h-3 !stroke-primary" />
         </div>
@@ -504,7 +504,7 @@ export default function UtxoSwap() {
         <div className="flex items-center justify-between border-b border-b-grey-200 pt-2 pb-3">
           <div className="text-primary text-base font-medium flex gap-1 items-center">
             <span className="text-primary text-base font-medium capitalize">
-              {t("components.swap.priceImpact")}
+              {t("components.swap.price_impact")}
             </span>
             <IcnInfo className={"priceImpact"} />
             <Tooltip
@@ -512,7 +512,7 @@ export default function UtxoSwap() {
               place="top"
               className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[180px] !tracking-[0.1px] !rounded-lg"
             >
-              {t("components.swap.tooltip.priceImpack")}
+              {t("components.swap.tooltip.price_impact")}
             </Tooltip>
           </div>
           <div
@@ -588,7 +588,7 @@ export default function UtxoSwap() {
                   {inputAmount > getBalanceToken(assetX?.typeHash)
                     ? t("components.swap.insufficient_balance")
                     : outputAmount.priceImpact < MIN_PRICE_IMPACT
-                    ? t("components.swap.priceImpactTooHigh")
+                    ? t("components.swap.price_impact_too_high")
                     : t("components.swap.reviewOrder")}
                 </button>
               )}

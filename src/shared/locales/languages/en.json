@@ -123,18 +123,18 @@
       "price": "Price",
       "insufficient_balance": "Insufficient balance",
       "close": "Close",
-      "priceImpact": "Price impact",
-      "selectToken": "Select token",
-      "youPay": "You Pay",
-      "youReceive": "You Receive",
-      "slippageSettingDesc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
+      "price_impact": "Price impact",
+      "select_token": "Select token",
+      "you_pay": "You Pay",
+      "you_receive": "You Receive",
+      "slippage_setting_desc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
       "auto": "Auto",
       "custom": "Custom",
-      "priceImpactTooHigh": "Price impact is too high",
+      "price_impact_too_high": "Price impact is too high",
       "tooltip": {
         "fees": "The fee paid during the trade, primarily to liquidity",
         "maxSlippage": "The maximum percentage of price change you are willing to tolerate in the trade",
-        "priceImpack": "The difference between the market and estimated prices due to trade volume"
+        "price_impact": "The difference between the market and estimated prices due to trade volume"
       },
       "errors": {
         "minSlippage": "",

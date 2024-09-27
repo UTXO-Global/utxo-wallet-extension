@@ -185,7 +185,7 @@ export const convertCKBTransactionToSkeleton = async (
 
       const outputData =
         txInput?.transaction?.outputs_data[
-          Number(input.previousOutput.index)
+        Number(input.previousOutput.index)
         ] || "0x";
 
       txSkeleton = txSkeleton.update("inputs", (inputs) =>
@@ -243,8 +243,6 @@ export const convertCKBTransactionToSkeleton = async (
         input.cellOutput.lock.hashType === fromScript.hashType &&
         input.cellOutput.lock.args === fromScript.args
     );
-
-  console.log("first index", firstIndex);
 
   if (firstIndex !== -1) {
     while (firstIndex >= txSkeleton.get("witnesses").size) {

@@ -86,21 +86,21 @@
       "tooltip": {
         "fees": "交易期间支付的费用，主要用于流动性",
         "maxSlippage": "您愿意在交易中容忍的价格变化的最大百分比",
-        "priceImpack": "由于交易量导致的市场价格与预估价格之间的差异"
+        "price_impact": "由于交易量导致的市场价格与预估价格之间的差异"
       },
       "max": "最高",
       "balance": "余额",
       "price": "价格",
       "insufficient_balance": "余额不足",
       "close": "关闭",
-      "priceImpact": "价格影响",
-      "selectToken": "选择代币",
-      "youPay": "您支付",
-      "youReceive": "您收到",
-      "slippageSettingDesc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
+      "price_impact": "价格影响",
+      "select_token": "选择代币",
+      "you_pay": "您支付",
+      "you_receive": "您收到",
+      "slippage_setting_desc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
       "auto": "自动",
       "custom": "自定义",
-      "priceImpactTooHigh": "价格影响过高"
+      "price_impact_too_high": "价格影响过高"
     }
   },
   "change_password": {

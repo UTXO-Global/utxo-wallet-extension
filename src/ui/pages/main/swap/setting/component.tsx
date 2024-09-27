@@ -80,7 +80,7 @@ export default function UTXOSwapSetting() {
               {t("components.swap.slippageSettings")}
             </div>
             <div className="mt-4 text-sm leading-[18px] font-normal text-[#787575]">
-              {t("components.swap.slippageSettingDesc")}
+              {t("components.swap.slippage_setting_desc")}
             </div>
           </div>
           <div className="flex items-center px-[10px] gap-2">

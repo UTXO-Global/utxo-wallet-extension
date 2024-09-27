@@ -67,10 +67,10 @@ export default function UTXOReviewOrder() {
         ),
       },
       {
-        id: "reviewPriceImpack",
-        title: t("components.swap.priceImpact"),
+        id: "reviewPriceImpact",
+        title: t("components.swap.price_impact"),
         value: <>{state.outputAmount.priceImpact.toFixed(3)}%</>,
-        tooltip: t("components.swap.tooltip.priceImpack"),
+        tooltip: t("components.swap.tooltip.price_impact"),
       },
       {
         id: "reviewFees",
@@ -166,7 +166,7 @@ export default function UTXOReviewOrder() {
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium">
-                      {t("components.swap.youPay")}
+                      {t("components.swap.you_pay")}
                     </div>
                     <div className="text-[22px] leading-7 text-black font-medium">
                       <div>
@@ -195,7 +195,7 @@ export default function UTXOReviewOrder() {
                   </div>
                   <div className="flex flex-col gap-0 flex-grow">
                     <div className="text-[#787575] text-base font-medium flex items-center justify-between">
-                      <span>{t("components.swap.youReceive")}</span>
+                      <span>{t("components.swap.you_receive")}</span>
                       <span>
                         $
                         {formatNumber(
