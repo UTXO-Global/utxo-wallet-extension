@@ -1,7 +1,7 @@
-import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
 import ShortBalance from "@/ui/components/ShortBalance";
+import TextAvatar from "@/ui/components/text-avatar";
 
 export default function Tokens({ tokens }: { tokens: any[] }) {
   const navigate = useNavigate();
@@ -9,7 +9,9 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
     return (
       <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
         {t("wallet_page.no_tokens")}
-        <img src="/no-tokens.png" />
+        <div>
+          <img src="/no-tokens.png" className="h-[30px]" />
+        </div>
       </div>
     );
   };
@@ -38,10 +40,14 @@ export default function Tokens({ tokens }: { tokens: any[] }) {
               }
             >
               <div className="flex gap-[10px] justify-center items-center">
-                <img
-                  src={token.udt_icon_file || TOKEN_FILE_ICON_DEFAULT}
-                  className="h-9 rounded-full"
-                />
+                {!!token.udt_icon_file ? (
+                  <img src={token.udt_icon_file} className="h-9 rounded-full" />
+                ) : (
+                  <TextAvatar
+                    text={token.symbol || "Unnamed"}
+                    className="!h-9 !w-9"
+                  />
+                )}
                 <div className="flex flex-col gap-1">
                   <div className="font-medium text-base leading-6">
                     {!!token.symbol ? token.symbol : "Unnamed"}

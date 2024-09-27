@@ -150,6 +150,18 @@ export default function PagesLayout() {
         route: "/pages/tokens/@",
         title: t("components.layout.details"),
       },
+      {
+        route: "/pages/swap/slippage-settings",
+        title: t("components.swap.slippage_settings"),
+      },
+      {
+        route: "/pages/swap/search-token",
+        title: t("components.swap.search_token"),
+      },
+      {
+        route: "/pages/swap/review-order",
+        title: t("components.swap.review_order"),
+      },
     ],
     [currentAccount?.name]
   );
@@ -232,7 +244,7 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/transfer-nft/@",
-          title: t("detailNFT.transfer"),
+          title: t("detail_NFT.transfer"),
           backAction: () => {
             navigate("/nfts");
           },
@@ -250,9 +262,16 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/detail-nft/@",
-          title: t("components.layout.detailNFT"),
+          title: t("components.layout.detail_NFT"),
           backAction: () => {
             navigate("/nfts");
+          },
+        },
+        {
+          route: "/pages/swap/swap-success/@",
+          title: t("components.layout.swap"),
+          backAction: () => {
+            navigate("/home");
           },
         },
       ] as IRouteTitle[],

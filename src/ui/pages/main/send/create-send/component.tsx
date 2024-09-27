@@ -33,8 +33,8 @@ import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
 import { formatNumber } from "@/shared/utils";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
-import { TOKEN_FILE_ICON_DEFAULT } from "@/shared/constant";
 import ShortBalance from "@/ui/components/ShortBalance";
+import TextAvatar from "@/ui/components/text-avatar/component";
 
 export interface FormType {
   address: string;
@@ -273,14 +273,15 @@ const CreateSend = () => {
   return (
     <div className="flex flex-col justify-between w-full h-full">
       <div className="pt-8 pb-3 flex items-center justify-center">
-        <img
-          src={
-            isTokenTransaction
-              ? token?.attributes?.icon_file || TOKEN_FILE_ICON_DEFAULT
-              : NETWORK_ICON[currentNetwork.slug]
-          }
-          className="w-10 h-10"
-        />
+        {isTokenTransaction ? (
+          !!token?.attributes?.icon_file ? (
+            <img src={token?.attributes?.icon_file} className="w-10 h-10" />
+          ) : (
+            <TextAvatar text={token?.attributes?.symbol} />
+          )
+        ) : (
+          <img src={NETWORK_ICON[currentNetwork.slug]} className="w-10 h-10" />
+        )}
       </div>
       <form
         id={formId}
@@ -326,24 +327,35 @@ const CreateSend = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <div className="flex justify-between text-base font-medium">
+                <div className="flex justify-between text-base font-medium items-center">
                   <div className="capitalize">
                     {t("wallet_page.available_balance")}:
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <ShortBalance balance={balance} zeroDisplay={6} />
+                  <div className="flex items-center">
+                    <div className="w-36 text-right">
+                      <ShortBalance
+                        balance={balance}
+                        zeroDisplay={6}
+                        isDot={true}
+                      />
+                    </div>
                     <span>{symbol}</span>
                   </div>
                 </div>
                 {!isTokenTransaction && (
-                  <div className="flex justify-between text-base font-medium text-[#787575]">
+                  <div className="flex justify-between text-base font-medium text-[#787575] items-center">
                     <div className="capitalize">
                       {t("wallet_page.occupied_balance")}:
                     </div>
-                    <div className="flex gap-2 items-center">
-                      <span>
-                        {formatNumber(currentAccount.ordinalBalance, 2, 8)}
-                      </span>
+                    <div className="flex items-center">
+                      <div className="w-36 text-right">
+                        <ShortBalance
+                          balance={currentAccount.ordinalBalance}
+                          zeroDisplay={6}
+                          className="!text-base !font-medium !text-[#787575]"
+                          isDot={true}
+                        />
+                      </div>
                       <span>{symbol}</span>
                     </div>
                   </div>

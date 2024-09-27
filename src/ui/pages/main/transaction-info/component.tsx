@@ -1,7 +1,12 @@
 import { ITransaction } from "@/shared/interfaces/api";
 import { isCkbNetwork } from "@/shared/networks";
 import { browserTabsCreate } from "@/shared/utils/browser";
-import { shortAddress } from "@/shared/utils/transactions";
+import {
+  getTransactionTokenValue,
+  getTransactionValue,
+  isTxToken,
+  shortAddress,
+} from "@/shared/utils/transactions";
 import Modal from "@/ui/components/modal";
 import {
   useGetCurrentAccount,
@@ -15,6 +20,8 @@ import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
 import { useLocation } from "react-router-dom";
 import s from "./styles.module.scss";
+import { address } from "bitcoinjs-lib";
+import { formatNumber } from "@/shared/utils";
 
 const TransactionInfo = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -24,32 +31,80 @@ const TransactionInfo = () => {
   const {
     state: { transaction, lastBlock },
   } = useLocation();
-  const tx = transaction as ITransaction;
+
+  const tx = useMemo(() => {
+    return transaction as ITransaction;
+  }, [transaction]);
+
+  const isTokenTransaction = useMemo(() => {
+    return isTxToken(tx);
+  }, [tx]);
+
+  const txValue = useMemo(() => {
+    if (isTokenTransaction) {
+      const v = getTransactionTokenValue(tx, tx.address);
+      return { amount: v.amount.toString(), symbol: v.symbol };
+    } else {
+      return {
+        amount: getTransactionValue(tx, tx.address, 5),
+        symbol: currentNetwork.coinSymbol,
+      };
+    }
+  }, [isTokenTransaction]);
 
   const onOpenExplorer = async () => {
     await browserTabsCreate({
       url: `${currentNetwork.explorerUrl}/${
         isCkbNetwork(currentNetwork.network) ? "transaction" : "tx"
-      }/${transaction.txid}`,
+      }/${tx.txid}`,
       active: true,
     });
   };
 
   const filteredInput = useMemo(() => {
-    const txValues: Record<string, number> = {};
+    const txValues: { address: string; symbol: string; value: number }[] = [];
 
     tx.vin.forEach((i) => {
-      if (txValues[i.prevout?.scriptpubkey_address]) {
-        txValues[i.prevout?.scriptpubkey_address] += i.prevout?.value;
+      const item = {
+        address: i.prevout?.scriptpubkey_address,
+        symbol: currentNetwork.coinSymbol,
+        value: 0,
+      };
+
+      if (i.extra_info) {
+        item.symbol = i.extra_info.symbol;
+        item.value =
+          Number(i.extra_info.amount || 0) / 10 ** Number(i.extra_info.decimal);
       } else {
-        txValues[i.prevout?.scriptpubkey_address] = i.prevout?.value;
+        item.value = i.prevout?.value / 10 ** 8;
       }
+      txValues.push(item);
     });
 
-    return Object.entries(txValues).map((i) => ({
-      scriptpubkey_address: i[0],
-      value: i[1],
-    }));
+    return txValues;
+  }, [tx]);
+
+  const filteredOutput = useMemo(() => {
+    const txValues: { address: string; symbol: string; value: number }[] = [];
+
+    tx.vout.forEach((i) => {
+      const item = {
+        address: i.scriptpubkey_address,
+        symbol: currentNetwork.coinSymbol,
+        value: 0,
+      };
+
+      if (i.extra_info) {
+        item.symbol = i.extra_info.symbol;
+        item.value =
+          Number(i.extra_info.amount || 0) / 10 ** Number(i.extra_info.decimal);
+      } else {
+        item.value = i.value / 10 ** 8;
+      }
+      txValues.push(item);
+    });
+
+    return txValues;
   }, [tx]);
 
   return (
@@ -83,8 +138,7 @@ const TransactionInfo = () => {
                 {t("transaction_info.value_label")}
               </p>
               <span>
-                {tx.vout.reduce((acc, cur) => cur.value + acc, 0) / 10 ** 8}{" "}
-                {currentNetwork.coinSymbol}
+                {txValue.amount} {txValue.symbol}
               </span>
             </div>
 
@@ -106,7 +160,7 @@ const TransactionInfo = () => {
                 <TableItem
                   label={t("transaction_info.outputs")}
                   currentAddress={currentAccount.accounts[0].address}
-                  items={tx.vout}
+                  items={filteredOutput}
                 />
               </div>
             </Modal>
@@ -124,7 +178,8 @@ const TransactionInfo = () => {
 
 interface ITableItem {
   items: {
-    scriptpubkey_address: string;
+    address: string;
+    symbol: string;
     value: number;
   }[];
   currentAddress?: string;
@@ -133,36 +188,29 @@ interface ITableItem {
 
 const TableItem: FC<ITableItem> = ({ items, currentAddress, label }) => {
   const currentId = useId();
-
-  const addressLength = (value: number) => {
-    const newValue = (value / 10 ** 8).toFixed(2);
-    if (newValue.length > 7) {
-      return 9;
-    }
-    return 12;
-  };
-
   return (
     <div className={s.table}>
-      <h3 className="text-base font-medium text-primary">{label}:</h3>
+      <h3 className="text-base font-medium text-primary sticky top-0 bg-white pb-2">
+        {label}:
+      </h3>
       <div className={s.tableList}>
         {items.map((i, idx) => (
           <div
             key={`${currentId}${idx}`}
-            className="bg-grey-300 p-4 flex items-center justify-between border border-grey-200 rounded-lg"
+            className="bg-grey-300 p-4 border border-grey-200 rounded-lg"
           >
             <div
-              className="text-[#787575] text-base font-medium"
+              className="text-[#787575] text-base font-medium cursor-pointer"
               onClick={async () => {
-                await navigator.clipboard.writeText(i.scriptpubkey_address);
+                await navigator.clipboard.writeText(i.address);
                 toast.success(t("transaction_info.copied"));
               }}
-              title={i.scriptpubkey_address}
+              title={i.address}
             >
-              {shortAddress(i.scriptpubkey_address, addressLength(i.value))}
+              {shortAddress(i.address, 12)}
             </div>
-            <div className="text-primary text-base">
-              {(i.value / 10 ** 8).toFixed(2)}
+            <div className="text-primary text-sm">
+              {formatNumber(i.value, 3, 8)} {i.symbol}
             </div>
           </div>
         ))}

@@ -81,6 +81,7 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
         scriptsig_asm: "",
         is_coinbase: false,
         extra_info: x.extra_info,
+        address_hash: x.address_hash,
       })),
       vout: d.attributes.display_outputs.map((x) => ({
         value: parseFloat(x.capacity),

@@ -16,6 +16,7 @@ import { useControllersState } from "@/ui/states/controllerState";
 import { ITransaction } from "@/shared/interfaces/api";
 import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
 import ShortBalance from "../ShortBalance";
+import Loading from "react-loading";
 
 const TransactionList = ({
   className,
@@ -26,7 +27,7 @@ const TransactionList = ({
   type?: string;
   typeHash?: string;
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lastBlock, setLastBlock] = useState(0);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const { ref, inView } = useInView();
@@ -375,7 +376,17 @@ const TransactionList = ({
         Activities
       </div>
 
-      {!txes.length ? (
+      {loading ? (
+        <div className="flex justify-center">
+          <Loading
+            type="spin"
+            color="#ODODOD"
+            width={"2rem"}
+            height={"2rem"}
+            className="react-loading pr-2"
+          />
+        </div>
+      ) : !txes.length ? (
         <NoTransaction />
       ) : (
         <div className="border border-grey-300 rounded-lg px-3 standard:pb-[50px] mt-2">
@@ -431,10 +442,12 @@ const TransactionList = ({
                                 {isReceived ? "From" : "To"}{" "}
                                 {isReceived
                                   ? shortAddress(
-                                      t.vin[0].prevout.scriptpubkey_address
+                                      t.vin[0].prevout.scriptpubkey_address,
+                                      3
                                     )
                                   : shortAddress(
-                                      t.vout[0].scriptpubkey_address
+                                      t.vout[0].scriptpubkey_address,
+                                      3
                                     )}
                               </div>
                             </div>
@@ -445,13 +458,14 @@ const TransactionList = ({
                               color: isReceived ? "#09C148" : "#FF4545",
                             }}
                           >
-                            <span className="w-[110px] truncate block text-right">
+                            <span className="w-[120px] truncate block text-right">
                               {isReceived ? "+" : "-"}
                               <ShortBalance
                                 balance={Math.abs(
                                   Number(amount.toString().replace(/,/g, ""))
                                 )}
                                 zeroDisplay={6}
+                                isDot={true}
                                 className="!text-sm !inline-block"
                               />
                             </span>

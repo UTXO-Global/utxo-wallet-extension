@@ -110,7 +110,7 @@ const DetailNFT = () => {
                 className={cn("btn primary w-full")}
                 onClick={onNextToTransfer}
               >
-                {t("detailNFT.transfer")}
+                {t("detail_NFT.transfer")}
               </button>
             </div>
             <div className="mt-4 rounded-lg bg-[#FAFAFA] p-4 grid gap-4">
@@ -123,7 +123,7 @@ const DetailNFT = () => {
 
               <div className="flex justify-between">
                 <p className="text-base font-medium text-[#787575]">
-                  {t("detailNFT.type")}
+                  {t("detail_NFT.type")}
                 </p>
                 <p className="text-base font-medium text-primary text-right">
                   DOBs
@@ -133,9 +133,9 @@ const DetailNFT = () => {
               {!!detailNFT.contentType && (
                 <div className="flex justify-between">
                   <p className="text-base font-medium text-[#787575]">
-                    {t("detailNFT.content_type")}
+                    {t("detail_NFT.content_type")}
                   </p>
-                  <p className="text-base font-medium text-primary text-right">
+                  <p className="text-base font-medium text-primary text-right capitalize">
                     {detailNFT.contentType}
                   </p>
                 </div>
@@ -143,7 +143,7 @@ const DetailNFT = () => {
               <div className="flex justify-between">
                 <div className="flex gap-1 items-center">
                   <p className="text-base font-medium text-[#787575]">
-                    {t("detailNFT.occupied")}
+                    {t("detail_NFT.occupied")}
                   </p>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +190,7 @@ const DetailNFT = () => {
 
               <div className="flex justify-between">
                 <p className="text-base font-medium text-[#787575]">
-                  {t("detailNFT.creator")}
+                  {t("detail_NFT.creator")}
                 </p>
                 <p className="text-base font-medium text-primary text-right">
                   {shortAddress(detailNFT.collection.creator || "--", 8)}

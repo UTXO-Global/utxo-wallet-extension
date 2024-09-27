@@ -43,7 +43,9 @@
       "next": "다음",
       "confirm": "확인하다",
       "details": "세부 사항",
-      "detailNFT": "세부 NFT"
+      "detail_NFT": "세부 NFT",
+      "search": "검색",
+      "swap": "스왑"
     },
     "check_password": {
       "incorrect_password_error": "잘못된 비밀번호",
@@ -63,6 +65,34 @@
     },
     "card": {
       "close": "닫기"
+    },
+    "swap": {
+      "slippage_settings": "슬리피지 설정",
+      "search_token": "토큰 검색",
+      "max_slippage": "최대 슬리피지",
+      "swap_success": "스왑 성공",
+      "review_order": "주문 검토",
+      "no_assets_available": "사용 가능한 자산 없음",
+      "fees": "수수료",
+      "fee": "수수료",
+      "tooltip": {
+        "fees": "거래 중 지불한 수수료, 주로 유동성",
+        "max_slippage": "거래에서 허용할 수 있는 최대 가격 변화 비율",
+        "price_impact": "거래량으로 인한 시장 가격과 추정 가격의 차이"
+      },
+      "max": "최대",
+      "balance": "잔액",
+      "price": "가격",
+      "insufficient_balance": "잔액이 부족합니다",
+      "close": "닫기",
+      "price_impact": "가격 영향",
+      "select_token": "토큰 선택",
+      "you_pay": "지불",
+      "you_receive": "수신",
+      "slippage_setting_desc": "가격이 슬리피지보다 더 많이 변하면 거래가 실패합니다. 값이 너무 높으면 불리한 거래가 발생합니다",
+      "auto": "자동",
+      "custom": "사용자 정의",
+      "price_impact_too_high": "가격 영향이 너무 크다"
     }
   },
   "change_password": {
@@ -214,7 +244,7 @@
     "recommended": "추천",
     "partners": "파트너"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "유형",
     "content_type": "콘텐츠 유형",
     "occupied": "가득차 있는",

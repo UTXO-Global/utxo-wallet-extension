@@ -439,7 +439,7 @@ class KeyringService {
     const collectedCells: Cell[] = [];
     let neededCapacity = BI.from(0);
     let totalCapacity = BI.from(0);
-    let xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
+    const xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
 
     if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
       throw new Error(`${data.token.attributes.symbol} insufficient balance`);

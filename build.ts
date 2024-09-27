@@ -178,7 +178,7 @@ const makeArchive = () => {
   Bun.spawnSync({
     cmd: [
       "zip",
-      "-r",
+      "-r9",
       `../${chrome ? "chrome" : "firefox"}-${
         process.env.npm_package_version
       }.zip`,

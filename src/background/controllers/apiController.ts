@@ -47,7 +47,9 @@ export interface IApiController {
     address: string,
     location: string
   ): Promise<Inscription[] | undefined>;
-  getNativeCoinPrice(): Promise<{ usd: number; changePercent24Hr: number }>;
+  getNativeCoinPrice(
+    coinSymbol?: string
+  ): Promise<{ usd: number; changePercent24Hr: number }>;
   getLastBlock(): Promise<number>;
   getFees(): Promise<{ fast: number; slow: number }>;
   getInscriptions(address: string): Promise<Inscription[] | undefined>;
@@ -289,16 +291,14 @@ class ApiController implements IApiController {
     }
   }
 
-  async getNativeCoinPrice(): Promise<{
+  async getNativeCoinPrice(coinSymbol: string): Promise<{
     usd: number;
     changePercent24Hr: number;
   }> {
-    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    const slug = networkData.parentSlug || networkData.slug;
     let apiFetchPrice = "";
-    if (slug === "btc") {
+    if (coinSymbol.toLowerCase() === "btc") {
       apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
-    } else if (slug === "nervos") {
+    } else if (coinSymbol === "ckb") {
       apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
     }
 

@@ -11,7 +11,12 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
-import { IcnApproximate, IcnSend, IcnReceive } from "@/ui/components/icons";
+import {
+  IcnApproximate,
+  IcnSend,
+  IcnReceive,
+  IcnSwap,
+} from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
@@ -43,40 +48,27 @@ const AccountPanel = () => {
   }, [currentAccount.balance]);
 
   const panelNavs = useMemo(() => {
-    return isCkbNetwork(currentNetwork.network)
-      ? [
-          {
-            navPath: `/pages/receive/${currentAccount.accounts[0].address}`,
-            navName: "pf_receive",
-            navLabel: "receive",
-            icon: <IcnReceive />,
-            title: t("wallet_page.receive"),
-          },
-          {
-            navPath: "/pages/create-send",
-            navName: "pf_send",
-            navLabel: "send",
-            icon: <IcnSend />,
-            title: t("wallet_page.send"),
-          },
-        ]
-      : [
-          {
-            navPath: "/pages/receive",
-            navName: "pf_receive",
-            navLabel: "receive",
-            icon: <IcnReceive />,
-            title: t("wallet_page.receive"),
-            isPopup: true,
-          },
-          {
-            navPath: "/pages/create-send",
-            navName: "pf_send",
-            navLabel: "send",
-            icon: <IcnSend />,
-            title: t("wallet_page.send"),
-          },
-        ];
+    const isCKB = isCkbNetwork(currentNetwork.network);
+    const navs = [
+      {
+        navPath: `/pages/receive/${
+          isCKB ? currentAccount.accounts[0].address : ""
+        }`,
+        navName: "pf_receive",
+        navLabel: "receive",
+        icon: <IcnReceive />,
+        title: t("wallet_page.receive"),
+        isPopup: !isCKB,
+      },
+      {
+        navPath: "/pages/create-send",
+        navName: "pf_send",
+        navLabel: "send",
+        icon: <IcnSend />,
+        title: t("wallet_page.send"),
+      },
+    ];
+    return navs;
   }, [currentAccount.accounts, currentNetwork.network]);
 
   const _navigate = (path: string, name: string, label: string) => {
@@ -177,7 +169,8 @@ const AccountPanel = () => {
             <div
               className={cn(`grid gap-2 !mt-6 pb-2`, {
                 "grid-cols-2": panelNavs.length <= 2,
-                "grid-cols-4": panelNavs.length > 2,
+                "grid-cols-3": panelNavs.length === 3,
+                "grid-cols-4": panelNavs.length > 3,
               })}
             >
               {panelNavs.map((nav, i) => (

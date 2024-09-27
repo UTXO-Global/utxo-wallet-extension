@@ -320,26 +320,46 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     await LS.setItem(NATIVE_COIN_PRICES_KEY, prices);
   };
 
-  const loadNativeCoinPrice = useCallback(async () => {
+  const getCoinPrice = async (symbol: string) => {
     try {
-      let pricesFromCache = await getNativeCoinPricesFromLS(
-        currentNetwork.coinSymbol
-      );
+      const symbolLower = symbol.toLowerCase();
+      let pricesFromCache = await getNativeCoinPricesFromLS(symbolLower);
 
       if (
         !pricesFromCache &&
         apiController &&
         apiController.getNativeCoinPrice
       ) {
-        pricesFromCache = await apiController.getNativeCoinPrice();
+        pricesFromCache = await apiController.getNativeCoinPrice(symbolLower);
         await updateLastBlock();
         await setNativeCoinPricesToLS(
-          currentNetwork.coinSymbol,
+          symbolLower,
           pricesFromCache.usd,
           pricesFromCache.changePercent24Hr
         );
       }
 
+      if (pricesFromCache) {
+        return {
+          symbol: symbolLower,
+          usd: pricesFromCache.usd,
+          changePercent24Hr: pricesFromCache.changePercent24Hr,
+        };
+      }
+    } catch (e) {
+      console.log(`Load coin ${symbol} price: `, e.message);
+    }
+
+    return {
+      symbol: symbol,
+      usd: 0,
+      changePercent24Hr: 0,
+    };
+  };
+
+  const loadNativeCoinPrice = useCallback(async () => {
+    try {
+      const pricesFromCache = await getCoinPrice(currentNetwork.coinSymbol);
       setCurrentPrice(pricesFromCache?.usd || 0);
       setChangePercent24Hr(pricesFromCache?.changePercent24Hr || 0);
     } catch (e) {
@@ -393,6 +413,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     inscriptions,
     currentPrice,
     changePercent24Hr,
+    getCoinPrice,
     loadMoreTransactions,
     loadMoreInscriptions,
     trottledUpdate: throttleUpdate,
@@ -423,6 +444,11 @@ interface TransactionManagerContextType {
   inscriptions: Inscription[];
   currentPrice: number | undefined;
   changePercent24Hr: number | undefined;
+  getCoinPrice: (symbol: string) => Promise<{
+    symbol: string;
+    usd: number;
+    changePercent24Hr: number;
+  }>;
   loadMoreTransactions: () => Promise<void>;
   loadMoreInscriptions: () => Promise<void>;
   trottledUpdate: (force?: boolean) => void;
@@ -467,6 +493,13 @@ export const useTransactionManagerContext = () => {
       inscriptions: [],
       currentPrice: undefined,
       changePercent24Hr: undefined,
+      getCoinPrice: async (symbol: string) => {
+        return {
+          symbol: "",
+          usd: 0,
+          changePercent24Hr: 0,
+        };
+      },
       loadMoreTransactions: () => {},
       loadMoreInscriptions: () => {},
       trottledUpdate: () => {},

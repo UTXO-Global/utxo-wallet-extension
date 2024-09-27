@@ -7,6 +7,7 @@ export interface NetworkConfig {
   rpc_url: string;
   rpc: RPC;
   indexer: CkbIndexer;
+  utxoAPIKey: string;
 }
 
 export interface OffCKBConfig {
@@ -110,18 +111,21 @@ const offCKBConfig: OffCKBConfig = {
       rpc_url: "http://127.0.0.1:8114",
       rpc: new RPC("http://127.0.0.1:8114", { fetch: customizedFetch }),
       indexer: new CkbIndexer("http://127.0.0.1:8114"),
+      utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
     },
     testnet: {
       lumosConfig: testnetLumosConfig,
       rpc_url: "https://testnet.ckb.dev/rpc",
       rpc: new RPC("https://testnet.ckb.dev/rpc", { fetch: customizedFetch }),
       indexer: new CkbIndexer("https://testnet.ckb.dev/rpc"),
+      utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
     },
     mainnet: {
       lumosConfig: mainnetLumosConfig,
       rpc_url: "https://mainnet.ckb.dev/rpc",
       rpc: new RPC("https://mainnet.ckb.dev/rpc", { fetch: customizedFetch }),
       indexer: new CkbIndexer("https://mainnet.ckb.dev/rpc"),
+      utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
     },
   },
   initializeLumosConfig: () => {

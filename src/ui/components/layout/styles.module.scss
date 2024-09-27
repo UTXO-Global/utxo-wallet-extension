@@ -21,7 +21,7 @@
 }
 
 .title {
-  @apply absolute left-1/2 -translate-x-1/2 font-medium text-xl whitespace-nowrap;
+  @apply absolute left-1/2 -translate-x-1/2 font-medium text-xl whitespace-nowrap capitalize;
 }
 
 .addNew {

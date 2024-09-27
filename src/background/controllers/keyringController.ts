@@ -10,6 +10,8 @@ import type {
   TransferNFT,
 } from "../services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
+import { Transaction, helpers } from "@ckb-lumos/lumos";
+import { convertCKBTransactionToSkeleton } from "@/shared/networks/ckb/helpers";
 
 export interface IKeyringController {
   init(password: string): Promise<IPrivateWallet[]>;
@@ -24,6 +26,12 @@ export interface IKeyringController {
     hdPath: string;
     data: string;
   }): Promise<string>;
+  signCkbTransaction(
+    fromAddress: string,
+    networkSlug: NetworkSlug,
+    tx: any,
+    hdPath: string
+  ): Promise<Transaction>;
   sendCoin(data: SendCoin): Promise<string>;
   sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }>;
   transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }>;
@@ -139,6 +147,20 @@ class KeyringController implements IKeyringController {
     utxos: ApiUTXO[]
   ): Promise<string> {
     return keyringService.sendMultiOrd(toAddress, feeRate, ordUtxos, utxos);
+  }
+
+  async signCkbTransaction(
+    fromAddress: string,
+    networkSlug: NetworkSlug,
+    tx: any,
+    hdPath: string
+  ): Promise<Transaction> {
+    const txSkeleton = await convertCKBTransactionToSkeleton(
+      fromAddress,
+      networkSlug,
+      tx
+    );
+    return await keyringService.signCkbTransaction({ tx: txSkeleton, hdPath });
   }
 }
 

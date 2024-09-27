@@ -88,7 +88,7 @@ export default function ConfirmTransferNFT() {
   return (
     <div className="w-full h-full flex flex-col justify-between">
       <div className="p-4 pb-16">
-        <div className="w-full flex flex-col justify-start items-start gap-4 py-4">
+        <div className="w-full flex flex-col justify-start items-start gap-4 py-4 pt-0">
           {fields.map((i) => (
             <div key={i.label} className="w-full">
               <div className="mb-1 ml-1 text-base font-medium">{i.label}</div>

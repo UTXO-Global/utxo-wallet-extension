@@ -45,11 +45,22 @@ export const getTxDirection = (
 };
 
 export const isTxToken = (transaction: ITransaction) => {
-  if (transaction.vin.find((t) => t.extra_info !== undefined)) {
+  if (
+    transaction.vin.find(
+      (t) =>
+        t.address_hash === transaction.address && t.extra_info !== undefined
+    )
+  ) {
     return true;
   }
 
-  if (transaction.vout.find((t) => t.extra_info !== undefined)) {
+  if (
+    transaction.vout.find(
+      (t) =>
+        t.scriptpubkey_address === transaction.address &&
+        t.extra_info !== undefined
+    )
+  ) {
     return true;
   }
 

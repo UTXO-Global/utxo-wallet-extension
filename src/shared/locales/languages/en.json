@@ -60,7 +60,9 @@
       "next": "Next",
       "confirm": "Confirm",
       "details": "Details",
-      "detailNFT": "NFT Details"
+      "detail_NFT": "NFT Details",
+      "search": "Search",
+      "swap": "Swap"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",
@@ -106,6 +108,39 @@
       "create_transfer": "Mint transfer",
       "send": "Send",
       "no_transfers": "No transfers"
+    },
+    "swap": {
+      "slippage_settings": "Slippage settings",
+      "search_token": "Search Token",
+      "max_slippage": "Max Slippage",
+      "swap_success": "Swap Success",
+      "review_order": "Review order",
+      "no_assets_available": "No Assets Available",
+      "fees": "Fees",
+      "fee": "Fee",
+      "max": "Max",
+      "balance": "Balance",
+      "price": "Price",
+      "insufficient_balance": "Insufficient balance",
+      "close": "Close",
+      "price_impact": "Price impact",
+      "select_token": "Select token",
+      "you_pay": "You Pay",
+      "you_receive": "You Receive",
+      "slippage_setting_desc": "Your transaction will fail if the price changes more than the slippage. Too high of a value will result in an unfavorable trade",
+      "auto": "Auto",
+      "custom": "Custom",
+      "price_impact_too_high": "Price impact is too high",
+      "tooltip": {
+        "fees": "The fee paid during the trade, primarily to liquidity",
+        "max_slippage": "The maximum percentage of price change you are willing to tolerate in the trade",
+        "price_impact": "The difference between the market and estimated prices due to trade volume"
+      },
+      "errors": {
+        "minSlippage": "",
+        "max_slippage": "",
+        "midSlippage": ""
+      }
     }
   },
   "change_password": {
@@ -345,7 +380,7 @@
     "recommended": "Recommended",
     "partners": "Partners"
   },
-  "detailNFT": {
+  "detail_NFT": {
     "type": "Type",
     "content_type": "Content Type",
     "occupied": "Occupied",

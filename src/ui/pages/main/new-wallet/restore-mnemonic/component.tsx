@@ -100,6 +100,7 @@ const RestoreMnemonic = () => {
                 setSelected={(e) => {
                   setSelectedWaleltName(e.name);
                 }}
+                className="capitalize"
               />
             </div>
           )}

@@ -1,7 +1,5 @@
 import { createHashRouter, Navigate } from "react-router-dom";
-
 import Wallet from "@/ui/pages/main/wallet";
-
 import PagesLayout from "@/ui/components/layout";
 import CreatePassword from "@/ui/pages/main/create-password";
 import Login from "@/ui/pages/main/login";
@@ -47,6 +45,11 @@ import DetailNFT from "./main/detail-nft";
 import Activities from "./main/activities";
 import TransferNft from "./main/transfer-nft";
 import ConfirmTransferNft from "./main/transfer-nft/confirm-transfer-nft";
+import UtxoSwap from "./main/swap/component";
+import UTXOSwapSetting from "./main/swap/setting";
+import UTXOSwapSearchToken from "./main/swap/search-token/component";
+import UTXOReviewOrder from "./main/swap/review-order/component";
+import UTXOFinalSwap from "./main/swap/success";
 
 export const guestRouter = createHashRouter([
   {
@@ -74,9 +77,29 @@ export const authenticatedRouter = createHashRouter([
     element: <Activities />,
   },
   {
+    path: "swap",
+    element: <UtxoSwap />,
+  },
+  {
+    path: "swap/search-token",
+    element: <UTXOSwapSearchToken />,
+  },
+  {
     path: "pages",
     element: <PagesLayout />,
     children: [
+      {
+        path: "swap/slippage-settings",
+        element: <UTXOSwapSetting />,
+      },
+      {
+        path: "swap/review-order",
+        element: <UTXOReviewOrder />,
+      },
+      {
+        path: "swap/swap-success/:txId",
+        element: <UTXOFinalSwap />,
+      },
       {
         path: "tokens/:type/:typeHash",
         element: <TokenDetail />,
