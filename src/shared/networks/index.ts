@@ -50,11 +50,6 @@ export const supportedNetworks: ChainData[] = [
         parentSlug: "btc",
         walletToImport: [
           {
-            name: "BitSnap",
-            value: "bitsnap",
-            passphrase: "",
-          },
-          {
             name: "Unisat",
             value: "unisat",
             passphrase: "",

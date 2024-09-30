@@ -6,7 +6,7 @@ export interface IWallet {
   accounts: IGroupAccount[];
   name: string;
   type: "simple" | "root";
-  restoreFromWallet?: "utxoGlobal" | "neuron" | "bitsnap" | "unisat" | "others";
+  restoreFromWallet?: "utxoGlobal" | "neuron" | "unisat" | "others";
 }
 
 export interface IPrivateWallet extends IWallet {
@@ -37,5 +37,5 @@ export interface INewWalletProps {
   restoreFrom?: "wif" | "hex";
   hdPath?: string;
   passphrase?: string;
-  restoreFromWallet?: "utxoGlobal" | "neuron" | "bitsnap" | "unisat" | "others";
+  restoreFromWallet?: "utxoGlobal" | "neuron" | "unisat" | "others";
 }
