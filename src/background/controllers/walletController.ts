@@ -21,6 +21,7 @@ import { Keyring } from "../services/keyring/ckbhdw";
 import { getAddress } from "../services/keyring/ckbhdw/hd/utils";
 import { Json } from "../services/keyring/types";
 import type { DecryptedSecrets } from "../services/storage/types";
+import { CKB_NEURON_HD_PATH } from "@/shared/networks/ckb";
 
 function getAddressesByWalletIndex({
   walletIndex,
@@ -61,11 +62,8 @@ function getAddressesByWalletIndex({
   return addresses;
 }
 
-function getNewHdPathFromAddressType(
-  addressType: ChainAddressType,
-  newIndex: number
-): string {
-  const hdPathPrefix = addressType.hdPath.split("/").slice(0, -1).join("/");
+function getNewHdPathFromAddressType(hdPath: string, newIndex: number): string {
+  const hdPathPrefix = hdPath.split("/").slice(0, -1).join("/");
   return hdPathPrefix + "/" + newIndex.toString();
 }
 
@@ -79,7 +77,9 @@ function getNewGAccountIndex(
   network: NetworkSlug
 ): number {
   const _accounts = accounts.filter((z) => z.network === network);
-  const _lastIndex = getIndexFromHdPath(_accounts[_accounts.length - 1].accounts[0].hdPath);
+  const _lastIndex = getIndexFromHdPath(
+    _accounts[_accounts.length - 1].accounts[0].hdPath
+  );
   return _lastIndex + 1;
 }
 
@@ -182,10 +182,13 @@ class WalletController implements IWalletController {
 
     const keyring = await keyringService.newKeyring(props);
 
+    const hdPath =
+      props.restoreFromWallet === "neuron" ? CKB_NEURON_HD_PATH : "";
+
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
-      hdPath: props.hdPath,
+      hdPath,
     });
 
     return {
@@ -193,6 +196,7 @@ class WalletController implements IWalletController {
       id: walletId,
       type: props.walletType,
       accounts: [groupAccount],
+      restoreFromWallet: props.restoreFromWallet
     };
   }
 
@@ -252,7 +256,7 @@ class WalletController implements IWalletController {
       throw new Error("No supported on simple key");
     }
     const network = getNetworkDataBySlug(networkSlug);
-    const newGAccountIndex = getNewGAccountIndex(wallet.accounts, networkSlug)
+    const newGAccountIndex = getNewGAccountIndex(wallet.accounts, networkSlug);
 
     // Unisat bitcoin network testnet, mainnet, signet has same hdpath (as mainnet)
     let addressTypes = network.addressTypes;
@@ -264,7 +268,12 @@ class WalletController implements IWalletController {
     }
 
     const accounts: IAccount[] = addressTypes.map((addressType, id) => {
-      const hdPath = getNewHdPathFromAddressType(addressType, newGAccountIndex);
+      const hdPath = getNewHdPathFromAddressType(
+        wallet.restoreFromWallet === "neuron"
+          ? CKB_NEURON_HD_PATH
+          : addressType.hdPath,
+        newGAccountIndex
+      );
       const publicKey = keyring.exportPublicKey(hdPath);
       const address = getAddress(
         addressType.value,

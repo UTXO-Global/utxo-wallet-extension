@@ -1,3 +1,4 @@
+import { WalletToImport } from "@/shared/networks/types";
 import Select from "@/ui/components/select";
 import SelectWithHint from "@/ui/components/select-hint/component";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
@@ -21,8 +22,10 @@ const RestoreMnemonic = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const currentNetwork = useGetCurrentNetwork();
-  const [selectedWalletName, setSelectedWaleltName] = useState(
-    currentNetwork.walletToImport ? currentNetwork.walletToImport[0].name : ""
+  const [selectedWallet, setSelectedWallet] = useState<
+    WalletToImport | undefined
+  >(
+    currentNetwork.walletToImport ? currentNetwork.walletToImport[0] : undefined
   );
 
   const setMnemonic = useCallback(
@@ -48,18 +51,14 @@ const RestoreMnemonic = () => {
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         passphrase:
-          selectedWalletName !== ""
+          selectedWallet.name !== ""
             ? currentNetwork.walletToImport.find(
-                (w) => w.name === selectedWalletName
+                (w) => w.name === selectedWallet.name
               ).passphrase
             : "",
-        walletName: selectedWalletName !== "" ? selectedWalletName : undefined,
-        hdPath:
-          selectedWalletName !== ""
-            ? currentNetwork.walletToImport.find(
-                (w) => w.name === selectedWalletName
-              ).hdPath
-            : "",
+        walletName:
+          setSelectedWallet.name !== "" ? selectedWallet.name : undefined,
+        restoreFromWallet: selectedWallet.value,
       });
       await updateWalletState({ vaultIsEmpty: false });
       // NOTE: [GA] - Restore mnemonic
@@ -91,14 +90,12 @@ const RestoreMnemonic = () => {
             <div className="w-full mb-4">
               <Select
                 label={t("new_wallet.restore_from_label")}
-                values={currentNetwork.walletToImport.map((wallet) => ({
-                  name: wallet.name,
-                }))}
+                values={currentNetwork.walletToImport}
                 selected={{
-                  name: selectedWalletName,
+                  name: selectedWallet.name,
                 }}
                 setSelected={(e) => {
-                  setSelectedWaleltName(e.name);
+                  setSelectedWallet(e as WalletToImport);
                 }}
                 className="capitalize"
               />
