@@ -27,10 +27,11 @@ export type NetworkSlug =
   | "nervos_testnet";
 export type ChainSlug = "btc" | "nervos";
 
-type WalletToImport = {
+export type WalletToImport = {
   name: string;
   passphrase: string;
-  hdPath?: string
+  hdPath?: string;
+  value?: "utxoGlobal" | "neuron" | "unisat" | "others";
 };
 
 export type NetworkData = {

@@ -22,16 +22,19 @@ export const supportedNetworks: ChainData[] = [
       walletToImport: [
         {
           name: "UTXO Global",
+          value: "utxoGlobal",
           hdPath: "",
           passphrase: "",
         },
         {
           name: "Neuron",
+          value: "neuron",
           hdPath: CKB_NEURON_HD_PATH,
           passphrase: "",
         },
         {
           name: "Others",
+          value: "others",
           hdPath: "",
           passphrase: "",
         },
@@ -47,15 +50,13 @@ export const supportedNetworks: ChainData[] = [
         parentSlug: "btc",
         walletToImport: [
           {
-            name: "BitSnap",
-            passphrase: "",
-          },
-          {
             name: "Unisat",
+            value: "unisat",
             passphrase: "",
           },
           {
             name: "Others",
+            value: "others",
             passphrase: "",
           },
         ],

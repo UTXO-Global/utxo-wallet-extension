@@ -43,6 +43,14 @@ const Language = () => {
           中國人
         </button>
       </div>
+      <div className="flex w-10/12 justify-evenly gap-4">
+        <button
+          className={cn(s.langBtn, "btn primary")}
+          onClick={newLanguage("kr")}
+        >
+          한국인
+        </button>
+      </div>
     </div>
   );
 };
