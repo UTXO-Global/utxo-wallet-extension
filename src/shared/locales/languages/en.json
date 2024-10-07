@@ -136,11 +136,7 @@
         "max_slippage": "The maximum percentage of price change you are willing to tolerate in the trade",
         "price_impact": "The difference between the market and estimated prices due to trade volume"
       },
-      "errors": {
-        "minSlippage": "",
-        "max_slippage": "",
-        "midSlippage": ""
-      }
+      "powered_by": "Powered by"
     }
   },
   "change_password": {
