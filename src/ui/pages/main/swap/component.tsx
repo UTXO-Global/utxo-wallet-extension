@@ -569,7 +569,7 @@ export default function UtxoSwap() {
               {isShowPrice && <Prices />}
             </div>
             <div className="absolute bottom-0 left-0 w-full px-4 pb-4 pt-2 standard:bottom-12">
-              {isShowPrice && (
+              {isShowPrice ? (
                 <button
                   type="submit"
                   className={cn(
@@ -591,6 +591,14 @@ export default function UtxoSwap() {
                     ? t("components.swap.price_impact_too_high")
                     : t("components.swap.review_order")}
                 </button>
+              ) : (
+                <div className="text-grey-100 text-sm leading-[17px] font-normal flex items-center justify-center gap-[6px]">
+                  {t("components.swap.powered_by")}
+                  <img
+                    src="https://utxoswap.xyz/assets/utxo_logo-D-iQcdzQ.svg"
+                    className="h-4"
+                  />
+                </div>
               )}
             </div>
           </>
