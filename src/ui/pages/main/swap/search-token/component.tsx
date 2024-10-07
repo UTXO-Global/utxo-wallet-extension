@@ -1,7 +1,6 @@
 import { isCkbNetwork } from "@/shared/networks";
 import WalletPanel from "../wallet-panel";
 import {
-  useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { t } from "i18next";
@@ -13,11 +12,10 @@ import Loading from "react-loading";
 import {
   CKB_TYPE_HASH,
   Client,
-  Collector,
-  Pool,
   PoolInfo,
 } from "@utxoswap/swap-sdk-js";
 import TextAvatar from "@/ui/components/text-avatar";
+import DOMPurify from "dompurify";
 
 const IcnSearch = ({ className }: { className?: string }) => {
   return (
@@ -199,7 +197,7 @@ export default function UTXOSwapSearchToken() {
                         <div className="w-10 h-10">
                           {!!assetDisplay.logo ? (
                             <img
-                              src={assetDisplay.logo}
+                              src={DOMPurify.sanitize(assetDisplay.logo)}
                               className="w-full rounded-full object-cover object-center"
                             />
                           ) : (

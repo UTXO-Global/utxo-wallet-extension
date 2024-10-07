@@ -2,10 +2,8 @@ import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
-import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "react-loading";
-import s from "./styles.module.scss";
 import TransactionList from "@/ui/components/transactions-list";
 import { IcnCopy, IcnReceive, IcnSend } from "@/ui/components/icons";
 import toast from "react-hot-toast";
@@ -15,14 +13,14 @@ import cn from "classnames";
 import Analytics from "@/ui/utils/gtm";
 import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
-import { analyzeSmallNumber, formatNumber } from "@/shared/utils";
+import { formatNumber } from "@/shared/utils";
 import { ckbExplorerApi } from "@/ui/utils/helpers";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 import { shortAddress } from "@/shared/utils/transactions";
-import { BI } from "@ckb-lumos/lumos";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
+import DOMPurify from "dompurify";
 
 const COIN_NATIVE_NAME = {
   CKB: "Nervos CKB",
@@ -181,7 +179,7 @@ const TokenDetail = () => {
     <>
       <div className="flex gap-4 items-center bg-grey-400 px-4 py-2 w-full h-[92px]">
         {!!tokenInfo.attributes.icon_file ? (
-          <img src={tokenInfo.attributes.icon_file} className="w-16 h-16" />
+          <img src={DOMPurify.sanitize(tokenInfo.attributes.icon_file)} className="w-16 h-16" />
         ) : (
           <TextAvatar
             len={2}

@@ -12,6 +12,7 @@ import BottomPanel from "../wallet/bottom-panel";
 import { t } from "i18next";
 import ReactLoading from "react-loading";
 import { TELEGRAM_PARTNERSHIP } from "@/shared/constant";
+import DOMPurify from "dompurify";
 
 const EXPLORER_LINK = "https://config.utxo.global/explore.json";
 
@@ -20,7 +21,6 @@ const Explorer = () => {
   const [active, setActive] = useState<number>(0);
   const [feature, setFeature] = useState<IFeature[]>([]);
   const [partners, setPartners] = useState<IFeature[]>([]);
-  const [recommended, setRecommended] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const loadFeature = async () => {
@@ -91,10 +91,10 @@ const Explorer = () => {
               >
                 {feature.map((z, i) => (
                   <SwiperSlide key={i}>
-                    <a href={z.link} target="_blank" rel="noreferrer">
+                    <a href={DOMPurify.sanitize(z.link)} target="_blank" rel="noreferrer">
                       <div className="rounded-[8px] overflow-hidden">
                         <img
-                          src={z.image}
+                          src={DOMPurify.sanitize(z.image)}
                           alt={z.title}
                           className="object-cover max-h-[120px] w-full"
                         />
@@ -160,14 +160,14 @@ const Explorer = () => {
                 partners.map((z, i) => (
                   <a
                     key={i}
-                    href={z.link}
+                    href={DOMPurify.sanitize(z.link)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex gap-3 items-start py-2 px-3 border-b border-b-grey-300 group hover:bg-grey-300"
                   >
                     <div className="w-12 h-12 flex items-center justify-center bg-grey-300 group-hover:bg-grey-200 rounded-xl">
                       <img
-                        src={z.image}
+                        src={DOMPurify.sanitize(z.image)}
                         alt={z.title}
                         className="w-[33px] h-[33px] object-cover rounded-full"
                       />

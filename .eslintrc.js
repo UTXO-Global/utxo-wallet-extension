@@ -20,6 +20,7 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended",
         "plugin:react-hooks/recommended",
+        "plugin:security/recommended-legacy"
       ],
       files: ["src/**/*.{ts,tsx,js}"],
       parser: "@typescript-eslint/parser",
@@ -28,7 +29,7 @@ module.exports = {
         sourceType: "module",
         project: "./src/tsconfig.json",
       },
-      plugins: ["@typescript-eslint", "react"],
+      plugins: ["@typescript-eslint", "react", "security"],
       rules: {
         "@typescript-eslint/no-explicit-any": "off",
         "react/jsx-uses-react": "off",
