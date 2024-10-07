@@ -12,10 +12,8 @@ import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
 import {
-  IcnApproximate,
   IcnSend,
   IcnReceive,
-  IcnSwap,
 } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";

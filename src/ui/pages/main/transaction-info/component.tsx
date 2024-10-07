@@ -13,14 +13,12 @@ import {
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { LinkIcon } from "@heroicons/react/24/outline";
-import cn from "classnames";
 import { t } from "i18next";
 import { FC, useId, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
 import { useLocation } from "react-router-dom";
 import s from "./styles.module.scss";
-import { address } from "bitcoinjs-lib";
 import { formatNumber } from "@/shared/utils";
 
 const TransactionInfo = () => {

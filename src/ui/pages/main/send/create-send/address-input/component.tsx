@@ -1,6 +1,5 @@
 import { shortAddress } from "@/shared/utils/transactions";
 import { Combobox, Transition } from "@headlessui/react";
-import { BookOpenIcon } from "@heroicons/react/24/outline";
 import s from "./styles.module.scss";
 import { FC, Fragment, useState } from "react";
 import { useAppState } from "@/ui/states/appState";

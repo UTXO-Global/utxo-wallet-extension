@@ -1,7 +1,6 @@
 import { shortAddress } from "@/shared/utils/transactions";
 import Modal from "@/ui/components/modal";
 import { useAppState } from "@/ui/states/appState";
-import { MinusCircleIcon } from "@heroicons/react/24/outline";
 import { FC } from "react";
 
 import { t } from "i18next";

@@ -29,7 +29,7 @@ module.exports = {
         sourceType: "module",
         project: "./src/tsconfig.json",
       },
-      plugins: ["@typescript-eslint", "react", "security"],
+      plugins: ["@typescript-eslint", "react", "security", "unused-imports"],
       rules: {
         "@typescript-eslint/no-explicit-any": "off",
         "react/jsx-uses-react": "off",
@@ -45,6 +45,16 @@ module.exports = {
           "error",
           { ignoreVoid: false, ignoreIIFE: false },
         ],
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "^_",
+                "args": "after-used",
+                "argsIgnorePattern": "^_",
+            },
+        ]
       },
     },
     {

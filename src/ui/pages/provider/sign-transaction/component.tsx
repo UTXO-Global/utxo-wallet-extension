@@ -7,12 +7,9 @@ import { t } from "i18next";
 import Loading from "react-loading";
 import Layout from "../layout";
 import { useControllersState } from "@/ui/states/controllerState";
-import { callCKBRPC } from "@/shared/networks/ckb/helpers";
 import {
   useGetCurrentAccount,
-  useGetCurrentNetwork,
 } from "@/ui/states/walletState";
-import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { shortAddress } from "@/shared/utils/transactions";
 import { IcnCopy } from "@/ui/components/icons";
 import toast from "react-hot-toast";

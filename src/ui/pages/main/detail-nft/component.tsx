@@ -11,7 +11,7 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { formatNumber } from "@/shared/utils";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 const DetailNFT = () => {
   const [mounted, setMounted] = useState(false);

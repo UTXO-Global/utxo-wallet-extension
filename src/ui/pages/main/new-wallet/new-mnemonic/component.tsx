@@ -1,6 +1,5 @@
 import { useAppState } from "@/ui/states/appState";
 import { useControllersState } from "@/ui/states/controllerState";
-import { useWalletState } from "@/ui/states/walletState";
 import cn from "classnames";
 import { t } from "i18next";
 import { useCallback, useEffect, useState } from "react";

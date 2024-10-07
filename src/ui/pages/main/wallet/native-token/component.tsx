@@ -1,4 +1,4 @@
-import { NETWORK_ICON, isCkbNetwork } from "@/shared/networks";
+import { NETWORK_ICON } from "@/shared/networks";
 import { formatNumber } from "@/shared/utils";
 import {
   useGetCurrentAccount,

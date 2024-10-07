@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   useGetCurrentAccount,
-  useGetCurrentNetwork,
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import Analytics from "@/ui/utils/gtm";

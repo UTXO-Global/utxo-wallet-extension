@@ -6,7 +6,7 @@ import {
   isBitcoinNetwork,
   isCkbNetwork,
 } from "@/shared/networks";
-import { balanceOf, capacityOf, getCells } from "@/shared/networks/ckb/helpers";
+import { balanceOf, getCells } from "@/shared/networks/ckb/helpers";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import {
   CkbTipBlockResponse,

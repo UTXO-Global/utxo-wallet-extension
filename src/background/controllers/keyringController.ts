@@ -10,7 +10,7 @@ import type {
   TransferNFT,
 } from "../services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
-import { Transaction, helpers } from "@ckb-lumos/lumos";
+import { Transaction } from "@ckb-lumos/lumos";
 import { convertCKBTransactionToSkeleton } from "@/shared/networks/ckb/helpers";
 
 export interface IKeyringController {
