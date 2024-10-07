@@ -9,3 +9,4 @@ package-lock.json
 note
 note.*
 .DS_Store
+.dccache

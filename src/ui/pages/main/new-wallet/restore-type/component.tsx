@@ -1,11 +1,8 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import cn from "classnames";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
-import { isCkbNetwork } from "@/shared/networks";
 
 const RestoreType = () => {
-  const currentNetwork = useGetCurrentNetwork();
   return (
     <div className="w-full h-full flex flex-col items-center gap-4 standard:gap-8 text-base p-4 pb-0">
       <div className={cn("h-full flex flex-col justify-start w-full")}>

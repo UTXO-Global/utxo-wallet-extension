@@ -1,12 +1,11 @@
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
-import { useAppState } from "@/ui/states/appState";
 import { useControllersState } from "@/ui/states/controllerState";
 import { useWalletState } from "@/ui/states/walletState";
 import cn from "classnames";
 import { t } from "i18next";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import ReactLoading from "react-loading";
 

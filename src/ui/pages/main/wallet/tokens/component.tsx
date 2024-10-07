@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Tokens from "./tokens";
 import Loading from "react-loading";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";

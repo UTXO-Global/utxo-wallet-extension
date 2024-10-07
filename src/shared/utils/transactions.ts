@@ -12,7 +12,7 @@ import {
 } from "../networks";
 import { AddressType, NetworkSlug } from "../networks/types";
 import { formatNumber } from ".";
-import { BI, helpers } from "@ckb-lumos/lumos";
+import { helpers } from "@ckb-lumos/lumos";
 import { ccc } from "@ckb-ccc/core";
 
 export enum TxDirection {

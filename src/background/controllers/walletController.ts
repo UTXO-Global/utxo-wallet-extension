@@ -14,7 +14,7 @@ import {
   supportedNetworks,
 } from "@/shared/networks";
 import { BTC_LIVENET_ADDRESS_TYPES } from "@/shared/networks/btc";
-import { ChainAddressType, NetworkSlug } from "@/shared/networks/types";
+import { NetworkSlug } from "@/shared/networks/types";
 import { excludeKeysFromObj } from "@/shared/utils";
 import * as bip39 from "bip39";
 import { Keyring } from "../services/keyring/ckbhdw";

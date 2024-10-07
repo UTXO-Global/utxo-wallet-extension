@@ -4,7 +4,6 @@ import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
 import s from "./styles.module.scss";
-import { formatNumber } from "@/shared/utils";
 import { useMemo } from "react";
 import TextAvatar from "@/ui/components/text-avatar";
 

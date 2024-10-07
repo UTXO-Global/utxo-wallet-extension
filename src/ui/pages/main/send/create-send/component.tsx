@@ -18,7 +18,6 @@ import { t } from "i18next";
 import {
   ChangeEventHandler,
   MouseEventHandler,
-  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -31,7 +30,6 @@ import AddressBookModal from "./address-book-modal";
 import AddressInput from "./address-input";
 import FeeInput from "./fee-input";
 import s from "./styles.module.scss";
-import { formatNumber } from "@/shared/utils";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";

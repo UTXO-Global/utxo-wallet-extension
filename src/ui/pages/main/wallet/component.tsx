@@ -10,7 +10,6 @@ import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import TransactionList from "@/ui/components/transactions-list";
 import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 

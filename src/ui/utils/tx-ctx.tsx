@@ -495,7 +495,7 @@ export const useTransactionManagerContext = () => {
       changePercent24Hr: undefined,
       getCoinPrice: async (symbol: string) => {
         return {
-          symbol: "",
+          symbol,
           usd: 0,
           changePercent24Hr: 0,
         };

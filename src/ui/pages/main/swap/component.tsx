@@ -22,7 +22,6 @@ import {
 import { formatNumber } from "@/shared/utils";
 import ShortBalance from "@/ui/components/ShortBalance";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { apiController } from "@/background/controllers";
 import { Tooltip } from "react-tooltip";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import TextAvatar from "@/ui/components/text-avatar";

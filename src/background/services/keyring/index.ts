@@ -37,9 +37,8 @@ import type {
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
-import { TransactionSkeletonType, addCellDep } from "@ckb-lumos/lumos/helpers";
+import { addCellDep } from "@ckb-lumos/lumos/helpers";
 import {
-  assembleTransferSporeAction,
   calculateFeeByTransactionSkeleton,
   generateTransferSporeAction,
   getSporeScript,
