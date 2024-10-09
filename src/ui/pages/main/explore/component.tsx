@@ -41,7 +41,7 @@ const Explorer = () => {
   }, []);
 
   return (
-    <div className="w-full h-full p-4">
+    <div className="w-full h-full p-4 pb-[88px]">
       {isLoading ? (
         <div className="flex justify-center h-full items-center">
           <ReactLoading type="spin" color="#ODODOD" />
