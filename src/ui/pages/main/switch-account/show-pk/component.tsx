@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import cn from "classnames";
 import { NETWORK_ICON } from "@/shared/networks";
 import { IcnCopy } from "@/ui/components/icons";
+import { isCkbNetwork } from "@/shared/networks";
 
 const ShowPk = () => {
   const [unlocked, setUnlocked] = useState(false);
@@ -102,7 +103,9 @@ const ShowPk = () => {
                     >
                       <div className="grid gap-1 flex-1">
                         <p className="text-[14px] leading-[140%] font-medium text-primary">
-                          {t("export_private_key.wif_private_key")}
+                          {isCkbNetwork(currentNetwork.network)
+                            ? t("export_private_key.hex_private_key")
+                            : t("export_private_key.wif_private_key")}
                         </p>
                         <p className="text-[#787575] text-xs break-all">
                           {secrets[i]}
