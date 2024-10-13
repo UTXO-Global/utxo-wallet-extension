@@ -1,13 +1,13 @@
 import { browserTabsCreate } from "@/shared/utils/browser";
 import s from "./styles.module.scss";
 
-import { TileProps } from "@/ui/components/tile/component";
 import { KeyIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
 import { useAppState } from "@/ui/states/appState";
 import { t } from "i18next";
 import config from "../../../../../package.json";
 import versionInfo from "../../../../../version.json";
+import { useNavigate } from "react-router-dom";
 
 const ICON_SIZE = 6;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -17,11 +17,13 @@ const Security = () => {
     logout: v.logout,
   }));
 
-  const items: TileProps[] = [
+  const navigate = useNavigate();
+
+  const items = [
     {
       icon: <KeyIcon className={ICON_CN} />,
       label: t("components.layout.change_password"),
-      link: "/pages/change-password",
+      onClick: () => navigate("/pages/change-password"),
     },
     {
       icon: <LockClosedIcon className={ICON_CN} />,
@@ -39,7 +41,8 @@ const Security = () => {
         {items.map((i) => (
           <div
             key={i.label}
-            className="flex justify-between items-center gap-2 pt-4 pb-5 border-b border-b-grey-300 last:border-b-0"
+            className="flex justify-between items-center gap-2 pt-4 pb-5 border-b border-b-grey-300 last:border-b-0 cursor-pointer"
+            onClick={i.onClick}
           >
             <div className="flex gap-2 items-center">
               <div>{i.icon}</div>
