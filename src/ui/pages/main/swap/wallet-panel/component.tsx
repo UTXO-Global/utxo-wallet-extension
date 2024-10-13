@@ -6,10 +6,12 @@ import {
 import Analytics from "@/ui/utils/gtm";
 import { IcnChevronDown } from "@/ui/components/icons";
 import { useMemo } from "react";
+import { useAppState } from "@/ui/states/appState";
 
 const WalletPanel = ({ state }: { state?: any }) => {
   const currentWallet = useGetCurrentWallet();
   const currentAccount = useGetCurrentAccount();
+  const { swapSetting } = useAppState();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -69,7 +71,7 @@ const WalletPanel = ({ state }: { state?: any }) => {
         >
           <IcnSlippageSettings />
           <span className="text-sm leading-5 font-medium text-primary">
-            {localState?.slippage}%
+            {swapSetting.slippage}%
           </span>
         </div>
       </div>

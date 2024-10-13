@@ -25,6 +25,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { Tooltip } from "react-tooltip";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import TextAvatar from "@/ui/components/text-avatar";
+import { useAppState } from "@/ui/states/appState";
 
 const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
@@ -49,13 +50,14 @@ export default function UtxoSwap() {
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
   const location = useLocation();
+  const { swapSetting } = useAppState();
 
   const [pool, setPool] = useState<Pool>(undefined);
   const [poolInfo, setPoolInfo] = useState<PoolInfo>(undefined);
 
-  const [assetXAmount, setAssetXAmount] = useState("");
-  const [slippage, setSlippage] = useState(0.5);
-  const [isSlippageAuto, setIsSlippageAuto] = useState(true);
+  const [assetXAmount, setAssetXAmount] = useState(
+    location?.state?.inputAmount?.toString() || ""
+  );
   const [isReverse, setIsReverse] = useState(
     location.state?.isReverse !== undefined
       ? !!location.state?.isReverse
@@ -189,8 +191,8 @@ export default function UtxoSwap() {
       inputAmount,
       outputAmount,
       price: outputAmount.buyPrice,
-      slippage: slippage,
-      isSlippageAuto: isSlippageAuto,
+      slippage: swapSetting.slippage,
+      isSlippageAuto: swapSetting.isSlippageAuto,
       isReverse: isReverse,
       networkFee: 0.0001,
       fee: fee,
@@ -202,8 +204,7 @@ export default function UtxoSwap() {
     inputAmount,
     outputAmount,
     poolInfo,
-    slippage,
-    isSlippageAuto,
+    swapSetting,
     isReverse,
   ]);
 
@@ -279,14 +280,6 @@ export default function UtxoSwap() {
       ];
 
       setTokens(newTokens);
-    }
-
-    if (location.state?.isSlippageAuto !== undefined) {
-      setIsSlippageAuto(location.state?.isSlippageAuto);
-    }
-
-    if (location.state?.slippage !== undefined) {
-      setSlippage(location.state?.slippage);
     }
   }, [location.state]);
 

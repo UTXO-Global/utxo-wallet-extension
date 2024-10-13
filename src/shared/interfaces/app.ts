@@ -6,6 +6,7 @@ export interface IAppStateBase {
   addressBook: string[];
   pendingWallet?: string;
   language: string;
+  swapSetting: { slippage: number; isSlippageAuto: boolean };
 }
 
 export interface IAppState extends IAppStateBase {

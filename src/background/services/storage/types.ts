@@ -32,5 +32,6 @@ export interface StorageInterface {
     pendingWallet?: string;
     connectedSites: ConnectedSite[];
     language?: string;
+    swapSetting: { slippage: number; isSlippageAuto: boolean };
   };
 }

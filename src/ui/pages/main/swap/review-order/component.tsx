@@ -17,6 +17,7 @@ import Loading from "react-loading";
 import toast from "react-hot-toast";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
+import { useAppState } from "@/ui/states/appState";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -28,6 +29,7 @@ export default function UTXOReviewOrder() {
     apiController: v.apiController,
     keyringController: v.keyringController,
   }));
+  const { swapSetting } = useAppState();
 
   const collector = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -89,7 +91,7 @@ export default function UTXOReviewOrder() {
       {
         id: "reviewMaxSlippage",
         title: t("components.swap.max_slippage"),
-        value: <>{state.slippage}%</>,
+        value: <>{swapSetting.slippage}%</>,
         tooltip: t("components.swap.tooltip.max_slippage"),
       },
     ];
@@ -130,7 +132,7 @@ export default function UTXOReviewOrder() {
 
       const txHash = await pool.swapWithExactInput(
         signTxFunc,
-        `${location.state?.slippage?.toString() || "0.5"}`,
+        `${swapSetting.slippage.toString()}`,
         5000
       );
 

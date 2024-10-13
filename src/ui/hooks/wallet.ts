@@ -383,8 +383,8 @@ export const useSwitchNetwork = () => {
               ? ""
               : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
                 CKB_NEURON_HD_PATH
-                ? CKB_NEURON_HD_PATH
-                : "";
+              ? CKB_NEURON_HD_PATH
+              : "";
 
           const networkGroupAccount =
             await walletController.createDefaultGroupAccount(

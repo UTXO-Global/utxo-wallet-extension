@@ -10,6 +10,7 @@ export const useAppState = create<IAppState>()((set) => ({
   vault: [],
   addressBook: [],
   language: "en",
+  swapSetting: { slippage: 0.5, isSlippageAuto: true },
   activeTabs: [],
   updateAppState: async (app: Partial<IAppState>, updateBack = true) => {
     if (updateBack) {
