@@ -41,7 +41,7 @@
       "transaction_info": "Transaction Info",
       "settings": "Settings",
       "show_mnemonic": "Show Mnemonic",
-      "show_private_key": "Show Private Key (WIF)",
+      "show_private_key": "Show Private Key",
       "restore_from_mnemonic": "Restore From Mnemonic",
       "restore_from_private_key": "Restore From Private Key",
       "security": "Security",
@@ -369,7 +369,8 @@
     "switch_chain": "Switch chain"
   },
   "export_private_key": {
-    "wif_private_key": "WIF Private Key:"
+    "wif_private_key": "WIF Private Key:",
+    "hex_private_key": "HEX Private Key:"
   },
   "explore": {
     "feature": "Features",

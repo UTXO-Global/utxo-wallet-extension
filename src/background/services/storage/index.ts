@@ -77,7 +77,11 @@ class StorageService {
     };
     this._appState = {
       ...this._appState,
-      ...pickKeysFromObj(data.cache, ["addressBook", "pendingWallet"]),
+      ...pickKeysFromObj(data.cache, [
+        "addressBook",
+        "pendingWallet",
+        "swapSetting",
+      ]),
     };
 
     if (data?.cache?.language) {
@@ -249,6 +253,7 @@ class StorageService {
           selectedNetwork: defaultNetwork.slug,
           wallets: [],
           connectedSites: [],
+          swapSetting: { slippage: 0.5, isSlippageAuto: true },
         },
         enc: undefined,
       };

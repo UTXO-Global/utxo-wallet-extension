@@ -265,7 +265,8 @@
     }
   },
   "export_private_key": {
-    "wif_private_key": "WIF Private Key:"
+    "wif_private_key": "WIF Private Key:",
+    "hex_private_key": "HEX Private Key:"
   },
   "explore": {
     "feature": "功能",

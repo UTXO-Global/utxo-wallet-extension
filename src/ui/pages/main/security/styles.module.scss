@@ -1,5 +1,5 @@
 .settings {
-  @apply w-full grid grid-cols-2 grid-rows-2 gap-3;
+  @apply w-full flex flex-col;
 }
 
 .wrapper {
@@ -9,7 +9,7 @@
 .card {
   @apply cursor-pointer bg-input-bg h-36 rounded-xl hover:bg-text hover:text-bg transition-colors flex items-center justify-center flex-col gap-4 px-3;
 
-  > div {
+  >div {
     @apply text-xs text-center font-medium;
   }
 }

@@ -35,7 +35,7 @@
       "transaction_info": "거래 정보",
       "settings": "설정",
       "show_mnemonic": "니모닉 표시",
-      "show_private_key": "비밀 키 표시",
+      "show_private_key": "개인 키 표시",
       "restore_from_mnemonic": "니모닉에서 복원",
       "restore_from_private_key": "개인 키에서 복원",
       "mnemonic_confirmation": "복구 문구 확인",

@@ -25,6 +25,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { Tooltip } from "react-tooltip";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import TextAvatar from "@/ui/components/text-avatar";
+import { useAppState } from "@/ui/states/appState";
 
 const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
@@ -49,13 +50,14 @@ export default function UtxoSwap() {
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
   const location = useLocation();
+  const { swapSetting } = useAppState();
 
   const [pool, setPool] = useState<Pool>(undefined);
   const [poolInfo, setPoolInfo] = useState<PoolInfo>(undefined);
 
-  const [assetXAmount, setAssetXAmount] = useState("");
-  const [slippage, setSlippage] = useState(0.5);
-  const [isSlippageAuto, setIsSlippageAuto] = useState(true);
+  const [assetXAmount, setAssetXAmount] = useState(
+    location?.state?.inputAmount?.toString() || ""
+  );
   const [isReverse, setIsReverse] = useState(
     location.state?.isReverse !== undefined
       ? !!location.state?.isReverse
@@ -189,8 +191,8 @@ export default function UtxoSwap() {
       inputAmount,
       outputAmount,
       price: outputAmount.buyPrice,
-      slippage: slippage,
-      isSlippageAuto: isSlippageAuto,
+      slippage: swapSetting.slippage,
+      isSlippageAuto: swapSetting.isSlippageAuto,
       isReverse: isReverse,
       networkFee: 0.0001,
       fee: fee,
@@ -202,8 +204,7 @@ export default function UtxoSwap() {
     inputAmount,
     outputAmount,
     poolInfo,
-    slippage,
-    isSlippageAuto,
+    swapSetting,
     isReverse,
   ]);
 
@@ -279,14 +280,6 @@ export default function UtxoSwap() {
       ];
 
       setTokens(newTokens);
-    }
-
-    if (location.state?.isSlippageAuto !== undefined) {
-      setIsSlippageAuto(location.state?.isSlippageAuto);
-    }
-
-    if (location.state?.slippage !== undefined) {
-      setSlippage(location.state?.slippage);
     }
   }, [location.state]);
 
@@ -620,25 +613,37 @@ export default function UtxoSwap() {
 const IcnSwapDirect = ({ className }: { className?: string }) => {
   return (
     <svg
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(className ? className : "")}
     >
-      <rect
-        width="32"
-        height="32"
-        rx="16"
-        className="fill-primary group-hover:fill-[#2C2C2C]"
-      />
+      <rect width="40" height="40" rx="20" fill="#0D0D0D" />
       <path
-        d="M16 11.5V20.5M16 20.5L20.25 16.25M16 20.5L11.75 16.25"
+        d="M14.7347 14.6981V24.5468C14.6215 25.6788 15.2102 27.9429 18.4704 27.9429"
         stroke="white"
         strokeWidth="1.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
+      />
+      <path
+        d="M11 18.0942L14.7357 14.3585L18.4714 18.0942"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M25.2662 26.2448L25.2662 16.3961C25.3795 15.2641 24.7908 13 21.5305 13"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M29.001 22.8487L25.2653 26.5844L21.5295 22.8487"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       />
     </svg>
   );

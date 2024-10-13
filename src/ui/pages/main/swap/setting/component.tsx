@@ -5,6 +5,7 @@ import cn from "classnames";
 import { t } from "i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BellIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useAppState } from "@/ui/states/appState";
 const MAX_SLIPPAGE = 30;
 const MIN_SLIPPAGE = 0.5;
 const MID_SLIPPAGE = 5;
@@ -13,8 +14,10 @@ export default function UTXOSwapSetting() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentNetwork = useGetCurrentNetwork();
-  const [slippage, setSlippage] = useState(location.state?.slippage || 0.5);
-  const [isAuto, setIsAuto] = useState(!!location.state?.isSlippageAuto);
+  const { swapSetting, updateAppState } = useAppState();
+  const [slippage, setSlippage] = useState(swapSetting.slippage);
+  const [isAuto, setIsAuto] = useState(swapSetting.isSlippageAuto);
+
   const inputRef = useRef<HTMLInputElement>();
 
   const SlippageWarning = () => {
@@ -130,7 +133,7 @@ export default function UTXOSwapSetting() {
                     (reg.test(numeric) || numeric === "") &&
                     Number(numeric) <= 100
                   ) {
-                    setSlippage(numeric);
+                    setSlippage(Number(numeric));
                   }
                 }}
               />
@@ -147,8 +150,14 @@ export default function UTXOSwapSetting() {
           type="submit"
           className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
           disabled={!isSlippageValid}
-          onClick={() =>
-            navigate("/swap", {
+          onClick={async () => {
+            await updateAppState({
+              swapSetting: {
+                slippage: Number(slippage),
+                isSlippageAuto: isAuto,
+              },
+            });
+            return navigate("/swap", {
               state: {
                 ...location.state,
                 slippage: Number(slippage).toLocaleString("fullwide", {
@@ -157,8 +166,8 @@ export default function UTXOSwapSetting() {
                 }),
                 isSlippageAuto: isAuto,
               },
-            })
-          }
+            });
+          }}
         >
           {t("components.layout.confirm")}
         </button>

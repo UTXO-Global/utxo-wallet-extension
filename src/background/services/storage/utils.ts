@@ -14,5 +14,6 @@ export function emptyAppState(): IAppStateBase {
     vault: [],
     addressBook: [],
     language: "en",
+    swapSetting: { slippage: 0.5, isSlippageAuto: true },
   };
 }
