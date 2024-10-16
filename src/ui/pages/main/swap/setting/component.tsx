@@ -15,7 +15,7 @@ export default function UTXOSwapSetting() {
   const location = useLocation();
   const currentNetwork = useGetCurrentNetwork();
   const { swapSetting, updateAppState } = useAppState();
-  const [slippage, setSlippage] = useState(swapSetting.slippage);
+  const [slippage, setSlippage] = useState(swapSetting.slippage.toString());
   const [isAuto, setIsAuto] = useState(swapSetting.isSlippageAuto);
 
   const inputRef = useRef<HTMLInputElement>();
@@ -94,7 +94,7 @@ export default function UTXOSwapSetting() {
                 })}
                 onClick={() => {
                   setIsAuto(true);
-                  setSlippage(0.5);
+                  setSlippage("0.5");
                 }}
               >
                 {t("components.swap.auto")}
@@ -133,7 +133,7 @@ export default function UTXOSwapSetting() {
                     (reg.test(numeric) || numeric === "") &&
                     Number(numeric) <= 100
                   ) {
-                    setSlippage(Number(numeric));
+                    setSlippage(numeric);
                   }
                 }}
               />
