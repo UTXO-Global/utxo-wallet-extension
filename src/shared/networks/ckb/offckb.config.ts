@@ -172,7 +172,7 @@ const offCKBConfig: OffCKBConfig = {
         cellDep: {
           outPoint: {
             txHash:
-              "0x3ceb520f240b168e0bddf0d89b4bcabbe7d4fa69751057cbe8e4f27239fad0e9",
+              "0x8ec1081bd03e5417bb4467e96f4cec841acdd35924538a35e7547fe320118977",
             index: "0x0",
           },
           depType: "code",

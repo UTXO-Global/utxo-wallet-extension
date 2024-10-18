@@ -140,6 +140,7 @@ export const convertCKBTransactionToSkeleton = async (
   networkSlug: NetworkSlug,
   rawTx: any
 ) => {
+  console.log(rawTx);
   const network = getNetworkDataBySlug(networkSlug);
   if (!isCkbNetwork(network.network)) {
     throw new Error("Error when trying to get the current account");
@@ -183,6 +184,7 @@ export const convertCKBTransactionToSkeleton = async (
         );
       }
 
+      console.log(cellOutput);
       if (
         cellOutput.type &&
         networkConfig.RUSD.script.codeHash === cellOutput.type.code_hash &&
@@ -300,6 +302,8 @@ export const convertCKBTransactionToSkeleton = async (
       witnesses.set(firstIndex, witness)
     );
   }
+
+  console.log(txSkeleton);
 
   return txSkeleton;
 };
