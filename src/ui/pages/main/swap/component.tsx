@@ -165,7 +165,11 @@ export default function UtxoSwap() {
 
   const getBalanceToken = (typeHash: string) => {
     if (typeHash === CKB_TYPE_HASH) return availableCKBBalance;
-    if (currentAccount.coinBalances[typeHash]) {
+    if (
+      currentAccount &&
+      currentAccount.coinBalances &&
+      currentAccount.coinBalances[typeHash]
+    ) {
       return currentAccount.coinBalances[typeHash] || 0;
     }
 

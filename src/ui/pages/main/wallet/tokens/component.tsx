@@ -31,7 +31,7 @@ export default function TokenTabs() {
         const udtAccounts = addressInfo.attributes.udt_accounts;
         const tokens = udtAccounts.filter(
           (token) =>
-            ["sudt", "xudt"].includes(token.udt_type) &&
+            ["sudt", "xudt", "xudt_compatible"].includes(token.udt_type) &&
             BI.from(token.amount).gt(BI.from(0))
         );
 

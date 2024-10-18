@@ -160,6 +160,7 @@ class KeyringController implements IKeyringController {
       networkSlug,
       tx
     );
+
     return await keyringService.signCkbTransaction({ tx: txSkeleton, hdPath });
   }
 }

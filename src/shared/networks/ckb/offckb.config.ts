@@ -1,4 +1,4 @@
-import { RPC, config } from "@ckb-lumos/lumos";
+import { CellDep, RPC, Script, config } from "@ckb-lumos/lumos";
 import { customizedFetch } from "./helpers";
 import { CkbIndexer } from "./Indexer";
 import { predefined } from "@ckb-lumos/config-manager";
@@ -8,6 +8,10 @@ export interface NetworkConfig {
   rpc: RPC;
   indexer: CkbIndexer;
   utxoAPIKey: string;
+  RUSD: {
+    script: Script;
+    cellDep: CellDep;
+  };
 }
 
 export interface OffCKBConfig {
@@ -112,6 +116,22 @@ const offCKBConfig: OffCKBConfig = {
       rpc: new RPC("http://127.0.0.1:8114", { fetch: customizedFetch }),
       indexer: new CkbIndexer("http://127.0.0.1:8114"),
       utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
+      RUSD: {
+        script: {
+          codeHash:
+            "0x1142755a044bf2ee358cba9f2da187ce928c91cd4dc8692ded0337efa677d21a",
+          hashType: "type",
+          args: "0x878fcc6f1f08d48e87bb1c3b3d5083f23f8a39c5d5c764f253b55b998526439b",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0xed7d65b9ad3d99657e37c4285d585fea8a5fcaf58165d54dacf90243f911548b",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
     },
     testnet: {
       lumosConfig: testnetLumosConfig,
@@ -119,6 +139,22 @@ const offCKBConfig: OffCKBConfig = {
       rpc: new RPC("https://testnet.ckb.dev/rpc", { fetch: customizedFetch }),
       indexer: new CkbIndexer("https://testnet.ckb.dev/rpc"),
       utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
+      RUSD: {
+        script: {
+          codeHash:
+            "0x1142755a044bf2ee358cba9f2da187ce928c91cd4dc8692ded0337efa677d21a",
+          hashType: "type",
+          args: "0x878fcc6f1f08d48e87bb1c3b3d5083f23f8a39c5d5c764f253b55b998526439b",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0xed7d65b9ad3d99657e37c4285d585fea8a5fcaf58165d54dacf90243f911548b",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
     },
     mainnet: {
       lumosConfig: mainnetLumosConfig,
@@ -126,6 +162,22 @@ const offCKBConfig: OffCKBConfig = {
       rpc: new RPC("https://mainnet.ckb.dev/rpc", { fetch: customizedFetch }),
       indexer: new CkbIndexer("https://mainnet.ckb.dev/rpc"),
       utxoAPIKey: "scmJuHZTih2UZYkdWPhz82DKxiTgblR612MhYQZ1",
+      RUSD: {
+        script: {
+          codeHash:
+            "0x26a33e0815888a4a0614a0b7d09fa951e0993ff21e55905510104a0b1312032b",
+          hashType: "type",
+          args: "0x360c9d87b2824c357958c23e8878f686001e88e9527a08ea229e7d9ba7fe39a7",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0x3ceb520f240b168e0bddf0d89b4bcabbe7d4fa69751057cbe8e4f27239fad0e9",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
     },
   },
   initializeLumosConfig: () => {

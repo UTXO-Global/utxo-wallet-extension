@@ -183,9 +183,28 @@ export const convertCKBTransactionToSkeleton = async (
         );
       }
 
+      if (
+        cellOutput.type &&
+        networkConfig.RUSD.script.codeHash === cellOutput.type.code_hash &&
+        networkConfig.RUSD.script.args === cellOutput.type.args &&
+        networkConfig.RUSD.script.hashType === cellOutput.type.hash_type
+      ) {
+        if (
+          txSkeleton.cellDeps.findIndex(
+            (cell) =>
+              cell.outPoint.txHash ===
+              networkConfig.RUSD.cellDep.outPoint.txHash
+          ) === -1
+        ) {
+          txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+            cellDeps.push({ ...networkConfig.RUSD.cellDep })
+          );
+        }
+      }
+
       const outputData =
         txInput?.transaction?.outputs_data[
-        Number(input.previousOutput.index)
+          Number(input.previousOutput.index)
         ] || "0x";
 
       txSkeleton = txSkeleton.update("inputs", (inputs) =>

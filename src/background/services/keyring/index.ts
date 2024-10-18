@@ -383,6 +383,8 @@ class KeyringService {
       throw new Error("Network invalid");
     }
 
+    const networkConfig = network.network as NetworkConfig;
+
     const isTestnet = nervosTestnetSlug.includes(network.slug);
     const lumosConfig = isTestnet ? AGGRON4 : LINA;
 
@@ -395,11 +397,22 @@ class KeyringService {
       config: lumosConfig,
     });
 
-    const xUdtType = {
+    const isRUSD =
+      networkConfig.RUSD.script.args === data.token.attributes.type_script.args;
+
+    let xUdtType = {
       codeHash: lumosConfig.SCRIPTS.XUDT.CODE_HASH,
       hashType: lumosConfig.SCRIPTS.XUDT.HASH_TYPE,
       args: data.token.attributes.type_script.args,
     } as Script;
+
+    if (isRUSD) {
+      xUdtType = {
+        codeHash: networkConfig.RUSD.script.codeHash,
+        hashType: networkConfig.RUSD.script.hashType,
+        args: data.token.attributes.type_script.args,
+      } as Script;
+    }
 
     const xudtCollector = indexer.collector({
       type: xUdtType,
@@ -446,13 +459,17 @@ class KeyringService {
 
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
 
-    txSkeleton = addCellDep(txSkeleton, {
-      outPoint: {
-        txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
-        index: lumosConfig.SCRIPTS.XUDT.INDEX,
-      },
-      depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
-    });
+    if (isRUSD) {
+      txSkeleton = addCellDep(txSkeleton, networkConfig.RUSD.cellDep);
+    } else {
+      txSkeleton = addCellDep(txSkeleton, {
+        outPoint: {
+          txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
+          index: lumosConfig.SCRIPTS.XUDT.INDEX,
+        },
+        depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
+      });
+    }
 
     txSkeleton = addCellDep(txSkeleton, {
       outPoint: {

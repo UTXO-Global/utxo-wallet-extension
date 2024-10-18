@@ -76,7 +76,9 @@ const TokenDetail = () => {
 
     try {
       const res = await fetch(
-        `${ckbExplorerApi(currentNetwork.slug)}/v1/${type}s/${typeHash}`,
+        `${ckbExplorerApi(currentNetwork.slug)}/v1/${
+          type === "xudt_compatible" ? "xudt" : type
+        }s/${typeHash}`,
         {
           method: "GET",
           headers: {
@@ -153,6 +155,12 @@ const TokenDetail = () => {
         ];
   }, [currentAccount.accounts, currentNetwork.network]);
 
+  const fullNameLength = useMemo(() => {
+    const fullnameLen = tokenInfo?.attributes?.full_name?.length || 0;
+    const symbolLen = tokenInfo?.attributes?.symbol?.length || 0;
+    return fullnameLen + symbolLen;
+  }, [tokenInfo]);
+
   const _navigate = (path: string, name: string, label: string) => {
     // NOTE: [GA]
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -179,7 +187,10 @@ const TokenDetail = () => {
     <>
       <div className="flex gap-4 items-center bg-grey-400 px-4 py-2 w-full h-[92px]">
         {!!tokenInfo.attributes.icon_file ? (
-          <img src={DOMPurify.sanitize(tokenInfo.attributes.icon_file)} className="w-16 h-16" />
+          <img
+            src={DOMPurify.sanitize(tokenInfo.attributes.icon_file)}
+            className="w-16 h-16"
+          />
         ) : (
           <TextAvatar
             len={2}
@@ -187,11 +198,10 @@ const TokenDetail = () => {
             className="!w-16 !h-16 !text-3xl"
           />
         )}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 flex-grow">
           <div
-            className={cn("text-primary flex gap-1 items-center", {
-              "flex-col !items-start":
-                tokenInfo.attributes.full_name?.length > 10,
+            className={cn("text-primary flex gap-1 items-center w-full", {
+              "flex-col !items-start": fullNameLength > 10,
             })}
           >
             <div className="flex items-center gap-1">
@@ -210,16 +220,16 @@ const TokenDetail = () => {
             </div>
             {!isNativeToken && tokenInfo && (
               <div
-                className={cn("pb-[1px]", {
-                  "mt-1": tokenInfo.attributes.full_name?.length > 10,
+                className={cn("pb-[1px] flex items-center", {
+                  "mt-1": fullNameLength > 10,
                 })}
               >
-                {tokenInfo.attributes.full_name?.length <= 10 && (
+                {fullNameLength <= 10 && (
                   <div className="h-[21px] w-[1px] bg-grey-200" />
                 )}
                 <div className="flex gap-1 items-start">
                   <label className="inline-block bg-grey-300 px-2 rounded text-[10px] text-[#787575] leading-5">
-                    {tokenInfo.attributes.udt_type === "xudt" ? "xUDT" : "sUDT"}
+                    {tokenInfo.attributes.udt_type.toUpperCase()}
                   </label>
                   {tokenInfo.attributes.xudt_tags?.includes("rgb++") && (
                     <label
