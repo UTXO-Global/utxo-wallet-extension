@@ -201,7 +201,7 @@ export default function PagesLayout() {
         },
         {
           route: "/pages/confirm-send",
-          title: t("components.send.confirmation"),
+          title: t("send.confirm_send.confirmation"),
           backAction: () => {
             if (!!currentRoute.state.isSending) {
               navigate("/home");
