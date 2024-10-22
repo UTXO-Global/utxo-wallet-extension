@@ -73,7 +73,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "7.52.1",
     "react-hot-toast": "2.4.1",
-    "react-intersection-observer": "9.10.3",
+    "react-intersection-observer": "9.13.1",
     "react-loading": "2.0.3",
     "react-router-dom": "6.24.1",
     "react-tooltip": "^5.28.0",
