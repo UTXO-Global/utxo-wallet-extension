@@ -187,10 +187,10 @@
     "@noble/hashes" "^1.1.5"
     "@noble/secp256k1" "^1.7.1"
 
-"@ckb-ccc/core@^0.0.14-alpha.0":
-  version "0.0.14-alpha.0"
-  resolved "https://registry.yarnpkg.com/@ckb-ccc/core/-/core-0.0.14-alpha.0.tgz#b9ec6e143472c90be54c0e39e2fc323070ec1739"
-  integrity sha512-kKMah5xWzLt48YE9Asc1KfDfN5lX7c7IE09X/7/ozVqWRNEyY1u6UmSQXyOV5LwP2fgvJmkkRD54H2RRAtNVoA==
+"@ckb-ccc/core@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@ckb-ccc/core/-/core-0.0.15.tgz#ad85335d0c9a11609a647121d59475767dc2e681"
+  integrity sha512-+x1ESD3X9/89g0pNJgxB1gOFEToVJ2/ebnR+XETyRj69aOkmz7NTilEXayemP/ko09nLIw6wnZOW1zDatmBOQQ==
   dependencies:
     "@joyid/ckb" "^1.0.1"
     "@noble/ciphers" "^0.5.3"
