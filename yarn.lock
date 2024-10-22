@@ -273,14 +273,14 @@
     cross-fetch "^3.1.5"
     events "^3.3.0"
 
-"@ckb-lumos/codec@0.22.2", "@ckb-lumos/codec@^0.22.0-next.3", "@ckb-lumos/codec@^0.22.2":
+"@ckb-lumos/codec@0.22.2", "@ckb-lumos/codec@^0.22.2":
   version "0.22.2"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/codec/-/codec-0.22.2.tgz#038afd6e7b5dcb072b19973ce4d64a110b66dfa3"
   integrity sha512-P5SyhT2qkJwCwcHF3yMLInE0z3wWHDkqJNbSM2Q9oyu0+9kjMQfexNia3T+atBl2M7ELFzN5WvttojYr6DrCwQ==
   dependencies:
     "@ckb-lumos/bi" "0.22.2"
 
-"@ckb-lumos/codec@0.23.0":
+"@ckb-lumos/codec@0.23.0", "@ckb-lumos/codec@^0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/codec/-/codec-0.23.0.tgz#abc8c2da95931859d3347608af4b461d27c5daff"
   integrity sha512-FwYooXnsFDjlHHnlFnCTB1UbBzV72I0VjkRpeauFk5nQ4+/75xl28ywK3J14M+0aHTnYU9msXUTRDAGqC0CaNQ==
