@@ -83,8 +83,8 @@ class ProviderController {
             ? ""
             : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
               CKB_NEURON_HD_PATH
-              ? CKB_NEURON_HD_PATH
-              : "";
+            ? CKB_NEURON_HD_PATH
+            : "";
 
         const accounts = await walletController.createDefaultGroupAccount(
           _network,
@@ -156,7 +156,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "switchChain",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   switchChain = async ({
     data: {
@@ -174,7 +174,7 @@ class ProviderController {
   @Reflect.metadata(
     "APPROVAL",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ["switchNetwork", (_req: any) => { }]
+    ["switchNetwork", (_req: any) => {}]
   )
   switchNetwork = async ({
     data: {
@@ -185,8 +185,8 @@ class ProviderController {
   };
 
   @Reflect.metadata("SAFE", true)
-  getBalance = async ({ session: { origin } }) => {
-    if (!permission.siteIsConnected(origin)) return undefined;
+  getBalance = async () => {
+    if (!(await permission.siteIsConnected())) return undefined;
     const currentAccount = storageService.currentAccount;
     if (!currentAccount) return null;
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
@@ -211,21 +211,21 @@ class ProviderController {
   };
 
   @Reflect.metadata("SAFE", true)
-  getAccountName = async ({ session: { origin } }) => {
-    if (!permission.siteIsConnected(origin)) return undefined;
+  getAccountName = async () => {
+    if (!(await permission.siteIsConnected())) return undefined;
     const account = storageService.currentAccount;
     if (!account) return null;
     return account.name;
   };
 
   @Reflect.metadata("SAFE", true)
-  isConnected = async ({ session: { origin } }) => {
-    return permission.siteIsConnected(origin);
+  isConnected = async () => {
+    return permission.siteIsConnected();
   };
 
   @Reflect.metadata("SAFE", true)
-  getAccount = async ({ session: { origin } }) => {
-    if (!permission.siteIsConnected(origin)) return undefined;
+  getAccount = async () => {
+    if (!(await permission.siteIsConnected())) return undefined;
     const _account = storageService.currentAccount;
     if (!_account) return undefined;
     return _account.accounts.map((account) => account.address);
@@ -233,12 +233,12 @@ class ProviderController {
 
   @Reflect.metadata("SAFE", true)
   calculateFee = async ({
-    session: { origin },
+    session,
     data: {
       params: { hex, feeRate },
     },
   }) => {
-    if (!permission.siteIsConnected(origin)) return undefined;
+    if (!(await permission.siteIsConnected())) return undefined;
     const psbt = Psbt.fromHex(hex);
     (psbt as any).__CACHE.__UNSAFE_SIGN_NONSEGWIT = true;
 
@@ -254,8 +254,8 @@ class ProviderController {
   };
 
   @Reflect.metadata("SAFE", true)
-  getPublicKey = async ({ session: { origin } }) => {
-    if (!permission.siteIsConnected(origin)) return undefined;
+  getPublicKey = async () => {
+    if (!(await permission.siteIsConnected())) return undefined;
     const _account = storageService.currentAccount;
     if (!_account) return undefined;
     return _account.accounts.map((account) => ({
@@ -267,7 +267,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signMessage",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signMessage = async ({
     data: {
@@ -291,7 +291,7 @@ class ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signLNInvoice",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signLNInvoice = async ({
     data: {
@@ -316,7 +316,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -351,7 +351,7 @@ class BTCProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signTransaction = async (data: {
     data: {
@@ -383,7 +383,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "CreateTx",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   createTx = async (data: any) => {
     const account = storageService.currentAccount;
@@ -407,7 +407,7 @@ class CKBProviderController extends ProviderController {
   @Reflect.metadata("APPROVAL", [
     "signTransaction",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_req: any) => { },
+    (_req: any) => {},
   ])
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
