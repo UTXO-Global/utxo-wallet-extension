@@ -18,6 +18,7 @@ import { t } from "i18next";
 import {
   ChangeEventHandler,
   MouseEventHandler,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -372,9 +373,10 @@ const CreateSend = () => {
                 {t("send.create_send.fee_label")}
               </span>
               <FeeInput
-                onChange={(v) =>
-                  setFormData((prev) => ({ ...prev, feeAmount: v }))
-                }
+                onChange={useCallback(
+                  (v) => setFormData((prev) => ({ ...prev, feeAmount: v })),
+                  [setFormData]
+                )}
                 value={formData.feeAmount}
               />
             </div>
