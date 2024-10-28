@@ -35,7 +35,7 @@ const ConfirmMnemonic = () => {
     const mnemonic = await stateController.getPendingWallet();
     const mnemonicArr = mnemonic.split(" ");
     const _indices = [];
-    while (_indices.length < 5) {
+    while (_indices.length < 3) {
       const randomIndex = Math.floor(Math.random() * mnemonicArr.length);
       if (!_indices.includes(randomIndex)) {
         _indices.push(randomIndex);
@@ -59,13 +59,14 @@ const ConfirmMnemonic = () => {
   const navigate = useNavigate();
 
   const onCreate = async () => {
-    if (!mnemonicPhaseConfirm || mnemonicPhaseConfirm.length === 0) {
+    const _mnemonicPhaseConfirm = mnemonicPhaseConfirm.map(z => z.trim())
+    if (!_mnemonicPhaseConfirm || _mnemonicPhaseConfirm.length === 0) {
       toast.error(t("new_wallet.new_mnemonic.error_phrase_blank"));
       return;
     }
 
     const mnemonic = await stateController.getPendingWallet();
-    if (mnemonicPhaseConfirm.join(" ") !== mnemonic) {
+    if (_mnemonicPhaseConfirm.join(" ") !== mnemonic) {
       toast.error(
         t("Mnemonic confirmation does not match. Please check and try again")
       );
@@ -73,7 +74,7 @@ const ConfirmMnemonic = () => {
     }
     setLoading(true);
     await createNewWallet({
-      payload: mnemonicPhaseConfirm.join(" "),
+      payload: _mnemonicPhaseConfirm.join(" "),
       walletType: "root",
     });
     await updateWalletState({ vaultIsEmpty: false });
