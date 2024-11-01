@@ -56,7 +56,7 @@ const Campaign = () => {
               className="rounded-lg overflow-hidden relative cursor-pointer"
             >
               <div
-                className="size-5 bg-white/40 rounded-full flex justify-center items-center absolute top-1 right-1 cursor-pointer"
+                className="size-5 bg-white/40 rounded-full flex justify-center items-center absolute top-1 right-1 cursor-pointer z-[4]"
                 onClick={(e) => {
                   e.stopPropagation();
                   close(z.id);
