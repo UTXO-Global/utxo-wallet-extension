@@ -45,10 +45,10 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   _providerReq: string;
 
-  private _pushEventHandlers: PushEventHandlers;
+  #_pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(0);
 
-  private _bcm: BroadcastChannelMessage;
+  #_bcm: BroadcastChannelMessage;
 
   constructor({ maxListeners = 100 } = {}) {
     super();
@@ -77,20 +77,20 @@ export class UtxoGlobalProvider extends EventEmitter {
       );
     }
 
-    if (!this._bcm) {
-      this._bcm = new BroadcastChannelMessage(channelName);
+    if (!this.#_bcm) {
+      this.#_bcm = new BroadcastChannelMessage(channelName);
     }
-    this._pushEventHandlers = new PushEventHandlers(this);
+    this.#_pushEventHandlers = new PushEventHandlers(this);
 
     document.addEventListener(
       "visibilitychange",
       this._requestPromiseCheckVisibility
     );
 
-    this._bcm.connect().on("message", this._handleBackgroundMessage);
+    this.#_bcm.connect().on("message", this._handleBackgroundMessage);
     domReadyCall(async () => {
       try {
-        await this._bcm.request({
+        await this.#_bcm.request({
           method: "tabCheckin",
           params: {
             icon: sanitizedIcon,
@@ -112,11 +112,11 @@ export class UtxoGlobalProvider extends EventEmitter {
         this._state.isUnlocked = true;
       }
       this.emit("connect", {});
-      this._pushEventHandlers.networkChanged({
+      this.#_pushEventHandlers.networkChanged({
         network,
       });
 
-      this._pushEventHandlers.accountsChanged(accounts);
+      this.#_pushEventHandlers.accountsChanged(accounts);
     } catch {
       //
     } finally {
@@ -144,11 +144,11 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
-    if (!this._pushEventHandlers[event]) {
+    if (!this.#_pushEventHandlers[event]) {
       return; // Ignore unexpected events
     }
 
-    this._pushEventHandlers[event](data);
+    this.#_pushEventHandlers[event](data);
     this.emit(event, data);
   };
 
@@ -168,7 +168,7 @@ export class UtxoGlobalProvider extends EventEmitter {
 
     const params = { provider: this._providerReq, ...data };
     return this._requestPromise.call(() => {
-      return this._bcm
+      return this.#_bcm
         .request(params)
         .then((res) => {
           return res;

@@ -12,6 +12,7 @@ import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
 import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
+import Campaign from "./campaign";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -34,6 +35,7 @@ const Wallet = () => {
       <div className={`${s.walletDiv} !h-100vh-72px standard:!h-100vh-100px`}>
         <WalletPanel />
         <AccountPanel />
+        <Campaign />
         <NativeToken />
         {isCkbNetwork(currentNetwork.network) && <TokenTabs />}
       </div>
