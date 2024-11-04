@@ -45,6 +45,7 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
+import { t } from "i18next";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -246,6 +247,7 @@ class KeyringService {
       // the tx fee could calculated by tx size
       // TODO: this is just a simple example
       const neededCapacity = BI.from(data.amount).add(100000);
+      console.log(data.amount, neededCapacity.toNumber());
 
       let txSkeleton = helpers.TransactionSkeleton({});
       const fromScript = helpers.parseAddress(ckbAccount.address, {
@@ -276,8 +278,13 @@ class KeyringService {
           break;
       }
 
-      if (capacityChangeOutput.eq(0) || capacityChangeOutput.lt(minCapacity)) {
-        throw new Error(`CKB: insufficient balance`);
+      if (capacityChangeOutput.gt(0) && capacityChangeOutput.lt(minCapacity)) {
+        throw new Error(
+          `The remaining balance in your wallet must be greater than ${(
+            minCapacity.toNumber() /
+            10 ** 8
+          ).toString()} CKB. Please adjust your transaction amount or add more CKB to proceed (${capacityChangeOutput})`
+        );
       }
 
       const changeOutput: Cell = {
@@ -519,8 +526,13 @@ class KeyringService {
         break;
     }
 
-    if (capacityChangeOutput.eq(0) || capacityChangeOutput.lt(minCapacity)) {
-      throw new Error(`CKB: insufficient balance`);
+    if (capacityChangeOutput.gt(0) && capacityChangeOutput.lt(minCapacity)) {
+      throw new Error(
+        `The remaining balance in your wallet must be greater than ${(
+          minCapacity.toNumber() /
+          10 ** 8
+        ).toString()} CKB. Please adjust your transaction amount or add more CKB to proceed`
+      );
     }
 
     txSkeleton = txSkeleton.update("inputs", (inputs) =>

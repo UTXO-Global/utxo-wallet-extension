@@ -178,6 +178,7 @@ const CreateSend = () => {
           .div(10 ** 8)
           .toNumber();
         if (changeOutputCapacity > 0 && changeOutputCapacity < minCap) {
+          console.log("changeOutputCapacity", changeOutputCapacity);
           return toast.error(
             t("send.create_send.error_not_enough_balance_remaining").replaceAll(
               "{value}",
