@@ -12,10 +12,11 @@ import { useMemo, useState } from "react";
 import { formatNumber } from "@/shared/utils";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import {
+  CKB_TYPE_HASH,
   Client,
   Collector,
-  INTENT_LOCK_CKB_CELL_CAPACITY_FOR_SWAP,
   Pool,
+  SWAP_OCCUPIED_CKB_AMOUNT,
 } from "@utxoswap/swap-sdk-js";
 import { useControllersState } from "@/ui/states/controllerState";
 import Loading from "react-loading";
@@ -23,7 +24,6 @@ import toast from "react-hot-toast";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import { useAppState } from "@/ui/states/appState";
-import { helpers } from "@ckb-lumos/lumos";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -31,11 +31,24 @@ export default function UTXOReviewOrder() {
   const { currentPrice } = useTransactionManagerContext();
   const currentNetwork = useGetCurrentNetwork();
   const currentAccount = useGetCurrentAccount();
-  const { apiController, keyringController } = useControllersState((v) => ({
+  const { keyringController } = useControllersState((v) => ({
     apiController: v.apiController,
     keyringController: v.keyringController,
   }));
   const { swapSetting } = useAppState();
+
+  const swapOccupiedCKBAmount = useMemo(() => {
+    return Number(SWAP_OCCUPIED_CKB_AMOUNT) / 10 ** 8;
+  }, []);
+
+  const availableCKBBalance = useMemo(() => {
+    const bal =
+      Number(currentAccount.balance || 0) -
+      Number(currentAccount.ordinalBalance || 0) -
+      0.00001;
+
+    return bal > 0 ? bal : 0;
+  }, [currentAccount]);
 
   const collector = useMemo(() => {
     if (isCkbNetwork(currentNetwork.network)) {
@@ -132,12 +145,15 @@ export default function UTXOReviewOrder() {
   const onSwap = async () => {
     setIsProgressing(true);
     try {
+      if (
+        pool.tokens[0].typeHash === CKB_TYPE_HASH &&
+        availableCKBBalance < swapOccupiedCKBAmount
+      ) {
+        setIsProgressing(false);
+        return toast.error(t("components.swap.tooltip.balance_reservation"));
+      }
       pool.calculateOutputAmountAndPriceImpactWithExactInput(
         `${location.state?.inputAmount}`
-      );
-
-      const fromScript = helpers.parseAddress(
-        currentAccount?.accounts[0].address
       );
 
       const txHash = await pool.swapWithExactInput(

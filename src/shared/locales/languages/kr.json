@@ -78,7 +78,8 @@
       "tooltip": {
         "fees": "거래 중 지불한 수수료, 주로 유동성",
         "max_slippage": "거래에서 허용할 수 있는 최대 가격 변화 비율",
-        "price_impact": "거래량으로 인한 시장 가격과 추정 가격의 차이"
+        "price_impact": "거래량으로 인한 시장 가격과 추정 가격의 차이",
+        "balance_reservation": "SWAP에는 276 CKB의 예약이 필요하므로 사용 가능한 CKB 잔액은 총 잔액보다 적습니다"
       },
       "max": "최대",
       "balance": "잔액",
@@ -191,7 +192,8 @@
       "address_book": {
         "address_book": "주소록",
         "no_addresses": "여기에 주소가 없습니다"
-      }
+      },
+      "error_not_enough_balance_remaining": "지갑에 남은 잔액은 {value} CKB보다 커야 합니다. 계속하려면 거래 금액을 조정하거나 CKB를 더 추가하세요"
     },
     "finalle_send": {
       "success": "성공",

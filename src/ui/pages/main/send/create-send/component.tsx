@@ -174,14 +174,16 @@ const CreateSend = () => {
         });
 
         const changeOutputCapacity = Number(balance ?? 0) - Number(amount);
-        if (
-          changeOutputCapacity > 0 &&
-          changeOutputCapacity <
-            MIN_CAPACITY(toScript)
-              .div(10 ** 8)
-              .toNumber()
-        ) {
-          return toast.error("Amount invalid. Min is 61 CKB");
+        const minCap = MIN_CAPACITY(toScript)
+          .div(10 ** 8)
+          .toNumber();
+        if (changeOutputCapacity > 0 && changeOutputCapacity < minCap) {
+          return toast.error(
+            t("send.create_send.error_not_enough_balance_remaining").replaceAll(
+              "{value}",
+              minCap.toString()
+            )
+          );
         }
       }
 
