@@ -14,10 +14,8 @@ import {
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
 import { getScriptForAddress } from "@/shared/utils/transactions";
-import { Script, blockchain } from "@ckb-lumos/base";
-import { ScriptValue } from "@ckb-lumos/base/lib/values";
-import { bytes } from "@ckb-lumos/codec";
-import { BI, Cell, commons, helpers, WitnessArgs } from "@ckb-lumos/lumos";
+import { Script } from "@ckb-lumos/base";
+import { BI, Cell, commons, helpers } from "@ckb-lumos/lumos";
 import { Psbt } from "bitcoinjs-lib";
 import { HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
 import { KeyringServiceError } from "./consts";
@@ -46,6 +44,7 @@ import {
   injectLiveSporeCell,
   payFeeByOutput,
 } from "@spore-sdk/core";
+import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -252,9 +251,13 @@ class KeyringService {
       const fromScript = helpers.parseAddress(ckbAccount.address, {
         config: network.network.lumosConfig,
       });
+
       const toScript = helpers.parseAddress(data.to, {
         config: network.network.lumosConfig,
       });
+
+      const minCapacity = MIN_CAPACITY(toScript);
+      let capacityChangeOutput = BI.from(0);
 
       // TODO: add smart selector
       const collected: Cell[] = [];
@@ -264,12 +267,22 @@ class KeyringService {
           collectedSum = collectedSum.add(cell.cellOutput.capacity);
           collected.push(cell);
         }
-        if (collectedSum.gte(neededCapacity)) break;
+
+        capacityChangeOutput = collectedSum.sub(neededCapacity);
+        if (
+          collectedSum.gte(neededCapacity) &&
+          (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
+        )
+          break;
+      }
+
+      if (capacityChangeOutput.eq(0) || capacityChangeOutput.lt(minCapacity)) {
+        throw new Error(`CKB: insufficient balance`);
       }
 
       const changeOutput: Cell = {
         cellOutput: {
-          capacity: collectedSum.sub(neededCapacity).toHexString(),
+          capacity: capacityChangeOutput.toHexString(),
           lock: fromScript,
         },
         data: "0x",
@@ -312,53 +325,7 @@ class KeyringService {
         })
       );
 
-      const firstIndex = txSkeleton
-        .get("inputs")
-        .findIndex((input) =>
-          new ScriptValue(input.cellOutput.lock, { validate: false }).equals(
-            new ScriptValue(fromScript, { validate: false })
-          )
-        );
-      if (firstIndex !== -1) {
-        while (firstIndex >= txSkeleton.get("witnesses").size) {
-          txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-            witnesses.push("0x")
-          );
-        }
-        let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
-        const newWitnessArgs: WitnessArgs = {
-          /* 65-byte zeros in hex */
-          lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-        };
-        if (witness !== "0x") {
-          const witnessArgs = blockchain.WitnessArgs.unpack(
-            bytes.bytify(witness)
-          );
-          const lock = witnessArgs.lock;
-          if (
-            !!lock &&
-            !!newWitnessArgs.lock &&
-            !bytes.equal(lock, newWitnessArgs.lock)
-          ) {
-            throw new Error(
-              "Lock field in first witness is set aside for signature!"
-            );
-          }
-          const inputType = witnessArgs.inputType;
-          if (inputType) {
-            newWitnessArgs.inputType = inputType;
-          }
-          const outputType = witnessArgs.outputType;
-          if (outputType) {
-            newWitnessArgs.outputType = outputType;
-          }
-        }
-        witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
-        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-          witnesses.set(firstIndex, witness)
-        );
-      }
-
+      txSkeleton = prepareWitnesses(txSkeleton, fromScript);
       txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
       const message = txSkeleton.get("signingEntries").get(0)!.message;
       const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
@@ -396,6 +363,8 @@ class KeyringService {
     const toScript = helpers.parseAddress(data.to, {
       config: lumosConfig,
     });
+
+    const minCapacity = MIN_CAPACITY(toScript);
 
     const isRUSD =
       networkConfig.RUSD.script.args === data.token.attributes.type_script.args;
@@ -451,6 +420,7 @@ class KeyringService {
     const collectedCells: Cell[] = [];
     let neededCapacity = BI.from(0);
     let totalCapacity = BI.from(0);
+    let capacityChangeOutput = BI.from(0);
     const xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
 
     if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
@@ -541,12 +511,15 @@ class KeyringService {
       if (isAddressTypeJoy) {
         totalCapacity = totalCapacity.add(joyCapacityAddMore);
       }
-      if (totalCapacity.gte(neededCapacity)) {
+      capacityChangeOutput = totalCapacity.sub(neededCapacity);
+      if (
+        totalCapacity.gte(neededCapacity) &&
+        (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
+      )
         break;
-      }
     }
 
-    if (totalCapacity.lt(neededCapacity)) {
+    if (capacityChangeOutput.eq(0) || capacityChangeOutput.lt(minCapacity)) {
       throw new Error(`CKB: insufficient balance`);
     }
 
@@ -554,11 +527,11 @@ class KeyringService {
       inputs.push(...collectedCells)
     );
 
-    if (totalCapacity.gt(neededCapacity)) {
+    if (capacityChangeOutput.gt(0)) {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
-            capacity: totalCapacity.sub(neededCapacity).toHexString(),
+            capacity: capacityChangeOutput.toHexString(),
             lock: fromScript,
           },
           data: "0x",
@@ -566,56 +539,7 @@ class KeyringService {
       );
     }
 
-    const firstIndex = txSkeleton
-      .get("inputs")
-      .findIndex(
-        (input) =>
-          input.cellOutput.lock.codeHash === fromScript.codeHash &&
-          input.cellOutput.lock.hashType === fromScript.hashType &&
-          input.cellOutput.lock.args === fromScript.args
-      );
-
-    if (firstIndex !== -1) {
-      while (firstIndex >= txSkeleton.get("witnesses").size) {
-        txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-          witnesses.push("0x")
-        );
-      }
-      let witness: string = txSkeleton.get("witnesses").get(firstIndex)!;
-      const newWitnessArgs: WitnessArgs = {
-        /* 65-byte zeros in hex */
-        lock: "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-      };
-
-      if (witness !== "0x") {
-        const witnessArgs = blockchain.WitnessArgs.unpack(
-          bytes.bytify(witness)
-        );
-        const lock = witnessArgs.lock;
-        if (
-          !!lock &&
-          !!newWitnessArgs.lock &&
-          !bytes.equal(lock, newWitnessArgs.lock)
-        ) {
-          throw new Error(
-            "Lock field in first witness is set aside for signature!"
-          );
-        }
-        const inputType = witnessArgs.inputType;
-        if (inputType) {
-          newWitnessArgs.inputType = inputType;
-        }
-        const outputType = witnessArgs.outputType;
-        if (outputType) {
-          newWitnessArgs.outputType = outputType;
-        }
-      }
-      witness = bytes.hexify(blockchain.WitnessArgs.pack(newWitnessArgs));
-      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.set(firstIndex, witness)
-      );
-    }
-
+    txSkeleton = prepareWitnesses(txSkeleton, fromScript);
     txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
       config: lumosConfig,
     });

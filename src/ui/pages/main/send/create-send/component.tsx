@@ -34,6 +34,9 @@ import s from "./styles.module.scss";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
+import { helpers } from "@ckb-lumos/lumos";
+import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
+import { MIN_CAPACITY } from "@/shared/networks/ckb/helpers";
 
 export interface FormType {
   address: string;
@@ -163,6 +166,23 @@ const CreateSend = () => {
       }
       if (feeRate % 1 !== 0) {
         return toast.error(t("send.create_send.fee_is_text_error"));
+      }
+
+      if (isCkbNetwork(currentNetwork.network)) {
+        const toScript = helpers.parseAddress(address, {
+          config: currentNetwork.network.lumosConfig,
+        });
+
+        const changeOutputCapacity = Number(balance ?? 0) - Number(amount);
+        if (
+          changeOutputCapacity > 0 &&
+          changeOutputCapacity <
+            MIN_CAPACITY(toScript)
+              .div(10 ** 8)
+              .toNumber()
+        ) {
+          return toast.error("Amount invalid. Min is 61 CKB");
+        }
       }
 
       const { fee, rawtx, fromAddresses } = !inscriptionTransaction

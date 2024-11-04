@@ -11,13 +11,19 @@ import { Tooltip } from "react-tooltip";
 import { useMemo, useState } from "react";
 import { formatNumber } from "@/shared/utils";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { Client, Collector, Pool } from "@utxoswap/swap-sdk-js";
+import {
+  Client,
+  Collector,
+  INTENT_LOCK_CKB_CELL_CAPACITY_FOR_SWAP,
+  Pool,
+} from "@utxoswap/swap-sdk-js";
 import { useControllersState } from "@/ui/states/controllerState";
 import Loading from "react-loading";
 import toast from "react-hot-toast";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import { useAppState } from "@/ui/states/appState";
+import { helpers } from "@ckb-lumos/lumos";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -128,6 +134,10 @@ export default function UTXOReviewOrder() {
     try {
       pool.calculateOutputAmountAndPriceImpactWithExactInput(
         `${location.state?.inputAmount}`
+      );
+
+      const fromScript = helpers.parseAddress(
+        currentAccount?.accounts[0].address
       );
 
       const txHash = await pool.swapWithExactInput(

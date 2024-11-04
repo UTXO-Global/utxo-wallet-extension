@@ -17,6 +17,7 @@ import {
   DEFAULT_FEE_DENOMINATOR,
   Pool,
   PoolInfo,
+  SWAP_OCCUPIED_CKB_AMOUNT,
   Token,
 } from "@utxoswap/swap-sdk-js";
 import { formatNumber } from "@/shared/utils";
@@ -106,9 +107,11 @@ export default function UtxoSwap() {
   }, [currentNetwork]);
 
   const availableCKBBalance = useMemo(() => {
+    const swapOccupiedCKBAmount = Number(SWAP_OCCUPIED_CKB_AMOUNT) / 10 ** 8;
     const bal =
       Number(currentAccount.balance || 0) -
       Number(currentAccount.ordinalBalance || 0) -
+      swapOccupiedCKBAmount -
       0.00001;
 
     return bal > 0 ? bal : 0;
