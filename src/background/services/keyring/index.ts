@@ -46,15 +46,7 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
-import {
-  addressToScriptPublicKeyHex,
-  bitcoin,
-  DataSource,
-  NetworkType,
-} from "@rgbpp-sdk/btc";
-import { BTCTestnetType, buildRgbppLockArgs, Collector } from "@rgbpp-sdk/ckb";
-import { BtcAssetsApi } from "@rgbpp-sdk/service";
-import { buildRgbppTransferTx } from "rgbpp";
+import { bitcoin } from "@rgbpp-sdk/btc";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -767,96 +759,24 @@ class KeyringService {
     }
   }
 
-  async sendRgbppAsset(data: RgbppTransferParams): Promise<string> {
-    const { rgbppAssets, toBtcAddress, xudtTypeArgs, transferAmount } = data;
+  async sendRgbppAsset(
+    btcPsbtHex: string,
+    toSignInputs?: UserToSignInput[]
+  ): Promise<string> {
     const account = storageService.currentAccount;
     if (!account || !account.accounts[0].address)
       throw new Error("Error when trying to get the current account");
 
-    const networkSlug = storageService.currentNetwork;
-    const network = getNetworkDataBySlug(networkSlug);
+    // build psbt
+    const psbt = bitcoin.Psbt.fromHex(btcPsbtHex);
 
-    if (isBitcoinNetwork(network.network)) {
-      const isMainnet = networkSlug === "btc";
+    // sign psbt
+    this.signPsbt(psbt, toSignInputs);
 
-      let btcServiceUrl = "http://0.0.0.0:3000";
-      let btcTestnetNetworkType: BTCTestnetType | undefined;
-      let btcNetworkType = NetworkType.TESTNET;
-
-      let ckbIndexerUrl = "https://testnet.ckb.dev/indexer";
-      let ckbNodeUrl = "https://testnet.ckb.dev/rpc";
-      switch (networkSlug) {
-        case "btc_signet":
-          btcTestnetNetworkType = "Signet" as BTCTestnetType;
-          btcNetworkType = NetworkType.TESTNET;
-          // TODO: btcServiceUrl = ;
-          break;
-        case "btc_testnet":
-        case "btc_testnet_4":
-          btcTestnetNetworkType = "Testnet3" as BTCTestnetType;
-          btcNetworkType = NetworkType.TESTNET;
-          // TODO: btcServiceUrl = ;
-          break;
-        case "btc":
-          btcNetworkType = NetworkType.MAINNET;
-          ckbIndexerUrl = "https://mainnet.ckb.dev/indexer";
-          ckbNodeUrl = "https://mainnet.ckb.dev/rpc";
-          break;
-      }
-      const collector = new Collector({
-        ckbNodeUrl,
-        ckbIndexerUrl,
-      });
-
-      const btcService = BtcAssetsApi.fromToken(btcServiceUrl, "");
-      const btcDataSource = new DataSource(btcService, btcNetworkType);
-
-      const rgbppLockArgsList = rgbppAssets.map((asset) =>
-        buildRgbppLockArgs(Number(asset.outPoint.index), asset.outPoint.txHash)
-      );
-
-      // TODO: check assets all address type
-      const _account = account.accounts.find(
-        (acc) => acc.addressType.value === AddressType.P2TR
-      );
-      const { ckbVirtualTxResult, btcPsbtHex } = await buildRgbppTransferTx({
-        ckb: {
-          collector,
-          xudtTypeArgs,
-          rgbppLockArgsList,
-          transferAmount,
-        },
-        btc: {
-          fromAddress: _account.address,
-          toAddress: toBtcAddress,
-          fromPubkey: this.exportPublicKey(account.accounts[0].hdPath),
-          dataSource: btcDataSource,
-          testnetType: btcTestnetNetworkType,
-        },
-        isMainnet,
-      });
-
-      // TODO: Save ckbVirtualTxResult
-      // saveCkbVirtualTxResult(ckbVirtualTxResult, "2-btc-transfer");
-
-      // build psbt
-      const psbt = bitcoin.Psbt.fromHex(btcPsbtHex);
-
-      // sign psbt
-      const accountScript = addressToScriptPublicKeyHex(
-        _account.address,
-        btcNetworkType
-      );
-      this.signAllPsbtInputs(psbt);
-      psbt.finalizeAllInputs();
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore We are really dont know what is it but we still copy working code
-      psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
-      return psbt.toHex();
-    } else {
-      throw Error("Invalid network");
-    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore We are really dont know what is it but we still copy working code
+    psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
+    return psbt.toHex();
   }
 }
 

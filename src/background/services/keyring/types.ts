@@ -48,7 +48,7 @@ export interface TransferNFT {
 
 interface BaseUserToSignInput {
   index: number;
-  sighashTypes: number[] | undefined;
+  sighashTypes?: number[];
   disableTweakSigner?: boolean;
 }
 
@@ -88,5 +88,5 @@ export interface RgbppTransferParams {
   rgbppAssets: RgbppAsset[];
   toBtcAddress: string;
   xudtTypeArgs: string;
-  transferAmount: bigint;
+  transferAmount: number;
 }

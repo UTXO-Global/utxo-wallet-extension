@@ -9,6 +9,7 @@ import type {
   SendCoin,
   SendOrd,
   TransferNFT,
+  UserToSignInput,
 } from "../services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { Transaction } from "@ckb-lumos/lumos";
@@ -48,7 +49,7 @@ export interface IKeyringController {
     ordUtxos: ApiOrdUTXO[],
     utxos: ApiUTXO[]
   ): Promise<string>;
-  sendRgbppAsset(data: RgbppTransferParams): Promise<string>;
+  sendRgbpp(btcPsbtHex: string, inputs?: UserToSignInput[]): Promise<string>;
 }
 
 class KeyringController implements IKeyringController {
@@ -166,8 +167,11 @@ class KeyringController implements IKeyringController {
     return await keyringService.signCkbTransaction({ tx: txSkeleton, hdPath });
   }
 
-  async sendRgbppAsset(data: RgbppTransferParams): Promise<string> {
-    return keyringService.sendRgbppAsset(data);
+  async sendRgbpp(
+    btcPsbtHex: string,
+    inputs?: UserToSignInput[]
+  ): Promise<string> {
+    return keyringService.sendRgbppAsset(btcPsbtHex, inputs);
   }
 }
 
