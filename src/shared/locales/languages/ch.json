@@ -86,7 +86,8 @@
       "tooltip": {
         "fees": "交易期间支付的费用，主要用于流动性",
         "max_slippage": "您愿意在交易中容忍的价格变化的最大百分比",
-        "price_impact": "由于交易量导致的市场价格与预估价格之间的差异"
+        "price_impact": "由于交易量导致的市场价格与预估价格之间的差异",
+        "balance_reservation": "SWAP 需要预留 276 CKB，因此您的可用 CKB 余额将小于总余额"
       },
       "max": "最高",
       "balance": "余额",
@@ -203,7 +204,8 @@
       "address_book": {
         "address_book": "地址簿",
         "no_addresses": "还没有地址"
-      }
+      },
+      "error_not_enough_balance_remaining": "您钱包中的剩余余额必须大于 {value} CKB。请调整您的交易金额或添加更多 CKB 以继续"
     },
     "final_send": {
       "success": "成功",

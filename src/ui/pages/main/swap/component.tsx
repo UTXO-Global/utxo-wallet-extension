@@ -27,7 +27,6 @@ import IcnInfo from "@/ui/components/icons/IcnInfo";
 import TextAvatar from "@/ui/components/text-avatar";
 import { useAppState } from "@/ui/states/appState";
 
-const MIN_CAPACITY = 63;
 const MIN_PRICE_IMPACT = -80;
 const PRICE_IMPACT_WARNING = -5;
 
@@ -353,7 +352,21 @@ export default function UtxoSwap() {
             </div>
             <div className="flex gap-0 flex-grow justify-between items-center">
               <div className="text-black text-base leading-[22px] font-medium flex flex-col items-start">
-                <div>{assetX ? assetX.symbol : ""}</div>
+                <div className="flex gap-1 items-center">
+                  <p>{assetX ? assetX.symbol : ""}</p>
+                  {assetX.typeHash === CKB_TYPE_HASH && (
+                    <>
+                      <IcnInfo className={"balanceReservation"} />
+                      <Tooltip
+                        anchorSelect={`.balanceReservation`}
+                        place="bottom-end"
+                        className="!text-[12px] !leading-[14px] !bg-primary !text-white !p-2 !max-w-[250px] !tracking-[0.1px] !rounded-lg z-[100]"
+                      >
+                        {t("components.swap.tooltip.balance_reservation")}
+                      </Tooltip>
+                    </>
+                  )}
+                </div>
                 <div className="flex gap-1 w-full items-center text-[#787575]">
                   <span className="text-sm leading-4 font-medium">
                     {t("components.swap.balance")}:

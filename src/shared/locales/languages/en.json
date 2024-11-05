@@ -134,7 +134,8 @@
       "tooltip": {
         "fees": "The fee paid during the trade, primarily to liquidity",
         "max_slippage": "The maximum percentage of price change you are willing to tolerate in the trade",
-        "price_impact": "The difference between the market and estimated prices due to trade volume"
+        "price_impact": "The difference between the market and estimated prices due to trade volume",
+        "balance_reservation": "The SWAP requires a reservation of 276 CKB, so your available CKB balance will be less than the total balance"
       },
       "powered_by": "Powered by"
     }
@@ -243,7 +244,8 @@
       "address_book": {
         "address_book": "Address book",
         "no_addresses": "No addresses here"
-      }
+      },
+      "error_not_enough_balance_remaining": "The remaining balance in your wallet must be greater than {value} CKB. Please adjust your transaction amount or add more CKB to proceed"
     },
     "finalle_send": {
       "success": "Success",
