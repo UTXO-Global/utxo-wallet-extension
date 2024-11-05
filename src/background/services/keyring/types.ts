@@ -1,6 +1,7 @@
 import type { ApiUTXO } from "@/shared/interfaces/api";
 import { ApiOrdUTXO } from "@/shared/interfaces/inscriptions";
 import { INFT } from "@/shared/interfaces/nft";
+import { RgbppAsset } from "@/shared/interfaces/rgbpp";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { Cell } from "@ckb-lumos/lumos";
 
@@ -81,4 +82,11 @@ export interface ToSignInput {
   index: number;
   publicKey: string;
   sighashTypes?: number[];
+}
+
+export interface RgbppTransferParams {
+  rgbppAssets: RgbppAsset[];
+  toBtcAddress: string;
+  xudtTypeArgs: string;
+  transferAmount: bigint;
 }

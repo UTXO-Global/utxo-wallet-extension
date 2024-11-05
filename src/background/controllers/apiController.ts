@@ -16,6 +16,14 @@ import {
 import { fetchEsplora } from "@/shared/utils";
 import { Cell } from "@ckb-lumos/lumos";
 import { storageService } from "../services";
+import {
+  getRgbppAssetApiUrl,
+  RgbppAsset,
+  RgbppTx,
+  RgbppXudtBalance,
+} from "@/shared/interfaces/rgbpp";
+import { NetworkData } from "@/shared/networks/types";
+import { udtDataToDecimal } from "../utils";
 
 export interface IApiController {
   getAccountBalance(address: string): Promise<
@@ -69,6 +77,12 @@ export interface IApiController {
   getTokens(address: string): Promise<IToken[] | undefined>;
   getTransactionHex(txid: string): Promise<string | undefined>;
   getUtxoValues(outpoints: string[]): Promise<number[] | undefined>;
+  getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]>;
+  getRgbppTxs(typeScript: string): Promise<RgbppTx[]>;
+  getRgbppAssets(typeScript: string, address: string): Promise<RgbppAsset[]>;
 }
 
 // TODO: use interface instead
@@ -403,6 +417,62 @@ class ApiController implements IApiController {
     );
 
     return values;
+  }
+
+  async getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]> {
+    const networkData =
+      network ?? getNetworkDataBySlug(storageService.currentNetwork);
+    const response = await fetchEsplora<{
+      address: string;
+      xudt: RgbppXudtBalance[];
+    }>({
+      path: `${getRgbppAssetApiUrl(
+        networkData.slug
+      )}/rgbpp/v1/address/${address}/balance?no_cache=false`,
+    });
+
+    return response.xudt;
+  }
+
+  async getRgbppTxs(typeScript: string): Promise<RgbppTx[]> {
+    const txs: RgbppTx[] = [];
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      const response = await fetchEsplora<{
+        address: string;
+        txs: RgbppTx[];
+      }>({
+        path: `${getRgbppAssetApiUrl(networkData.slug)}/rgbpp/v1/address/${
+          account.address
+        }/activity?rgbpp_only=true&type_script=${typeScript}`,
+      });
+      txs.push(...response.txs);
+    }
+    return txs;
+  }
+
+  async getRgbppAssets(
+    typeScript: string,
+    address: string
+  ): Promise<RgbppAsset[]> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const rgbAssets = await fetchEsplora<RgbppAsset[]>({
+      path: `${getRgbppAssetApiUrl(
+        networkData.slug
+      )}/rgbpp/v1/address/${address}/assets?no_cache=false&type_script=${typeScript}`,
+    });
+    return rgbAssets.map(
+      (asset) => ({
+        ...asset,
+        balance: udtDataToDecimal(asset.data),
+      }),
+      0
+    );
   }
 }
 

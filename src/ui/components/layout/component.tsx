@@ -151,6 +151,10 @@ export default function PagesLayout() {
         title: t("components.layout.details"),
       },
       {
+        route: "/rgbpp/@",
+        title: t("components.layout.details"),
+      },
+      {
         route: "/pages/swap/slippage-settings",
         title: t("components.swap.slippage_settings"),
       },

@@ -10,9 +10,10 @@ import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import { isCkbNetwork } from "@/shared/networks";
+import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
+import RgbppXudtTabs from "./rgbpp-xudt";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -38,6 +39,7 @@ const Wallet = () => {
         <Campaign />
         <NativeToken />
         {isCkbNetwork(currentNetwork.network) && <TokenTabs />}
+        {isBitcoinNetwork(currentNetwork.network) && <RgbppXudtTabs />}
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />

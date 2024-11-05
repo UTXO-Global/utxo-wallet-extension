@@ -17,6 +17,7 @@ import {
 } from "../states/walletState";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { ckbExplorerApi } from "../utils/helpers";
+import { RgbppAsset } from "@/shared/interfaces/rgbpp";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -163,8 +164,7 @@ export function useCreateTxCallback() {
           fromAddresses: psbt.txInputs.map((input) => {
             const selectedUtxo = totalUtxos.find(
               (utxo) =>
-                utxo.txid ===
-                  Buffer.from(input.hash).reverse().toString("hex") &&
+                utxo.txid === input.hash.reverse().toString("hex") &&
                 utxo.vout === input.index
             );
             return selectedUtxo.address;
@@ -393,5 +393,54 @@ export function useCreateNFTTxCallback() {
       selectedWallet,
       keyringController,
     ]
+  );
+}
+
+export function useCreateRgbppTxCallback() {
+  const { selectedAccount, selectedWallet } = useWalletState((v) => ({
+    selectedAccount: v.selectedAccount,
+    selectedWallet: v.selectedWallet,
+  }));
+  const { keyringController } = useControllersState((v) => ({
+    keyringController: v.keyringController,
+  }));
+
+  return useCallback(
+    async (
+      toAddress: Hex,
+      toAmount: number,
+      xudtTypeArgs: string,
+      rgbppAssets: RgbppAsset[]
+    ) => {
+      if (selectedWallet === undefined || selectedAccount === undefined)
+        throw new Error("Failed to get current wallet or account");
+      const key = await keyringController.exportPublicKey(toAddress);
+      console.log({ key });
+
+      const psbtHex = await keyringController.sendRgbppAsset({
+        toBtcAddress: toAddress,
+        transferAmount: BigInt(toAmount),
+        rgbppAssets,
+        xudtTypeArgs,
+        // feeRate,
+      });
+      const psbt = Psbt.fromHex(psbtHex);
+      const tx = psbt.extractTransaction();
+      const rawtx = tx.toHex();
+      return {
+        rawtx,
+        fee: psbt.getFee(),
+        fromAddresses: psbt.txInputs.map((input) => {
+          const selectedUtxo = rgbppAssets.find(
+            (utxo) =>
+              utxo.outPoint.txHash === input.hash.reverse().toString("hex") &&
+              Number(utxo.outPoint.index) === input.index
+          );
+          // TODO: return address of specific selected input
+          return "";
+        }),
+      };
+    },
+    [selectedAccount, selectedWallet, keyringController]
   );
 }

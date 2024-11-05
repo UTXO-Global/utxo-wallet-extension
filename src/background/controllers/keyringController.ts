@@ -4,6 +4,7 @@ import { NetworkSlug } from "@/shared/networks/types";
 import { Psbt } from "bitcoinjs-lib";
 import { keyringService } from "../services";
 import type {
+  RgbppTransferParams,
   SendCkbToken,
   SendCoin,
   SendOrd,
@@ -47,6 +48,7 @@ export interface IKeyringController {
     ordUtxos: ApiOrdUTXO[],
     utxos: ApiUTXO[]
   ): Promise<string>;
+  sendRgbppAsset(data: RgbppTransferParams): Promise<string>;
 }
 
 class KeyringController implements IKeyringController {
@@ -162,6 +164,10 @@ class KeyringController implements IKeyringController {
     );
 
     return await keyringService.signCkbTransaction({ tx: txSkeleton, hdPath });
+  }
+
+  async sendRgbppAsset(data: RgbppTransferParams): Promise<string> {
+    return keyringService.sendRgbppAsset(data);
   }
 }
 
