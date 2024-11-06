@@ -16,7 +16,7 @@ import {
   useWalletState,
 } from "../states/walletState";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
-import { ckbExplorerApi } from "../utils/helpers";
+import { fetchExplorerAPI } from "../utils/helpers";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -332,8 +332,9 @@ export function usePushCkbTxCallback() {
     try {
       if (!!txId) {
         interval = setInterval(async () => {
-          const res = await fetch(
-            `${ckbExplorerApi(currentNetwork.slug)}/v1/transactions/${txId}`
+          const res = await fetchExplorerAPI(
+            currentNetwork.slug,
+            `/v1/transactions/${txId}`
           );
 
           const { data } = await res.json();

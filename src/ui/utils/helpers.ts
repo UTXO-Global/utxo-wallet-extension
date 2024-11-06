@@ -32,11 +32,6 @@ export const hexStringToUint8Array = (hexString: string): Uint8Array => {
   return buffer;
 };
 
-export const ckbExplorerApi = (networkSlug: string) => {
-  const _network = networkSlug === "nervos" ? "mainnet" : "testnet";
-  return `${process.env.API_BASE_URL}/ckb/${_network}`;
-};
-
 export const evaluatePassword = (password: string): number => {
   let score = 0;
 
@@ -54,4 +49,19 @@ export const evaluatePassword = (password: string): number => {
   if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
   return score;
+};
+
+export const fetchExplorerAPI = async (networkSlug: string, path: string) => {
+  const _network = networkSlug === "nervos" ? "mainnet" : "testnet";
+  const apiURL = `https://${_network}-api.explorer.nervos.org/api/${
+    path.startsWith("/") ? path.slice(1) : path
+  }`;
+
+  return await fetch(apiURL, {
+    method: "GET",
+    headers: {
+      Accept: "application/vnd.api+json",
+      "Content-Type": "application/vnd.api+json",
+    },
+  });
 };
