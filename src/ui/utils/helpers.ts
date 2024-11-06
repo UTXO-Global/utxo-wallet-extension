@@ -55,3 +55,18 @@ export const evaluatePassword = (password: string): number => {
 
   return score;
 };
+
+export const fetchExploreAPI = async (networkSlug: string, path: string) => {
+  const _network = networkSlug === "nervos" ? "mainnet" : "testnet";
+  const apiURL = `https://${_network}-api.explorer.nervos.org/api/${
+    path.startsWith("/") ? path.slice(1) : path
+  }`;
+
+  return await fetch(apiURL, {
+    method: "GET",
+    headers: {
+      Accept: "application/vnd.api+json",
+      "Content-Type": "application/vnd.api+json",
+    },
+  });
+};
