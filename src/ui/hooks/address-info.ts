@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchExploreAPI } from "../utils/helpers";
+import { fetchExplorerAPI } from "../utils/helpers";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
@@ -30,7 +30,7 @@ export const useGetCKBAddressInfo = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetchExploreAPI(
+      const res = await fetchExplorerAPI(
         currentNetwork.slug,
         `/v1/addresses/${currentAccount.accounts[0].address}`
       );

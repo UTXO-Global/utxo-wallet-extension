@@ -14,7 +14,7 @@ import Analytics from "@/ui/utils/gtm";
 import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
-import { fetchExploreAPI } from "@/ui/utils/helpers";
+import { fetchExplorerAPI } from "@/ui/utils/helpers";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { useGetCKBAddressInfo } from "@/ui/hooks/address-info";
 import { shortAddress } from "@/shared/utils/transactions";
@@ -78,7 +78,7 @@ const TokenDetail = () => {
       const path = `/v1/${
         type === "xudt_compatible" ? "xudt" : type
       }s/${typeHash}`;
-      const res = await fetchExploreAPI(currentNetwork.slug, path);
+      const res = await fetchExplorerAPI(currentNetwork.slug, path);
       const { data } = await res.json();
       setTokenInfo(data as CKBTokenInfo);
     } catch (e) {

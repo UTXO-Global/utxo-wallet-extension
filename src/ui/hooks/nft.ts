@@ -8,7 +8,7 @@ import {
 } from "../states/walletState";
 import { DOB_PROTOCOL_VERSIONS, isCkbNetwork } from "@/shared/networks";
 import { INFT } from "@/shared/interfaces/nft";
-import { fetchExploreAPI } from "../utils/helpers";
+import { fetchExplorerAPI } from "../utils/helpers";
 
 export const useGetMyNFTs = (isProgess?: boolean) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,7 +36,7 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
       }
       setIsLoading(isLoading);
       try {
-        const res = await fetchExploreAPI(
+        const res = await fetchExplorerAPI(
           currentNetwork.slug,
           `/v2/nft/items?page=${page}&owner=${currentAccount.accounts[0].address}&standard=spore`
         );
@@ -119,7 +119,7 @@ export const useGetDetailNFT = (isLoadNFT: boolean) => {
 
   const getDetailNFT = async () => {
     try {
-      const res = await fetchExploreAPI(
+      const res = await fetchExplorerAPI(
         currentNetwork.slug,
         `/v2/nft/collections/${collection}/items/${nftId}`
       );

@@ -5,7 +5,7 @@ import {
 } from "@ckb-lumos/lumos/helpers";
 import { CKBHasher } from "@ckb-lumos/lumos/utils";
 import { NetworkConfig } from "./offckb.config";
-import { fetchExploreAPI } from "@/ui/utils/helpers";
+import { fetchExplorerAPI } from "@/ui/utils/helpers";
 import { CKBAddressInfo } from "./types";
 import { getNetworkDataBySlug, isCkbNetwork } from "..";
 import { NetworkSlug } from "../types";
@@ -100,7 +100,7 @@ export async function balanceOf(
   };
 }> {
   try {
-    const res = await fetchExploreAPI(networkSlug, `v1/addresses/${address}`);
+    const res = await fetchExplorerAPI(networkSlug, `v1/addresses/${address}`);
     const { data } = await res.json();
     const addressInfo = data[0] as CKBAddressInfo;
     const udtBalances = {};
