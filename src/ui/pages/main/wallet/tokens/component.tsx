@@ -17,15 +17,17 @@ export default function TokenTabs() {
     try {
       const res = await fetch(`${jsonURL}?t=${Date.now()}`);
       const data = await res.json();
-      setTokens([...data]);
+      return [...data];
     } catch (e) {
       console.error(e);
     }
+
+    return [];
   };
 
   useEffect(() => {
     const f = async () => {
-      await getTokenDefaults();
+      const defaultTokens = await getTokenDefaults();
       const udtAccounts = addressInfo?.attributes?.udt_accounts || [];
       if (udtAccounts.length > 0) {
         const udtAccounts = addressInfo.attributes.udt_accounts;
@@ -48,7 +50,7 @@ export default function TokenTabs() {
               }
               return newTokens;
             },
-            [...prev]
+            [...defaultTokens]
           );
         });
       }
