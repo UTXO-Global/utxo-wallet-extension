@@ -151,7 +151,8 @@ const TokenDetail = () => {
   const fullNameLength = useMemo(() => {
     const fullnameLen = tokenInfo?.attributes?.full_name?.length || 0;
     const symbolLen = tokenInfo?.attributes?.symbol?.length || 0;
-    return fullnameLen + symbolLen;
+    const typeLen = tokenInfo?.attributes?.udt_type?.length || 0;
+    return fullnameLen + symbolLen + (typeLen > 4 ? typeLen - 4 : 0);
   }, [tokenInfo]);
 
   const _navigate = (path: string, name: string, label: string) => {
