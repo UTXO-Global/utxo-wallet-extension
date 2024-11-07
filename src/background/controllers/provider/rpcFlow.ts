@@ -23,14 +23,14 @@ const isSignApproval = (type: string) => {
   return SIGN_APPROVALS.includes(type);
 };
 
-const isInternalMethods = (type:string) => {
+const isInternalMethods = (type: string) => {
   const INTERNAL_METHODS = [
     "_switchChain",
     "_switchNetwork",
     "_getCurrentChain",
   ];
   return INTERNAL_METHODS.includes(type);
-}
+};
 
 const windowHeight = 600;
 const flow = new PromiseFlow();
@@ -59,7 +59,10 @@ const flowContext = flow
       data: { method },
     } = ctx.request;
     ctx.mapMethod = underline2Camelcase(method);
-    if (!ctx.providerController[ctx.mapMethod] || isInternalMethods(ctx.mapMethod)) {
+    if (
+      !ctx.providerController[ctx.mapMethod] ||
+      isInternalMethods(ctx.mapMethod)
+    ) {
       throw ethErrors.rpc.methodNotFound({
         message: `method [${method}] doesn't has corresponding handler`,
         data: ctx.request.data,
@@ -80,11 +83,10 @@ const flowContext = flow
     return next();
   })
   .use(async (ctx, next) => {
-   
     const { mapMethod } = ctx;
     if (Reflect.getMetadata("SAFE", providerController, mapMethod)) {
       if (!(await permissionService.siteIsConnected())) {
-        return
+        return;
       }
     }
 
@@ -132,6 +134,12 @@ const flowContext = flow
       Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
+      if (notificationService.isPending) {
+        throw ethErrors.rpc.limitExceeded({
+          message: `there is a request pending processing`,
+        });
+      }
+       
       ctx.request.requestedApproval = true;
       // eslint-disable-next-line
       ctx.approvalRes = await notificationService.requestApproval(
