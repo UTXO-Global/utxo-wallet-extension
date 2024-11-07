@@ -70,6 +70,17 @@ browserRuntimeOnConnect((port: any) => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   pm.listen(async (data) => {
     const sessionId = port.sender?.tab?.id;
+    if (data.method === "tabCheckin") {
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (tabs.length === 0) return false;
+      const url = new URL(tabs[0].url);
+      if (url.origin !== data.params.origin) return;
+      sessionService.createSession(sessionId, data.params);
+      return;
+    }
     const session = sessionService.getOrCreateSession(sessionId);
 
     const req = { data, session };
