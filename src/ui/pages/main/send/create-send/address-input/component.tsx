@@ -46,11 +46,11 @@ const AddressInput: FC<Props> = ({
           for (const record of records) {
             if (
               (record.key === "address.ckb" &&
-                // isCkbNetwork(currentNetwork.network))
-                currentNetwork.slug === "nervos") ||
+                isCkbNetwork(currentNetwork.network)) ||
+              // currentNetwork.slug === "nervos"
               (record.key === "address.btc" &&
-                // isBitcoinNetwork(currentNetwork.network))
-                currentNetwork.slug === "btc")
+                isBitcoinNetwork(currentNetwork.network))
+              // currentNetwork.slug === "btc"
             ) {
               onChange(record.value);
               setFiltered(getFiltered(record.value));

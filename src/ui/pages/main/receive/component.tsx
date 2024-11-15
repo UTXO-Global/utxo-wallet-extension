@@ -1,10 +1,12 @@
 import { NETWORK_ICON } from "@/shared/networks";
+import { browserTabsCreate } from "@/shared/utils/browser";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import QRCode from "qr-code-styling";
 import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+import cn from "classnames";
 
 const Receive = () => {
   const { address: selectedAddress } = useParams();
@@ -101,6 +103,26 @@ const Receive = () => {
         />
         <div className="rounded-[16px] border border-[#F5F5F5] p-4 break-all text-center text-[14px] leading-[18px] text-primary">
           {selectedAddress}
+        </div>
+
+        <div
+          className="inline-block"
+          onClick={async () => {
+            await browserTabsCreate({
+              url: `https://d.id/bit/create?inviter=superviolet.bit&channel=superviolet.bit`,
+              active: true,
+            });
+          }}
+        >
+          <div className="bg-grey-400 rounded-full flex gap-0">
+            <div
+              className={cn(
+                "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#7F00FF] cursor-pointer bg-grey-300"
+              )}
+            >
+              Create OnChain Name
+            </div>
+          </div>
         </div>
         <div
           className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
