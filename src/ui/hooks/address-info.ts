@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ckbExplorerApi } from "../utils/helpers";
+import { fetchExplorerAPI } from "../utils/helpers";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
@@ -30,16 +30,9 @@ export const useGetCKBAddressInfo = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(
-        `${ckbExplorerApi(currentNetwork.slug)}/v1/addresses/${
-          currentAccount.accounts[0].address
-        }`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.api+json",
-          },
-        }
+      const res = await fetchExplorerAPI(
+        currentNetwork.slug,
+        `/v1/addresses/${currentAccount.accounts[0].address}`
       );
       const { data } = await res.json();
       if (data && data.length > 0) {

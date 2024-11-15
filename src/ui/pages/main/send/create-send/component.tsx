@@ -168,17 +168,17 @@ const CreateSend = () => {
         return toast.error(t("send.create_send.fee_is_text_error"));
       }
 
-      if (isCkbNetwork(currentNetwork.network)) {
+      if (isCkbNetwork(currentNetwork.network) && !isTokenTransaction) {
         const toScript = helpers.parseAddress(address, {
           config: currentNetwork.network.lumosConfig,
         });
 
-        const changeOutputCapacity = Number(balance ?? 0) - Number(amount);
+        const changeOutputCapacity =
+          Number(availableCKBBalance ?? 0) - Number(amount);
         const minCap = MIN_CAPACITY(toScript)
           .div(10 ** 8)
           .toNumber();
         if (changeOutputCapacity > 0 && changeOutputCapacity < minCap) {
-          console.log("changeOutputCapacity", changeOutputCapacity);
           return toast.error(
             t("send.create_send.error_not_enough_balance_remaining").replaceAll(
               "{value}",
