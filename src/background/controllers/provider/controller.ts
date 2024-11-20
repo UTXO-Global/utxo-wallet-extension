@@ -40,11 +40,13 @@ class ProviderController {
     return account;
   };
 
+  @Reflect.metadata("INTERNAL", true)
   _getCurrentChain = () => {
     const currentChain = storageService.currentNetwork.split("_", 1);
     return currentChain.length > 0 ? currentChain[0] : "";
   };
 
+  @Reflect.metadata("INTERNAL", true)
   _switchNetwork = async (_network: NetworkSlug) => {
     const currentNetwork = storageService.currentNetwork;
     if (currentNetwork === _network) return currentNetwork;
@@ -119,6 +121,7 @@ class ProviderController {
     return _network;
   };
 
+  @Reflect.metadata("INTERNAL", true)
   _switchChain = async (chainSlug: ChainSlug) => {
     const currentNetwork = storageService.currentNetwork;
     const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(

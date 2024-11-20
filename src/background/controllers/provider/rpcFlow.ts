@@ -61,10 +61,30 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
+    if (Reflect.getMetadata("INTERNAL", providerController, mapMethod)) {
+      throw ethErrors.rpc.invalidRequest({
+        message: `there is a invalid request`,
+      });
+    }
+
+    return next();
+  })
+  .use(async (ctx, next) => {
+    const { mapMethod } = ctx;
     if (!Reflect.getMetadata("SAFE", ctx.providerController, mapMethod)) {
       if (!storageService.appState.isUnlocked) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval({ lock: true });
+      }
+    }
+
+    return next();
+  })
+  .use(async (ctx, next) => {
+    const { mapMethod } = ctx;
+    if (Reflect.getMetadata("SAFE", providerController, mapMethod)) {
+      if (!(await permissionService.siteIsConnected())) {
+        return;
       }
     }
 
@@ -112,6 +132,12 @@ const flowContext = flow
       Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
+      if (notificationService.isPending) {
+        throw ethErrors.rpc.limitExceeded({
+          message: `there is a request pending processing`,
+        });
+      }
+
       ctx.request.requestedApproval = true;
       // eslint-disable-next-line
       ctx.approvalRes = await notificationService.requestApproval(

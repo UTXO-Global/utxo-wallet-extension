@@ -1,17 +1,6 @@
 import { storageService } from "@/background/services";
 import { permissionService } from "@/background/services";
 
-export const tabCheckin = ({
-  data: {
-    params: { origin, name, icon },
-  },
-  session,
-}) => {
-  session.origin = origin;
-  session.icon = icon;
-  session.name = name;
-};
-
 export const getProviderState = async () => {
   
   const isUnlocked = storageService.appState.isUnlocked;
