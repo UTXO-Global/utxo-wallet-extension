@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { shortAddress } from "@/shared/utils/transactions";
 import { Combobox, Transition } from "@headlessui/react";
 import s from "./styles.module.scss";
@@ -25,15 +26,12 @@ const AddressInput: FC<Props> = ({
   onOpenModal,
   className,
 }) => {
-  const [filtered, setFiltered] = useState([]);
+  const [filtered, setFiltered] = useState<string[]>([]);
   const currentNetwork = useGetCurrentNetwork();
   const [inputValue, setInputValue] = useState("");
   const [requesting, setRequesting] = useState(false);
-  const [hasBit, setHasBit] = useState(false);
 
-  const { addressBook } = useAppState((v) => ({
-    addressBook: v.addressBook,
-  }));
+  const { addressBook } = useAppState();
 
   const getFiltered = (query: string) => {
     return addressBook.filter((i) => i.startsWith(query));
@@ -43,21 +41,17 @@ const AddressInput: FC<Props> = ({
     if (inputValue.endsWith(".bit")) {
       if (!requesting) {
         dotbit.records(inputValue).then((records) => {
-          for (const record of records) {
-            if (
-              (record.key === "address.ckb" &&
-                isCkbNetwork(currentNetwork.network)) ||
-              // currentNetwork.slug === "nervos"
-              (record.key === "address.btc" &&
-                isBitcoinNetwork(currentNetwork.network))
-              // currentNetwork.slug === "btc"
-            ) {
-              onChange(record.value);
-              setFiltered(getFiltered(record.value));
-              setHasBit(true);
-              break;
-            }
-          }
+          setFiltered(
+            records
+              .filter(
+                (z) =>
+                  (z.key === "address.ckb" &&
+                    isCkbNetwork(currentNetwork.network)) ||
+                  (z.key === "address.btc" &&
+                    isBitcoinNetwork(currentNetwork.network))
+              )
+              .map((j) => j.value)
+          );
           setTimeout(() => {
             setRequesting(false);
           }, 3000);
@@ -67,20 +61,19 @@ const AddressInput: FC<Props> = ({
     } else {
       onChange(inputValue);
       setFiltered(getFiltered(inputValue));
-      setHasBit(false);
     }
   }, [inputValue, requesting]);
 
   return (
     <div
       className={cn(
-        `flex gap-2 items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300 ${
+        `flex gap-2 relative items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300 ${
           className ? className : ""
         }`
       )}
     >
       <Combobox value={inputValue}>
-        <div className="relative w-full">
+        <div className="w-full">
           <Combobox.Input
             displayValue={(value: string) => value}
             autoComplete="off"
@@ -94,15 +87,15 @@ const AddressInput: FC<Props> = ({
             }}
           />
 
-          {hasBit && (
+          {/* {hasBit && (
             <div className="rounded-[16px] border border-[#F5F5F5] p-4 break-all text-center text-[14px] leading-[18px] text-primary">
               <b>D.id Address: </b>
               {address}
             </div>
-          )}
+          )} */}
 
           {filtered.length > 0 ? (
-            <div className="w-[100vw] px-4 absolute -left-4 z-10">
+            <div className="w-[calc(100%+32px)] px-4 absolute -left-4 z-10">
               <Transition
                 as={Fragment}
                 leave="transition ease-in duration-100"
@@ -115,6 +108,9 @@ const AddressInput: FC<Props> = ({
                       className={s.addressbookoption}
                       key={address}
                       value={address}
+                      onClick={() => {
+                        setInputValue(address);
+                      }}
                     >
                       {shortAddress(address, 14)}
                     </Combobox.Option>
