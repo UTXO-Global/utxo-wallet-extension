@@ -18,14 +18,35 @@ import {
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
+import { useState } from "react";
+import Modal from "@/ui/components/modal";
+import Switch from "@/ui/components/switch";
+import { useWalletState } from "@/ui/states/walletState";
+import {
+  emptyAppState,
+  emptyWalletState,
+} from "@/background/services/storage/utils";
+import { useNavigate } from "react-router-dom";
+import CheckPassword from "@/ui/components/check-password";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
 
 const Settings = () => {
-  const { logout } = useAppState((v) => ({
+  const navigate = useNavigate();
+  const { logout, logoutAndErase, updateAppState } = useAppState((v) => ({
     logout: v.logout,
+    logoutAndErase: v.logoutAndErase,
+    updateAppState: v.updateAppState,
   }));
+
+  const { updateWalletState } = useWalletState((v) => ({
+    updateWalletState: v.updateWalletState,
+  }));
+
+  const [isOpenLogout, setIsOpenLogout] = useState(false);
+  const [isBackup, setIsBackup] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const expandView = async () => {
     await browserTabsCreate({
@@ -69,17 +90,17 @@ const Settings = () => {
       gaLabel: "expand_view",
     },
     {
-      icon: <IcnArrowLeftOnRectangle className={ICON_CN} />,
-      label: t("settings.logout"),
-      onClick: logout,
-      gaLabel: "logout",
-    },
-    {
       icon: <IcnHelpSupport className={ICON_CN} />,
       label: t("settings.help_n_support"),
       link: TELEGRAM_HELP_AND_SUPPORT,
       target: "_blank",
       gaLabel: "helpAndSupport",
+    },
+    {
+      icon: <IcnArrowLeftOnRectangle className={ICON_CN} />,
+      label: t("settings.logout"),
+      onClick: () => setIsOpenLogout(true),
+      gaLabel: "logout",
     },
   ];
 
@@ -119,6 +140,62 @@ const Settings = () => {
           UTXO Global team
         </a>
       </div>
+      <Modal
+        onClose={() => setIsOpenLogout(false)}
+        open={isOpenLogout}
+        title={t("logout.are_you_sure")}
+      >
+        {isVerified ? (
+          <>
+            <div className="text-base text-primary flex flex-col items-center gap-2">
+              <div className="text-base">
+                {t("logout.warning_1")} <br />
+                {t("logout.warning_2")}
+              </div>
+              <Switch
+                label={t("logout.have_you_backed")}
+                value={isBackup}
+                onChange={setIsBackup}
+                locked={false}
+                className="switch flex w-full flex-row-reverse items-center justify-between py-1 capitalize !text-primary [&>label]:!text-primary [&>label]:!font-medium"
+              />
+            </div>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                className="btn w-full secondary"
+                onClick={() => {
+                  setIsBackup(false);
+                  setIsVerified(false);
+                  setIsOpenLogout(false);
+                }}
+              >
+                {t("switch_wallet.no")}
+              </button>
+              <button
+                className="btn w-full primary"
+                disabled={!isBackup}
+                onClick={async () => {
+                  if (isBackup) {
+                    await logoutAndErase();
+                    await updateWalletState({
+                      ...emptyWalletState(),
+                    });
+                    await updateAppState({
+                      ...emptyAppState(),
+                    });
+                    window.location.reload();
+                    navigate("/");
+                  }
+                }}
+              >
+                {t("switch_wallet.yes")}
+              </button>
+            </div>
+          </>
+        ) : (
+          <CheckPassword handler={(_password) => setIsVerified(true)} />
+        )}
+      </Modal>
     </div>
   );
 };

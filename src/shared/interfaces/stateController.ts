@@ -9,4 +9,5 @@ export interface IStateController {
   getWalletPhrase(index: number, password: string): Promise<string>;
   clearPendingWallet(): Promise<void>;
   getPendingWallet(): Promise<string | undefined>;
+  clearAllData(): Promise<void>;
 }
