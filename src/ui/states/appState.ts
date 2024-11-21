@@ -22,4 +22,10 @@ export const useAppState = create<IAppState>()((set) => ({
     await proxy.updateAppState({ password: undefined, isUnlocked: false });
     set({ password: undefined, isUnlocked: false });
   },
+  logoutAndErase: async () => {
+    await proxy.clearAllData();
+    set((_state) => {
+      return {};
+    });
+  },
 }));

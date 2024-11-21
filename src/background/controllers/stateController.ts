@@ -38,6 +38,10 @@ class StateController implements IStateController {
   async getWalletState(): Promise<IWalletStateBase> {
     return storageService.walletState;
   }
+
+  async clearAllData() {
+    return await storageService.clearAllData();
+  }
 }
 
 export default new StateController();

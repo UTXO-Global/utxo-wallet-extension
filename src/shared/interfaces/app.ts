@@ -15,4 +15,5 @@ export interface IAppState extends IAppStateBase {
     updateBack?: boolean
   ) => Promise<void>;
   logout: () => Promise<void>;
+  logoutAndErase: () => Promise<void>;
 }
