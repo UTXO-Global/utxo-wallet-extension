@@ -253,11 +253,5 @@
     "occupied": "Занятый",
     "creator": "Создатель",
     "transfer": "Передача"
-  },
-  "logout": {
-    "warning_1": "You are about to log out of the wallet. Logging out will erase all data, and your wallet will be reset to an empty state.",
-    "warning_2": "Please ensure you have backed up any important information before proceeding",
-    "are_you_sure": "Are you sure you want to logout?",
-    "have_you_backed": "Have you backed up all your wallet data?"
   }
 }

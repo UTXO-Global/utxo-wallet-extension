@@ -11,7 +11,6 @@ import { defaultNetwork } from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import { excludeKeysFromObj, pickKeysFromObj } from "@/shared/utils";
 import {
-  browserStorageClear,
   browserStorageLocalGet,
   browserStorageLocalSet,
 } from "@/shared/utils/browser";
@@ -331,12 +330,6 @@ class StorageService {
       return undefined;
     }
     return this._walletState.wallets[idx];
-  }
-
-  async clearAllData() {
-    await browserStorageClear();
-    this._walletState = { ...emptyWalletState() };
-    this._appState = { ...emptyAppState() };
   }
 }
 
