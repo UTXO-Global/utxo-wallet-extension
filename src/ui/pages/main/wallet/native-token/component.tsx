@@ -63,7 +63,7 @@ export default function NativeToken() {
         </div>
         <div className="flex flex-col justify-end text-right">
           <div className="text-primary text-base font-medium">
-            {formatNumber(nativeCoinBalance, 2, 5)}
+            {formatNumber(nativeCoinBalance, 2, 8)}
           </div>
           <div className="text-sm font-normal leading-[18px] text-[#787575]">
             ${formatNumber(nativeCoinBalance * nativeCoinPrice, 2, 3)}
