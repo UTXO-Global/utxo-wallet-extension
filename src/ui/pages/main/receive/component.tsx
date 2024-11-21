@@ -106,25 +106,6 @@ const Receive = () => {
         </div>
 
         <div
-          className="inline-block"
-          onClick={async () => {
-            await browserTabsCreate({
-              url: `https://d.id/bit/create?inviter=superviolet.bit&channel=superviolet.bit`,
-              active: true,
-            });
-          }}
-        >
-          <div className="bg-grey-400 rounded-full flex gap-0">
-            <div
-              className={cn(
-                "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#7F00FF] cursor-pointer bg-grey-300"
-              )}
-            >
-              Create OnChain Name
-            </div>
-          </div>
-        </div>
-        <div
           className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
           onClick={async () => {
             await navigator.clipboard.writeText(selectedAddress);
