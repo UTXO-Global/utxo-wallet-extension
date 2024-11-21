@@ -29,11 +29,6 @@ export async function browserStorageLocalSet<T extends object>(val: T) {
   return await browser.storage.local.set(val);
 }
 
-export async function browserStorageClear() {
-  await browser.storage.sync.clear();
-  await browser.storage.local.clear();
-}
-
 export async function browserTabsGetCurrent() {
   return await browser.tabs.getCurrent();
 }

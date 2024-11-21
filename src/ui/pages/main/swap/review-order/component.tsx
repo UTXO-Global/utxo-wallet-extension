@@ -145,7 +145,10 @@ export default function UTXOReviewOrder() {
   const onSwap = async () => {
     setIsProgressing(true);
     try {
-      if (availableCKBBalance < swapOccupiedCKBAmount) {
+      if (
+        pool.tokens[0].typeHash === CKB_TYPE_HASH &&
+        availableCKBBalance < swapOccupiedCKBAmount
+      ) {
         setIsProgressing(false);
         return toast.error(t("components.swap.tooltip.balance_reservation"));
       }
@@ -162,19 +165,8 @@ export default function UTXOReviewOrder() {
       navigate(`/pages/swap/swap-success/${txHash}`, {
         state: { ...location.state, txId: txHash },
       });
-    } catch (e: any) {
-      switch (e.code as number) {
-        case 1:
-          toast.error("Insufficient CKB capacity. Please try again");
-          break;
-        case 2:
-          toast.error(
-            `Insufficient ${pool.tokens[0].symbol ?? "free UDT"} balance`
-          );
-          break;
-        default:
-          toast.error((e as any)?.message ?? "Unknown error");
-      }
+    } catch (e) {
+      toast.error((e as any)?.message ?? "Unknown error");
     }
     setIsProgressing(false);
   };
