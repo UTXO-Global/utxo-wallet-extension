@@ -9,8 +9,8 @@ export const CKB_MAINNET: NetworkData = {
   addressTypes: [
     {
       value: AddressType.CKB_ADDRESS,
-      label: "Nervos",
-      name: "Nervos",
+      label: "CKB",
+      name: "CKB",
       hdPath: `m/13'/0'/0'/0`,
     },
   ],
@@ -28,8 +28,8 @@ export const CKB_TESTNET: NetworkData = {
   addressTypes: [
     {
       value: AddressType.CKB_ADDRESS,
-      label: "Nervos",
-      name: "Nervos",
+      label: "CKB",
+      name: "CKB",
       hdPath: `m/13'/1'/0'/0`,
     },
   ],

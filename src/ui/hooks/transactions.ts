@@ -17,6 +17,7 @@ import {
 } from "../states/walletState";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { fetchExplorerAPI } from "../utils/helpers";
+import { formatNumber } from "@/shared/utils";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -46,33 +47,38 @@ export function useCreateTxCallback() {
     // additional 0.001 ckb for tx fee
     // the tx fee could calculated by tx size
     // TODO: this is just a simple example
-    const _ckbMinTransfer = ckbMinTransfer(
-      toAddress,
-      slug === "nervos_testnet"
-    );
+    let ckbMinCapacity = ckbMinTransfer(toAddress, slug === "nervos_testnet");
     const fixedFee = 100000;
-    const _toAmount = receiverToPayFee ? toAmount - fixedFee : toAmount;
-    const neededCapacity = BI.from(_toAmount).add(fixedFee);
+    let amount = toAmount;
+
+    if (receiverToPayFee) {
+      ckbMinCapacity += fixedFee / 10 ** 8;
+      amount = toAmount - fixedFee;
+    }
+
+    const neededCapacity = BI.from(amount).add(fixedFee);
 
     if (safeBalance.lt(neededCapacity)) {
       throw new Error(
         `${t("hooks.transaction.insufficient_balance_0")} (${tidoshisToAmount(
           safeBalance.toNumber()
         )} ${t("hooks.transaction.insufficient_balance_1")} ${tidoshisToAmount(
-          _toAmount
+          amount
         )} ${t("hooks.transaction.insufficient_balance_2")}`
       );
-    } else if (BI.from(_toAmount).lt(BI.from(_ckbMinTransfer * 10 ** 8))) {
+    } else if (BI.from(toAmount).lt(BI.from(ckbMinCapacity * 10 ** 8))) {
       // toast.error(`Must be at least ${_ckbMinTransfer} CKB`);
       // throw new Error(
       //   `every cell's capacity must be at least ${_ckbMinTransfer} CKB, see https://medium.com/nervosnetwork/understanding-the-nervos-dao-and-cell-model-d68f38272c24`
       // );
-      throw new Error(`Must be at least ${_ckbMinTransfer} CKB`);
+      throw new Error(
+        `Must be at least ${formatNumber(ckbMinCapacity, 2, 8)} CKB`
+      );
     }
 
     const tx = await keyringController.sendCoin({
       to: toAddress,
-      amount: _toAmount,
+      amount: amount,
       cells,
       receiverToPayFee,
       feeRate,
