@@ -13,10 +13,6 @@ const ICON_SIZE = 6;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
 
 const Security = () => {
-  const { logout } = useAppState((v) => ({
-    logout: v.logout,
-  }));
-
   const navigate = useNavigate();
 
   const items = [
@@ -24,14 +20,6 @@ const Security = () => {
       icon: <KeyIcon className={ICON_CN} />,
       label: t("components.layout.change_password"),
       onClick: () => navigate("/pages/change-password"),
-    },
-    {
-      icon: <LockClosedIcon className={ICON_CN} />,
-      label: t("components.layout.lock"),
-      onClick: async () => {
-        // TODO: confirm dialog
-        await logout();
-      },
     },
   ];
 
