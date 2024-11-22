@@ -38,7 +38,7 @@ export const DOGECOIN_ADDRESS_TYPES: ChainAddressType[] = [
 export const DOGECOIN_LIVENET: NetworkData = {
   slug: "dogecoin",
   name: "Dogecoin Mainnet",
-  esploraUrl: "", // TODO
+  esploraUrl: "https://doge-electrs-demo.qed.me",
   explorerUrl: "https://blockexplorer.one/dogecoin/mainnet",
   addressTypes: DOGECOIN_ADDRESS_TYPES,
   coinName: "Dogecoin",
