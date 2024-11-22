@@ -1,7 +1,7 @@
 .addressbookoptions {
-  @apply mt-1 min-h-24 max-h-60 w-full overflow-auto rounded-md bg-grey-200 py-1 text-sm outline-none;
+  @apply mt-1 max-h-60 w-full overflow-auto rounded-md bg-grey-300 border border-grey-200 py-1 text-sm outline-none shadow-md;
 }
 
 .addressbookoption {
-  @apply cursor-pointer p-2 hover:bg-grey-100 rounded-md;
+  @apply cursor-pointer p-2 hover:bg-grey-200;
 }
