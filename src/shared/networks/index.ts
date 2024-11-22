@@ -6,6 +6,7 @@ import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
 import { Config, createConfig } from "@ckb-lumos/lumos/config";
 import { SporeConfig, predefinedSporeConfigs } from "@spore-sdk/core";
+import { DOGECOIN_LIVENET, DOGECOIN_TESTNET } from "./dogecoin";
 
 export const defaultNetwork = CKB_MAINNET;
 
@@ -63,6 +64,15 @@ export const supportedNetworks: ChainData[] = [
       })
     ),
   },
+  {
+    name: "Dogecoin",
+    slug: "dogecoin",
+    networks: [DOGECOIN_LIVENET, DOGECOIN_TESTNET].map((chain) => ({
+      ...chain,
+      parentSlug: "dogecoin",
+      walletToImport: [],
+    })),
+  },
 ];
 
 export function getNetworkDataBySlug(slug: NetworkSlug): NetworkData {
@@ -98,7 +108,23 @@ export function isCkbNetwork(
 export function isBitcoinNetwork(
   network: BitcoinNetwork | CkbNetwork
 ): network is BitcoinNetwork {
-  return (<BitcoinNetwork>network).wif !== undefined;
+  // bitcoin: 0x80
+  // testnet: 0xef
+  return (
+    (<BitcoinNetwork>network).wif === 0x80 ||
+    (<BitcoinNetwork>network).wif === 0xef
+  );
+}
+
+export function isDogecoinNetwork(
+  network: BitcoinNetwork | CkbNetwork
+): network is BitcoinNetwork {
+  // dogecoin: 0x80
+  // testnet: 0xef
+  return (
+    (<BitcoinNetwork>network).wif === 0x9e ||
+    (<BitcoinNetwork>network).wif === 0xf1
+  );
 }
 
 export const NETWORK_ICON = {
@@ -108,6 +134,8 @@ export const NETWORK_ICON = {
   btc_signet: "/btc.png",
   nervos: "/ckb.png",
   nervos_testnet: "/ckb.png",
+  dogecoin: "/dogecoin.png",
+  dogecoin_testnet: "/dogecoin.png",
 };
 
 export const AGGRON4: Config = createConfig({

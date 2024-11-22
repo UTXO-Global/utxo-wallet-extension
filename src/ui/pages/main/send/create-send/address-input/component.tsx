@@ -8,7 +8,6 @@ import { IcnBook } from "@/ui/components/icons/IcnBook";
 import cn from "classnames";
 import { createInstance } from "dotbit";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
 
 const dotbit = createInstance();
 
@@ -46,11 +45,8 @@ const AddressInput: FC<Props> = ({
           for (const record of records) {
             if (
               (record.key === "address.ckb" &&
-                // isCkbNetwork(currentNetwork.network))
                 currentNetwork.slug === "nervos") ||
-              (record.key === "address.btc" &&
-                // isBitcoinNetwork(currentNetwork.network))
-                currentNetwork.slug === "btc")
+              (record.key === "address.btc" && currentNetwork.slug === "btc")
             ) {
               onChange(record.value);
               setFiltered(getFiltered(record.value));

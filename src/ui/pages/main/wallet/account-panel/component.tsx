@@ -11,10 +11,7 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
-import {
-  IcnSend,
-  IcnReceive,
-} from "@/ui/components/icons";
+import { IcnSend, IcnReceive } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
@@ -24,6 +21,7 @@ const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
   btc_testnet_4: "https://mempool.space/testnet4/faucet",
   btc_signet: "https://signetfaucet.com/",
+  dogecoin_testnet: "https://faucet.doge.toys",
 };
 
 const AccountPanel = () => {
