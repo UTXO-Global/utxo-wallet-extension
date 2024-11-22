@@ -1,24 +1,51 @@
+import cn from "classnames";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Loading from "react-loading";
 import AccountPanel from "./account-panel";
 import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import { isCkbNetwork } from "@/shared/networks";
+import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
+import MyDIDs from "./my-dids";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
   const { trottledUpdate } = useTransactionManagerContext();
   const currentAccount = useGetCurrentAccount();
   const currentNetwork = useGetCurrentNetwork();
+  const [tab, setTab] = useState<"coins" | "myDids">("coins");
+
+  const tabs = useMemo(() => {
+    if (isCkbNetwork(currentNetwork.network))
+      return [
+        {
+          key: "coins",
+          label: "Coins",
+        },
+        {
+          key: "myDids",
+          label: "My DIDs",
+        },
+      ];
+    return [
+      {
+        key: "myDids",
+        label: "My DIDs",
+      },
+    ];
+  }, [currentNetwork.network]);
+
+  useEffect(() => {
+    if (isBitcoinNetwork(currentNetwork.network)) setTab("myDids");
+  }, [currentNetwork.network]);
 
   useEffect(() => {
     trottledUpdate();
@@ -37,7 +64,27 @@ const Wallet = () => {
         <AccountPanel />
         <Campaign />
         <NativeToken />
-        {isCkbNetwork(currentNetwork.network) && <TokenTabs />}
+        <div className="px-4">
+          <div className="mt-4 flex gap-4">
+            {tabs.map((z) => (
+              <div key={z.key} className="bg-grey-400 rounded-full flex gap-0">
+                <div
+                  className={cn(
+                    "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-300",
+                    {
+                      "!bg-grey-200": z.key === tab,
+                    }
+                  )}
+                  onClick={() => setTab(z.key as any)}
+                >
+                  {z.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {tab === "coins" ? <TokenTabs /> : null}
+        {tab === "myDids" ? <MyDIDs /> : null}
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />
