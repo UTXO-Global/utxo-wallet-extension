@@ -11,7 +11,7 @@ import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
 import MyDIDs from "./my-dids";
@@ -32,19 +32,10 @@ const Wallet = () => {
         },
         {
           key: "myDids",
-          label: "My DIDs",
+          label: "DID DOBs",
         },
       ];
-    return [
-      {
-        key: "myDids",
-        label: "My DIDs",
-      },
-    ];
-  }, [currentNetwork.network]);
-
-  useEffect(() => {
-    if (isBitcoinNetwork(currentNetwork.network)) setTab("myDids");
+    return [];
   }, [currentNetwork.network]);
 
   useEffect(() => {
@@ -83,8 +74,12 @@ const Wallet = () => {
             ))}
           </div>
         </div>
-        {tab === "coins" ? <TokenTabs /> : null}
-        {tab === "myDids" ? <MyDIDs /> : null}
+        {isCkbNetwork(currentNetwork.network) ? (
+          <>
+            {tab === "coins" ? <TokenTabs /> : null}
+            {tab === "myDids" ? <MyDIDs /> : null}
+          </>
+        ) : null}
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />

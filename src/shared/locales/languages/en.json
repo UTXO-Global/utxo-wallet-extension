@@ -239,7 +239,7 @@
       },
       "address_input": {
         "address_book": "Address book",
-        "address_placeholder": "Address/DID Account"
+        "address_placeholder": "Address/.bit Alias"
       },
       "address_book": {
         "address_book": "Address book",
