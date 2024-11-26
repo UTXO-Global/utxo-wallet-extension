@@ -14,7 +14,6 @@ import TokenTabs from "./tokens";
 import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
-import MyDIDs from "./my-dids";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -29,10 +28,6 @@ const Wallet = () => {
         {
           key: "coins",
           label: "Coins",
-        },
-        {
-          key: "myDids",
-          label: "DID DOBs",
         },
       ];
     return [];
@@ -75,10 +70,7 @@ const Wallet = () => {
           </div>
         </div>
         {isCkbNetwork(currentNetwork.network) ? (
-          <>
-            {tab === "coins" ? <TokenTabs /> : null}
-            {tab === "myDids" ? <MyDIDs /> : null}
-          </>
+          <>{tab === "coins" ? <TokenTabs /> : null}</>
         ) : null}
       </div>
       <div className="absolute w-full bottom-0">
