@@ -145,10 +145,7 @@ export default function UTXOReviewOrder() {
   const onSwap = async () => {
     setIsProgressing(true);
     try {
-      if (
-        pool.tokens[0].typeHash === CKB_TYPE_HASH &&
-        availableCKBBalance < swapOccupiedCKBAmount
-      ) {
+      if (availableCKBBalance < swapOccupiedCKBAmount) {
         setIsProgressing(false);
         return toast.error(t("components.swap.tooltip.balance_reservation"));
       }
@@ -165,8 +162,19 @@ export default function UTXOReviewOrder() {
       navigate(`/pages/swap/swap-success/${txHash}`, {
         state: { ...location.state, txId: txHash },
       });
-    } catch (e) {
-      toast.error((e as any)?.message ?? "Unknown error");
+    } catch (e: any) {
+      switch (e.code as number) {
+        case 1:
+          toast.error("Insufficient CKB capacity. Please try again");
+          break;
+        case 2:
+          toast.error(
+            `Insufficient ${pool.tokens[0].symbol ?? "free UDT"} balance`
+          );
+          break;
+        default:
+          toast.error((e as any)?.message ?? "Unknown error");
+      }
     }
     setIsProgressing(false);
   };
@@ -198,7 +206,7 @@ export default function UTXOReviewOrder() {
                     </div>
                     <div className="text-[22px] leading-7 text-black font-medium">
                       <div>
-                        {formatNumber(location.state?.inputAmount)}{" "}
+                        {formatNumber(location.state?.inputAmount, 2, 8)}{" "}
                         {location.state?.tokens[0]?.symbol}
                       </div>
                     </div>
@@ -230,7 +238,7 @@ export default function UTXOReviewOrder() {
                           Number(location.state?.inputAmount | 0) *
                             currentPrice,
                           2,
-                          3
+                          8
                         )}
                       </span>
                     </div>

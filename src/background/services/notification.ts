@@ -14,6 +14,7 @@ class NotificationService extends Events {
   approval: Approval | null = null;
   notifiWindowId = 0;
   isLocked = false;
+  isPending = false;
 
   constructor() {
     super();
@@ -62,6 +63,7 @@ class NotificationService extends Events {
     data?: any,
     winProps?: OpenNotificationProps
   ): Promise<any> => {
+    this.isPending = true
     // We will just override the existing open approval with the new one coming in
     return new Promise((resolve, reject) => {
       this.approval = {
@@ -78,6 +80,7 @@ class NotificationService extends Events {
   clear = async (stay = false) => {
     this.unLock();
     this.approval = null;
+    this.isPending = false
     if (this.notifiWindowId && !stay) {
       await remove(this.notifiWindowId);
       this.notifiWindowId = 0;

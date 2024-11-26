@@ -25,7 +25,7 @@ const CopyAddress: FC<Props> = ({ active, onClose }) => {
           <div key={i} className="rounded-lg flex justify-between items-center">
             <div>
               <p className="text-base fomt-medium text-primary">
-                {z.addressType.name}
+                {z.addressType.name === "Nervos" ? "CKB" : z.addressType.name}
               </p>
               <p className="text-[14px] leading-[18px] text-[#787575]">
                 {shortAddress(z.address, 9)}
