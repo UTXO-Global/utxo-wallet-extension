@@ -1,11 +1,17 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { shortAddress } from "@/shared/utils/transactions";
 import { Combobox, Transition } from "@headlessui/react";
 import s from "./styles.module.scss";
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { useAppState } from "@/ui/states/appState";
 import { t } from "i18next";
 import { IcnBook } from "@/ui/components/icons/IcnBook";
 import cn from "classnames";
+import { createInstance } from "dotbit";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+
+const dotbit = createInstance();
 
 interface Props {
   address: string;
@@ -20,42 +26,76 @@ const AddressInput: FC<Props> = ({
   onOpenModal,
   className,
 }) => {
-  const [filtered, setFiltered] = useState([]);
+  const [filtered, setFiltered] = useState<string[]>([]);
+  const currentNetwork = useGetCurrentNetwork();
+  const [inputValue, setInputValue] = useState("");
+  const [requesting, setRequesting] = useState(false);
 
-  const { addressBook } = useAppState((v) => ({
-    addressBook: v.addressBook,
-  }));
+  const { addressBook } = useAppState();
 
   const getFiltered = (query: string) => {
     return addressBook.filter((i) => i.startsWith(query));
   };
 
+  useEffect(() => {
+    if (inputValue.endsWith(".bit")) {
+      if (!requesting) {
+        dotbit.records(inputValue).then((records) => {
+          setFiltered(
+            records
+              .filter(
+                (z) =>
+                  (z.key === "address.ckb" &&
+                    isCkbNetwork(currentNetwork.network)) ||
+                  (z.key === "address.btc" &&
+                    isBitcoinNetwork(currentNetwork.network))
+              )
+              .map((j) => j.value)
+          );
+          setTimeout(() => {
+            setRequesting(false);
+          }, 3000);
+        });
+      }
+      setRequesting(true);
+    } else {
+      onChange(inputValue);
+      setFiltered(getFiltered(inputValue));
+    }
+  }, [inputValue, requesting]);
+
   return (
     <div
       className={cn(
-        `flex gap-2 items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300 ${
+        `flex gap-2 relative items-center bg-grey-200 rounded-lg border border-grey-200 focus-within:bg-grey-300 ${
           className ? className : ""
         }`
       )}
     >
-      <Combobox value={address} onChange={onChange}>
-        <div className="relative w-full">
+      <Combobox value={inputValue}>
+        <div className="w-full">
           <Combobox.Input
-            displayValue={(address: string) => address}
+            displayValue={(value: string) => value}
             autoComplete="off"
             className="w-full bg-transparent p-4 text-base font-normal"
-            value={address}
+            value={inputValue}
             placeholder={t(
               "send.create_send.address_input.address_placeholder"
             )}
             onChange={(v) => {
-              onChange(v.target.value.trim());
-              setFiltered(getFiltered(v.target.value.trim()));
+              setInputValue(v.target.value.trim());
             }}
           />
 
+          {/* {hasBit && (
+            <div className="rounded-[16px] border border-[#F5F5F5] p-4 break-all text-center text-[14px] leading-[18px] text-primary">
+              <b>D.id Address: </b>
+              {address}
+            </div>
+          )} */}
+
           {filtered.length > 0 ? (
-            <div className="w-[100vw] px-4 absolute -left-4 z-10">
+            <div className="w-[calc(100%+32px)] px-4 absolute -left-4 z-10">
               <Transition
                 as={Fragment}
                 leave="transition ease-in duration-100"
@@ -68,6 +108,9 @@ const AddressInput: FC<Props> = ({
                       className={s.addressbookoption}
                       key={address}
                       value={address}
+                      onClick={() => {
+                        setInputValue(address);
+                      }}
                     >
                       {shortAddress(address, 14)}
                     </Combobox.Option>

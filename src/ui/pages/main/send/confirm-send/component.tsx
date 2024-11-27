@@ -1,4 +1,8 @@
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import { useUpdateAddressBook } from "@/ui/hooks/app";
 import {
   usePushBitcoinTxCallback,
@@ -26,7 +30,10 @@ const ConfirmSend = () => {
   const { trottledUpdate } = useTransactionManagerContext();
 
   const isSent = useMemo(() => {
-    return isBitcoinNetwork(currentNetwork.network) ? true : isCkbSent;
+    return isBitcoinNetwork(currentNetwork.network) ||
+      isDogecoinNetwork(currentNetwork.network)
+      ? true
+      : isCkbSent;
   }, [currentNetwork, isCkbSent]);
 
   const isProgressing = useMemo(() => {
@@ -45,7 +52,10 @@ const ConfirmSend = () => {
     setLoading(true);
     try {
       let txId = "";
-      if (isBitcoinNetwork(currentNetwork.network)) {
+      if (
+        isBitcoinNetwork(currentNetwork.network) ||
+        isDogecoinNetwork(currentNetwork.network)
+      ) {
         txId = (await pushTx(location.state.hex)).txid;
       } else if (isCkbNetwork(currentNetwork.network)) {
         txId = (await pushCkbTx(location.state.hex)).txid;

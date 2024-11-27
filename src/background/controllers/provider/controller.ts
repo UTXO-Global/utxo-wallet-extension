@@ -7,6 +7,7 @@ import {
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
+  isDogecoinNetwork,
   nervosTestnetSlug,
 } from "@/shared/networks";
 import {
@@ -195,7 +196,10 @@ class ProviderController {
     if (!currentAccount) return null;
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
 
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       const balance = [];
       for (let i = 0; i < currentAccount.accounts.length; i++) {
         const data = await fetchEsplora<ApiUTXO[]>({
@@ -326,7 +330,10 @@ class BTCProviderController extends ProviderController {
     const account = storageService.currentAccount;
     if (!account) return;
     const networkData = getNetworkDataBySlug(this.getNetwork());
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       const allUtxos: ApiUTXO[] = [];
       for (const _account of account.accounts) {
         const utxos = await fetchEsplora<ApiUTXO[]>({

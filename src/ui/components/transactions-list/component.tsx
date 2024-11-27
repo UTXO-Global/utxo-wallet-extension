@@ -14,7 +14,11 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
 import { useControllersState } from "@/ui/states/controllerState";
 import { ITransaction } from "@/shared/interfaces/api";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import ShortBalance from "../ShortBalance";
 import Loading from "react-loading";
 
@@ -54,7 +58,10 @@ const TransactionList = ({
   useEffect(() => {
     const f = async () => {
       setLoading(true);
-      if (isBitcoinNetwork(currentNetwork.network)) {
+      if (
+        isBitcoinNetwork(currentNetwork.network) ||
+        isDogecoinNetwork(currentNetwork.network)
+      ) {
         setTransactions(await apiController.getTransactions());
       } else if (isCkbNetwork(currentNetwork.network)) {
         setTransactions(

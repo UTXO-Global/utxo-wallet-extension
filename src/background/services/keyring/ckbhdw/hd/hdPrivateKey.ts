@@ -1,4 +1,8 @@
-import { getNetworkDataBySlug, isBitcoinNetwork } from "@/shared/networks";
+import {
+  getNetworkDataBySlug,
+  isBitcoinNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import * as tinysecp from "@bitcoinerlab/secp256k1";
 import { hd } from "@ckb-lumos/lumos";
@@ -93,7 +97,10 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
     this.initPair();
 
     const network = getNetworkDataBySlug(networkSlug);
-    if (isBitcoinNetwork(network.network)) {
+    if (
+      isBitcoinNetwork(network.network) ||
+      isDogecoinNetwork(network.network)
+    ) {
       this.pair.network = network.network;
       return this.pair.toWIF();
     } else {
