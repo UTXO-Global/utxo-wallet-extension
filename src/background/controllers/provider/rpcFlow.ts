@@ -132,11 +132,11 @@ const flowContext = flow
       Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
-      if (notificationService.isPending) {
-        throw ethErrors.rpc.limitExceeded({
-          message: `there is a request pending processing`,
-        });
-      }
+      // if (notificationService.isPending) {
+      //   throw ethErrors.rpc.limitExceeded({
+      //     message: `there is a request pending processing`,
+      //   });
+      // }
 
       ctx.request.requestedApproval = true;
       // eslint-disable-next-line
