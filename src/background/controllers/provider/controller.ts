@@ -30,6 +30,7 @@ import {
 } from "@/shared/networks/ckb";
 import { helpers } from "@ckb-lumos/lumos";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
+import { ccc } from "@ckb-ccc/core";
 
 class ProviderController {
   connect = async () => {
@@ -438,7 +439,13 @@ class CKBProviderController extends ProviderController {
     if (tx.cellDeps && tx.cellDeps.length > 0) {
       tx.cellDeps?.forEach((cellDep: any) => {
         txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
-          cellDeps.push(cellDep)
+          cellDeps.push({
+            ...cellDep,
+            outPoint: {
+              txHash: cellDep.outPoint.txHash,
+              index: ccc.numToHex(cellDep.outPoint.index),
+            },
+          })
         );
       });
     }
@@ -471,11 +478,11 @@ class CKBProviderController extends ProviderController {
           inputs.push({
             outPoint: {
               txHash: input.previousOutput.txHash,
-              index: input.previousOutput.index,
+              index: ccc.numToHex(input.previousOutput.index),
             },
             data: input.outputData ? input.outputData : "0x",
             cellOutput: {
-              capacity: cellOutput.capacity,
+              capacity: ccc.numToHex(cellOutput.capacity),
               lock: {
                 codeHash: cellOutput.lock?.code_hash,
                 hashType: cellOutput.lock?.hash_type,
@@ -493,7 +500,7 @@ class CKBProviderController extends ProviderController {
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
-            capacity: output.capacity,
+            capacity: ccc.numToHex(output.capacity),
             lock: output.lock,
             type: output.type || null,
           },
