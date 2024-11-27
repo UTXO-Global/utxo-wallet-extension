@@ -45,7 +45,6 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
-import { t } from "i18next";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
