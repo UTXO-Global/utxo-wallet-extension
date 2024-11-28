@@ -93,11 +93,9 @@ class NotificationService extends Events {
   };
 
   openNotification = async (winProps: OpenNotificationProps) => {
-    if (this.isLocked) {
-      await remove(this.notifiWindowId);
-      this.notifiWindowId = 0;
-    }
+    if (this.isLocked) return;
     this.lock();
+
     if (this.notifiWindowId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       remove(this.notifiWindowId);
