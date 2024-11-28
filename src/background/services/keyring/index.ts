@@ -46,7 +46,6 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
-import { t } from "i18next";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -528,6 +527,17 @@ class KeyringService {
         (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
       )
         break;
+    }
+
+    if (totalCapacity.lt(neededCapacity)) {
+      throw new Error(
+        `The balance in your wallet must be greater than ${(neededCapacity.lt(
+          minCapacity
+        )
+          ? neededCapacity.add(minCapacity).toNumber() / 10 ** 8
+          : neededCapacity.toNumber() / 10 ** 8
+        ).toString()} CKB. Please adjust your transaction amount or add more CKB to proceed`
+      );
     }
 
     if (capacityChangeOutput.gt(0) && capacityChangeOutput.lt(minCapacity)) {
