@@ -1,10 +1,16 @@
 import { NetworkSlug } from "@/shared/networks/types";
+import { helpers } from "@ckb-lumos/lumos";
 import { Psbt } from "bitcoinjs-lib";
 
 export type Base58String = string;
 
 export interface PrivateKeyOptions {
   seed: string;
+}
+
+export interface HDOneKeyOptions {
+  connectId: string;
+  deviceId: string;
 }
 
 export interface FromSeedOpts {
@@ -30,6 +36,11 @@ export interface SerializedHDKey {
 export interface SerializedHDPrivateKey {
   privateKey: string;
   isHex?: boolean;
+}
+
+export interface SerializedHDOneKey {
+  connectId: string;
+  deviceId: string;
 }
 
 export type Hex = string;

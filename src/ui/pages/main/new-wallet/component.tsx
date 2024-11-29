@@ -4,6 +4,7 @@ import { t } from "i18next";
 import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
+import { browserTabsCreate } from "@/shared/utils/browser";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -26,18 +27,13 @@ const NewWallet = () => {
       gaLabel: "restore mnemonic",
       btnType: "secondary",
     },
-    // {
-    //   icon: <KeyIcon className={ICON_CN} />,
-    //   label: t("new_wallet.restore_from_private_key_label"),
-    //   link: "/pages/restore-priv-key",
-    //   gaLabel: "restore from pk",
-    // },
-    // {
-    //   icon: <GlobeAltIcon className={ICON_CN} />,
-    //   label: t("new_wallet.restore_ordinals_label"),
-    //   link: "/pages/restore-ordinals",
-    //   gaLabel: "restore ordinals mnemonic",
-    // },
+    {
+      icon: <GlobeAltIcon className={ICON_CN} />,
+      label: t("new_wallet.connect_onekey_hardware"),
+      link: "index.html#/hware/onekey/connect",
+      gaLabel: "connect onekey hardware",
+      btnType: "primary",
+    },
   ];
 
   const analytics = async (label: string, path: string) => {
@@ -62,7 +58,15 @@ const NewWallet = () => {
         {items.map((i) => (
           <button
             key={i.label}
-            onClick={() => analytics(i.gaLabel, i.link)}
+            onClick={() => {
+              if (i.link.includes("index.html#")) {
+                browserTabsCreate({
+                  url: i.link,
+                });
+              } else {
+                analytics(i.gaLabel, i.link);
+              }
+            }}
             className={cn(`btn !py-3`, {
               [i.btnType]: true,
             })}

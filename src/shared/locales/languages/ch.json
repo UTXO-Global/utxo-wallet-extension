@@ -153,7 +153,8 @@
       "invalid_private_key_error": "私钥错误"
     },
     "create_wallet": "Create Wallet",
-    "restore_an_existing_wallet": "Restore An Existing Wallet"
+    "restore_an_existing_wallet": "Restore An Existing Wallet",
+    "connect_onekey_hardware": "Connect OneKey Hardware"
   },
   "receive": {
     "click_to_copy": "点击复制",

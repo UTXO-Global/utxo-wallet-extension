@@ -16,7 +16,7 @@ import { convertCKBTransactionToSkeleton } from "@/shared/networks/ckb/helpers";
 export interface IKeyringController {
   init(password: string): Promise<IPrivateWallet[]>;
   newKeyring(
-    type: "simple" | "root",
+    type: "simple" | "root" | "onekey",
     payload: string
   ): Promise<string | undefined>;
   exportAccount(hdPath: string, networkSlug: NetworkSlug): Promise<string>;
@@ -61,12 +61,12 @@ class KeyringController implements IKeyringController {
 
   /**
    * Method should be called to create a new wallet from mnemonic
-   * @param {"simple" | "root"} type Type of wallet that should be created
+   * @param {"simple" | "root" | "onekey"} type Type of wallet that should be created
    * @param {string} payload Phrases string words separated by space that generated for wallet or private key hex format
    * @returns {Promise<undefined>}
    */
   async newKeyring(
-    walletType: "simple" | "root",
+    walletType: "simple" | "root" | "onekey",
     payload: string
   ): Promise<undefined> {
     await keyringService.newKeyring({ walletType, payload });

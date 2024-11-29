@@ -50,7 +50,7 @@ function getAddressesByWalletIndex({
         const publicKey = keyring.exportPublicKey(hdPath);
         const address = getAddress(
           addressType.value,
-          Buffer.from(publicKey, "hex"),
+          new Uint8Array(Buffer.from(publicKey, "hex")),
           networkSlug
         );
         groupAddress.push(address);
@@ -115,7 +115,7 @@ async function _createDefaultGroupAccount({
       const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
       return {
@@ -144,7 +144,7 @@ async function _createDefaultGroupAccount({
       const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
       return {
@@ -185,18 +185,23 @@ class WalletController implements IWalletController {
     const hdPath =
       props.restoreFromWallet === "neuron" ? CKB_NEURON_HD_PATH : "";
 
-    const groupAccount = await _createDefaultGroupAccount({
-      networkSlug: storageService.currentNetwork,
-      key: keyring,
-      hdPath,
-    });
+    let groupAccounts: IGroupAccount[];
+    if (props.walletType !== "onekey") {
+      groupAccounts.push(
+        await _createDefaultGroupAccount({
+          networkSlug: storageService.currentNetwork,
+          key: keyring,
+          hdPath,
+        })
+      );
+    }
 
     return {
       name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
       id: walletId,
       type: props.walletType,
-      accounts: [groupAccount],
-      restoreFromWallet: props.restoreFromWallet
+      accounts: groupAccounts,
+      restoreFromWallet: props.restoreFromWallet,
     };
   }
 
@@ -277,7 +282,7 @@ class WalletController implements IWalletController {
       const publicKey = keyring.exportPublicKey(hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
       return {

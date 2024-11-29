@@ -1,7 +1,7 @@
 import { getNetworkDataBySlug, isBitcoinNetwork } from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import * as tinysecp from "@bitcoinerlab/secp256k1";
-import { hd } from "@ckb-lumos/lumos";
+import { hd, helpers } from "@ckb-lumos/lumos";
 import { sha256 } from "@noble/hashes/sha256";
 import {
   hexToBytes as fromHex,
@@ -151,7 +151,7 @@ class HDSeedKey implements Keyring<SerializedHDKey> {
     if (["nervos", "nervos_testnet"].includes(networkSlug)) {
       const signature = secp256k1.sign(
         ccc.bytesFrom(messageHashCkbSecp256k1(text)),
-        ccc.bytesFrom(ccc.hexFrom(account.privateKey))
+        ccc.bytesFrom(ccc.hexFrom(new Uint8Array(account.privateKey)))
       );
       const { r, s, recovery } = signature;
 
@@ -172,7 +172,7 @@ class HDSeedKey implements Keyring<SerializedHDKey> {
 
   async fromOptions(options: PrivateKeyOptions) {
     this.fromSeed({
-      seed: Buffer.from(options.seed),
+      seed: new Uint8Array(Buffer.from(options.seed)),
     });
     return this;
   }
@@ -197,7 +197,7 @@ class HDSeedKey implements Keyring<SerializedHDKey> {
     const seed = await mnemonicToSeed(opts.mnemonic, opts.passphrase);
 
     this.fromSeed({
-      seed,
+      seed: new Uint8Array(seed),
     });
 
     this.walletName = opts.walletName;

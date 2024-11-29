@@ -5,7 +5,7 @@ export interface IWallet {
   id: number;
   accounts: IGroupAccount[];
   name: string;
-  type: "simple" | "root";
+  type: "simple" | "root" | "onekey";
   restoreFromWallet?: "utxoGlobal" | "neuron" | "unisat" | "others";
 }
 
@@ -31,7 +31,7 @@ export interface IWalletState extends IWalletStateBase {
 
 export interface INewWalletProps {
   payload: string;
-  walletType: "simple" | "root";
+  walletType: "simple" | "root" | "onekey";
   name?: string;
   walletName?: string;
   restoreFrom?: "wif" | "hex";
