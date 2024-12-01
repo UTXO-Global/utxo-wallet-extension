@@ -9,8 +9,8 @@ export const CKB_MAINNET: NetworkData = {
   addressTypes: [
     {
       value: AddressType.CKB_ADDRESS,
-      label: "Nervos",
-      name: "Nervos",
+      label: "CKB",
+      name: "CKB",
       hdPath: `m/13'/0'/0'/0`,
     },
   ],
@@ -22,14 +22,14 @@ export const CKB_MAINNET: NetworkData = {
 
 export const CKB_TESTNET: NetworkData = {
   slug: "nervos_testnet",
-  name: "Pudge Testnet",
+  name: "Meepo Testnet",
   esploraUrl: "https://testnet-api.explorer.nervos.org/api/v1",
-  explorerUrl: "https://pudge.explorer.nervos.org/en",
+  explorerUrl: "https://testnet.explorer.nervos.org/en",
   addressTypes: [
     {
       value: AddressType.CKB_ADDRESS,
-      label: "Nervos",
-      name: "Nervos",
+      label: "CKB",
+      name: "CKB",
       hdPath: `m/13'/1'/0'/0`,
     },
   ],

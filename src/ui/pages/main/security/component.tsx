@@ -1,9 +1,8 @@
 import { browserTabsCreate } from "@/shared/utils/browser";
 import s from "./styles.module.scss";
 
-import { KeyIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { KeyIcon } from "@heroicons/react/24/outline";
 
-import { useAppState } from "@/ui/states/appState";
 import { t } from "i18next";
 import config from "../../../../../package.json";
 import versionInfo from "../../../../../version.json";
@@ -13,10 +12,6 @@ const ICON_SIZE = 6;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
 
 const Security = () => {
-  const { logout } = useAppState((v) => ({
-    logout: v.logout,
-  }));
-
   const navigate = useNavigate();
 
   const items = [
@@ -24,14 +19,6 @@ const Security = () => {
       icon: <KeyIcon className={ICON_CN} />,
       label: t("components.layout.change_password"),
       onClick: () => navigate("/pages/change-password"),
-    },
-    {
-      icon: <LockClosedIcon className={ICON_CN} />,
-      label: t("components.layout.lock"),
-      onClick: async () => {
-        // TODO: confirm dialog
-        await logout();
-      },
     },
   ];
 

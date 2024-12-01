@@ -71,7 +71,9 @@ class NotificationService extends Events {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.openNotification(winProps);
+      if (!this.isLocked) {
+        this.openNotification(winProps);
+      }
     });
   };
 
@@ -92,9 +94,14 @@ class NotificationService extends Events {
     this.isLocked = true;
   };
 
-  openNotification = (winProps: OpenNotificationProps) => {
-    if (this.isLocked) return;
+  openNotification = async (winProps: OpenNotificationProps) => {
+    if (this.isLocked) {
+      await remove(this.notifiWindowId);
+      this.notifiWindowId = 0;
+    }
+
     this.lock();
+
     if (this.notifiWindowId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       remove(this.notifiWindowId);

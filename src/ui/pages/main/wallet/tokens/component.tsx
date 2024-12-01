@@ -1,4 +1,3 @@
-import cn from "classnames";
 import { useEffect, useState } from "react";
 import Tokens from "./tokens";
 import Loading from "react-loading";
@@ -17,15 +16,17 @@ export default function TokenTabs() {
     try {
       const res = await fetch(`${jsonURL}?t=${Date.now()}`);
       const data = await res.json();
-      setTokens([...data]);
+      return [...data];
     } catch (e) {
       console.error(e);
     }
+
+    return [];
   };
 
   useEffect(() => {
     const f = async () => {
-      await getTokenDefaults();
+      const defaultTokens = await getTokenDefaults();
       const udtAccounts = addressInfo?.attributes?.udt_accounts || [];
       if (udtAccounts.length > 0) {
         const udtAccounts = addressInfo.attributes.udt_accounts;
@@ -48,7 +49,7 @@ export default function TokenTabs() {
               }
               return newTokens;
             },
-            [...prev]
+            [...defaultTokens]
           );
         });
       }
@@ -58,17 +59,6 @@ export default function TokenTabs() {
 
   return (
     <div className="px-4">
-      <div className="mt-4 inline-block">
-        <div className="bg-grey-400 rounded-full flex gap-0">
-          <div
-            className={cn(
-              "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-300"
-            )}
-          >
-            Coins
-          </div>
-        </div>
-      </div>
       <div className="mt-4">
         {isLoading && (
           <div className="flex justify-center">
