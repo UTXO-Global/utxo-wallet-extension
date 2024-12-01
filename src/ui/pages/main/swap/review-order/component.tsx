@@ -12,7 +12,6 @@ import { useMemo, useState } from "react";
 import { formatNumber } from "@/shared/utils";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import {
-  CKB_TYPE_HASH,
   Client,
   Collector,
   Pool,
