@@ -1,6 +1,7 @@
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
+  useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { useEffect, useState } from "react";
@@ -13,11 +14,13 @@ import TokenTabs from "./tokens";
 import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
+import NewOneKeyAccount from "../hware/onekey/new-account";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
   const { trottledUpdate } = useTransactionManagerContext();
   const currentAccount = useGetCurrentAccount();
+  const currentWallet = useGetCurrentWallet();
   const currentNetwork = useGetCurrentNetwork();
 
   useEffect(() => {
@@ -34,7 +37,11 @@ const Wallet = () => {
     <div className="relative w-full top-0">
       <div className={`${s.walletDiv} !h-100vh-72px standard:!h-100vh-100px`}>
         <WalletPanel />
-        <AccountPanel />
+        {currentWallet.type === "onekey" && !currentAccount ? (
+          <NewOneKeyAccount />
+        ) : (
+          <AccountPanel />
+        )}
         <Campaign />
         <NativeToken />
         {isCkbNetwork(currentNetwork.network) && <TokenTabs />}

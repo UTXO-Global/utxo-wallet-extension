@@ -1,7 +1,6 @@
 import WalletPanel from "../../wallet/wallet-panel";
 import BottomPanel from "../../wallet/bottom-panel";
 import { useCallback, useEffect, useState } from "react";
-import HdWebSdk from "@onekeyfe/hd-web-sdk";
 import {
   UI_EVENT,
   UI_RESPONSE,
@@ -14,8 +13,8 @@ import { HDOneKeyOptions } from "@/background/services/keyring/ckbhdw/hd/types";
 import { useNavigate } from "react-router-dom";
 import { useWalletState } from "@/ui/states/walletState";
 import toast from "react-hot-toast";
-import { t } from "i18next";
 import Loading from "react-loading";
+import HdWebSdk from "@onekeyfe/hd-web-sdk";
 
 const { HardwareWebSdk: HardwareSDK } = HdWebSdk;
 

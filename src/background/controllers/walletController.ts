@@ -62,7 +62,10 @@ function getAddressesByWalletIndex({
   return addresses;
 }
 
-function getNewHdPathFromAddressType(hdPath: string, newIndex: number): string {
+export function getNewHdPathFromAddressType(
+  hdPath: string,
+  newIndex: number
+): string {
   const hdPathPrefix = hdPath.split("/").slice(0, -1).join("/");
   return hdPathPrefix + "/" + newIndex.toString();
 }
@@ -72,7 +75,7 @@ function getIndexFromHdPath(hdPath: string): number {
   return Number(_hdPath[_hdPath.length - 1]);
 }
 
-function getNewGAccountIndex(
+export function getNewGAccountIndex(
   accounts: IGroupAccount[],
   network: NetworkSlug
 ): number {
@@ -185,7 +188,7 @@ class WalletController implements IWalletController {
     const hdPath =
       props.restoreFromWallet === "neuron" ? CKB_NEURON_HD_PATH : "";
 
-    let groupAccounts: IGroupAccount[];
+    let groupAccounts: IGroupAccount[] = [];
     if (props.walletType !== "onekey") {
       groupAccounts.push(
         await _createDefaultGroupAccount({

@@ -90,6 +90,7 @@ class KeyringService {
     walletName = undefined,
   }: INewWalletProps) {
     let keyring: HDSeedKey | HDPrivateKey | HDOneKey;
+    console.log(this.keyrings);
     if (walletType === "onekey") {
       keyring = new HDOneKey(JSON.parse(payload));
       // check duplicated for onekey keyring

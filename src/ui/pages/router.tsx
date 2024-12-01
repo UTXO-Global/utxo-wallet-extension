@@ -50,7 +50,7 @@ import UTXOSwapSetting from "./main/swap/setting";
 import UTXOSwapSearchToken from "./main/swap/search-token/component";
 import UTXOReviewOrder from "./main/swap/review-order/component";
 import UTXOFinalSwap from "./main/swap/success";
-import OneKeyConnect from "./main/hware/onekey";
+import OneKeyConnect from "./main/hware/onekey/connect";
 
 export const guestRouter = createHashRouter([
   {
