@@ -33,7 +33,9 @@ const Campaign = () => {
   };
 
   useEffect(() => {
-    loadCampaign();
+    loadCampaign().catch((e) => {
+      console.log(e);
+    });
   }, []);
   return (
     <div className="max-w-[350px] mx-auto px-4">
@@ -59,7 +61,9 @@ const Campaign = () => {
                 className="size-5 bg-white/40 rounded-full flex justify-center items-center absolute top-1 right-1 cursor-pointer z-[4]"
                 onClick={(e) => {
                   e.stopPropagation();
-                  close(z.id);
+                  close(z.id).catch((e) => {
+                    console.log(e);
+                  });
                 }}
               >
                 <XMarkIcon className="size-4" />

@@ -35,7 +35,6 @@ import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import { helpers } from "@ckb-lumos/lumos";
-import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { MIN_CAPACITY } from "@/shared/networks/ckb/helpers";
 
 export interface FormType {
@@ -178,6 +177,7 @@ const CreateSend = () => {
         const minCap = MIN_CAPACITY(toScript)
           .div(10 ** 8)
           .toNumber();
+
         if (changeOutputCapacity > 0 && changeOutputCapacity < minCap) {
           return toast.error(
             t("send.create_send.error_not_enough_balance_remaining").replaceAll(

@@ -102,6 +102,7 @@ const Receive = () => {
         <div className="rounded-[16px] border border-[#F5F5F5] p-4 break-all text-center text-[14px] leading-[18px] text-primary">
           {selectedAddress}
         </div>
+
         <div
           className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
           onClick={async () => {
