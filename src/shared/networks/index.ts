@@ -119,8 +119,8 @@ export function isBitcoinNetwork(
 export function isDogecoinNetwork(
   network: BitcoinNetwork | CkbNetwork
 ): network is BitcoinNetwork {
-  // dogecoin: 0x80
-  // testnet: 0xef
+  // dogecoin: 0x9e
+  // testnet: 0xf1
   return (
     (<BitcoinNetwork>network).wif === 0x9e ||
     (<BitcoinNetwork>network).wif === 0xf1

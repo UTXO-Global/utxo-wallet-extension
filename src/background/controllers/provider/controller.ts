@@ -355,7 +355,7 @@ class BTCProviderController extends ProviderController {
       transactionData.amount = transactionData.amount * 10 ** 8;
       const tx = await keyringService.sendCoin(transactionData);
       const psbt = Psbt.fromHex(tx);
-      return psbt.extractTransaction().toHex();
+      return psbt.extractTransaction(true).toHex();
     }
   };
 
@@ -382,7 +382,7 @@ class BTCProviderController extends ProviderController {
     for (const index of data.data.params.options?.toSignInputs.keys()) {
       psbt.finalizeInput(index);
     }
-    const tx = psbt.extractTransaction();
+    const tx = psbt.extractTransaction(true);
     return {
       psbtHex: tx.toHex(),
       txId: tx.getId(),
