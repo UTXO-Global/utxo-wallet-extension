@@ -315,7 +315,6 @@ class ApiController implements IApiController {
     } else if (coinSymbol === "doge") {
       apiFetchPrice = `https://api.coincap.io/v2/assets/dogecoin`;
     }
-    console.log({ apiFetchPrice, coinSymbol });
 
     if (!apiFetchPrice) {
       return {
