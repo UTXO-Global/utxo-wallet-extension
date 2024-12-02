@@ -2,7 +2,6 @@ import cn from "classnames";
 import { supportedNetworks } from "@/shared/networks";
 import { useSwitchNetwork } from "@/ui/hooks/wallet";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
-import Analytics from "@/ui/utils/gtm";
 import { NETWORK_ICON } from "@/shared/networks";
 import { useState } from "react";
 import { IcnCheck } from "@/ui/components/icons";
@@ -14,12 +13,7 @@ const Network = () => {
   const [parentNetworkSelect, setParentNetworkSelect] = useState("");
 
   const analytics = (label: string) => {
-    // NOTE: [GA] - Switch network
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent("st_switch_network", {
-      action: "click",
-      label,
-    });
+  
   };
 
   return (

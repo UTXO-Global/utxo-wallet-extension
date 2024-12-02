@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import { NETWORK_ICON, isCkbNetwork } from "@/shared/networks";
 import { t } from "i18next";
 import cn from "classnames";
-import Analytics from "@/ui/utils/gtm";
 import { useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
@@ -155,13 +154,7 @@ const TokenDetail = () => {
     return fullnameLen + symbolLen + (typeLen > 4 ? typeLen - 4 : 0);
   }, [tokenInfo]);
 
-  const _navigate = (path: string, name: string, label: string) => {
-    // NOTE: [GA]
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent(name, {
-      action: "click",
-      label,
-    });
+  const _navigate = (path: string) => {
     navigate(path, {
       state: {
         token: !isNativeToken && tokenInfo ? tokenInfo : undefined,
@@ -307,7 +300,7 @@ const TokenDetail = () => {
                       nav.navPath === "/pages/create-send"
                     )
                       return;
-                    _navigate(nav.navPath, nav.navName, nav.navLabel);
+                    _navigate(nav.navPath);
                   }
                 }}
               >

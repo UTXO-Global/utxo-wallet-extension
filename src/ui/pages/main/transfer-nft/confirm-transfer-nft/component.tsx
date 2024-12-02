@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+import Analytics from "@/ui/utils/gtm";
 
 export default function ConfirmTransferNFT() {
   const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
@@ -66,6 +67,22 @@ export default function ConfirmTransferNFT() {
       if (!txId) {
         throw new Error("Failed pushing transaction");
       }
+
+      try {
+        // NOTE: [GA] - track send nfts
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        await Analytics.fireEvent("tnx_send_nfts", {
+          from_address: location.state.fromAddress,
+          to_address: location.state.toAddress,
+          network: currentNetwork.slug,
+          nft_collection_name: location.state.nft.collection.name,
+          nft_name: location.state.nft.name,
+          nft_token_id: location.state.nft.token_id,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
       setTxId(txId);
       navigate(location.pathname, {
         state: { ...location.state, isSending: true },

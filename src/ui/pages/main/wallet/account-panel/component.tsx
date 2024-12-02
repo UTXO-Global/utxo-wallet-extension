@@ -2,7 +2,6 @@ import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
-import Analytics from "@/ui/utils/gtm";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { Popover } from "@headlessui/react";
 import { t } from "i18next";
@@ -68,16 +67,6 @@ const AccountPanel = () => {
     ];
     return navs;
   }, [currentAccount.accounts, currentNetwork.network]);
-
-  const _navigate = (path: string, name: string, label: string) => {
-    // NOTE: [GA]
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent(name, {
-      action: "click",
-      label,
-    });
-    navigate(path);
-  };
 
   const isCkbTestnet = useMemo(() => {
     return currentNetwork && currentNetwork.slug === "nervos_testnet";
@@ -191,7 +180,7 @@ const AccountPanel = () => {
                         nav.navPath === "/pages/create-send"
                       )
                         return;
-                      _navigate(nav.navPath, nav.navName, nav.navLabel);
+                      navigate(nav.navPath);
                     }
                   }}
                 >
