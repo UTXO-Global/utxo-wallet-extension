@@ -97,7 +97,10 @@ const SendTransferModal: FC<Props> = ({
           <span className="input-span">{t("send.create_send.address")}</span>
           <AddressInput
             address={formData.address}
-            onChange={(v) => setFormData((p) => ({ ...p, address: v }))}
+            onChange={useCallback(
+              (v) => setFormData((p) => ({ ...p, address: v.value })),
+              [setFormData]
+            )}
             onOpenModal={() => setOpenModal(true)}
           />
         </div>

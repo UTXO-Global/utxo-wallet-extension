@@ -74,9 +74,9 @@ class Analytics {
     if (!params.session_id) {
       params.session_id = await this.getOrCreateSessionId();
     }
-    if (!params.engagement_time_msec) {
-      params.engagement_time_msec = DEFAULT_ENGAGEMENT_TIME_MSEC;
-    }
+    // if (!params.engagement_time_msec) {
+    //   params.engagement_time_msec = DEFAULT_ENGAGEMENT_TIME_MSEC;
+    // }
 
     try {
       await fetch(

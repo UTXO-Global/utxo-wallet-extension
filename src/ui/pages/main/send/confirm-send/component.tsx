@@ -69,6 +69,7 @@ const ConfirmSend = () => {
           network: currentNetwork.slug,
           amount: location.state.amount,
           coin: symbol,
+          did: location.state.isUseDID,
         });
       } catch (e) {
         console.error(e);
