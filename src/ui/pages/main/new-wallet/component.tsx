@@ -1,7 +1,6 @@
 import { TileProps } from "@/ui/components/tile/component";
 import { GlobeAltIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { t } from "i18next";
-import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 
@@ -40,16 +39,6 @@ const NewWallet = () => {
     // },
   ];
 
-  const analytics = async (label: string, path: string) => {
-    // NOTE: [GA] - Create new wallet
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    await Analytics.fireEvent("ob_create_new_wallet", {
-      action: "click",
-      label,
-    });
-    navigate(path);
-  };
-
   return (
     <div className="w-full p-4">
       <img
@@ -62,7 +51,7 @@ const NewWallet = () => {
         {items.map((i) => (
           <button
             key={i.label}
-            onClick={() => analytics(i.gaLabel, i.link)}
+            onClick={() => navigate(i.link)}
             className={cn(`btn !py-3`, {
               [i.btnType]: true,
             })}

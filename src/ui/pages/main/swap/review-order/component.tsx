@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import IcnInfo from "@/ui/components/icons/IcnInfo";
 import { useAppState } from "@/ui/states/appState";
+import Analytics from "@/ui/utils/gtm";
 
 export default function UTXOReviewOrder() {
   const [isProgressing, setIsProgressing] = useState(false);
@@ -151,6 +152,20 @@ export default function UTXOReviewOrder() {
       pool.calculateOutputAmountAndPriceImpactWithExactInput(
         `${location.state?.inputAmount}`
       );
+
+      try {
+        // NOTE: [GA] - track swap
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        await Analytics.fireEvent("tnx_swap", {
+          from_coin: location.state?.tokens[0]?.symbol,
+          to_coin: location.state?.tokens[1]?.symbol,
+          network: currentNetwork.slug,
+          address: currentAccount?.accounts[0].address,
+          amount: location.state?.inputAmount,
+        });
+      } catch (e) {
+        console.error(e);
+      }
 
       const txHash = await pool.swapWithExactInput(
         signTxFunc,
