@@ -22,6 +22,7 @@ import { getAddress } from "../services/keyring/ckbhdw/hd/utils";
 import { Json } from "../services/keyring/types";
 import type { DecryptedSecrets } from "../services/storage/types";
 import { CKB_NEURON_HD_PATH } from "@/shared/networks/ckb";
+import Analytics from "@/ui/utils/gtm";
 
 function getAddressesByWalletIndex({
   walletIndex,
@@ -118,6 +119,17 @@ async function _createDefaultGroupAccount({
         Buffer.from(publicKey, "hex"),
         networkSlug
       );
+
+      try {
+        // NOTE: [GA] - track create account
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        Analytics.fireEvent("wallet_create_account", {
+          address,
+          network: networkSlug,
+        });
+      } catch (e) {
+        console.error(e);
+      }
       return {
         id,
         name: `Account ${id}`,
@@ -196,7 +208,7 @@ class WalletController implements IWalletController {
       id: walletId,
       type: props.walletType,
       accounts: [groupAccount],
-      restoreFromWallet: props.restoreFromWallet
+      restoreFromWallet: props.restoreFromWallet,
     };
   }
 
@@ -280,6 +292,17 @@ class WalletController implements IWalletController {
         Buffer.from(publicKey, "hex"),
         networkSlug
       );
+
+      try {
+        // NOTE: [GA] - track create account
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        Analytics.fireEvent("wallet_create_account", {
+          address,
+          network: networkSlug,
+        });
+      } catch (e) {
+        console.error(e);
+      }
       return {
         id,
         name: `Account ${id}`,

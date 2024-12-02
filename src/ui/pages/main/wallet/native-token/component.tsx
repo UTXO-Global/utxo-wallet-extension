@@ -6,8 +6,9 @@ import {
 } from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import cn from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import Analytics from "@/ui/utils/gtm";
 
 export default function NativeToken() {
   const currentAccount = useGetCurrentAccount();
@@ -26,6 +27,20 @@ export default function NativeToken() {
   }, [currentAccount?.balance]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    try {
+      // NOTE: [GA] - track tvl
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      Analytics.fireEvent("wallet_tvl", {
+        address: currentAccount.accounts[0].address,
+        network: currentNetwork.slug,
+        amount: nativeCoinBalance,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }, [nativeCoinBalance]);
 
   return (
     <div className="px-4 mt-2">

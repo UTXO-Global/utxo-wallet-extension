@@ -3,7 +3,6 @@ import {
   useGetCurrentAccount,
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
-import Analytics from "@/ui/utils/gtm";
 import { IcnChevronDown } from "@/ui/components/icons";
 import { useMemo } from "react";
 import { useAppState } from "@/ui/states/appState";
@@ -20,12 +19,7 @@ const WalletPanel = ({ state }: { state?: any }) => {
     return location.state;
   }, [state, location.state]);
 
-  const _navigate = (path: string, name: string, label: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent(name, {
-      action: "click",
-      label,
-    });
+  const _navigate = (path: string) => {
     navigate(path, { state: localState });
   };
 
@@ -64,8 +58,6 @@ const WalletPanel = ({ state }: { state?: any }) => {
           onClick={() =>
             _navigate(
               "/pages/swap/slippage-settings",
-              "pf_slippage_settings",
-              "slippageSettings"
             )
           }
         >
