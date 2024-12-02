@@ -101,6 +101,10 @@ export function isBitcoinNetwork(
   return (<BitcoinNetwork>network).wif !== undefined;
 }
 
+export function rgbppAssetSupported(network: NetworkData) {
+  return ["btc", "btc_signet", "btc_testnet"].includes(network.slug);
+}
+
 export const NETWORK_ICON = {
   btc: "/btc.png",
   btc_testnet: "/btc.png",

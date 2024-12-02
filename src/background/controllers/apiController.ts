@@ -17,7 +17,7 @@ import { fetchEsplora } from "@/shared/utils";
 import { Cell } from "@ckb-lumos/lumos";
 import { storageService } from "../services";
 import {
-  getRgbppAssetApiUrl,
+  RGBPP_ASSET_API_URL,
   RgbppAsset,
   RgbppTx,
   RgbppXudtBalance,
@@ -429,9 +429,10 @@ class ApiController implements IApiController {
       address: string;
       xudt: RgbppXudtBalance[];
     }>({
-      path: `${getRgbppAssetApiUrl(
-        networkData.slug
-      )}/rgbpp/v1/address/${address}/balance?no_cache=false`,
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/balance?no_cache=false`,
+      headers: {
+        "x-network": networkData.slug,
+      },
     });
 
     return response.xudt;
@@ -447,9 +448,10 @@ class ApiController implements IApiController {
         address: string;
         txs: RgbppTx[];
       }>({
-        path: `${getRgbppAssetApiUrl(networkData.slug)}/rgbpp/v1/address/${
-          account.address
-        }/activity?rgbpp_only=true&type_script=${typeScript}`,
+        path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${account.address}/activity?rgbpp_only=true&type_script=${typeScript}`,
+        headers: {
+          "x-network": networkData.slug,
+        },
       });
       txs.push(...response.txs);
     }
@@ -462,9 +464,10 @@ class ApiController implements IApiController {
   ): Promise<RgbppAsset[]> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const rgbAssets = await fetchEsplora<RgbppAsset[]>({
-      path: `${getRgbppAssetApiUrl(
-        networkData.slug
-      )}/rgbpp/v1/address/${address}/assets?no_cache=false&type_script=${typeScript}`,
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/assets?no_cache=false&type_script=${typeScript}`,
+      headers: {
+        "x-network": networkData.slug,
+      },
     });
     return rgbAssets.map(
       (asset) => ({

@@ -1,20 +1,6 @@
 import { Script } from "@ckb-lumos/base";
-import { NetworkSlug } from "../networks/types";
 
-export function getRgbppAssetApiUrl(networkSlug: NetworkSlug): string {
-  switch (networkSlug) {
-    case "btc":
-    //   return "https://api.rgbpp.io";
-    case "btc_testnet":
-      //   return "https://api.testnet.rgbpp.io";
-      return "http://localhost:3001";
-    case "btc_signet":
-      //   return "https://api.signet.rgbpp.io";
-      return "http://localhost:3000";
-    default:
-      throw Error(`Invalid network slug: ${networkSlug}`);
-  }
-}
+export const RGBPP_ASSET_API_URL = "https://rgbpp-proxy.utxo.global";
 
 export interface RgbppAsset {
   cellOutput: {

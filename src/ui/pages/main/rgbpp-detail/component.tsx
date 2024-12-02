@@ -11,7 +11,7 @@ import cn from "classnames";
 import Analytics from "@/ui/utils/gtm";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ReceiveAddress from "@/ui/components/receive-address";
-import { ckbExplorerApi } from "@/ui/utils/helpers";
+import { fetchExplorerAPI } from "@/ui/utils/helpers";
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { shortAddress } from "@/shared/utils/transactions";
 import ShortBalance from "@/ui/components/ShortBalance";
@@ -63,15 +63,7 @@ const RgbppDetail = () => {
         currentNetwork.slug === BTC_LIVENET.slug
           ? CKB_MAINNET.slug
           : CKB_TESTNET.slug;
-      const res = await fetch(
-        `${ckbExplorerApi(ckbSlug)}/v1/xudts/${typeHash}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.api+json",
-          },
-        }
-      );
+      const res = await fetchExplorerAPI(ckbSlug, `/v1/xudts/${typeHash}`);
       const { data } = await res.json();
       setTokenInfo(data as CKBTokenInfo);
     } catch (e) {

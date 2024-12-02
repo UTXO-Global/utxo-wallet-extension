@@ -17,7 +17,7 @@ import { getScriptForAddress } from "@/shared/utils/transactions";
 import { Script } from "@ckb-lumos/base";
 import { BI, Cell, commons, helpers } from "@ckb-lumos/lumos";
 import { Psbt } from "bitcoinjs-lib";
-import { AddressType, HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
+import { HDPrivateKey, HDSeedKey, Keyring } from "./ckbhdw";
 import { KeyringServiceError } from "./consts";
 import { createSendBtc } from "./ord-utils";
 import type {
@@ -778,7 +778,7 @@ class KeyringService {
       throw new Error("Error when trying to get the current account");
 
     // build psbt
-    const psbt = bitcoin.Psbt.fromHex(btcPsbtHex);
+    const psbt = Psbt.fromHex(btcPsbtHex);
 
     // sign psbt
     this.signPsbt(psbt, toSignInputs);
