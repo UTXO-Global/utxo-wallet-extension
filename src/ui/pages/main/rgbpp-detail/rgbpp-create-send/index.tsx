@@ -147,7 +147,7 @@ const CreateSendRgbpp = () => {
         return toast.error(t("send.create_send.fee_is_text_error"));
       }
 
-      const { fee, rawtx, fromAddresses } = await createRgbppTx(
+      const { fee, rawtx, fromAddresses, isomorphicTx } = await createRgbppTx(
         address,
         Number((Number(amount) * 10 ** Number(decimal)).toFixed(0)),
         token.attributes.type_script.args,
@@ -178,6 +178,7 @@ const CreateSendRgbpp = () => {
           hex: rawtx,
           save: isSaveAddress,
           token: token,
+          isomorphicTx,
         },
       });
     } catch (e) {

@@ -18,6 +18,12 @@ import {
 import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { fetchExplorerAPI } from "../utils/helpers";
 import { formatNumber } from "@/shared/utils";
+import { RGBPP_ASSET_API_URL, RgbppAsset } from "@/shared/interfaces/rgbpp";
+import { BTCTestnetType, Collector } from "@rgbpp-sdk/ckb";
+import { AddressType } from "@/shared/networks/types";
+import { buildRgbppTransferTx } from "@/background/services/rgbpp";
+import { NetworkType, DataSource } from "@rgbpp-sdk/btc";
+import { BtcAssetsApi } from "../utils/rgbpp";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -428,7 +434,6 @@ export function useCreateRgbppTxCallback() {
 
       const isMainnet = networkSlug === "btc";
 
-      let btcServiceUrl = "http://0.0.0.0:3000";
       let btcTestnetNetworkType: BTCTestnetType | undefined;
       let btcNetworkType = NetworkType.TESTNET;
 
@@ -438,13 +443,11 @@ export function useCreateRgbppTxCallback() {
         case "btc_signet":
           btcTestnetNetworkType = "Signet" as BTCTestnetType;
           btcNetworkType = NetworkType.TESTNET;
-          // TODO: btcServiceUrl = ;
           break;
         case "btc_testnet":
         case "btc_testnet_4":
           btcTestnetNetworkType = "Testnet3" as BTCTestnetType;
           btcNetworkType = NetworkType.TESTNET;
-          // TODO: btcServiceUrl = ;
           break;
         case "btc":
           btcNetworkType = NetworkType.MAINNET;
@@ -457,10 +460,7 @@ export function useCreateRgbppTxCallback() {
         ckbIndexerUrl,
       });
 
-      const btcService = BtcAssetsApi.fromToken(
-        btcServiceUrl,
-        "utxo.global" // any domain while we don't need token
-      );
+      const btcService = new BtcAssetsApi(RGBPP_ASSET_API_URL, networkSlug);
       const btcDataSource = new DataSource(btcService, btcNetworkType);
 
       const rgbppLockArgsList = rgbppAssets.map(
@@ -494,8 +494,10 @@ export function useCreateRgbppTxCallback() {
 
       // TODO: Save ckbVirtualTxResult
       // saveCkbVirtualTxResult(ckbVirtualTxResult, "2-btc-transfer");
+      const isomorphicTx = JSON.stringify(ckbVirtualTxResult);
+      // btcService.sendRgbppCkbTransaction({ btc_txid: btcTxId, ckb_virtual_result: ckbVirtualTxResult })
 
-      const unsignedPsbt = bitcoin.Psbt.fromHex(btcPsbtHex);
+      const unsignedPsbt = Psbt.fromHex(btcPsbtHex);
       const toSignInputs = unsignedPsbt.data.inputs.map((v, index) => ({
         index,
         address: _account.address,
@@ -511,6 +513,7 @@ export function useCreateRgbppTxCallback() {
       return {
         rawtx,
         fee: psbt.getFee(),
+        isomorphicTx,
         fromAddresses: [_account.address], // TODO: return address of specific selected input
       };
     },

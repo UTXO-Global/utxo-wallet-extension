@@ -11,10 +11,7 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
-import {
-  IcnSend,
-  IcnReceive,
-} from "@/ui/components/icons";
+import { IcnSend, IcnReceive } from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";

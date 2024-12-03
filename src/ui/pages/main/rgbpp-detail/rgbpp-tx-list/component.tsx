@@ -47,15 +47,17 @@ const RgbppTxList = ({
   }, [apiController]);
 
   useEffect(() => {
-    const f = async () => {
-      setLoading(true);
-      setTransactions(await apiController.getRgbppTxs(typeScriptString));
-      setLoading(false);
-    };
-
-    f().catch((e) => {
-      console.error(e);
-    });
+    setLoading(true);
+    apiController
+      .getRgbppTxs(typeScriptString)
+      .then((txs) => {
+        setTransactions(txs);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.error(e);
+      });
   }, [typeScriptString]);
 
   if (!Array.isArray(transactions)) {

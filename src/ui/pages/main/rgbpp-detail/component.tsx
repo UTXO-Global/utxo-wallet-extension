@@ -2,7 +2,7 @@ import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "react-loading";
 import { IcnCopy, IcnReceive, IcnSend } from "@/ui/components/icons";
 import toast from "react-hot-toast";
@@ -52,9 +52,9 @@ const RgbppDetail = () => {
         })
       );
     }
-  }, [tokenInfo]);
+  }, [tokenInfo?.id]);
 
-  const getToken = async () => {
+  const getToken = useCallback(async () => {
     if (isLoading) return;
     setIsLoading(true);
 
@@ -70,7 +70,7 @@ const RgbppDetail = () => {
       console.error(e);
     }
     setIsLoading(false);
-  };
+  }, [typeHash]);
 
   const panelNavs = useMemo(() => {
     return [

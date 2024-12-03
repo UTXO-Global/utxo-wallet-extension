@@ -9,6 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import Loading from "react-loading";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+import { BtcAssetsApi } from "@/ui/utils/rgbpp";
+import { RGBPP_ASSET_API_URL } from "@/shared/interfaces/rgbpp";
 
 const ConfirmSendRgbpp = () => {
   const location = useLocation();
@@ -42,6 +44,18 @@ const ConfirmSendRgbpp = () => {
       if (location.state.save) {
         await updateAddressBook(location.state.toAddress);
       }
+
+      // Send Isomorphic TX
+      // TODO: should wait for at least 1 confirmed
+      const btcService = new BtcAssetsApi(
+        RGBPP_ASSET_API_URL,
+        currentNetwork.slug
+      );
+      const ckbVirtualTxResult = JSON.parse(location.state.isomorphicTx);
+      await btcService.sendRgbppCkbTransaction({
+        btc_txid: txId,
+        ckb_virtual_result: ckbVirtualTxResult,
+      });
 
       if (!txId) {
         throw new Error("Failed pushing transaction");

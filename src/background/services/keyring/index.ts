@@ -249,7 +249,6 @@ class KeyringService {
       // the tx fee could calculated by tx size
       // TODO: this is just a simple example
       const neededCapacity = BI.from(data.amount).add(100000);
-      console.log(data.amount, neededCapacity.toNumber());
 
       let txSkeleton = helpers.TransactionSkeleton({});
       const fromScript = helpers.parseAddress(ckbAccount.address, {
