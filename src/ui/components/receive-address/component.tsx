@@ -8,7 +8,6 @@ import { FC, useMemo } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import toast from "react-hot-toast";
 import { isBitcoinNetwork } from "@/shared/networks";
-import Analytics from "@/ui/utils/gtm";
 import { useNavigate } from "react-router-dom";
 import { IcnCopy, IcnQr } from "../icons";
 
@@ -27,16 +26,6 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
       ? currentAccount.accounts.slice(3, 5)
       : currentAccount.accounts;
   }, [currentAccount.accounts, currentNetwork.network]);
-
-  const _navigate = (path: string, name: string, label: string) => {
-    // NOTE: [GA]
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent(name, {
-      action: "click",
-      label,
-    });
-    navigate(path);
-  };
 
   return (
     <Modal
@@ -71,11 +60,7 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
               <div
                 className="w-[40px] h-[40px] rounded-full cursor-pointer transition-colors bg-[#F5F5F5] hover:bg-[#EBECEC] flex justify-center items-center"
                 onClick={() => {
-                  _navigate(
-                    `/pages/receive/${z.address}`,
-                    "pf_receive",
-                    "receive"
-                  );
+                  navigate(`/pages/receive/${z.address}`);
                 }}
               >
                 <IcnQr className="w-4 h-4 fill-[#ABA8A1]" />

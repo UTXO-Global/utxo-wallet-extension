@@ -27,6 +27,7 @@ export default async (req) => {
       height: 600,
       route: "/account/create-password",
     });
+
     throw ethErrors.provider.userRejectedRequest({
       message: "wallet must has at least one account",
     });

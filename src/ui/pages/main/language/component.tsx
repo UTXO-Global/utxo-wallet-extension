@@ -2,7 +2,6 @@ import i18n from "@/shared/locales/i18n";
 import { useAppState } from "@/ui/states/appState";
 import s from "./styles.module.scss";
 import cn from "classnames";
-import Analytics from "@/ui/utils/gtm";
 
 const Language = () => {
   const { updateAppState } = useAppState((v) => ({
@@ -17,12 +16,6 @@ const Language = () => {
 
   const newLanguage = (lng: string) => {
     return async () => {
-      // NOTE: [GA] - Settings
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      await Analytics.fireEvent("st_language", {
-        action: "click",
-        label: lng,
-      });
       await changeLanguage(lng);
     };
   };

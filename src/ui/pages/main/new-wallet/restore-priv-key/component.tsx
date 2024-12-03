@@ -15,7 +15,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
-import Analytics from "@/ui/utils/gtm";
 
 interface FormType {
   privKey: string;
@@ -68,13 +67,6 @@ const RestorePrivKey = () => {
         restoreFrom: "hex", // use hex to save because we have already convert
       });
       await updateWalletState({ vaultIsEmpty: false });
-      // NOTE: [GA] - Restore from pk
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Analytics.fireEvent("ob_restore_from_pk", {
-        action: "click",
-        label: "recover",
-        content: selectedWayToRestore.name,
-      });
       navigate("/home");
     } catch (e) {
       if (e.message === "Already existed") {

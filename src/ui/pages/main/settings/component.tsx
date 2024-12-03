@@ -1,6 +1,5 @@
 import { browserTabsCreate } from "@/shared/utils/browser";
 import { useAppState } from "@/ui/states/appState";
-import Analytics from "@/ui/utils/gtm";
 import s from "./styles.module.scss";
 
 import Tile from "@/ui/components/tile";
@@ -84,12 +83,7 @@ const Settings = () => {
   ];
 
   const analytics = (label: string) => {
-    // NOTE: [GA] - Settings
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent("st_options", {
-      action: "click",
-      label,
-    });
+
   };
 
   return (

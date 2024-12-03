@@ -132,7 +132,6 @@ const flowContext = flow
       Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
-
       ctx.request.requestedApproval = true;
       // eslint-disable-next-line
       ctx.approvalRes = await notificationService.requestApproval(

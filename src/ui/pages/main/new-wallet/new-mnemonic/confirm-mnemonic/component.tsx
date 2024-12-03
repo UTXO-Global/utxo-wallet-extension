@@ -10,8 +10,8 @@ import s from "./styles.module.scss";
 import ReactLoading from "react-loading";
 
 const convertToAsterisks = (word: string) => {
-  return '*'.repeat(word.length)
-}
+  return "*".repeat(word.length);
+};
 
 const ConfirmMnemonic = () => {
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ const ConfirmMnemonic = () => {
   const navigate = useNavigate();
 
   const onCreate = async () => {
-    const _mnemonicPhaseConfirm = mnemonicPhaseConfirm.map(z => z.trim())
+    const _mnemonicPhaseConfirm = mnemonicPhaseConfirm.map((z) => z.trim());
     if (!_mnemonicPhaseConfirm || _mnemonicPhaseConfirm.length === 0) {
       toast.error(t("new_wallet.new_mnemonic.error_phrase_blank"));
       return;
