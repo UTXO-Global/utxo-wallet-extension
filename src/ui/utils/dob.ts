@@ -74,6 +74,13 @@ export const getURLFromHex = (dataHex: string, network: NetworkData) => {
     const buffer = hexStringToUint8Array(msg.content.toString().slice(2));
     const blob = new Blob([buffer], { type: contentType });
     return { url: URL.createObjectURL(blob), contentType: contentType };
+  } else if (contentType === "application/json") {
+    const hexContent = msg.content.toString().slice(2);
+    const utf8Content = Buffer.from(hexContent, "hex").toString("utf8");
+    const payload = JSON.parse(utf8Content);
+    if (!!payload.resource?.url && !!payload.resource?.type) {
+      return { url: payload.resource.url, contentType: payload.resource.type };
+    }
   }
   return { contentType: msg.contentType };
 };

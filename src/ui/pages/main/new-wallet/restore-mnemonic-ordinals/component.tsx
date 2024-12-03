@@ -1,7 +1,6 @@
 import SelectWithHint from "@/ui/components/select-hint/component";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
 import { useWalletState } from "@/ui/states/walletState";
-import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
 import { t } from "i18next";
 import { useCallback, useState } from "react";
@@ -47,12 +46,6 @@ const RestoreMnemonicOrdinals = () => {
         passphrase: "",
       });
       await updateWalletState({ vaultIsEmpty: false });
-      // NOTE: [GA] - Restore ordinals mnemonic
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Analytics.fireEvent("ob_restore_ordinals_mnemonic", {
-        action: "click",
-        label: "continue",
-      });
       navigate("/home");
     } catch (e) {
       toast.error(t("new_wallet.restore_mnemonic.invalid_words_error"));
