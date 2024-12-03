@@ -4,7 +4,6 @@ import {
   getNetworkDataBySlug,
   isCkbNetwork,
 } from "@/shared/networks";
-import { shortAddress } from "@/shared/utils/transactions";
 import Switch from "@/ui/components/switch";
 import { useCreateOrdTx, useCreateTxCallback } from "@/ui/hooks/transactions";
 import {
@@ -12,7 +11,6 @@ import {
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { normalizeAmount } from "@/ui/utils";
-import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
 import { t } from "i18next";
 import {
@@ -197,19 +195,6 @@ const CreateSend = () => {
             token
           )
         : await createOrdTx(address, feeRate, inscription);
-
-      // NOTE: [GA] - Send BTC
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      await Analytics.fireEvent("pf_send_btc", {
-        action: "continue",
-        label: fromAddresses.map((z) => shortAddress(z, 3)).join(","),
-        amount: Number(amount),
-        includeFeeInAmount,
-        recipient: shortAddress(address, 3),
-        fee: fee,
-        include_fee: formData.includeFeeInAmount ? 1 : 0,
-        save_address: isSaveAddress ? 1 : 0,
-      });
 
       navigate("/pages/confirm-send", {
         state: {

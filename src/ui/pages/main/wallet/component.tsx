@@ -4,7 +4,7 @@ import {
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Loading from "react-loading";
 import AccountPanel from "./account-panel";
 import s from "./styles.module.scss";
@@ -19,6 +19,7 @@ import {
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
 import RgbppXudtTabs from "./rgbpp-xudt";
+import Analytics from "@/ui/utils/gtm";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -38,6 +39,19 @@ const Wallet = () => {
     return [];
   }, [currentNetwork.network]);
 
+  const trackWalletActive = useCallback(() => {
+    try {
+      // NOTE: [GA] - track wallet active
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      Analytics.fireEvent("wallet_active", {
+        address: currentAccount.accounts[0].address,
+        network: currentNetwork.slug,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   useEffect(() => {
     trottledUpdate();
   }, [trottledUpdate]);
@@ -45,6 +59,10 @@ const Wallet = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    trackWalletActive();
+  }, [trackWalletActive]);
 
   if (!currentAccount && !mounted) return <Loading color="#ODODOD" />;
 
