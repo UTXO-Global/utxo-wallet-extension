@@ -1,15 +1,18 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   useGetCurrentAccount,
+  useGetCurrentNetwork,
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import { IcnChevronDown } from "@/ui/components/icons";
 import { useMemo } from "react";
 import { useAppState } from "@/ui/states/appState";
+import { isCkbNetwork } from "@/shared/networks";
 
 const WalletPanel = ({ state }: { state?: any }) => {
   const currentWallet = useGetCurrentWallet();
   const currentAccount = useGetCurrentAccount();
+  const currentNetwork = useGetCurrentNetwork();
   const { swapSetting } = useAppState();
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,21 +55,19 @@ const WalletPanel = ({ state }: { state?: any }) => {
         </div>
       </Link>
 
-      <div className="flex gap-4 items-center">
-        <div
-          className="flex items-center cursor-pointer gap-1 bg-grey-300 p-[6px] rounded group"
-          onClick={() =>
-            _navigate(
-              "/pages/swap/slippage-settings",
-            )
-          }
-        >
-          <IcnSlippageSettings />
-          <span className="text-sm leading-5 font-medium text-primary">
-            {swapSetting.slippage}%
-          </span>
+      {isCkbNetwork(currentNetwork.network) ? (
+        <div className="flex gap-4 items-center">
+          <div
+            className="flex items-center cursor-pointer gap-1 bg-grey-300 p-[6px] rounded group"
+            onClick={() => _navigate("/pages/swap/slippage-settings")}
+          >
+            <IcnSlippageSettings />
+            <span className="text-sm leading-5 font-medium text-primary">
+              {swapSetting.slippage}%
+            </span>
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 };

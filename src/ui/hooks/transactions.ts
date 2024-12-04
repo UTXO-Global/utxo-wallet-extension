@@ -2,7 +2,11 @@ import type { Hex, TransferNFT } from "@/background/services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { Inscription } from "@/shared/interfaces/inscriptions";
 import { ITransfer } from "@/shared/interfaces/token";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import { ckbMinTransfer, tidoshisToAmount } from "@/shared/utils/transactions";
 import { BI } from "@ckb-lumos/lumos";
 import { Psbt } from "bitcoinjs-lib";
@@ -123,20 +127,24 @@ export function useCreateTxCallback() {
       if (selectedWallet === undefined || selectedAccount === undefined)
         throw new Error("Failed to get current wallet or account");
 
-      if (isBitcoinNetwork(network)) {
+      if (isBitcoinNetwork(network) || isDogecoinNetwork(network)) {
         // Send BTC tx
         const totalUtxos: ApiUTXO[] = [];
         for (const account of currentAccount.accounts) {
           const utxos = await apiController.getUtxos(account.address);
           // Filter utxo contains runes or ordinals
-          const outpointOrds = (
-            await apiController.getOrdUtxos(account.address)
-          ).map((oo) => `${oo.outpoint}`);
-          const nonOrdUtxo = utxos.filter(
-            (utxo) => !outpointOrds.includes(`${utxo.txid}:${utxo.vout}`)
-          );
+          if (isBitcoinNetwork(network)) {
+            const outpointOrds = (
+              await apiController.getOrdUtxos(account.address)
+            ).map((oo) => `${oo.outpoint}`);
+            const nonOrdUtxo = utxos.filter(
+              (utxo) => !outpointOrds.includes(`${utxo.txid}:${utxo.vout}`)
+            );
 
-          totalUtxos.push(...nonOrdUtxo);
+            totalUtxos.push(...nonOrdUtxo);
+          } else {
+            totalUtxos.push(...utxos);
+          }
         }
         const safeBalance = (totalUtxos ?? []).reduce(
           (pre, cur) => pre + cur.value,
@@ -161,7 +169,7 @@ export function useCreateTxCallback() {
           feeRate,
         });
         const psbt = Psbt.fromHex(psbtHex);
-        const tx = psbt.extractTransaction();
+        const tx = psbt.extractTransaction(true);
         const rawtx = tx.toHex();
         return {
           rawtx,
@@ -227,7 +235,7 @@ export function useCreateOrdTx() {
         feeRate,
       });
       const psbt = Psbt.fromHex(psbtHex);
-      const tx = psbt.extractTransaction();
+      const tx = psbt.extractTransaction(true);
       const rawtx = tx.toHex();
       return {
         rawtx,
