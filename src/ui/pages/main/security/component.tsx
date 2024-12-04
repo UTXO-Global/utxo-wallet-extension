@@ -28,7 +28,7 @@ const Security = () => {
         {items.map((i) => (
           <div
             key={i.label}
-            className="flex justify-between items-center gap-2 pt-4 pb-5 border-b border-b-grey-300 last:border-b-0 cursor-pointer"
+            className="flex justify-between items-center gap-2 py-2 border-b border-b-grey-300 last:border-b-0 cursor-pointer"
             onClick={i.onClick}
           >
             <div className="flex gap-2 items-center">

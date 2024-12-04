@@ -24,8 +24,10 @@ export type NetworkSlug =
   | "btc_testnet_4"
   | "btc_signet"
   | "nervos"
-  | "nervos_testnet";
-export type ChainSlug = "btc" | "nervos";
+  | "nervos_testnet"
+  | "dogecoin"
+  | "dogecoin_testnet";
+export type ChainSlug = "btc" | "nervos" | "dogecoin";
 
 export type WalletToImport = {
   name: string;

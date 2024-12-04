@@ -238,7 +238,7 @@ export class OrdTransaction {
     this.removeChangeOutput();
 
     // todo: support changing the feeRate
-    const txSize = psbt1.extractTransaction().toBuffer().length;
+    const txSize = psbt1.extractTransaction(true).toBuffer().length;
     const fee = txSize * this.feeRate;
 
     if (unspent > fee) {
@@ -252,7 +252,7 @@ export class OrdTransaction {
       }
     }
     const psbt2 = await this.createSignedPsbt();
-    const tx = psbt2.extractTransaction();
+    const tx = psbt2.extractTransaction(true);
 
     const rawtx = tx.toHex();
     const toAmount = this.outputs[0].value;

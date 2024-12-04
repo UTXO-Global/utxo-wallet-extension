@@ -2,6 +2,7 @@ import {
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
+  isDogecoinNetwork,
 } from "@/shared/networks";
 import { publicKeyToBlake160 } from "@/shared/networks/ckb/helpers";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -9,7 +10,7 @@ import * as ecc from "@bitcoinerlab/secp256k1";
 import { encodeToAddress } from "@ckb-lumos/lumos/helpers";
 import { sha256 } from "@noble/hashes/sha256";
 import * as bitcoinjs from "bitcoinjs-lib";
-import { payments as bitcoinPayments, payments } from "bitcoinjs-lib";
+import { payments } from "bitcoinjs-lib";
 import varuint from "varuint-bitcoin";
 import { AddressType } from "./types";
 
@@ -82,7 +83,7 @@ export function getAddress(
     throw new Error("addressType of keyring is not specified");
 
   const network = getNetworkDataBySlug(networkSlug).network;
-  if (isBitcoinNetwork(network)) {
+  if (isBitcoinNetwork(network) || isDogecoinNetwork(network)) {
     switch (addressType) {
       case AddressType.P2WPKH:
         return payments.p2wpkh({
@@ -103,7 +104,7 @@ export function getAddress(
         }).address;
       case AddressType.P2TR as any:
         bitcoinjs.initEccLib(ecc);
-        return bitcoinPayments.p2tr({
+        return payments.p2tr({
           internalPubkey: toXOnly(Buffer.from(publicKey)),
           network: network,
         }).address;
