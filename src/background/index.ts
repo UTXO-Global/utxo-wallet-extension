@@ -135,3 +135,21 @@ setInterval(() => {
     }
   }
 }, 5000);
+
+let tabActiveInfo;
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  tabActiveInfo = activeInfo;
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  (async () => {
+    if (message.action === "openSidePanel" && tabActiveInfo) {
+      chrome.sidePanel.setOptions({
+        tabId: tabActiveInfo.tabId,
+        path: "index.html",
+        enabled: true,
+      });
+      await chrome.sidePanel.open(tabActiveInfo);
+    }
+  })();
+});
