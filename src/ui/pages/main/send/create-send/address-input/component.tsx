@@ -9,7 +9,11 @@ import { IcnBook } from "@/ui/components/icons/IcnBook";
 import cn from "classnames";
 import { createInstance } from "dotbit";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 
 const dotbit = createInstance();
 
@@ -48,7 +52,9 @@ const AddressInput: FC<Props> = ({
                   (z.key === "address.ckb" &&
                     isCkbNetwork(currentNetwork.network)) ||
                   (z.key === "address.btc" &&
-                    isBitcoinNetwork(currentNetwork.network))
+                    isBitcoinNetwork(currentNetwork.network)) ||
+                  (z.key === "address.doge" &&
+                    isDogecoinNetwork(currentNetwork.network))
               )
               .map((j) => j.value)
           );

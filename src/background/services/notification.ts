@@ -72,6 +72,7 @@ class NotificationService extends Events {
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       if (!this.isLocked) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.openNotification(winProps);
       }
     });

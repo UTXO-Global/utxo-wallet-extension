@@ -1,4 +1,8 @@
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import PasswordInput from "@/ui/components/password-input";
 import Select from "@/ui/components/select";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
@@ -45,7 +49,10 @@ const RestorePrivKey = () => {
       // Convert WIF to hex based on current network
       if (selectedWayToRestore.name === "wif") {
         const ECPair = ECPairFactory(tinysecp);
-        if (isBitcoinNetwork(currentNetwork.network)) {
+        if (
+          isBitcoinNetwork(currentNetwork.network) ||
+          isDogecoinNetwork(currentNetwork.network)
+        ) {
           const pair = ECPair.fromWIF(privKey, currentNetwork.network);
           privKey = pair.privateKey.toString("hex");
         }
