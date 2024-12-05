@@ -10,6 +10,7 @@ import {
   nervosTestnetSlug,
   DOBS_TESTNET_CONFIG,
   DOBS_MAINNET_CONFIG,
+  isDogecoinNetwork,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -202,7 +203,10 @@ class KeyringService {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
 
-    if (isBitcoinNetwork(network.network)) {
+    if (
+      isBitcoinNetwork(network.network) ||
+      isDogecoinNetwork(network.network)
+    ) {
       const utxos = (data as SendBtcCoin).utxos.map((v) => {
         const _account = account.accounts.find(
           (acc) => acc.address === v.address
