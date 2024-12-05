@@ -7,7 +7,7 @@ import { t } from "i18next";
 import Loading from "react-loading";
 import { shortAddress } from "@/shared/utils/transactions";
 import AddressInput from "../send/create-send/address-input";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AddressBookModal from "../send/create-send/address-book-modal";
 import Switch from "@/ui/components/switch";
 import ShortBalance from "@/ui/components/ShortBalance";
@@ -21,6 +21,7 @@ import { useCreateNFTTxCallback } from "@/ui/hooks/transactions";
 export interface FormTransferNFTType {
   address: string;
   feeRate: number;
+  isUseDID?: boolean;
 }
 
 const feeRates = [
@@ -50,6 +51,7 @@ export default function TransferNFT() {
   const [formData, setFormData] = useState<FormTransferNFTType>({
     address: "",
     feeRate: 1000,
+    isUseDID: false,
   });
 
   const navigate = useNavigate();
@@ -112,6 +114,7 @@ export default function TransferNFT() {
           hex: rawtx,
           save: isSaveAddress,
           nft: detailNFT,
+          isUseDID: !!formData.isUseDID,
         },
       });
     } catch (e) {
@@ -169,7 +172,15 @@ export default function TransferNFT() {
                   </span>
                   <AddressInput
                     address={formData.address}
-                    onChange={(v) => setFormData((p) => ({ ...p, address: v }))}
+                    onChange={useCallback(
+                      (v) =>
+                        setFormData((p) => ({
+                          ...p,
+                          address: v.value,
+                          isUseDID: v.isUseDID,
+                        })),
+                      [setFormData]
+                    )}
                     onOpenModal={() => setOpenModal(true)}
                     className="!bg-grey-300"
                   />

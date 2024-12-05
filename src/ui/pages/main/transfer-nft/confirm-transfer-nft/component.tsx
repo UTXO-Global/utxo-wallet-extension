@@ -78,6 +78,7 @@ export default function ConfirmTransferNFT() {
           nft_collection_name: location.state.nft.collection.name,
           nft_name: location.state.nft.name,
           nft_token_id: location.state.nft.token_id,
+          did: location.state.isUseDID
         });
       } catch (e) {
         console.error(e);

@@ -40,6 +40,7 @@ export interface FormType {
   amount: string;
   feeAmount: number | string;
   includeFeeInAmount: boolean;
+  isUseDID?: boolean;
 }
 
 const CreateSend = () => {
@@ -52,6 +53,7 @@ const CreateSend = () => {
     amount: "",
     includeFeeInAmount: false,
     feeAmount: 10,
+    isUseDID: false,
   });
   const currentNetwork = useGetCurrentNetwork();
   const [includeFeeLocked, setIncludeFeeLocked] = useState<boolean>(false);
@@ -142,6 +144,7 @@ const CreateSend = () => {
     amount,
     feeAmount: feeRate,
     includeFeeInAmount,
+    isUseDID,
   }: FormType) => {
     try {
       setLoading(true);
@@ -208,6 +211,7 @@ const CreateSend = () => {
           save: isSaveAddress,
           inscriptionTransaction,
           token: token,
+          isUseDID: !!isUseDID,
         },
       });
     } catch (e) {
@@ -305,7 +309,16 @@ const CreateSend = () => {
             </span>
             <AddressInput
               address={formData.address}
-              onChange={(v) => setFormData((p) => ({ ...p, address: v }))}
+              onChange={useCallback(
+                (v) => {
+                  setFormData((p) => ({
+                    ...p,
+                    address: v.value,
+                    isUseDID: v.isUseDID,
+                  }));
+                },
+                [setFormData]
+              )}
               onOpenModal={() => setOpenModal(true)}
             />
           </div>
