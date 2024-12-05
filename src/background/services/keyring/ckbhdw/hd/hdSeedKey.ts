@@ -1,4 +1,8 @@
-import { getNetworkDataBySlug, isBitcoinNetwork } from "@/shared/networks";
+import {
+  getNetworkDataBySlug,
+  isBitcoinNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import * as tinysecp from "@bitcoinerlab/secp256k1";
 import { hd, helpers } from "@ckb-lumos/lumos";
@@ -61,7 +65,10 @@ class HDSeedKey implements Keyring<SerializedHDKey> {
   exportAccount(hdPath: string, networkSlug: NetworkSlug) {
     const network = getNetworkDataBySlug(networkSlug);
     const account = this.getAccountByPath(hdPath);
-    if (isBitcoinNetwork(network.network)) {
+    if (
+      isBitcoinNetwork(network.network) ||
+      isDogecoinNetwork(network.network)
+    ) {
       account.network = network.network;
       return account.toWIF();
     } else {

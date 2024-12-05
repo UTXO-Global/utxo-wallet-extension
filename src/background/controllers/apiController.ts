@@ -5,6 +5,7 @@ import {
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
+  isDogecoinNetwork,
 } from "@/shared/networks";
 import { balanceOf, getCells } from "@/shared/networks/ckb/helpers";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
@@ -75,11 +76,13 @@ export interface IApiController {
 class ApiController implements IApiController {
   async getAccountBalance(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       // Bitcoin using esplora API
-      const path = "utxo";
       const data = await fetchEsplora<ApiUTXO[]>({
-        path: `${networkData.esploraUrl}/address/${address}/${path}`,
+        path: `${networkData.esploraUrl}/address/${address}/utxo`,
       });
 
       const balance = data.reduce((acc, utxo) => acc + utxo.value, 0);
@@ -148,13 +151,16 @@ class ApiController implements IApiController {
 
   async getFees() {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       const data = await fetchEsplora({
         path: `${networkData.esploraUrl}/fee-estimates`,
       });
       return {
-        slow: Number((data["6"] as number)?.toFixed(0)),
-        fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+        slow: Math.ceil(Number(data["6"] as number)),
+        fast: Math.ceil(Number(data["2"] as number)),
       };
     }
 
@@ -194,7 +200,10 @@ class ApiController implements IApiController {
   async getTransactions(): Promise<ITransaction[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const accounts = storageService.currentAccount.accounts;
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       const data = await Promise.all(
         accounts.map(async (z) => {
           const txs = await fetchEsplora<ITransaction[]>({
@@ -272,7 +281,10 @@ class ApiController implements IApiController {
 
   async getLastBlock(): Promise<number> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       return Number(
         await fetchEsplora<string>({
           path: `${networkData.esploraUrl}/blocks/tip/height`,
@@ -300,6 +312,8 @@ class ApiController implements IApiController {
       apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
     } else if (coinSymbol === "ckb") {
       apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
+    } else if (coinSymbol === "doge") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/dogecoin`;
     }
 
     if (!apiFetchPrice) {

@@ -1,4 +1,8 @@
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import PasswordInput from "@/ui/components/password-input";
 import Select from "@/ui/components/select";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
@@ -11,7 +15,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
-import Analytics from "@/ui/utils/gtm";
 
 interface FormType {
   privKey: string;
@@ -46,7 +49,10 @@ const RestorePrivKey = () => {
       // Convert WIF to hex based on current network
       if (selectedWayToRestore.name === "wif") {
         const ECPair = ECPairFactory(tinysecp);
-        if (isBitcoinNetwork(currentNetwork.network)) {
+        if (
+          isBitcoinNetwork(currentNetwork.network) ||
+          isDogecoinNetwork(currentNetwork.network)
+        ) {
           const pair = ECPair.fromWIF(privKey, currentNetwork.network);
           privKey = pair.privateKey.toString("hex");
         }
@@ -61,13 +67,6 @@ const RestorePrivKey = () => {
         restoreFrom: "hex", // use hex to save because we have already convert
       });
       await updateWalletState({ vaultIsEmpty: false });
-      // NOTE: [GA] - Restore from pk
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Analytics.fireEvent("ob_restore_from_pk", {
-        action: "click",
-        label: "recover",
-        content: selectedWayToRestore.name,
-      });
       navigate("/home");
     } catch (e) {
       if (e.message === "Already existed") {

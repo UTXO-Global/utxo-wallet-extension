@@ -1,4 +1,4 @@
-import { isBitcoinNetwork } from "@/shared/networks";
+import { isBitcoinNetwork, isDogecoinNetwork } from "@/shared/networks";
 import CheckPassword from "@/ui/components/check-password";
 import { useControllersState } from "@/ui/states/controllerState";
 import { useGetCurrentNetwork, useWalletState } from "@/ui/states/walletState";
@@ -31,7 +31,10 @@ const ShowMnemonic = () => {
         password
       );
       if (_phrase && wallets[Number(walletId)].type === "simple") {
-        if (isBitcoinNetwork(currentNetwork.network)) {
+        if (
+          isBitcoinNetwork(currentNetwork.network) ||
+          isDogecoinNetwork(currentNetwork.network)
+        ) {
           const ECPair = ECPairFactory(tinysecp);
           const pair = ECPair.fromPrivateKey(Buffer.from(_phrase, "hex"), {
             network: currentNetwork.network,

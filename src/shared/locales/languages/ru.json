@@ -14,6 +14,7 @@
     "logout": "Выйти",
     "connected_sites": "Подключенные сайты",
     "expand_view": "Развернуть обзор",
+    "security_settings": "Настройки безопасности",
     "change_password": "Сменить пароль",
     "address_type": "Тип адреса",
     "wallet": "Кошелек",
@@ -187,7 +188,7 @@
       },
       "address_input": {
         "address_book": "Адресная книга",
-        "address_placeholder": "Адрес"
+        "address_placeholder": "Адрес/.bit"
       },
       "address_book": {
         "address_book": "Адресная книга",

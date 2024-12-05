@@ -1,4 +1,8 @@
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import {
+  isBitcoinNetwork,
+  isCkbNetwork,
+  isDogecoinNetwork,
+} from "@/shared/networks";
 import { useUpdateAddressBook } from "@/ui/hooks/app";
 import {
   usePushBitcoinTxCallback,
@@ -13,6 +17,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import Loading from "react-loading";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
+import Analytics from "@/ui/utils/gtm";
 
 const ConfirmSend = () => {
   const location = useLocation();
@@ -26,7 +31,10 @@ const ConfirmSend = () => {
   const { trottledUpdate } = useTransactionManagerContext();
 
   const isSent = useMemo(() => {
-    return isBitcoinNetwork(currentNetwork.network) ? true : isCkbSent;
+    return isBitcoinNetwork(currentNetwork.network) ||
+      isDogecoinNetwork(currentNetwork.network)
+      ? true
+      : isCkbSent;
   }, [currentNetwork, isCkbSent]);
 
   const isProgressing = useMemo(() => {
@@ -45,7 +53,10 @@ const ConfirmSend = () => {
     setLoading(true);
     try {
       let txId = "";
-      if (isBitcoinNetwork(currentNetwork.network)) {
+      if (
+        isBitcoinNetwork(currentNetwork.network) ||
+        isDogecoinNetwork(currentNetwork.network)
+      ) {
         txId = (await pushTx(location.state.hex)).txid;
       } else if (isCkbNetwork(currentNetwork.network)) {
         txId = (await pushCkbTx(location.state.hex)).txid;
@@ -58,6 +69,22 @@ const ConfirmSend = () => {
       if (!txId) {
         throw new Error("Failed pushing transaction");
       }
+
+      try {
+        // NOTE: [GA] - track send coins
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        await Analytics.fireEvent("tnx_send", {
+          from_address: location.state.fromAddresses.join("\n"),
+          to_address: location.state.toAddress,
+          network: currentNetwork.slug,
+          amount: location.state.amount,
+          coin: symbol,
+          did: location.state.isUseDID,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
       setTxId(txId);
       navigate(location.pathname, {
         state: { ...location.state, isSending: true },

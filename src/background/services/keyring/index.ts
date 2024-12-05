@@ -10,6 +10,7 @@ import {
   nervosTestnetSlug,
   DOBS_TESTNET_CONFIG,
   DOBS_MAINNET_CONFIG,
+  isDogecoinNetwork,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -221,7 +222,10 @@ class KeyringService {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
 
-    if (isBitcoinNetwork(network.network)) {
+    if (
+      isBitcoinNetwork(network.network) ||
+      isDogecoinNetwork(network.network)
+    ) {
       const utxos = (data as SendBtcCoin).utxos.map((v) => {
         const _account = account.accounts.find(
           (acc) => acc.address === v.address
@@ -543,6 +547,17 @@ class KeyringService {
         (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
       )
         break;
+    }
+
+    if (totalCapacity.lt(neededCapacity)) {
+      throw new Error(
+        `The balance in your wallet must be greater than ${(neededCapacity.lt(
+          minCapacity
+        )
+          ? neededCapacity.add(minCapacity).toNumber() / 10 ** 8
+          : neededCapacity.toNumber() / 10 ** 8
+        ).toString()} CKB. Please adjust your transaction amount or add more CKB to proceed`
+      );
     }
 
     if (capacityChangeOutput.gt(0) && capacityChangeOutput.lt(minCapacity)) {
