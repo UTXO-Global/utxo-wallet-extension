@@ -12,11 +12,20 @@ import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import {
   CkbTipBlockResponse,
   CkbTransactionResponse,
+  rgpTxToITransactions,
   toITransactions,
 } from "@/shared/networks/ckb/types";
 import { fetchEsplora } from "@/shared/utils";
 import { Cell } from "@ckb-lumos/lumos";
 import { storageService } from "../services";
+import {
+  RGBPP_ASSET_API_URL,
+  RgbppAsset,
+  RgbppTx,
+  RgbppXudtBalance,
+} from "@/shared/interfaces/rgbpp";
+import { NetworkData, NetworkSlug } from "@/shared/networks/types";
+import { udtDataToDecimal } from "../utils";
 
 export interface IApiController {
   getAccountBalance(address: string): Promise<
@@ -70,6 +79,17 @@ export interface IApiController {
   getTokens(address: string): Promise<IToken[] | undefined>;
   getTransactionHex(txid: string): Promise<string | undefined>;
   getUtxoValues(outpoints: string[]): Promise<number[] | undefined>;
+  getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]>;
+  getRgbppTxs(typeScript: string): Promise<RgbppTx[]>;
+  getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined>;
+  getRgbppAssets(typeScript: string, address: string): Promise<RgbppAsset[]>;
 }
 
 // TODO: use interface instead
@@ -417,6 +437,99 @@ class ApiController implements IApiController {
     );
 
     return values;
+  }
+
+  async getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]> {
+    const networkData =
+      network ?? getNetworkDataBySlug(storageService.currentNetwork);
+    const response = await fetchEsplora<{
+      address: string;
+      xudt: RgbppXudtBalance[];
+    }>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/balance?no_cache=false`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+
+    return response.xudt;
+  }
+
+  async getRgbppTxs(typeScript: string): Promise<RgbppTx[]> {
+    const txs: RgbppTx[] = [];
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      const response = await fetchEsplora<{
+        address: string;
+        txs: RgbppTx[];
+      }>({
+        path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${account.address}/activity?rgbpp_only=true&type_script=${typeScript}`,
+        headers: {
+          "x-network": networkData.slug,
+        },
+      });
+      txs.push(...response.txs);
+    }
+    return txs;
+  }
+
+  async getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined> {
+    const txs: ITransaction[] = [];
+    const ckbNetworkSlug: NetworkSlug =
+      storageService.currentNetwork === "btc" ? "nervos" : "nervos_testnet";
+    const networkData = getNetworkDataBySlug(ckbNetworkSlug);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      let apiURL = `${networkData.esploraUrl}/address_transactions/${account.address}?page=1&page_size=25`;
+      if (!!typeHash) {
+        apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${account.address}`;
+      }
+
+      const res = await fetchEsplora<CkbTransactionResponse>({
+        path: apiURL,
+        headers: {
+          "content-type": "application/vnd.api+json",
+          accept: "application/vnd.api+json",
+        },
+      });
+      txs.push(
+        ...rgpTxToITransactions(res).map((z) => ({
+          ...z,
+          address: account.address,
+        }))
+      );
+    }
+    return txs;
+  }
+
+  async getRgbppAssets(
+    typeScript: string,
+    address: string
+  ): Promise<RgbppAsset[]> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const rgbAssets = await fetchEsplora<RgbppAsset[]>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/assets?no_cache=false&type_script=${typeScript}`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+    return rgbAssets.map(
+      (asset) => ({
+        ...asset,
+        balance: udtDataToDecimal(asset.data),
+      }),
+      0
+    );
   }
 }
 

@@ -1,0 +1,27 @@
+.input {
+  @apply break-all bg-grey-300 border border-grey-200 rounded-lg font-normal p-4 text-sm flex justify-between;
+
+  .symbol {
+    @apply text-[#A69C8C] text-base;
+  }
+}
+
+.item {
+  @apply w-full;
+}
+
+.label {
+  @apply mb-1.5 ml-1 text-base font-medium;
+}
+
+.wrapper {
+  @apply h-full py-4 flex items-center justify-center px-4 relative;
+}
+
+.container {
+  @apply h-full flex flex-col items-center gap-4;
+}
+
+.confirmBtn {
+  @apply w-full;
+}
