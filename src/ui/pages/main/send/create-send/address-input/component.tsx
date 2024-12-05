@@ -19,7 +19,7 @@ const dotbit = createInstance();
 
 interface Props {
   address: string;
-  onChange: (value: string) => void;
+  onChange: ({ value, isUseDID }: { value: string; isUseDID: boolean }) => void;
   onOpenModal: () => void;
   className?: string;
 }
@@ -31,6 +31,7 @@ const AddressInput: FC<Props> = ({
   className,
 }) => {
   const [filtered, setFiltered] = useState<string[]>([]);
+  const [didAddresses, setDidAddresses] = useState<string[]>([])
   const currentNetwork = useGetCurrentNetwork();
   const [inputValue, setInputValue] = useState("");
   const [requesting, setRequesting] = useState(false);
@@ -45,7 +46,7 @@ const AddressInput: FC<Props> = ({
     if (inputValue.endsWith(".bit")) {
       if (!requesting) {
         dotbit.records(inputValue).then((records) => {
-          setFiltered(
+          setDidAddresses(
             records
               .filter(
                 (z) =>
@@ -65,7 +66,7 @@ const AddressInput: FC<Props> = ({
       }
       setRequesting(true);
     } else {
-      onChange(inputValue);
+      onChange({ value: inputValue, isUseDID: didAddresses.includes(inputValue) });
       setFiltered(getFiltered(inputValue));
     }
   }, [inputValue, requesting]);
@@ -100,7 +101,7 @@ const AddressInput: FC<Props> = ({
             </div>
           )} */}
 
-          {filtered.length > 0 ? (
+          {[...filtered, ...didAddresses].length > 0 ? (
             <div className="w-[calc(100%+32px)] px-4 absolute -left-4 z-10">
               <Transition
                 as={Fragment}
@@ -109,7 +110,7 @@ const AddressInput: FC<Props> = ({
                 leaveTo="opacity-0"
               >
                 <Combobox.Options className={s.addressbookoptions}>
-                  {filtered.map((address) => (
+                  {[...filtered, ...didAddresses].map((address) => (
                     <Combobox.Option
                       className={s.addressbookoption}
                       key={address}

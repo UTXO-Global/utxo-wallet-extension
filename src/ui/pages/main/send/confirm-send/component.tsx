@@ -74,11 +74,12 @@ const ConfirmSend = () => {
         // NOTE: [GA] - track send coins
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         await Analytics.fireEvent("tnx_send", {
-          from_address: location.state.fromAddress,
+          from_address: location.state.fromAddresses.join("\n"),
           to_address: location.state.toAddress,
           network: currentNetwork.slug,
           amount: location.state.amount,
           coin: symbol,
+          did: location.state.isUseDID,
         });
       } catch (e) {
         console.error(e);
