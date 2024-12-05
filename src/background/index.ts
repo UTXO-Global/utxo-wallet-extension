@@ -143,13 +143,26 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
 chrome.runtime.onMessage.addListener((message) => {
   (async () => {
-    if (message.action === "openSidePanel" && tabActiveInfo) {
-      chrome.sidePanel.setOptions({
-        tabId: tabActiveInfo.tabId,
-        path: "index.html",
-        enabled: true,
-      });
-      await chrome.sidePanel.open(tabActiveInfo);
+    if (message.type === "sidePanel" && tabActiveInfo) {
+      if (message.action === "open") {
+        chrome.sidePanel.setOptions({
+          tabId: tabActiveInfo.tabId,
+          path: "index.html",
+          enabled: true,
+        });
+        await chrome.sidePanel.open(tabActiveInfo);
+      } else {
+        chrome.sidePanel.setOptions({
+          tabId: tabActiveInfo.tabId,
+          enabled: false,
+        });
+      }
     }
   })();
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.sidePanel.setOptions({
+    enabled: false,
+  });
 });

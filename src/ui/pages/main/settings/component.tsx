@@ -21,6 +21,7 @@ import {
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
+import { useMemo } from "react";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -36,8 +37,19 @@ const Settings = () => {
     });
   };
 
-  const panelView = async () => {
-    chrome.runtime.sendMessage({ action: "openSidePanel" });
+  const isPanelView = useMemo(() => {
+    return window.innerWidth > 350;
+  }, [window.innerWidth]);
+
+  const triggerPanelView = async () => {
+    chrome.runtime.sendMessage({
+      type: "sidePanel",
+      action: isPanelView ? "disable" : "open",
+    });
+    console.log({
+      type: "sidePanel",
+      action: isPanelView ? "disable" : "open",
+    });
     window.close();
   };
 
@@ -85,8 +97,8 @@ const Settings = () => {
     },
     {
       icon: <DeviceTabletIcon className={ICON_CN} />,
-      label: "Side Panel",
-      onClick: panelView,
+      label: isPanelView ? "Popup" : "Side Panel",
+      onClick: triggerPanelView,
       gaLabel: "side_panel",
     },
   ];
