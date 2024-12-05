@@ -11,6 +11,7 @@ import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import {
   CkbTipBlockResponse,
   CkbTransactionResponse,
+  rgpTxToITransactions,
   toITransactions,
 } from "@/shared/networks/ckb/types";
 import { fetchEsplora } from "@/shared/utils";
@@ -22,7 +23,7 @@ import {
   RgbppTx,
   RgbppXudtBalance,
 } from "@/shared/interfaces/rgbpp";
-import { NetworkData } from "@/shared/networks/types";
+import { NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { udtDataToDecimal } from "../utils";
 
 export interface IApiController {
@@ -82,6 +83,11 @@ export interface IApiController {
     network?: NetworkData
   ): Promise<RgbppXudtBalance[]>;
   getRgbppTxs(typeScript: string): Promise<RgbppTx[]>;
+  getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined>;
   getRgbppAssets(typeScript: string, address: string): Promise<RgbppAsset[]>;
 }
 
@@ -454,6 +460,40 @@ class ApiController implements IApiController {
         },
       });
       txs.push(...response.txs);
+    }
+    return txs;
+  }
+
+  async getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined> {
+    const txs: ITransaction[] = [];
+    const ckbNetworkSlug: NetworkSlug =
+      storageService.currentNetwork === "btc" ? "nervos" : "nervos_testnet";
+    const networkData = getNetworkDataBySlug(ckbNetworkSlug);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      let apiURL = `${networkData.esploraUrl}/address_transactions/${account.address}?page=1&page_size=25`;
+      if (!!typeHash) {
+        apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${account.address}`;
+      }
+
+      const res = await fetchEsplora<CkbTransactionResponse>({
+        path: apiURL,
+        headers: {
+          "content-type": "application/vnd.api+json",
+          accept: "application/vnd.api+json",
+        },
+      });
+      txs.push(
+        ...rgpTxToITransactions(res).map((z) => ({
+          ...z,
+          address: account.address,
+        }))
+      );
     }
     return txs;
   }

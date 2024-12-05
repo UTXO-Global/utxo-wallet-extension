@@ -53,6 +53,7 @@ import UTXOReviewOrder from "./main/swap/review-order/component";
 import UTXOFinalSwap from "./main/swap/success";
 import CreateSendRgbpp from "./main/rgbpp-detail/rgbpp-create-send";
 import ConfirmSendRgbpp from "./main/rgbpp-detail/rgbpp-confirm-send";
+import RgbppTransactionInfo from "./main/rgbpp-detail/rgbpp-transaction-info";
 
 export const guestRouter = createHashRouter([
   {
@@ -110,6 +111,10 @@ export const authenticatedRouter = createHashRouter([
       {
         path: "rgbpp/:typeHash",
         element: <RgbppDetail />,
+      },
+      {
+        path: "rgbpp/transaction-info/:txId",
+        element: <RgbppTransactionInfo />,
       },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },

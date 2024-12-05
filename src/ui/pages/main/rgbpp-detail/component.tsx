@@ -20,7 +20,6 @@ import DOMPurify from "dompurify";
 import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
 import { BTC_LIVENET } from "@/shared/networks/btc";
 import RgbppTxList from "./rgbpp-tx-list";
-import { calculateScriptPack, toHexString } from "@/background/utils";
 
 const RgbppDetail = () => {
   const { typeHash } = useParams();
@@ -40,19 +39,6 @@ const RgbppDetail = () => {
     }
     return 0;
   }, [location]);
-
-  const typeScriptString = useMemo(() => {
-    if (tokenInfo) {
-      const { code_hash, hash_type, args } = tokenInfo.attributes.type_script;
-      return toHexString(
-        calculateScriptPack({
-          codeHash: code_hash,
-          hashType: hash_type as any,
-          args: args,
-        })
-      );
-    }
-  }, [tokenInfo?.id]);
 
   const getToken = useCallback(async () => {
     if (isLoading) return;
@@ -248,10 +234,7 @@ const RgbppDetail = () => {
               </div>
             ))}
           </div>
-          <RgbppTxList
-            className="mt-4 mb-4 !px-0 !z-5"
-            typeScriptString={typeScriptString}
-          />
+          <RgbppTxList className="mt-4 mb-4 !px-0 !z-5" typeHash={typeHash} />
         </div>
         <ReceiveAddress
           active={isShowReceive}

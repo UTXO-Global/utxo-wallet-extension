@@ -17,20 +17,19 @@ import Loading from "react-loading";
 import ShortBalance from "@/ui/components/ShortBalance";
 import NoTxIcon from "./NoTxIcon";
 import IcnTxReceive from "./IcnTxReceive";
-import { RgbppTx } from "@/shared/interfaces/rgbpp";
+import { ITransaction } from "@/shared/interfaces/api";
 
+type TxType = { key: string; title: string; data: ITransaction[] };
 const RgbppTxList = ({
   className,
-  typeScriptString,
+  typeHash,
 }: {
   className?: string;
-  typeScriptString: string;
+  typeHash: string;
 }) => {
   const [loading, setLoading] = useState(true);
-  const [lastBlock, setLastBlock] = useState(0);
-  const [transactions, setTransactions] = useState<RgbppTx[]>([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const { ref } = useInView();
-  const currentNetwork = useGetCurrentNetwork();
   const { apiController } = useControllersState((v) => ({
     apiController: v.apiController,
   }));
@@ -38,7 +37,6 @@ const RgbppTxList = ({
   useEffect(() => {
     const f = async () => {
       const block = await apiController.getLastBlock();
-      setLastBlock(block);
     };
 
     f().catch((e) => {
@@ -49,7 +47,9 @@ const RgbppTxList = ({
   useEffect(() => {
     setLoading(true);
     apiController
-      .getRgbppTxs(typeScriptString)
+      .getRgbppTxsFromExplorer({
+        typeHash,
+      })
       .then((txs) => {
         setTransactions(txs);
         setLoading(false);
@@ -58,7 +58,7 @@ const RgbppTxList = ({
         setLoading(false);
         console.error(e);
       });
-  }, [typeScriptString]);
+  }, [typeHash]);
 
   if (!Array.isArray(transactions)) {
     return (
@@ -66,40 +66,44 @@ const RgbppTxList = ({
     );
   }
 
-  const txes: { key: string; title: string; data: any[] }[] = useMemo(() => {
-    const txesMap = transactions.reduce((acc, item) => {
-      let date = "unconfirmation";
-      if (item.btcTx.status.confirmed) {
-        let blockTime = item.btcTx.status.block_time;
-        if (blockTime.toString().length <= 10) {
-          blockTime = blockTime * 1000;
+  const txes = useMemo(() => {
+    const txesMap: { [key: string]: TxType } = transactions.reduce(
+      (acc, item) => {
+        let date = "unconfirmation";
+        if (item.status.confirmed) {
+          let blockTime = item.status.block_time;
+          if (blockTime.toString().length <= 10) {
+            blockTime = blockTime * 1000;
+          }
+          const d = new Date(blockTime);
+          date = d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
         }
-        const d = new Date(blockTime);
-        date = d.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-      }
 
-      if (!acc[date]) {
-        acc[date] = {
-          key: date,
-          title: date === "unconfirmation" ? "Waiting for Confirmation" : date,
-          data: [],
-        };
-      }
+        if (!acc[date]) {
+          acc[date] = {
+            key: date,
+            title:
+              date === "unconfirmation" ? "Waiting for Confirmation" : date,
+            data: [],
+          };
+        }
 
-      acc[date].data.push(item.btcTx);
-      return acc;
-    }, {} as any);
+        acc[date].data.push(item);
+        return acc;
+      },
+      {}
+    );
 
     const unconfirmation = txesMap["unconfirmation"];
     delete txesMap["unconfirmation"];
 
     const results = Object.keys(txesMap)
       .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-      .reduce((acc, key) => {
+      .reduce((acc: TxType[], key) => {
         acc.push({ ...txesMap[key] });
         return acc;
       }, []);
@@ -176,23 +180,19 @@ const RgbppTxList = ({
                     {item.data.map((t, index) => {
                       const isReceived = isIncomeTx(t, t.address);
                       let amount = "",
-                        symbol = currentNetwork.coinSymbol;
-                      if (isTxToken(t)) {
-                        const v = getTransactionTokenValue(t, t.address);
-                        amount = v.amount.toString();
-                        symbol = v.symbol;
-                      } else {
-                        amount = getTransactionValue(t, t.address, 5);
-                      }
+                        symbol = "";
+                      const v = getTransactionTokenValue(t, t.address);
+
+                      amount = v.amount.toString();
+                      symbol = v.symbol;
 
                       return (
                         <Link
                           className={s.transaction}
                           key={index}
-                          to={`/pages/transaction-info/${t.txid}`}
+                          to={`/pages/rgbpp/transaction-info/${t.txid}`}
                           state={{
                             transaction: t,
-                            lastBlock,
                           }}
                         >
                           <div className="flex gap-2 items-center justify-between">
@@ -233,7 +233,7 @@ const RgbppTxList = ({
                               />
                             </span>
                             <span className="text-primary flex-1">
-                              {`${symbol || currentNetwork.coinSymbol}`}
+                              {symbol}
                             </span>
                           </div>
                         </Link>
