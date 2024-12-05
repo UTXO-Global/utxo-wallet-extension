@@ -9,6 +9,7 @@ import {
   isBitcoinNetwork,
   AGGRON4,
   LINA,
+  isDogecoinNetwork,
 } from "../networks";
 import { AddressType, NetworkSlug } from "../networks/types";
 import { formatNumber } from ".";
@@ -195,7 +196,7 @@ export const getScriptForAddress = (
   networkSlug: NetworkSlug
 ) => {
   const network = getNetworkDataBySlug(networkSlug).network;
-  if (isBitcoinNetwork(network)) {
+  if (isBitcoinNetwork(network) || isDogecoinNetwork(network)) {
     switch (addressType) {
       case AddressType.P2WPKH:
         return payments.p2wpkh({

@@ -71,7 +71,7 @@ class BIP322 {
       script: scriptPublicKey, // vout[0].scriptPubKey = message_challenge
     });
     // Return transaction
-    return psbt.extractTransaction();
+    return psbt.extractTransaction(true);
   }
 
   /**
