@@ -1,4 +1,8 @@
-import type { Hex, SendBtcCoin } from "@/background/services/keyring/types";
+import type {
+  Hex,
+  SendBtcCoin,
+  SendCkbCoin,
+} from "@/background/services/keyring/types";
 import { ApiUTXO } from "@/shared/interfaces/api";
 import {
   isBitcoinNetwork,
@@ -10,7 +14,7 @@ import {
   getScriptForAddress,
   tidoshisToAmount,
 } from "@/shared/utils/transactions";
-import { BI } from "@ckb-lumos/lumos";
+import { BI, Cell, commons, helpers } from "@ckb-lumos/lumos";
 import { Network, Psbt } from "bitcoinjs-lib";
 import { t } from "i18next";
 import { useCallback } from "react";
@@ -26,6 +30,13 @@ import { formatNumber } from "@/shared/utils";
 import { createSendBtc } from "@/background/services/keyring/ord-utils";
 import { HDOneKeyOptions } from "@/background/services/keyring/ckbhdw/hd/types";
 import { useOneKey } from "../components/onekey/hook";
+import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
+import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
+import {
+  bytesToHex,
+  serializeRawTransaction,
+} from "@nervosnetwork/ckb-sdk-utils";
+import { blockchain } from "@ckb-lumos/base";
 
 export function useCreateOnekeyTxCallback() {
   const onekeySdk = useOneKey();
@@ -61,7 +72,7 @@ export function useCreateOnekeyTxCallback() {
     }
   }, []);
 
-  const _sendCoin = useCallback(
+  const _sendBtcCoin = useCallback(
     async (data: SendBtcCoin): Promise<string> => {
       const utxos = data.utxos.map((v) => {
         const _account = currentAccount.accounts.find(
@@ -100,6 +111,128 @@ export function useCreateOnekeyTxCallback() {
       // @ts-ignore We are really dont know what is it but we still copy working code
       psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
       return psbt.toHex();
+    },
+    [currentNetwork, currentAccount]
+  );
+
+  const _sendCkbCoin = useCallback(
+    async (data: SendCkbCoin): Promise<string> => {
+      const ckbAccount = currentAccount.accounts[0];
+      // additional 0.001 ckb for tx fee
+      // the tx fee could calculated by tx size
+      // TODO: this is just a simple example
+      const neededCapacity = BI.from(data.amount).add(100000);
+
+      let txSkeleton = helpers.TransactionSkeleton({});
+      const fromScript = helpers.parseAddress(ckbAccount.address, {
+        config: (network as NetworkConfig).lumosConfig,
+      });
+
+      const toScript = helpers.parseAddress(data.to, {
+        config: (network as NetworkConfig).lumosConfig,
+      });
+
+      const minCapacity = MIN_CAPACITY(toScript);
+      let capacityChangeOutput = BI.from(0);
+
+      // TODO: add smart selector
+      const collected: Cell[] = [];
+      let collectedSum = BI.from(0);
+      for (const cell of (data as SendCkbCoin).cells) {
+        if (!cell.cellOutput.type) {
+          collectedSum = collectedSum.add(cell.cellOutput.capacity);
+          collected.push(cell);
+        }
+
+        capacityChangeOutput = collectedSum.sub(neededCapacity);
+        if (
+          collectedSum.gte(neededCapacity) &&
+          (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
+        )
+          break;
+      }
+
+      if (capacityChangeOutput.gt(0) && capacityChangeOutput.lt(minCapacity)) {
+        throw new Error(
+          `The remaining balance in your wallet must be greater than ${(
+            minCapacity.toNumber() /
+            10 ** 8
+          ).toString()} CKB. Please adjust your transaction amount or add more CKB to proceed (${capacityChangeOutput})`
+        );
+      }
+
+      const changeOutput: Cell = {
+        cellOutput: {
+          capacity: capacityChangeOutput.toHexString(),
+          lock: fromScript,
+        },
+        data: "0x",
+      };
+
+      const transferOutput: Cell = {
+        cellOutput: {
+          capacity: BI.from(data.amount).toHexString(),
+          lock: toScript,
+        },
+        data: "0x",
+      };
+
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.push(...collected)
+      );
+      if (collectedSum.sub(neededCapacity).eq(BI.from(0))) {
+        txSkeleton = txSkeleton.update("outputs", (outputs) =>
+          outputs.push(transferOutput)
+        );
+      } else {
+        txSkeleton = txSkeleton.update("outputs", (outputs) =>
+          outputs.push(transferOutput, changeOutput)
+        );
+      }
+
+      txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+        cellDeps.push({
+          outPoint: {
+            txHash: ((network as NetworkConfig).lumosConfig.SCRIPTS as any)
+              .SECP256K1_BLAKE160.TX_HASH,
+            index: ((network as NetworkConfig).lumosConfig.SCRIPTS as any)
+              .SECP256K1_BLAKE160.INDEX,
+          },
+          depType: ((network as NetworkConfig).lumosConfig.SCRIPTS as any)
+            .SECP256K1_BLAKE160.DEP_TYPE,
+        })
+      );
+
+      txSkeleton = prepareWitnesses(txSkeleton, fromScript);
+      txSkeleton = commons.common.prepareSigningEntries(txSkeleton);
+
+      const { connectId, deviceId }: HDOneKeyOptions = JSON.parse(
+        await keyringController.exportPublicKey("")
+      );
+      const witnessHex = txSkeleton.witnesses.get(0);
+      const dtx = helpers.createTransactionFromSkeleton(txSkeleton);
+      const serialize = blockchain.RawTransaction.pack(dtx);
+      const rawTx = bytesToHex(serialize);
+
+      const signCkbRes = await onekeySdk.nervosSignTransaction(
+        connectId,
+        deviceId,
+        {
+          path: ckbAccount.hdPath,
+          network: currentNetwork.slug === "nervos" ? "ckb" : "ckt",
+          rawTx,
+          witnessHex,
+        }
+      );
+
+      if (signCkbRes.success) {
+        const tx = helpers.sealTransaction(txSkeleton, [
+          "0x" + signCkbRes.payload.signature,
+        ]);
+        return JSON.stringify(tx);
+      } else {
+        throw Error("sign ckb tx failed");
+      }
     },
     [currentNetwork, currentAccount]
   );
@@ -149,7 +282,7 @@ export function useCreateOnekeyTxCallback() {
       );
     }
 
-    const tx = await keyringController.sendCoin({
+    const tx = await _sendCkbCoin({
       to: toAddress,
       amount: amount,
       cells,
@@ -230,7 +363,7 @@ export function useCreateOnekeyTxCallback() {
             )}`
           );
         }
-        const psbtHex = await _sendCoin({
+        const psbtHex = await _sendBtcCoin({
           to: toAddress,
           amount: toAmount,
           utxos: totalUtxos,
