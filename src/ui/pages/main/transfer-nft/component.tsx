@@ -78,6 +78,17 @@ export default function TransferNFT() {
     return true;
   }, [formData]);
 
+  const onChangeAddressInput = useCallback(
+    (v) =>
+      setFormData((p) => ({
+        ...p,
+        address: v.value,
+        isUseDID: v.isUseDID,
+      })),
+
+    [setFormData]
+  );
+
   const createTransaction = async () => {
     try {
       if (!formData.address) {
@@ -172,15 +183,7 @@ export default function TransferNFT() {
                   </span>
                   <AddressInput
                     address={formData.address}
-                    onChange={useCallback(
-                      (v) =>
-                        setFormData((p) => ({
-                          ...p,
-                          address: v.value,
-                          isUseDID: v.isUseDID,
-                        })),
-                      [setFormData]
-                    )}
+                    onChange={onChangeAddressInput}
                     onOpenModal={() => setOpenModal(true)}
                     className="!bg-grey-300"
                   />
