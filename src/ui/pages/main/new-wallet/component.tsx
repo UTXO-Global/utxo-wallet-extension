@@ -29,7 +29,7 @@ const NewWallet = () => {
     {
       icon: <GlobeAltIcon className={ICON_CN} />,
       label: t("new_wallet.connect_onekey_hardware"),
-      link: "index.html#/hware/onekey/connect",
+      link: "/hware/onekey/connect",
       gaLabel: "connect onekey hardware",
       btnType: "primary",
     },

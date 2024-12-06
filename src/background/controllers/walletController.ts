@@ -81,6 +81,9 @@ export function getNewGAccountIndex(
   network: NetworkSlug
 ): number {
   const _accounts = accounts.filter((z) => z.network === network);
+  if (_accounts.length === 0) {
+    return 0;
+  }
   const _lastIndex = getIndexFromHdPath(
     _accounts[_accounts.length - 1].accounts[0].hdPath
   );

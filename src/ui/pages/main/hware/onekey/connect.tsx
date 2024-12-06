@@ -1,13 +1,7 @@
 import WalletPanel from "../../wallet/wallet-panel";
 import BottomPanel from "../../wallet/bottom-panel";
 import { useCallback, useEffect, useState } from "react";
-import {
-  UI_EVENT,
-  UI_RESPONSE,
-  UI_REQUEST,
-  CoreMessage,
-  SearchDevice,
-} from "@onekeyfe/hd-core";
+import { SearchDevice } from "@onekeyfe/hd-core";
 import { useCreateNewWallet } from "@/ui/hooks/wallet";
 import { HDOneKeyOptions } from "@/background/services/keyring/ckbhdw/hd/types";
 import { useNavigate } from "react-router-dom";
@@ -60,35 +54,6 @@ export default function OneKeyConnect() {
         searchDevices();
       }
     });
-
-    HardwareSDK.on(UI_EVENT, (message: CoreMessage) => {
-      console.log({ message });
-      // Handle the PIN code input event
-      if (message.type === UI_REQUEST.REQUEST_PIN) {
-        // Enter the PIN code on the device
-        HardwareSDK.uiResponse({
-          type: UI_RESPONSE.RECEIVE_PIN,
-          payload: "@@ONEKEY_INPUT_PIN_IN_DEVICE",
-        });
-      }
-
-      // Handle the passphrase event
-      if (message.type === UI_REQUEST.REQUEST_PASSPHRASE) {
-        // Enter the passphrase on the device
-        HardwareSDK.uiResponse({
-          type: UI_RESPONSE.RECEIVE_PASSPHRASE,
-          payload: {
-            value: "",
-            passphraseOnDevice: true,
-            save: false,
-          },
-        });
-      }
-
-      if (message.type === UI_REQUEST.REQUEST_BUTTON) {
-        // Confirmation is required on the device, a UI prompt can be displayed
-      }
-    });
   }, []);
 
   const searchDevices = useCallback(async () => {
@@ -130,25 +95,25 @@ export default function OneKeyConnect() {
                     <table className="border-collapse table-auto w-full text-sm">
                       <thead>
                         <tr>
-                          <th className="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                          <th className="border-b font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 text-left">
                             Name
                           </th>
-                          <th className="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                          <th className="border-b font-medium p-4 pt-0 pb-3 text-slate-400 text-left">
                             Device ID
                           </th>
-                          <th className="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left"></th>
+                          <th className="border-b font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 text-left"></th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-slate-800">
+                      <tbody className="bg-white">
                         {devices.map((device) => (
                           <tr key={device.uuid}>
-                            <td className="text-left border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                            <td className="text-left border-b border-slate-100 p-4 pl-8 text-slate-500 ">
                               {device.name}
                             </td>
-                            <td className="text-left border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">
+                            <td className="text-left border-b border-slate-100 p-4 text-slate-500 ">
                               {device.deviceId}
                             </td>
-                            <td className="text-left border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-500 dark:text-slate-400">
+                            <td className="text-left border-b border-slate-100 p-4 pr-8 text-slate-500 ">
                               <button
                                 className="btn primary"
                                 onClick={() =>

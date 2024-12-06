@@ -39,12 +39,14 @@ const Wallet = () => {
 
   const trackWalletActive = useCallback(() => {
     try {
-      // NOTE: [GA] - track wallet active
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Analytics.fireEvent("wallet_active", {
-        address: currentAccount.accounts[0].address,
-        network: currentNetwork.slug,
-      });
+      if (currentAccount && currentAccount.accounts[0]) {
+        // NOTE: [GA] - track wallet active
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        Analytics.fireEvent("wallet_active", {
+          address: currentAccount.accounts[0].address,
+          network: currentNetwork.slug,
+        });
+      }
     } catch (e) {
       console.error(e);
     }

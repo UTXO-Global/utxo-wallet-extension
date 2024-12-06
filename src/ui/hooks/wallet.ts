@@ -156,7 +156,7 @@ export const useSwitchWallet = () => {
         const networkGroupAccounts = wallet.accounts.filter(
           (account) => account.network === network.slug
         );
-        if (networkGroupAccounts.length === 0) {
+        if (networkGroupAccounts.length === 0 && wallet.type !== "onekey") {
           // this wallet doesn't have any account match with this network
           // need initialize
           const networkGroupAccount =
@@ -176,7 +176,11 @@ export const useSwitchWallet = () => {
         await updateWalletState({
           selectedWallet: wallet.id,
           wallets: wallets.with(key, wallet),
-          selectedAccount: accKey ?? networkGroupAccounts[0].id,
+          selectedAccount:
+            accKey ??
+            (networkGroupAccounts.length > 0
+              ? networkGroupAccounts[0].id
+              : undefined),
         });
         await notificationController.changedAccount();
         resetTransactions();
@@ -354,7 +358,7 @@ export const useSwitchNetwork = () => {
   return useCallback(
     async (slug: NetworkSlug) => {
       const _wallets: IWallet[] = [];
-      let selectedAccount = currentAccount.id;
+      let selectedAccount = currentAccount?.id;
 
       for (const wallet of wallets) {
         if (wallet.id !== currentWallet.id) {
@@ -366,7 +370,7 @@ export const useSwitchNetwork = () => {
           (account) => slug === account.network
         );
 
-        if (networkGroupAccounts.length === 0) {
+        if (networkGroupAccounts.length === 0 && wallet.type !== "onekey") {
           // this wallet doesn't have any account match with this network
           // need initialize
           let _otherNetworkGroupAccounts: IGroupAccount[] = [];
@@ -405,7 +409,11 @@ export const useSwitchNetwork = () => {
           if (
             !networkGroupAccounts.map((c) => c.id).includes(selectedAccount)
           ) {
-            selectedAccount = networkGroupAccounts[0].id;
+            if (wallet.type === "onekey" && networkGroupAccounts.length === 0) {
+              selectedAccount = undefined;
+            } else {
+              selectedAccount = networkGroupAccounts[0].id;
+            }
           }
         }
 
