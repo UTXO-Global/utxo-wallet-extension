@@ -15,4 +15,5 @@ export interface IAccount {
   network: NetworkSlug;
   hdPath: string;
   address?: string;
+  publicKey?: string;
 }

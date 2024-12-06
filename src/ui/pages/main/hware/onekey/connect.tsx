@@ -8,11 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { useWalletState } from "@/ui/states/walletState";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
-import HdWebSdk from "@onekeyfe/hd-web-sdk";
-
-const { HardwareWebSdk: HardwareSDK } = HdWebSdk;
+import { useOneKey } from "@/ui/components/onekey/hook";
 
 export default function OneKeyConnect() {
+  const onekeySdk = useOneKey();
   const [devices, setDevices] = useState<SearchDevice[]>([]);
   const createNewWallet = useCreateNewWallet();
   const navigate = useNavigate();
@@ -45,20 +44,12 @@ export default function OneKeyConnect() {
   };
 
   useEffect(() => {
-    HardwareSDK.init({
-      debug: true,
-      fetchConfig: false,
-      connectSrc: "https://jssdk.onekey.so/0.3.38/",
-    }).then((success) => {
-      if (success) {
-        searchDevices();
-      }
-    });
+    searchDevices();
   }, []);
 
   const searchDevices = useCallback(async () => {
     setLoading(true);
-    const searchDeviceResponse = await HardwareSDK.searchDevices();
+    const searchDeviceResponse = await onekeySdk.searchDevices();
     if (
       searchDeviceResponse.success &&
       searchDeviceResponse.payload.length > 0

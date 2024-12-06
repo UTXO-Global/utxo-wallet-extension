@@ -48,10 +48,13 @@ export default function PagesLayout() {
         route: "/pages/switch-account",
         title: t("components.layout.switch_account"),
         action:
-          currentWallet && currentWallet.type === "root"
+          currentWallet && ["root", "onekey"].includes(currentWallet.type)
             ? {
                 icon: <IcnPlusCircle className="w-6 h-6" />,
-                link: "/pages/create-new-account",
+                link:
+                  currentWallet.type === "root"
+                    ? "/pages/create-new-account"
+                    : "/hware/onekey/create-new-account",
               }
             : undefined,
       },
