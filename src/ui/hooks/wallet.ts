@@ -410,12 +410,13 @@ export const useSwitchNetwork = () => {
             !networkGroupAccounts.map((c) => c.id).includes(selectedAccount)
           ) {
             if (wallet.type === "onekey" && networkGroupAccounts.length === 0) {
-              selectedAccount = undefined;
+              selectedAccount = null;
             } else {
               selectedAccount = networkGroupAccounts[0].id;
             }
           }
         }
+        console.log({ networkGroupAccounts, slug, selectedAccount });
 
         _wallets.push({
           ...wallet,

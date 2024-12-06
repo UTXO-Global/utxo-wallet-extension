@@ -105,8 +105,7 @@ class StorageService {
       const cache: StorageInterface["cache"] = {
         ...localState.cache,
       };
-      if (state.selectedAccount !== undefined)
-        cache.selectedAccount = state.selectedAccount;
+      cache.selectedAccount = state.selectedAccount;
       if (state.selectedWallet !== undefined)
         cache.selectedWallet = state.selectedWallet;
       if (state.selectedNetwork !== undefined)

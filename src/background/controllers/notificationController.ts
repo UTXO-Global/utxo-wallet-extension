@@ -39,7 +39,9 @@ class NotificationController implements INotificationController {
   async changedAccount(): Promise<void> {
     sessionService.broadcastEvent(
       "accountsChanged",
-      storageService.currentAccount.accounts.map((item) => item.address)
+      storageService.currentAccount
+        ? storageService.currentAccount.accounts.map((item) => item.address)
+        : []
     );
   }
 
