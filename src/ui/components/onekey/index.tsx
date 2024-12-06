@@ -46,7 +46,7 @@ export default function OneKeyProvider({
       .init({
         debug: true,
         fetchConfig: false,
-        connectSrc: "https://jssdk.onekey.so/0.3.38/",
+        connectSrc: "https://jssdk.onekey.so/1.0.16-alpha.0/",
       })
       .then((success) => {
         if (success) {

@@ -43,14 +43,15 @@ export function useCreateOnekeyTxCallback() {
     keyringController: v.keyringController,
   }));
 
-  const _signPsbt = async (psbt: Psbt): Promise<void> => {
+  const _signPsbt = useCallback(async (psbt: Psbt): Promise<void> => {
     const { connectId, deviceId }: HDOneKeyOptions = JSON.parse(
       await keyringController.exportPublicKey("")
     );
 
-    await onekeySdk.checkFirmwareRelease(connectId);
+    // TODO: fix - Failure_DataError,invalid psbt, taproot path is missing
     const signPsbtRes = await onekeySdk.btcSignPsbt(connectId, deviceId, {
       psbt: psbt.toHex(),
+      coin: slug === "btc" ? "BTC" : "TEST",
     });
 
     if (signPsbtRes.success) {
@@ -58,47 +59,50 @@ export function useCreateOnekeyTxCallback() {
     } else {
       throw Error("sign psbt failed");
     }
-  };
+  }, []);
 
-  const _sendCoin = async (data: SendBtcCoin): Promise<string> => {
-    const utxos = data.utxos.map((v) => {
-      const _account = currentAccount.accounts.find(
-        (acc) => acc.address === v.address
-      );
-      return {
-        txId: v.txid,
-        outputIndex: v.vout,
-        satoshis: v.value,
-        scriptPk: getScriptForAddress(
-          new Uint8Array(Buffer.from(_account.publicKey, "hex")),
-          _account.addressType.value,
-          slug
-        ).toString("hex"),
-        addressType: _account.addressType.value,
-        address: v.address,
-        ords: [],
-      };
-    });
+  const _sendCoin = useCallback(
+    async (data: SendBtcCoin): Promise<string> => {
+      const utxos = data.utxos.map((v) => {
+        const _account = currentAccount.accounts.find(
+          (acc) => acc.address === v.address
+        );
+        return {
+          txId: v.txid,
+          outputIndex: v.vout,
+          satoshis: v.value,
+          scriptPk: getScriptForAddress(
+            new Uint8Array(Buffer.from(_account.publicKey, "hex")),
+            _account.addressType.value,
+            slug
+          ).toString("hex"),
+          addressType: _account.addressType.value,
+          address: v.address,
+          ords: [],
+        };
+      });
 
-    const psbt = await createSendBtc({
-      utxos,
-      toAddress: data.to,
-      toAmount: data.amount,
-      signTransaction: _signPsbt,
-      network: currentNetwork.network as Network,
-      // default change address is first account in group account (usually legacy)
-      changeAddress: currentAccount.accounts[0].address,
-      receiverToPayFee: data.receiverToPayFee,
-      pubkey: currentAccount.accounts[0].publicKey,
-      feeRate: data.feeRate,
-      enableRBF: false,
-    });
+      const psbt = await createSendBtc({
+        utxos,
+        toAddress: data.to,
+        toAmount: data.amount,
+        signTransaction: _signPsbt,
+        network: currentNetwork.network as Network,
+        // default change address is first account in group account (usually legacy)
+        changeAddress: currentAccount.accounts[0].address,
+        receiverToPayFee: data.receiverToPayFee,
+        pubkey: currentAccount.accounts[0].publicKey,
+        feeRate: data.feeRate,
+        enableRBF: false,
+      });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore We are really dont know what is it but we still copy working code
-    psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
-    return psbt.toHex();
-  };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore We are really dont know what is it but we still copy working code
+      psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
+      return psbt.toHex();
+    },
+    [currentNetwork, currentAccount]
+  );
 
   const ckbSendNativeCoin = async (
     toAddress: Hex,
