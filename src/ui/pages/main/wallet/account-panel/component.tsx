@@ -195,8 +195,10 @@ const AccountPanel = () => {
                   onClick={() => {
                     if (!!nav.isExternal) {
                       browser.tabs.create({ url: nav.navPath });
+                      return;
                     } else if (nav.isPopup) {
                       setIsShowReceive(true);
+                      return;
                     } else if (
                       currentAccount?.balance === undefined &&
                       nav.navPath === "/pages/create-send"
