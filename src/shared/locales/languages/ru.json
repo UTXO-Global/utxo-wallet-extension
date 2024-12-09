@@ -7,7 +7,8 @@
     "send": "Отправить",
     "your_balance": "Ваш баланс",
     "available_balance": "Доступный остаток",
-    "occupied_balance": "Занятый баланс"
+    "occupied_balance": "Занятый баланс",
+    "multisig": "Multi-sig"
   },
   "settings": {
     "language": "Язык",

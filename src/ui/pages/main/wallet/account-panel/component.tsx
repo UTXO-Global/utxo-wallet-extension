@@ -10,11 +10,17 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
-import { IcnSend, IcnReceive } from "@/ui/components/icons";
+import {
+  IcnSend,
+  IcnReceive,
+  IcnSwap,
+  IcnMultisig,
+} from "@/ui/components/icons";
 import cn from "classnames";
 import { isCkbNetwork, isDogecoinNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
+import browser from "@/shared/utils/browser";
 
 const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
@@ -62,6 +68,21 @@ const AccountPanel = () => {
         navLabel: "send",
         icon: <IcnSend />,
         title: t("wallet_page.send"),
+      },
+      {
+        navPath: "https://safe.utxo.global/",
+        navName: "pf_multi_sig",
+        isExternal: true,
+        navLabel: "multisig",
+        icon: <IcnMultisig />,
+        title: t("wallet_page.multisig"),
+      },
+      {
+        navPath: "/swap",
+        navName: "pg_swap",
+        navLabel: "swap",
+        icon: <IcnSwap />,
+        title: t("wallet_page.swap"),
       },
     ];
     return navs;
@@ -164,7 +185,7 @@ const AccountPanel = () => {
                 <div
                   key={`panel-account-nav-${i}`}
                   className={cn(
-                    `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
+                    `py-3 px-2 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
                     {
                       "!cursor-not-allowed hover:!bg-grey-300":
                         currentAccount?.balance === undefined &&
@@ -172,20 +193,22 @@ const AccountPanel = () => {
                     }
                   )}
                   onClick={() => {
-                    if (nav.isPopup) {
+                    if (!!nav.isExternal) {
+                      browser.tabs.create({ url: nav.navPath });
+                    } else if (nav.isPopup) {
                       setIsShowReceive(true);
-                    } else {
-                      if (
-                        currentAccount?.balance === undefined &&
-                        nav.navPath === "/pages/create-send"
-                      )
-                        return;
-                      navigate(nav.navPath);
+                    } else if (
+                      currentAccount?.balance === undefined &&
+                      nav.navPath === "/pages/create-send"
+                    ) {
+                      return;
                     }
+
+                    navigate(nav.navPath);
                   }}
                 >
                   {nav.icon}
-                  <p className="text-base font-medium">{nav.title}</p>
+                  <p className="text-sm font-medium">{nav.title}</p>
                 </div>
               ))}
             </div>

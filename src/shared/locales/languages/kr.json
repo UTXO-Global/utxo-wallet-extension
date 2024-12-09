@@ -7,7 +7,8 @@
     "send": "보내기",
     "your_balance": "귀하의 잔액",
     "available_balance": "사용 가능한 잔액",
-    "occupied_balance": "점유된 잔액"
+    "occupied_balance": "점유된 잔액",
+    "multisig": "Multi-sig"
   },
   "settings": {
     "language": "언어",
