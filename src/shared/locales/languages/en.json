@@ -13,7 +13,8 @@
     "buy": "Buy",
     "your_balance": "Your Balance",
     "available_balance": "Available balance",
-    "occupied_balance": "Occupied balance"
+    "occupied_balance": "Occupied balance",
+    "multisig": "Multi-sig"
   },
   "settings": {
     "language": "Language",
