@@ -4,6 +4,7 @@ import type { ApiUTXO } from "@/shared/interfaces/api";
 import { SignPsbtOptions } from "@/shared/interfaces/provider";
 import {
   btcTestnetSlug,
+  dogecoinTestnetSlug,
   getNetworkDataBySlug,
   isBitcoinNetwork,
   isCkbNetwork,
@@ -31,6 +32,7 @@ import {
 import { helpers } from "@ckb-lumos/lumos";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { ccc } from "@ckb-ccc/core";
+import { DOGECOIN_LIVENET, DOGECOIN_TESTNET } from "@/shared/networks/dogecoin";
 
 class ProviderController {
   connect = async () => {
@@ -80,6 +82,12 @@ class ProviderController {
               account.network ===
               (_network === "nervos" ? "nervos_testnet" : "nervos")
           );
+        } else if (["dogecoin", "dogecoin_testnet"].includes(_network)) {
+          _otherNetworkGroupAccounts = wallet.accounts.filter(
+            (account) =>
+              account.network ===
+              (_network === "dogecoin" ? "dogecoin_testnet" : "dogecoin")
+          );
         }
 
         const hdPathForNeuronWallet =
@@ -126,9 +134,11 @@ class ProviderController {
   @Reflect.metadata("INTERNAL", true)
   _switchChain = async (chainSlug: ChainSlug) => {
     const currentNetwork = storageService.currentNetwork;
-    const isTestnet = [...btcTestnetSlug, ...nervosTestnetSlug].includes(
-      currentNetwork
-    );
+    const isTestnet = [
+      ...btcTestnetSlug,
+      ...nervosTestnetSlug,
+      ...dogecoinTestnetSlug,
+    ].includes(currentNetwork);
 
     if (this._getCurrentChain() === chainSlug) {
       return chainSlug;
@@ -141,6 +151,9 @@ class ProviderController {
         break;
       case "nervos":
         network = isTestnet ? CKB_TESTNET : CKB_MAINNET;
+        break;
+      case "dogecoin":
+        network = isTestnet ? DOGECOIN_TESTNET : DOGECOIN_LIVENET;
     }
 
     if (network) {
@@ -527,6 +540,9 @@ class CKBProviderController extends ProviderController {
   };
 }
 
+class DogeCoinProviderController extends BTCProviderController {}
+
 export const ckbProviderController = new CKBProviderController();
 export const btcProviderController = new BTCProviderController();
+export const dogecoinProviderController = new DogeCoinProviderController();
 export default new ProviderController();

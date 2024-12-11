@@ -10,6 +10,7 @@ import { ethErrors } from "eth-rpc-errors";
 import providerController, {
   btcProviderController,
   ckbProviderController,
+  dogecoinProviderController,
 } from "./controller";
 
 const isSignApproval = (type: string) => {
@@ -38,6 +39,10 @@ const flowContext = flow
       case "ckb":
         ctx.providerController = ckbProviderController;
         ctx.providerController._switchChain("nervos");
+        break;
+      case "dogecoin":
+        ctx.providerController = dogecoinProviderController;
+        ctx.providerController._switchChain("dogecoin");
         break;
       default:
         ctx.providerController = providerController;
