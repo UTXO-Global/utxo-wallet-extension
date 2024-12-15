@@ -26,6 +26,7 @@ import type {
   HdPathUserToSignInput,
   Json,
   PublicKeyUserToSignInput,
+  RgbppTransferParams,
   SendBtcCoin,
   SendCkbCoin,
   SendCkbToken,
@@ -216,7 +217,9 @@ class KeyringService {
           outputIndex: v.vout,
           satoshis: v.value,
           scriptPk: getScriptForAddress(
-            Buffer.from(this.exportPublicKey(_account.hdPath), "hex"),
+            Uint8Array.from(
+              Buffer.from(this.exportPublicKey(_account.hdPath), "hex")
+            ),
             _account.addressType.value,
             networkSlug
           ).toString("hex"),
@@ -250,7 +253,6 @@ class KeyringService {
       // the tx fee could calculated by tx size
       // TODO: this is just a simple example
       const neededCapacity = BI.from(data.amount).add(100000);
-      console.log(data.amount, neededCapacity.toNumber());
 
       let txSkeleton = helpers.TransactionSkeleton({});
       const fromScript = helpers.parseAddress(ckbAccount.address, {
@@ -771,6 +773,26 @@ class KeyringService {
         }
       }
     }
+  }
+
+  async sendRgbppAsset(
+    btcPsbtHex: string,
+    toSignInputs?: UserToSignInput[]
+  ): Promise<string> {
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address)
+      throw new Error("Error when trying to get the current account");
+
+    // build psbt
+    const psbt = Psbt.fromHex(btcPsbtHex);
+
+    // sign psbt
+    this.signPsbt(psbt, toSignInputs);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore We are really dont know what is it but we still copy working code
+    psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
+    return psbt.toHex();
   }
 }
 
