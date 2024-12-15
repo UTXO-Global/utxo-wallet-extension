@@ -434,6 +434,9 @@ class KeyringService {
     let totalCapacity = BI.from(0);
     let capacityChangeOutput = BI.from(0);
     const xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
+    if (isAddressTypeJoy) {
+      neededCapacity = neededCapacity.add(joyCapacityAddMore);
+    }
 
     if (totalTokenBalance.lt(totalTokenBalanceNeeed)) {
       throw new Error(`${data.token.attributes.symbol} insufficient balance`);
