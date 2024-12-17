@@ -2,7 +2,6 @@ import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
-import Analytics from "@/ui/utils/gtm";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import { Popover } from "@headlessui/react";
 import { t } from "i18next";
@@ -13,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import s from "../styles.module.scss";
 import { IcnSend, IcnReceive } from "@/ui/components/icons";
 import cn from "classnames";
-import { isCkbNetwork } from "@/shared/networks";
+import { isCkbNetwork, isDogecoinNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
 
@@ -21,7 +20,7 @@ const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
   btc_testnet_4: "https://mempool.space/testnet4/faucet",
   btc_signet: "https://signetfaucet.com/",
-  dogecoin_testnet: "https://faucet.doge.toys",
+  dogecoin_testnet: "https://shibe.technology/",
 };
 
 const AccountPanel = () => {
@@ -45,16 +44,17 @@ const AccountPanel = () => {
 
   const panelNavs = useMemo(() => {
     const isCKB = isCkbNetwork(currentNetwork.network);
+    const isDogecoin = isDogecoinNetwork(currentNetwork.network);
     const navs = [
       {
         navPath: `/pages/receive/${
-          isCKB ? currentAccount.accounts[0].address : ""
+          isCKB || isDogecoin ? currentAccount.accounts[0].address : ""
         }`,
         navName: "pf_receive",
         navLabel: "receive",
         icon: <IcnReceive />,
         title: t("wallet_page.receive"),
-        isPopup: !isCKB,
+        isPopup: !(isCKB || isDogecoin),
       },
       {
         navPath: "/pages/create-send",
@@ -66,16 +66,6 @@ const AccountPanel = () => {
     ];
     return navs;
   }, [currentAccount.accounts, currentNetwork.network]);
-
-  const _navigate = (path: string, name: string, label: string) => {
-    // NOTE: [GA]
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Analytics.fireEvent(name, {
-      action: "click",
-      label,
-    });
-    navigate(path);
-  };
 
   const isCkbTestnet = useMemo(() => {
     return currentNetwork && currentNetwork.slug === "nervos_testnet";
@@ -122,6 +112,7 @@ const AccountPanel = () => {
               "btc_testnet_4",
               "btc_signet",
               "nervos_testnet",
+              "dogecoin_testnet",
             ].includes(currentNetwork.slug) ? (
               <p className="text-[#FF4545] text-center mt-2 !mb-3 text-lg font-normal">
                 {currentNetwork.name} activated.{" "}
@@ -189,7 +180,7 @@ const AccountPanel = () => {
                         nav.navPath === "/pages/create-send"
                       )
                         return;
-                      _navigate(nav.navPath, nav.navName, nav.navLabel);
+                      navigate(nav.navPath);
                     }
                   }}
                 >

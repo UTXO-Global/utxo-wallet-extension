@@ -4,17 +4,17 @@ import {
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Loading from "react-loading";
 import AccountPanel from "./account-panel";
 import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import { isBitcoinNetwork, isCkbNetwork } from "@/shared/networks";
+import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
-import MyDIDs from "./my-dids";
+import Analytics from "@/ui/utils/gtm";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -30,22 +30,22 @@ const Wallet = () => {
           key: "coins",
           label: "Coins",
         },
-        {
-          key: "myDids",
-          label: "My DIDs",
-        },
       ];
-    return [
-      {
-        key: "myDids",
-        label: "My DIDs",
-      },
-    ];
+    return [];
   }, [currentNetwork.network]);
 
-  useEffect(() => {
-    if (isBitcoinNetwork(currentNetwork.network)) setTab("myDids");
-  }, [currentNetwork.network]);
+  const trackWalletActive = useCallback(() => {
+    try {
+      // NOTE: [GA] - track wallet active
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      Analytics.fireEvent("wallet_active", {
+        address: currentAccount.accounts[0].address,
+        network: currentNetwork.slug,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   useEffect(() => {
     trottledUpdate();
@@ -54,6 +54,10 @@ const Wallet = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    trackWalletActive();
+  }, [trackWalletActive]);
 
   if (!currentAccount && !mounted) return <Loading color="#ODODOD" />;
 
@@ -83,8 +87,9 @@ const Wallet = () => {
             ))}
           </div>
         </div>
-        {tab === "coins" ? <TokenTabs /> : null}
-        {tab === "myDids" ? <MyDIDs /> : null}
+        {isCkbNetwork(currentNetwork.network) ? (
+          <>{tab === "coins" ? <TokenTabs /> : null}</>
+        ) : null}
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />

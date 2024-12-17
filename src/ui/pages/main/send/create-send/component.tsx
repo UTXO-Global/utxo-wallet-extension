@@ -4,7 +4,6 @@ import {
   getNetworkDataBySlug,
   isCkbNetwork,
 } from "@/shared/networks";
-import { shortAddress } from "@/shared/utils/transactions";
 import Switch from "@/ui/components/switch";
 import { useCreateOrdTx, useCreateTxCallback } from "@/ui/hooks/transactions";
 import {
@@ -12,7 +11,6 @@ import {
   useGetCurrentNetwork,
 } from "@/ui/states/walletState";
 import { normalizeAmount } from "@/ui/utils";
-import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
 import { t } from "i18next";
 import {
@@ -35,7 +33,6 @@ import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import { helpers } from "@ckb-lumos/lumos";
-import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { MIN_CAPACITY } from "@/shared/networks/ckb/helpers";
 
 export interface FormType {
@@ -43,6 +40,7 @@ export interface FormType {
   amount: string;
   feeAmount: number | string;
   includeFeeInAmount: boolean;
+  isUseDID?: boolean;
 }
 
 const CreateSend = () => {
@@ -55,6 +53,7 @@ const CreateSend = () => {
     amount: "",
     includeFeeInAmount: false,
     feeAmount: 10,
+    isUseDID: false,
   });
   const currentNetwork = useGetCurrentNetwork();
   const [includeFeeLocked, setIncludeFeeLocked] = useState<boolean>(false);
@@ -145,6 +144,7 @@ const CreateSend = () => {
     amount,
     feeAmount: feeRate,
     includeFeeInAmount,
+    isUseDID,
   }: FormType) => {
     try {
       setLoading(true);
@@ -178,6 +178,7 @@ const CreateSend = () => {
         const minCap = MIN_CAPACITY(toScript)
           .div(10 ** 8)
           .toNumber();
+
         if (changeOutputCapacity > 0 && changeOutputCapacity < minCap) {
           return toast.error(
             t("send.create_send.error_not_enough_balance_remaining").replaceAll(
@@ -198,19 +199,6 @@ const CreateSend = () => {
           )
         : await createOrdTx(address, feeRate, inscription);
 
-      // NOTE: [GA] - Send BTC
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      await Analytics.fireEvent("pf_send_btc", {
-        action: "continue",
-        label: fromAddresses.map((z) => shortAddress(z, 3)).join(","),
-        amount: Number(amount),
-        includeFeeInAmount,
-        recipient: shortAddress(address, 3),
-        fee: fee,
-        include_fee: formData.includeFeeInAmount ? 1 : 0,
-        save_address: isSaveAddress ? 1 : 0,
-      });
-
       navigate("/pages/confirm-send", {
         state: {
           toAddress: address,
@@ -223,6 +211,7 @@ const CreateSend = () => {
           save: isSaveAddress,
           inscriptionTransaction,
           token: token,
+          isUseDID: !!isUseDID,
         },
       });
     } catch (e) {
@@ -320,7 +309,16 @@ const CreateSend = () => {
             </span>
             <AddressInput
               address={formData.address}
-              onChange={(v) => setFormData((p) => ({ ...p, address: v }))}
+              onChange={useCallback(
+                (v) => {
+                  setFormData((p) => ({
+                    ...p,
+                    address: v.value,
+                    isUseDID: v.isUseDID,
+                  }));
+                },
+                [setFormData]
+              )}
               onOpenModal={() => setOpenModal(true)}
             />
           </div>

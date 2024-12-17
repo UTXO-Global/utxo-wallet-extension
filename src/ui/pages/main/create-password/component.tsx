@@ -3,7 +3,6 @@ import PasswordInput from "@/ui/components/password-input";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { t } from "i18next";
-import Analytics from "@/ui/utils/gtm";
 import { evaluatePassword } from "@/ui/utils/helpers";
 
 interface FormType {
@@ -47,11 +46,6 @@ const CreatePassword = () => {
     }
 
     await updateAppState({ password, isUnlocked: true });
-    // NOTE: [GA] - Create password
-    await Analytics.fireEvent("ob_create_password", {
-      action: "click",
-      label: "create password",
-    });
   };
 
   return (

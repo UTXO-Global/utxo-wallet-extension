@@ -159,8 +159,8 @@ class ApiController implements IApiController {
         path: `${networkData.esploraUrl}/fee-estimates`,
       });
       return {
-        slow: Number((data["6"] as number)?.toFixed(0)),
-        fast: Number((data["2"] as number)?.toFixed(0)) + 1,
+        slow: Math.ceil(Number(data["6"] as number)),
+        fast: Math.ceil(Number(data["2"] as number)),
       };
     }
 
@@ -312,6 +312,8 @@ class ApiController implements IApiController {
       apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
     } else if (coinSymbol === "ckb") {
       apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
+    } else if (coinSymbol === "doge") {
+      apiFetchPrice = `https://api.coincap.io/v2/assets/dogecoin`;
     }
 
     if (!apiFetchPrice) {

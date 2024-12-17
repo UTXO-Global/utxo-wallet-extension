@@ -355,7 +355,7 @@ class BTCProviderController extends ProviderController {
       transactionData.amount = transactionData.amount * 10 ** 8;
       const tx = await keyringService.sendCoin(transactionData);
       const psbt = Psbt.fromHex(tx);
-      return psbt.extractTransaction().toHex();
+      return psbt.extractTransaction(true).toHex();
     }
   };
 
@@ -382,7 +382,7 @@ class BTCProviderController extends ProviderController {
     for (const index of data.data.params.options?.toSignInputs.keys()) {
       psbt.finalizeInput(index);
     }
-    const tx = psbt.extractTransaction();
+    const tx = psbt.extractTransaction(true);
     return {
       psbtHex: tx.toHex(),
       txId: tx.getId(),
@@ -454,46 +454,45 @@ class CKBProviderController extends ProviderController {
       throw new Error("Error when trying to get inputs");
     }
 
-    await Promise.all(
-      tx.inputs.map(async (input: any) => {
-        if (!input.previousOutput) {
-          throw new Error("Error when trying to get the previous output");
-        }
+    for (const input of tx.inputs) {
+      if (!input.previousOutput) {
+        throw new Error("Error when trying to get the previous output");
+      }
 
-        const txInput = await callCKBRPC(
-          networkConfig.rpc_url,
-          "get_transaction",
-          [input.previousOutput.txHash]
+      const txInput = await callCKBRPC(
+        networkConfig.rpc_url,
+        "get_transaction",
+        [input.previousOutput.txHash]
+      );
+
+      const cellOutput =
+        txInput?.transaction?.outputs[Number(input.previousOutput.index)];
+
+      if (!cellOutput) {
+        throw new Error(
+          `Error when trying to get the cell output ${input.previousOutput.txHash}`
         );
-        const cellOutput =
-          txInput?.transaction?.outputs[Number(input.previousOutput.index)];
+      }
 
-        if (!cellOutput) {
-          throw new Error(
-            `Error when trying to get the cell output ${input.previousOutput.txHash}`
-          );
-        }
-
-        txSkeleton = txSkeleton.update("inputs", (inputs) =>
-          inputs.push({
-            outPoint: {
-              txHash: input.previousOutput.txHash,
-              index: ccc.numToHex(input.previousOutput.index),
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.push({
+          outPoint: {
+            txHash: input.previousOutput.txHash,
+            index: ccc.numToHex(input.previousOutput.index),
+          },
+          data: input.outputData ? input.outputData : "0x",
+          cellOutput: {
+            capacity: ccc.numToHex(cellOutput.capacity),
+            lock: {
+              codeHash: cellOutput.lock?.code_hash,
+              hashType: cellOutput.lock?.hash_type,
+              args: cellOutput.lock?.args,
             },
-            data: input.outputData ? input.outputData : "0x",
-            cellOutput: {
-              capacity: ccc.numToHex(cellOutput.capacity),
-              lock: {
-                codeHash: cellOutput.lock?.code_hash,
-                hashType: cellOutput.lock?.hash_type,
-                args: cellOutput.lock?.args,
-              },
-              type: cellOutput.type,
-            },
-          })
-        );
-      })
-    );
+            type: cellOutput.type,
+          },
+        })
+      );
+    }
 
     const outputsData = tx.outputsData || [];
     tx.outputs?.forEach((output: any, index: number) => {

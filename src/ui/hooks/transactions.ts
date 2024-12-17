@@ -169,7 +169,7 @@ export function useCreateTxCallback() {
           feeRate,
         });
         const psbt = Psbt.fromHex(psbtHex);
-        const tx = psbt.extractTransaction();
+        const tx = psbt.extractTransaction(true);
         const rawtx = tx.toHex();
         return {
           rawtx,
@@ -235,7 +235,7 @@ export function useCreateOrdTx() {
         feeRate,
       });
       const psbt = Psbt.fromHex(psbtHex);
-      const tx = psbt.extractTransaction();
+      const tx = psbt.extractTransaction(true);
       const rawtx = tx.toHex();
       return {
         rawtx,

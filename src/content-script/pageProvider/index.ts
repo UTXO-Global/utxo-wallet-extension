@@ -160,6 +160,7 @@ export class UtxoGlobalProvider extends EventEmitter {
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
       );
     }
+
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
     }

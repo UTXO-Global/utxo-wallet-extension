@@ -1,5 +1,4 @@
 import { NETWORK_ICON } from "@/shared/networks";
-import { browserTabsCreate } from "@/shared/utils/browser";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import QRCode from "qr-code-styling";

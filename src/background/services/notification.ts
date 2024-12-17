@@ -14,7 +14,6 @@ class NotificationService extends Events {
   approval: Approval | null = null;
   notifiWindowId = 0;
   isLocked = false;
-  isPending = false;
 
   constructor() {
     super();
@@ -63,7 +62,6 @@ class NotificationService extends Events {
     data?: any,
     winProps?: OpenNotificationProps
   ): Promise<any> => {
-    this.isPending = true
     // We will just override the existing open approval with the new one coming in
     return new Promise((resolve, reject) => {
       this.approval = {
@@ -73,14 +71,16 @@ class NotificationService extends Events {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.openNotification(winProps);
+      if (!this.isLocked) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.openNotification(winProps);
+      }
     });
   };
 
   clear = async (stay = false) => {
     this.unLock();
     this.approval = null;
-    this.isPending = false
     if (this.notifiWindowId && !stay) {
       await remove(this.notifiWindowId);
       this.notifiWindowId = 0;
@@ -95,9 +95,14 @@ class NotificationService extends Events {
     this.isLocked = true;
   };
 
-  openNotification = (winProps: OpenNotificationProps) => {
-    if (this.isLocked) return;
+  openNotification = async (winProps: OpenNotificationProps) => {
+    if (this.isLocked) {
+      await remove(this.notifiWindowId);
+      this.notifiWindowId = 0;
+    }
+
     this.lock();
+
     if (this.notifiWindowId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       remove(this.notifiWindowId);
