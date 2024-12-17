@@ -6038,10 +6038,10 @@ satori@^0.10.13:
     postcss-value-parser "^4.2.0"
     yoga-wasm-web "^0.3.3"
 
-satori@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/satori/-/satori-0.11.0.tgz#abd5ed3c6b06cc4055a04412266ca192021a0023"
-  integrity sha512-m5llKBX+JRvZLvFwSvJ8TaF2WTjylI/1c8xigTlfHqw8ExyD6ZKg9e0mCuq/m30aMr1VgEYndonfcGkl3fNzWQ==
+satori@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/satori/-/satori-0.12.0.tgz#6ffd11daedbf63fc6a68411639894da128b7a99f"
+  integrity sha512-e0e+qQyeFwEszujN7SpWpRtZgww7Nh8lSO3bUn2spHZ5JpqEl3zJ3P14/JlWruxEwdgREs35ZnavrPrWaRVFDg==
   dependencies:
     "@shuding/opentype.js" "1.4.0-beta.0"
     css-background-parser "^0.1.0"
