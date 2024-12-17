@@ -32,11 +32,13 @@ export default function NativeToken() {
     try {
       // NOTE: [GA] - track tvl
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Analytics.fireEvent("wallet_tvl", {
-        address: currentAccount.accounts[0].address,
-        network: currentNetwork.slug,
-        amount: nativeCoinBalance,
-      });
+      if (currentAccount && currentAccount.accounts[0]) {
+        Analytics.fireEvent("wallet_tvl", {
+          address: currentAccount.accounts[0].address,
+          network: currentNetwork.slug,
+          amount: nativeCoinBalance,
+        });
+      }
     } catch (e) {
       console.error(e);
     }

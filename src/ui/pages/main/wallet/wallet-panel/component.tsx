@@ -20,9 +20,13 @@ const WalletPanel = () => {
 
   return (
     <div className="flex justify-between items-center sticky left-0 py-3 px-4 w-full top-0 z-50 standard:!relative border-b border-grey-300 bg-light-100">
-      <Link
+      <div
         className="flex gap-3 items-center select-none cursor-pointer"
-        to={"/pages/switch-account"}
+        onClick={() => {
+          if (currentAccount) {
+            navigate("/pages/switch-account");
+          }
+        }}
       >
         <img
           src="/utxo-global-account.png"
@@ -38,16 +42,18 @@ const WalletPanel = () => {
             <div className={`${s.change} font-medium !leading-4`}>
               {currentAccount?.name}{" "}
             </div>
-            <IcnChevronDown className="w-3 h-3" />
+            {currentAccount && <IcnChevronDown className="w-3 h-3" />}
           </div>
         </div>
-      </Link>
+      </div>
 
       <div className="flex gap-4 items-center">
-        <IcnCopy
-          className="w-6 transition-colors stroke-primary hover:stroke-[#787575]  cursor-pointer"
-          onClick={() => setIsShowCopyAddress(true)}
-        />
+        {currentAccount && (
+          <IcnCopy
+            className="w-6 transition-colors stroke-primary hover:stroke-[#787575]  cursor-pointer"
+            onClick={() => setIsShowCopyAddress(true)}
+          />
+        )}
         <IcnSetting
           className="w-6 h-6 stroke-primary hover:stroke-[#787575] hover:rotate-90 cursor-pointer transition-transform"
           onClick={() =>
@@ -70,27 +76,12 @@ const WalletPanel = () => {
         </div>
       </div>
 
-      <CopyAddress
-        active={isShowCopyAddress}
-        onClose={() => setIsShowCopyAddress(false)}
-      />
-
-      {/* <div className="flex gap-3 items-center">
-        <Link
-          to={"/pages/inscriptions"}
-          className="cursor-pointer flex items-center justify-center"
-        >
-          <img
-            src="https://i.ibb.co/W3Scy9R/cyborg-nft-lettering-2-2.png"
-            alt="shit"
-            className={cn("w-12", s.nftImage)}
-          />
-        </Link>
-        <div className="w-[1px] bg-white bg-opacity-25 h-5" />
-        <Link to={"/pages/settings"} className="cursor-pointer">
-          <Cog6ToothIcon className="w-6 h-6 hover:rotate-90 transition-transform" />
-        </Link>
-      </div> */}
+      {currentAccount && (
+        <CopyAddress
+          active={isShowCopyAddress}
+          onClose={() => setIsShowCopyAddress(false)}
+        />
+      )}
     </div>
   );
 };

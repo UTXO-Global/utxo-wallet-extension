@@ -18,7 +18,9 @@ const ShowMnemonic = () => {
   }));
   const [phrase, setPhrase] = useState("");
   const { wallets } = useWalletState((v) => ({ wallets: v.wallets }));
-  const [walletType, setWalletType] = useState<"simple" | "root">("root");
+  const [walletType, setWalletType] = useState<"simple" | "root" | "onekey">(
+    "root"
+  );
   const [isShow, setIsShow] = useState<boolean>(false);
   const currentNetwork = useGetCurrentNetwork();
 

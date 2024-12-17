@@ -20,6 +20,8 @@ import { useAppState } from "./states/appState";
 import { useControllersState } from "./states/controllerState";
 import { useWalletState } from "./states/walletState";
 import { logErrorToFirestore } from "./utils/helpers";
+import OneKeyModal from "./components/onekey";
+import OneKeyProvider from "./components/onekey";
 
 export default function App() {
   const [router, setRouter] = useState<Router>(authenticatedRouter);
@@ -147,12 +149,15 @@ export default function App() {
       </div>
       <div className="app !pb-0">
         {isReady ? (
-          <RouterProvider router={router} />
+          <OneKeyProvider>
+            <RouterProvider router={router} />
+          </OneKeyProvider>
         ) : (
           <div className="flex justify-center items-center w-full">
             <ReactLoading type="spin" color="#ODODOD" />
           </div>
         )}
+
         <Toaster
           position="top-center"
           toastOptions={{

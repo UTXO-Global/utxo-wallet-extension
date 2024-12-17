@@ -1,23 +1,23 @@
-import { useCreateNewGroupAccount } from "@/ui/hooks/wallet";
 import {
   useGetCurrentNetwork,
   useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
+import { useOnekeyNewAccount } from "./hook";
 
 interface FormType {
   name: string;
 }
 
-const NewAccount = () => {
+const CreateNewOneKeyAccount = () => {
   const navigate = useNavigate();
 
-  const createNewAccount = useCreateNewGroupAccount();
+  const { importAccount, loading } = useOnekeyNewAccount();
   const currentWallet = useGetCurrentWallet();
   const currentNetwork = useGetCurrentNetwork();
   const { register, handleSubmit, reset } = useForm<FormType>({
@@ -25,8 +25,6 @@ const NewAccount = () => {
       name: "",
     },
   });
-
-  const [loading, setLoading] = useState<boolean>(false);
 
   const nameAlreadyExists = (name: string) => {
     return (
@@ -50,10 +48,10 @@ const NewAccount = () => {
     if (name.length == 0) return toast.error(t("new_account.empty_name"));
     if (nameAlreadyExists(name))
       return toast.error(t("new_account.name_taken_error"));
-    setLoading(true);
-    await createNewAccount(name);
-    toast.success(t("new_account.account_created_message"));
-    navigate("/home");
+    await importAccount(name, () => {
+      toast.success(t("new_account.account_created_message"));
+      navigate("/home");
+    });
   };
 
   useEffect(() => {
@@ -95,4 +93,4 @@ const NewAccount = () => {
   );
 };
 
-export default NewAccount;
+export default CreateNewOneKeyAccount;

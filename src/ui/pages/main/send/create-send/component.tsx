@@ -9,6 +9,7 @@ import { useCreateOrdTx, useCreateTxCallback } from "@/ui/hooks/transactions";
 import {
   useGetCurrentAccount,
   useGetCurrentNetwork,
+  useGetCurrentWallet,
 } from "@/ui/states/walletState";
 import { normalizeAmount } from "@/ui/utils";
 import cn from "classnames";
@@ -34,6 +35,7 @@ import ShortBalance from "@/ui/components/ShortBalance";
 import TextAvatar from "@/ui/components/text-avatar/component";
 import { helpers } from "@ckb-lumos/lumos";
 import { MIN_CAPACITY } from "@/shared/networks/ckb/helpers";
+import { useCreateOnekeyTxCallback } from "@/ui/hooks/onekey-tx";
 
 export interface FormType {
   address: string;
@@ -58,7 +60,9 @@ const CreateSend = () => {
   const currentNetwork = useGetCurrentNetwork();
   const [includeFeeLocked, setIncludeFeeLocked] = useState<boolean>(false);
   const currentAccount = useGetCurrentAccount();
+  const currentWallet = useGetCurrentWallet();
   const createTx = useCreateTxCallback();
+  const createOnekeyTx = useCreateOnekeyTxCallback();
   const createOrdTx = useCreateOrdTx();
   const navigate = useNavigate();
   const location = useLocation();
@@ -139,6 +143,45 @@ const CreateSend = () => {
     return true;
   }, [formData, balance, isTokenTransaction, token]);
 
+  const _createTx = useCallback(
+    (
+      address: string,
+      feeRate: number,
+      amount: string,
+      includeFeeInAmount: boolean
+    ): Promise<{
+      rawtx: string;
+      fee: number | string;
+      fromAddresses: string[];
+    }> => {
+      if (inscriptionTransaction) {
+        if (currentWallet.type === "onekey") {
+          throw new Error("Not supported");
+        }
+        return createOrdTx(address, feeRate, inscription);
+      }
+
+      if (currentWallet.type === "onekey") {
+        return createOnekeyTx(
+          address,
+          Number((Number(amount) * 10 ** decimal).toFixed(0)),
+          feeRate,
+          includeFeeInAmount,
+          token
+        );
+      }
+
+      return createTx(
+        address,
+        Number((Number(amount) * 10 ** decimal).toFixed(0)),
+        feeRate,
+        includeFeeInAmount,
+        token
+      );
+    },
+    [inscriptionTransaction]
+  );
+
   const send = async ({
     address,
     amount,
@@ -189,15 +232,12 @@ const CreateSend = () => {
         }
       }
 
-      const { fee, rawtx, fromAddresses } = !inscriptionTransaction
-        ? await createTx(
-            address,
-            Number((Number(amount) * 10 ** decimal).toFixed(0)),
-            feeRate,
-            includeFeeInAmount,
-            token
-          )
-        : await createOrdTx(address, feeRate, inscription);
+      const { fee, rawtx, fromAddresses } = await _createTx(
+        address,
+        feeRate,
+        amount,
+        includeFeeInAmount
+      );
 
       navigate("/pages/confirm-send", {
         state: {

@@ -46,7 +46,12 @@ export const useGetCKBAddressInfo = () => {
   }, [isLoading, currentAccount, isLoaded]);
 
   useEffect(() => {
-    if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {
+    if (
+      currentAccount &&
+      currentAccount.accounts.length > 0 &&
+      currentNetwork &&
+      isCKBNetwork
+    ) {
       getAddressInfo()
         .catch((e) => {
           console.log(e);

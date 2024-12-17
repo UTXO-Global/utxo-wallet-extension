@@ -5,7 +5,7 @@ import {
 } from "@/shared/networks";
 import { NetworkSlug } from "@/shared/networks/types";
 import * as tinysecp from "@bitcoinerlab/secp256k1";
-import { hd } from "@ckb-lumos/lumos";
+import { hd, helpers } from "@ckb-lumos/lumos";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import ECPairFactory, { ECPairInterface } from "@/packages/pair";
 import { crypto, Psbt } from "bitcoinjs-lib";
@@ -20,7 +20,7 @@ import { ccc } from "@ckb-ccc/core";
 const ECPair = ECPairFactory(tinysecp);
 
 class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
-  privateKey: Uint8Array = ZERO_PRIVKEY;
+  privateKey: Uint8Array = new Uint8Array(ZERO_PRIVKEY);
   publicKey = ZERO_KEY;
 
   private pair?: ECPairInterface;
@@ -84,7 +84,7 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
       pair = ECPair.fromWIF(state.privateKey);
     }
 
-    const wallet = new this(pair.privateKey!);
+    const wallet = new this(new Uint8Array(pair.privateKey!));
     wallet.initPair();
     return wallet;
   }
@@ -111,7 +111,7 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
   exportPublicKey(_: string) {
     this.initPair();
 
-    return bytesToHex(this.publicKey);
+    return bytesToHex(new Uint8Array(this.publicKey));
   }
 
   signPsbt(psbt: Psbt, inputs: ToSignInput[]) {
@@ -193,7 +193,7 @@ class HDPrivateKey implements Keyring<SerializedHDPrivateKey> {
     if (["nervos", "nervos_testnet"].includes(networkSlug)) {
       const signature = secp256k1.sign(
         ccc.bytesFrom(messageHashCkbSecp256k1(text)),
-        ccc.bytesFrom(ccc.hexFrom(this.pair.privateKey))
+        ccc.bytesFrom(ccc.hexFrom(new Uint8Array(this.pair.privateKey)))
       );
       const { r, s, recovery } = signature;
 

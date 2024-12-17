@@ -53,7 +53,7 @@ export const useGetCurrentWallet = () => {
 
   if (
     currentWallet &&
-    currentWallet.accounts &&
+    currentWallet.accounts[0] &&
     !currentWallet.accounts[0].accounts[0].address
   ) {
     // eslint-disable-next-line

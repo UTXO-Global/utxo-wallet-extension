@@ -46,10 +46,12 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
+import HDOneKey from "./ckbhdw/hd/hdHwOnekey";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
   HDSeedKey,
+  HDOneKey,
 };
 
 class KeyringService {
@@ -63,9 +65,13 @@ class KeyringService {
   async init(password: string) {
     const wallets = await storageService.importWallets(password);
     for (const i of wallets) {
-      let wallet: HDSeedKey | HDPrivateKey;
+      let wallet: HDSeedKey | HDPrivateKey | HDOneKey;
       if (i.data.seed) {
         wallet = HDSeedKey.deserialize({
+          ...i.data,
+        });
+      } else if (i.data.deviceId) {
+        wallet = HDOneKey.deserialize({
           ...i.data,
         });
       } else {
@@ -84,25 +90,37 @@ class KeyringService {
     passphrase = undefined,
     walletName = undefined,
   }: INewWalletProps) {
-    let keyring: HDSeedKey | HDPrivateKey;
-    if (walletType === "root") {
-      keyring = await HDSeedKey.fromMnemonic({
-        mnemonic: payload,
-        passphrase,
-        walletName,
-      });
+    let keyring: HDSeedKey | HDPrivateKey | HDOneKey;
+    if (walletType === "onekey") {
+      keyring = new HDOneKey(JSON.parse(payload));
+      // check duplicated for onekey keyring
+      for (const key of this.keyrings) {
+        const checkKey = key as unknown as HDOneKey;
+        if (checkKey.deviceId && keyring.deviceId === checkKey.deviceId) {
+          throw new Error("Already existed");
+        }
+      }
     } else {
-      keyring = HDPrivateKey.deserialize({
-        privateKey: payload,
-        isHex: restoreFrom === "hex",
-      });
-    }
-    // Check duplicated with existing keyring by simply check fixed hd path public key is equal
-    const toCheckHdPath = "m/44'/0'/0'/0";
-    const toCheckPubkey = keyring.exportPublicKey(toCheckHdPath);
-    for (const key of this.keyrings) {
-      if (key.exportPublicKey(toCheckHdPath) === toCheckPubkey) {
-        throw new Error("Already existed");
+      if (walletType === "root") {
+        keyring = await HDSeedKey.fromMnemonic({
+          mnemonic: payload,
+          passphrase,
+          walletName,
+        });
+      } else {
+        keyring = HDPrivateKey.deserialize({
+          privateKey: payload,
+          isHex: restoreFrom === "hex",
+        });
+      }
+
+      // Check duplicated with existing keyring by simply check fixed hd path public key is equal
+      const toCheckHdPath = "m/44'/0'/0'/0";
+      const toCheckPubkey = keyring.exportPublicKey(toCheckHdPath);
+      for (const key of this.keyrings) {
+        if (key.exportPublicKey(toCheckHdPath) === toCheckPubkey) {
+          throw new Error("Already existed");
+        }
       }
     }
 
@@ -216,7 +234,9 @@ class KeyringService {
           outputIndex: v.vout,
           satoshis: v.value,
           scriptPk: getScriptForAddress(
-            Buffer.from(this.exportPublicKey(_account.hdPath), "hex"),
+            new Uint8Array(
+              Buffer.from(this.exportPublicKey(_account.hdPath), "hex")
+            ),
             _account.addressType.value,
             networkSlug
           ).toString("hex"),
@@ -250,7 +270,6 @@ class KeyringService {
       // the tx fee could calculated by tx size
       // TODO: this is just a simple example
       const neededCapacity = BI.from(data.amount).add(100000);
-      console.log(data.amount, neededCapacity.toNumber());
 
       let txSkeleton = helpers.TransactionSkeleton({});
       const fromScript = helpers.parseAddress(ckbAccount.address, {

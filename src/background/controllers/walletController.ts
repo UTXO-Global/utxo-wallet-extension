@@ -51,7 +51,7 @@ function getAddressesByWalletIndex({
         const publicKey = keyring.exportPublicKey(hdPath);
         const address = getAddress(
           addressType.value,
-          Buffer.from(publicKey, "hex"),
+          new Uint8Array(Buffer.from(publicKey, "hex")),
           networkSlug
         );
         groupAddress.push(address);
@@ -63,7 +63,10 @@ function getAddressesByWalletIndex({
   return addresses;
 }
 
-function getNewHdPathFromAddressType(hdPath: string, newIndex: number): string {
+export function getNewHdPathFromAddressType(
+  hdPath: string,
+  newIndex: number
+): string {
   const hdPathPrefix = hdPath.split("/").slice(0, -1).join("/");
   return hdPathPrefix + "/" + newIndex.toString();
 }
@@ -73,11 +76,14 @@ function getIndexFromHdPath(hdPath: string): number {
   return Number(_hdPath[_hdPath.length - 1]);
 }
 
-function getNewGAccountIndex(
+export function getNewGAccountIndex(
   accounts: IGroupAccount[],
   network: NetworkSlug
 ): number {
   const _accounts = accounts.filter((z) => z.network === network);
+  if (_accounts.length === 0) {
+    return 0;
+  }
   const _lastIndex = getIndexFromHdPath(
     _accounts[_accounts.length - 1].accounts[0].hdPath
   );
@@ -116,7 +122,7 @@ async function _createDefaultGroupAccount({
       const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
 
@@ -156,7 +162,7 @@ async function _createDefaultGroupAccount({
       const publicKey = keyring.exportPublicKey(hdPath || addressType.hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
       return {
@@ -197,17 +203,22 @@ class WalletController implements IWalletController {
     const hdPath =
       props.restoreFromWallet === "neuron" ? CKB_NEURON_HD_PATH : "";
 
-    const groupAccount = await _createDefaultGroupAccount({
-      networkSlug: storageService.currentNetwork,
-      key: keyring,
-      hdPath,
-    });
+    let groupAccounts: IGroupAccount[] = [];
+    if (props.walletType !== "onekey") {
+      groupAccounts.push(
+        await _createDefaultGroupAccount({
+          networkSlug: storageService.currentNetwork,
+          key: keyring,
+          hdPath,
+        })
+      );
+    }
 
     return {
       name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
       id: walletId,
       type: props.walletType,
-      accounts: [groupAccount],
+      accounts: groupAccounts,
       restoreFromWallet: props.restoreFromWallet,
     };
   }
@@ -289,7 +300,7 @@ class WalletController implements IWalletController {
       const publicKey = keyring.exportPublicKey(hdPath);
       const address = getAddress(
         addressType.value,
-        Buffer.from(publicKey, "hex"),
+        new Uint8Array(Buffer.from(publicKey, "hex")),
         networkSlug
       );
 

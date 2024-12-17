@@ -50,6 +50,8 @@ import UTXOSwapSetting from "./main/swap/setting";
 import UTXOSwapSearchToken from "./main/swap/search-token/component";
 import UTXOReviewOrder from "./main/swap/review-order/component";
 import UTXOFinalSwap from "./main/swap/success";
+import OneKeyConnect from "./main/hware/onekey/connect";
+import CreateNewOneKeyAccount from "../components/onekey/new-account";
 
 export const guestRouter = createHashRouter([
   {
@@ -147,6 +149,18 @@ export const authenticatedRouter = createHashRouter([
       { path: "createTx", element: <CreateTx /> },
       { path: "signTransaction", element: <SignTransaction /> },
       { path: "signLNInvoice", element: <SignLNInvoice /> },
+    ],
+  },
+  {
+    path: "hware",
+    children: [
+      {
+        path: "onekey",
+        children: [
+          { path: "connect", element: <OneKeyConnect /> },
+          { path: "create-new-account", element: <CreateNewOneKeyAccount /> },
+        ],
+      },
     ],
   },
   { path: "*", element: <Navigate to={"/"} /> },
