@@ -89,9 +89,6 @@ export default function OneKeyConnect() {
                           <th className="border-b font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 text-left">
                             Name
                           </th>
-                          <th className="border-b font-medium p-4 pt-0 pb-3 text-slate-400 text-left">
-                            Device ID
-                          </th>
                           <th className="border-b font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 text-left"></th>
                         </tr>
                       </thead>
@@ -100,9 +97,6 @@ export default function OneKeyConnect() {
                           <tr key={device.uuid}>
                             <td className="text-left border-b border-slate-100 p-4 pl-8 text-slate-500 ">
                               {device.name}
-                            </td>
-                            <td className="text-left border-b border-slate-100 p-4 text-slate-500 ">
-                              {device.deviceId}
                             </td>
                             <td className="text-left border-b border-slate-100 p-4 pr-8 text-slate-500 ">
                               <button

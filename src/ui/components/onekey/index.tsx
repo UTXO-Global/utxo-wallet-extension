@@ -72,8 +72,12 @@ export default function OneKeyProvider({
             }
 
             if (message.type === UI_REQUEST.REQUEST_BUTTON) {
-              setOpenActionRequired(true);
               // Confirmation is required on the device, a UI prompt can be displayed
+              setOpenActionRequired(true);
+            }
+
+            if (message.type === UI_REQUEST.CLOSE_UI_WINDOW) {
+              setOpenActionRequired(false);
             }
           });
         }
@@ -164,7 +168,9 @@ export default function OneKeyProvider({
         }}
         title={"Confirmation is required"}
       >
-        <div className="grid gap-4"></div>
+        <div className="grid gap-4">
+          <p>Confirmation is required on the device</p>
+        </div>
       </Modal>
     </OneKeyContext.Provider>
   );
