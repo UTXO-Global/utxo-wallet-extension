@@ -41,7 +41,7 @@
     "@ckb-lumos/lumos": "^0.22.0-next.3",
     "@exact-realty/multipart-parser": "^1.0.14",
     "@headlessui/react": "2.0.4",
-    "@heroicons/react": "2.1.1",
+    "@heroicons/react": "2.2.0",
     "@nervina-labs/dob-render": "^0.2.2",
     "@nervosnetwork/ckb-sdk-utils": "^0.109.1",
     "@noble/curves": "^1.4.2",
