@@ -317,11 +317,19 @@ export class BTCProvider extends UtxoGlobalProvider {
   };
 }
 
+export class DogeProvider extends BTCProvider {
+  constructor() {
+    super();
+    this._providerReq = "dogecoin";
+  }
+}
+
 declare global {
   interface Window {
     utxoGlobal: {
       bitcoinSigner: UtxoGlobalProvider;
       ckbSigner: UtxoGlobalProvider;
+      dogeSigner: UtxoGlobalProvider;
     };
   }
 }
@@ -329,6 +337,7 @@ declare global {
 const provider = new UtxoGlobalProvider();
 const btcProvider = new BTCProvider();
 const ckbProvider = new CKBProvider();
+const dogeProvider = new DogeProvider();
 
 Object.defineProperty(window, "utxoGlobal", {
   value: {
@@ -341,6 +350,9 @@ Object.defineProperty(window, "utxoGlobal", {
     ckbSigner: new Proxy(ckbProvider, {
       deleteProperty: () => true,
     }),
+    dogeSigner: new Proxy(dogeProvider, {
+      deleteProperty: () => true,
+    }),
   },
   writable: false,
 });
@@ -348,3 +360,4 @@ Object.defineProperty(window, "utxoGlobal", {
 window.dispatchEvent(new Event("utxoGlobal#initialized"));
 window.dispatchEvent(new Event("utxoGlobal.bitcoinSigner#initialized"));
 window.dispatchEvent(new Event("utxoGlobal.ckbSigner#initialized"));
+window.dispatchEvent(new Event("utxoGlobal.dogeSigner#initialized"));
