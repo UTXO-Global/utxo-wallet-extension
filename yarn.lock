@@ -261,19 +261,6 @@
   dependencies:
     jsbi "^4.1.0"
 
-"@ckb-lumos/ckb-indexer@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/ckb-indexer/-/ckb-indexer-0.22.2.tgz#80517b24a3fb68d205a481dd364cc8997c55c156"
-  integrity sha512-y4v2yNa3IYURcUc+lkFs/4/nV4W0QQeCORtv1IlkgbES0718XB4IMGWvQtSGKAC94A9B4kSHREcyn0d+9lMzew==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    "@ckb-lumos/toolkit" "0.22.2"
-    cross-fetch "^3.1.5"
-    events "^3.3.0"
-
 "@ckb-lumos/ckb-indexer@0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/ckb-indexer/-/ckb-indexer-0.23.0.tgz#67cbf4539904ea511517fda1e23c5ec4515b574d"
@@ -301,22 +288,6 @@
   dependencies:
     "@ckb-lumos/bi" "0.23.0"
 
-"@ckb-lumos/common-scripts@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/common-scripts/-/common-scripts-0.22.2.tgz#c7994ff6e32982a46a0bfa68383c7bad6d72ca1b"
-  integrity sha512-eSXutpQXqAVh0MorCG8bg+xcMqxhpiJCXgdgfpQAA0q6BkdSGmu4Zn3InFRdeHZam8ap02dadVK7ZOi4ZaUKCg==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/config-manager" "0.22.2"
-    "@ckb-lumos/helpers" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    "@ckb-lumos/toolkit" "0.22.2"
-    bech32 "^2.0.0"
-    bs58 "^5.0.0"
-    immutable "^4.3.0"
-
 "@ckb-lumos/common-scripts@0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/common-scripts/-/common-scripts-0.23.0.tgz#ccb04214ca7186829036ddcbb0dc1b5326127a90"
@@ -333,18 +304,6 @@
     bs58 "^5.0.0"
     immutable "^4.3.0"
 
-"@ckb-lumos/config-manager@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/config-manager/-/config-manager-0.22.2.tgz#03f04dedf413a5bcfefa98e71f11dd4da7779fba"
-  integrity sha512-LJ4p80VrCHh178Ks4wW1rEyHC/JWtZxrFiwHinA9aG6aOm2Z9hbZO0/ZKoS5pLfW0gxP2+ZHA3oMVt0UJhlTKA==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    "@types/deep-freeze-strict" "^1.1.0"
-    deep-freeze-strict "^1.1.1"
-
 "@ckb-lumos/config-manager@0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/config-manager/-/config-manager-0.23.0.tgz#93a607f7857c9a24fae86735e29f1ca40ee34fb5"
@@ -356,19 +315,6 @@
     "@ckb-lumos/rpc" "0.23.0"
     "@types/deep-freeze-strict" "^1.1.0"
     deep-freeze-strict "^1.1.1"
-
-"@ckb-lumos/hd@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/hd/-/hd-0.22.2.tgz#dbadc0091304f1c51479fcaee80afea312c532d0"
-  integrity sha512-bCcW+yoeBNniKijEIjZZZC2/a9ZEhvVco4L+aOHqwRon3jgXLN6izvzBgzm/m9hWUx47PpzPXjq3fRIn+kONxg==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    bn.js "^5.1.3"
-    elliptic "^6.5.4"
-    scrypt-js "^3.0.1"
-    sha3 "^2.1.3"
-    uuid "^8.3.0"
 
 "@ckb-lumos/hd@0.23.0":
   version "0.23.0"
@@ -383,19 +329,6 @@
     sha3 "^2.1.3"
     uuid "^8.3.0"
 
-"@ckb-lumos/helpers@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/helpers/-/helpers-0.22.2.tgz#4f7365b8196cac4a690fae754dfa81f52503925b"
-  integrity sha512-6ztXwxsaCuoHjkbclAnfAv9BYl02t+/XxNtl3Et4Sl09xIp9HJ9/vyJouC9JjdQdnfkv1zVGN9tLiKwc6QudaQ==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/config-manager" "0.22.2"
-    "@ckb-lumos/toolkit" "0.22.2"
-    bech32 "^2.0.0"
-    immutable "^4.3.0"
-
 "@ckb-lumos/helpers@0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/helpers/-/helpers-0.23.0.tgz#095a6d4752d756287cfbee0360c614d27a5f71f3"
@@ -409,17 +342,6 @@
     bech32 "^2.0.0"
     immutable "^4.3.0"
 
-"@ckb-lumos/light-client@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/light-client/-/light-client-0.22.2.tgz#0a292afc381f4ed6cde1c02d818473a68556b489"
-  integrity sha512-G9cDOeTC81+cVdGnVOEJ767jPDFV+ao/hsc8ANNVCxsWTlj1EQvEzxGB3vi3S9Jh0lri3t3XxRQia8No5HJ4EQ==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/ckb-indexer" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    cross-fetch "^3.1.5"
-    events "^3.3.0"
-
 "@ckb-lumos/light-client@0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/light-client/-/light-client-0.23.0.tgz#093f28d4183971f1212241271e7b23bad9909689"
@@ -430,24 +352,6 @@
     "@ckb-lumos/rpc" "0.23.0"
     cross-fetch "^3.1.5"
     events "^3.3.0"
-
-"@ckb-lumos/lumos@^0.22.0-next.3":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/lumos/-/lumos-0.22.2.tgz#f6babead9a1a7c669830411afe60666c9fc913af"
-  integrity sha512-oobNnRx2m2crr6rgz4Mz066ggRLiAgZPwcZJCxiQLxIR3e9ik9f37hxJOEhZ/1kZmNMxZIKectVckaMn8MHROg==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    "@ckb-lumos/ckb-indexer" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/common-scripts" "0.22.2"
-    "@ckb-lumos/config-manager" "0.22.2"
-    "@ckb-lumos/hd" "0.22.2"
-    "@ckb-lumos/helpers" "0.22.2"
-    "@ckb-lumos/light-client" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    "@ckb-lumos/toolkit" "0.22.2"
-    "@ckb-lumos/transaction-manager" "0.22.2"
 
 "@ckb-lumos/lumos@^0.23.0":
   version "0.23.0"
@@ -466,16 +370,6 @@
     "@ckb-lumos/rpc" "0.23.0"
     "@ckb-lumos/toolkit" "0.23.0"
     "@ckb-lumos/transaction-manager" "0.23.0"
-
-"@ckb-lumos/rpc@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/rpc/-/rpc-0.22.2.tgz#5c8030ae2d5bf1fa4b7e118216a74ec7129e09ef"
-  integrity sha512-c2SX0ooDJO3dV2JOTTQtKZs0k+dHst+NHfbYJ6mYWApcZWx2nG4bQR3CQFMIKnd5CKYP/r2JuaonDkcRH9vmzw==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/bi" "0.22.2"
-    abort-controller "^3.0.0"
-    cross-fetch "^3.1.5"
 
 "@ckb-lumos/rpc@0.23.0":
   version "0.23.0"
@@ -500,18 +394,6 @@
   integrity sha512-7LTsUFfoNCBWJLgh+V/QFnemjGw+y4mmLeQvubwYuJqIPIhIpwKUuKRzkvVG8snA8xVQSfjSSQOs5m3mKp66Kg==
   dependencies:
     "@ckb-lumos/bi" "0.23.0"
-
-"@ckb-lumos/transaction-manager@0.22.2":
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/@ckb-lumos/transaction-manager/-/transaction-manager-0.22.2.tgz#63c1e61fbb2c5123eecf704583506b2eb0c4b714"
-  integrity sha512-RV/nLGAi5to6ROHh58uwiQB9wJBFmABlmU3GvUf2Baz0SIlniBx0EBtS3SzyD95w4zot1Fc8sVwLN8wCvt8ADA==
-  dependencies:
-    "@ckb-lumos/base" "0.22.2"
-    "@ckb-lumos/ckb-indexer" "0.22.2"
-    "@ckb-lumos/codec" "0.22.2"
-    "@ckb-lumos/rpc" "0.22.2"
-    "@ckb-lumos/toolkit" "0.22.2"
-    immutable "^4.3.0"
 
 "@ckb-lumos/transaction-manager@0.23.0":
   version "0.23.0"
