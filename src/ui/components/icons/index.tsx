@@ -20,6 +20,7 @@ import { IcnEyesSlash } from "./IcnEyesSlash";
 import { IcnEye } from "./IcnEye";
 import { IcnExternalLink } from "./IcnExternalLink";
 import { IcnMultisig } from "./IcnMultisig";
+import { IcnRightPanel } from "./IcnRightPanel";
 
 export {
   IcnSetting,
@@ -44,4 +45,5 @@ export {
   IcnEye,
   IcnExternalLink,
   IcnMultisig,
+  IcnRightPanel,
 };

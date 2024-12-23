@@ -1,4 +1,4 @@
-import { browserTabsCreate } from "@/shared/utils/browser";
+import browser, { browserTabsCreate } from "@/shared/utils/browser";
 import { useAppState } from "@/ui/states/appState";
 import s from "./styles.module.scss";
 
@@ -14,6 +14,7 @@ import {
   IcnConnectSite,
   IcnSecurity,
   IcnWallet,
+  IcnRightPanel,
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
@@ -80,17 +81,43 @@ const Settings = () => {
       target: "_blank",
       gaLabel: "helpAndSupport",
     },
+    {
+      icon: <IcnRightPanel className={ICON_CN} />,
+      label: "Side Panel",
+      onClick: async () => {
+        const tabs = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+
+        const { id: tabId } = tabs[0];
+        console.log(tabs);
+        if (!!tabId) {
+          await chrome.sidePanel.setOptions({
+            enabled: true,
+            path: "index.html",
+            tabId,
+          });
+          await chrome.sidePanel.setPanelBehavior({
+            openPanelOnActionClick: false,
+          });
+          await chrome.sidePanel.open({
+            tabId,
+          });
+          window.close();
+        }
+      },
+      gaLabel: "helpAndSupport",
+    },
   ];
 
-  const analytics = (label: string) => {
-
-  };
+  const analytics = (label: string) => {};
 
   return (
     <div className={s.wrapper}>
       <div className={s.settings}>
         {items.map((i) => (
-          <div key={i.label} onClick={() => analytics(i.gaLabel)}>
+          <div key={i.label}>
             <Tile {...i} />
           </div>
         ))}
