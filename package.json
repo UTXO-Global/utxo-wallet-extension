@@ -43,7 +43,7 @@
     "@headlessui/react": "2.0.4",
     "@heroicons/react": "2.2.0",
     "@nervina-labs/dob-render": "^0.2.2",
-    "@nervosnetwork/ckb-sdk-utils": "^0.109.1",
+    "@nervosnetwork/ckb-sdk-utils": "^0.109.4",
     "@noble/curves": "^1.4.2",
     "@noble/hashes": "1.4.0",
     "@rollup/plugin-terser": "^0.4.4",
