@@ -36,3 +36,5 @@ export const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID;
 export const TELEGRAM_HELP_AND_SUPPORT = "https://t.me/utxoglobal/12";
 export const TELEGRAM_PARTNERSHIP = "https://t.me/utxoglobal/5";
 export const TELEGRAM_FEEDBACK = "https://t.me/utxoglobal/9";
+export const ALCHEMY_MERCHANT_API =
+  "https://staging-payment-720a.utxo.global/orders";

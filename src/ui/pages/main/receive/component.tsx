@@ -1,16 +1,16 @@
 import { NETWORK_ICON } from "@/shared/networks";
+import { browserTabsCreate } from "@/shared/utils/browser";
 import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import QRCode from "qr-code-styling";
 import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Receive = () => {
   const { address: selectedAddress } = useParams();
   const ref = useRef(null);
   const currentNetwork = useGetCurrentNetwork();
-  const navigate = useNavigate();
 
   const qrCode = useMemo(() => {
     return new QRCode({
