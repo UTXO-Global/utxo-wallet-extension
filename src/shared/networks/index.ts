@@ -12,6 +12,7 @@ export const defaultNetwork = CKB_MAINNET;
 
 export const btcTestnetSlug = ["btc_testnet", "btc_testnet_4", "btc_signet"];
 export const nervosTestnetSlug = ["nervos_testnet"];
+export const dogecoinTestnetSlug = ["dogecoin_testnet"];
 
 export const supportedNetworks: ChainData[] = [
   {
