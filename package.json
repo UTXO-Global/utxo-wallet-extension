@@ -45,7 +45,7 @@
     "@nervina-labs/dob-render": "^0.2.2",
     "@nervosnetwork/ckb-sdk-utils": "^0.109.4",
     "@noble/curves": "^1.4.2",
-    "@noble/hashes": "1.4.0",
+    "@noble/hashes": "1.6.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@spore-sdk/core": "^0.2.2-alpha.1",
     "@utxoswap/swap-sdk-js": "^0.1.10",
