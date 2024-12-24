@@ -16,7 +16,6 @@ import {
   useWalletState,
 } from "../states/walletState";
 import { useTransactionManagerContext } from "../utils/tx-ctx";
-import { CKB_NEURON_HD_PATH } from "@/shared/networks/ckb";
 
 export const useCreateNewWallet = () => {
   const { wallets, updateWalletState } = useWalletState((v) => ({
@@ -378,19 +377,16 @@ export const useSwitchNetwork = () => {
             );
           }
 
-          const hdPathForNeuronWallet =
+          const hdPath =
             _otherNetworkGroupAccounts.length === 0
               ? ""
-              : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
-                CKB_NEURON_HD_PATH
-              ? CKB_NEURON_HD_PATH
-              : "";
+              : _otherNetworkGroupAccounts[0].accounts[0].hdPath;
 
           const networkGroupAccount =
             await walletController.createDefaultGroupAccount(
               slug,
               wallet.id,
-              hdPathForNeuronWallet
+              hdPath
             );
           if (wallet.id === currentWallet.id) {
             selectedAccount = wallet.accounts.length;

@@ -15,6 +15,7 @@ import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
 import Analytics from "@/ui/utils/gtm";
+import WarningUpgradeAccount from "./warning-upgrade-account";
 
 const Wallet = () => {
   const [mounted, setMounted] = useState(false);
@@ -94,6 +95,7 @@ const Wallet = () => {
       <div className="absolute w-full bottom-0">
         <BottomPanel />
       </div>
+      <WarningUpgradeAccount />
     </div>
   );
 };

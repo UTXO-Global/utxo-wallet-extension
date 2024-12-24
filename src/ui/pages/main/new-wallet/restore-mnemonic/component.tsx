@@ -1,3 +1,4 @@
+import { CKB_OLD_HD_PATH } from "@/shared/networks/ckb";
 import { WalletToImport } from "@/shared/networks/types";
 import Select from "@/ui/components/select";
 import SelectWithHint from "@/ui/components/select-hint/component";
@@ -9,6 +10,7 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
+import config from "../../../../../../package.json";
 
 const RestoreMnemonic = () => {
   const { updateWalletState } = useWalletState((v) => ({
@@ -47,6 +49,7 @@ const RestoreMnemonic = () => {
     setLoading(true);
     try {
       await createNewWallet({
+        isNewVersion: selectedWallet.hdPath !== CKB_OLD_HD_PATH,
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         passphrase:
@@ -116,6 +119,9 @@ const RestoreMnemonic = () => {
         </div>
 
         <div className="w-full flex justify-between pt-4 pb-2 flex-col">
+          <div className="text-center py-2 text-[#787575] text-sm">
+            Version: {config.version}
+          </div>
           <button className="btn primary" onClick={onRestore}>
             {t("new_wallet.continue")}
           </button>

@@ -1,6 +1,8 @@
 import { AddressType, NetworkData } from "../types";
 import offCKBConfig from "./offckb.config";
 
+export const CKB_HD_PATH = "m/44'/309'/0'/0/0";
+export const CKB_OLD_HD_PATH = "m/13'/1'/0'/0";
 export const CKB_MAINNET: NetworkData = {
   slug: "nervos",
   name: "Mirana Mainnet",
@@ -11,7 +13,7 @@ export const CKB_MAINNET: NetworkData = {
       value: AddressType.CKB_ADDRESS,
       label: "CKB",
       name: "CKB",
-      hdPath: `m/13'/0'/0'/0`,
+      hdPath: CKB_HD_PATH,
     },
   ],
   coinName: "CKB",
@@ -30,7 +32,7 @@ export const CKB_TESTNET: NetworkData = {
       value: AddressType.CKB_ADDRESS,
       label: "CKB",
       name: "CKB",
-      hdPath: `m/13'/1'/0'/0`,
+      hdPath: CKB_HD_PATH,
     },
   ],
   coinName: "CKB",
@@ -38,5 +40,3 @@ export const CKB_TESTNET: NetworkData = {
   network: offCKBConfig.network.testnet,
   decimal: 8,
 };
-
-export const CKB_NEURON_HD_PATH = "m/44'/309'/0'/0/0";

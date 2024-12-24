@@ -33,7 +33,7 @@ export type WalletToImport = {
   name: string;
   passphrase: string;
   hdPath?: string;
-  value?: "utxoGlobal" | "neuron" | "unisat" | "others";
+  value?: "utxoGlobal" | "utxoGlobalOld" | "neuron" | "unisat" | "others";
 };
 
 export type NetworkData = {

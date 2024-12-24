@@ -24,11 +24,7 @@ import { IGroupAccount, IWallet } from "@/shared/interfaces";
 import walletController from "../walletController";
 import { ChainSlug, NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { BTC_LIVENET, BTC_TESTNET4 } from "@/shared/networks/btc";
-import {
-  CKB_MAINNET,
-  CKB_NEURON_HD_PATH,
-  CKB_TESTNET,
-} from "@/shared/networks/ckb";
+import { CKB_MAINNET, CKB_TESTNET } from "@/shared/networks/ckb";
 import { helpers } from "@ckb-lumos/lumos";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { ccc } from "@ckb-ccc/core";
@@ -90,18 +86,15 @@ class ProviderController {
           );
         }
 
-        const hdPathForNeuronWallet =
+        const hdPath =
           _otherNetworkGroupAccounts.length === 0
             ? ""
-            : _otherNetworkGroupAccounts[0].accounts[0].hdPath ===
-              CKB_NEURON_HD_PATH
-            ? CKB_NEURON_HD_PATH
-            : "";
+            : _otherNetworkGroupAccounts[0].accounts[0].hdPath;
 
         const accounts = await walletController.createDefaultGroupAccount(
           _network,
           wallet.id,
-          hdPathForNeuronWallet
+          hdPath
         );
         if (wallet.id === currentWallet.id) {
           selectedAccount = wallet.accounts.length;

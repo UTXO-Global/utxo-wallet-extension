@@ -74,6 +74,7 @@ const ConfirmMnemonic = () => {
     }
     setLoading(true);
     await createNewWallet({
+      isNewVersion: true,
       payload: _mnemonicPhaseConfirm.join(" "),
       walletType: "root",
     });

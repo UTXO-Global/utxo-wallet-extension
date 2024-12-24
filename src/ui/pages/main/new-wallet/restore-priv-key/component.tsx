@@ -62,6 +62,7 @@ const RestorePrivKey = () => {
         privKey.indexOf("0x") === 0 ? privKey.replace("0x", "") : privKey;
 
       await createNewWallet({
+        isNewVersion: true,
         payload: privKey,
         walletType: "simple",
         restoreFrom: "hex", // use hex to save because we have already convert

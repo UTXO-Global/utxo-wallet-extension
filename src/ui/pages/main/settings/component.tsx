@@ -1,4 +1,4 @@
-import browser, { browserTabsCreate } from "@/shared/utils/browser";
+import { browserTabsCreate } from "@/shared/utils/browser";
 import { useAppState } from "@/ui/states/appState";
 import s from "./styles.module.scss";
 
@@ -12,9 +12,9 @@ import versionInfo from "../../../../../version.json";
 import {
   IcnArrowLeftOnRectangle,
   IcnConnectSite,
+  IcnRightPanel,
   IcnSecurity,
   IcnWallet,
-  IcnRightPanel,
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
@@ -117,7 +117,7 @@ const Settings = () => {
     <div className={s.wrapper}>
       <div className={s.settings}>
         {items.map((i) => (
-          <div key={i.label}>
+          <div key={i.label} onClick={() => analytics(i.gaLabel)}>
             <Tile {...i} />
           </div>
         ))}

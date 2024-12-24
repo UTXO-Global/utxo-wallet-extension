@@ -21,7 +21,7 @@ import { Keyring } from "../services/keyring/ckbhdw";
 import { getAddress } from "../services/keyring/ckbhdw/hd/utils";
 import { Json } from "../services/keyring/types";
 import type { DecryptedSecrets } from "../services/storage/types";
-import { CKB_NEURON_HD_PATH } from "@/shared/networks/ckb";
+import { CKB_HD_PATH, CKB_OLD_HD_PATH } from "@/shared/networks/ckb";
 import Analytics from "@/ui/utils/gtm";
 
 function getAddressesByWalletIndex({
@@ -178,6 +178,35 @@ async function _createDefaultGroupAccount({
   }
 }
 
+async function _createNewWalletWithOldVersion(
+  props: INewWalletProps
+): Promise<IWallet> {
+  const exportedWallets = storageService.walletState.wallets;
+  const walletId =
+    exportedWallets.length > 0
+      ? exportedWallets[exportedWallets.length - 1].id + 1
+      : 0;
+
+  const keyring = await keyringService.newKeyring(props);
+
+  const hdPath =
+    props.restoreFromWallet === "neuron" ? CKB_HD_PATH : CKB_OLD_HD_PATH;
+
+  const groupAccount = await _createDefaultGroupAccount({
+    networkSlug: storageService.currentNetwork,
+    key: keyring,
+    hdPath,
+  });
+
+  return {
+    name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
+    id: walletId,
+    type: props.walletType,
+    accounts: [groupAccount],
+    restoreFromWallet: props.restoreFromWallet,
+  };
+}
+
 class WalletController implements IWalletController {
   async isVaultEmpty() {
     const values = await storageService.getLocalValues();
@@ -185,6 +214,9 @@ class WalletController implements IWalletController {
   }
 
   async createNewWallet(props: INewWalletProps): Promise<IWallet> {
+    if (!props.isNewVersion) {
+      return await _createNewWalletWithOldVersion(props);
+    }
     const exportedWallets = storageService.walletState.wallets;
 
     const walletId =
@@ -193,14 +225,9 @@ class WalletController implements IWalletController {
         : 0;
 
     const keyring = await keyringService.newKeyring(props);
-
-    const hdPath =
-      props.restoreFromWallet === "neuron" ? CKB_NEURON_HD_PATH : "";
-
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
-      hdPath,
     });
 
     return {
@@ -281,9 +308,7 @@ class WalletController implements IWalletController {
 
     const accounts: IAccount[] = addressTypes.map((addressType, id) => {
       const hdPath = getNewHdPathFromAddressType(
-        wallet.restoreFromWallet === "neuron"
-          ? CKB_NEURON_HD_PATH
-          : addressType.hdPath,
+        addressType.hdPath,
         newGAccountIndex
       );
       const publicKey = keyring.exportPublicKey(hdPath);

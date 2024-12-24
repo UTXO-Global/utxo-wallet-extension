@@ -40,6 +40,7 @@ const RestoreMnemonicOrdinals = () => {
     setLoading(true);
     try {
       await createNewWallet({
+        isNewVersion: true,
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         hdPath: "m/44'/3'/0'/0/0",

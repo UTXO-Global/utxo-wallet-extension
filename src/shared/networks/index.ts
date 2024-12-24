@@ -1,6 +1,6 @@
 import { Network as BitcoinNetwork } from "bitcoinjs-lib";
 import { BTC_LIVENET, BTC_SIGNET, BTC_TESTNET, BTC_TESTNET4 } from "./btc";
-import { CKB_MAINNET, CKB_NEURON_HD_PATH, CKB_TESTNET } from "./ckb";
+import { CKB_HD_PATH, CKB_MAINNET, CKB_OLD_HD_PATH, CKB_TESTNET } from "./ckb";
 import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
 import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
@@ -25,19 +25,19 @@ export const supportedNetworks: ChainData[] = [
         {
           name: "UTXO Global",
           value: "utxoGlobal",
-          hdPath: "",
+          hdPath: CKB_HD_PATH,
           passphrase: "",
         },
         {
-          name: "Neuron",
-          value: "neuron",
-          hdPath: CKB_NEURON_HD_PATH,
+          name: "UTXO Global (<0.1.3.5)",
+          value: "utxoGlobalOld",
+          hdPath: CKB_OLD_HD_PATH,
           passphrase: "",
         },
         {
           name: "Others",
           value: "others",
-          hdPath: "",
+          hdPath: CKB_OLD_HD_PATH,
           passphrase: "",
         },
       ],
