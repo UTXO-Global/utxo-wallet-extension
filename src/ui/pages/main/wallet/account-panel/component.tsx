@@ -20,7 +20,7 @@ import cn from "classnames";
 import { isCkbNetwork, isDogecoinNetwork } from "@/shared/networks";
 import ReceiveAddress from "@/ui/components/receive-address";
 import { formatNumber } from "@/shared/utils";
-import browser from "@/shared/utils/browser";
+import browser, { browserTabsCreate } from "@/shared/utils/browser";
 
 const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
@@ -39,10 +39,6 @@ const AccountPanel = () => {
   const ckbPrice = useMemo(() => {
     return currentPrice ? Number(currentPrice) : 0;
   }, [currentPrice]);
-
-  const ckbChange24h = useMemo(() => {
-    return changePercent24Hr ? Number(changePercent24Hr) : 0;
-  }, [changePercent24Hr]);
 
   const ckbBalance = useMemo(() => {
     return currentAccount.balance ? Number(currentAccount.balance) : 0;
@@ -156,6 +152,28 @@ const AccountPanel = () => {
                 )}
               </p>
             ) : null}
+
+            {["btc", "nervos", "dogecoin"].includes(currentNetwork.slug) ? (
+              <p className="text-[#FF4545] text-center mt-2 !mb-3 text-lg font-normal">
+                <span
+                  className="underline text-[#FFA23A] cursor-pointer"
+                  onClick={() => {
+                    if (window.innerWidth > 500) {
+                      navigate("/alchemypay");
+                    } else {
+                      browserTabsCreate({
+                        url: "/index.html#/alchemypay",
+                      });
+                    }
+                  }}
+                >
+                  Purchase now
+                </span>{" "}
+                with Alchemy Pay.
+              </p>
+            ) : (
+              <></>
+            )}
 
             <div className="grid gap-3 my-6">
               <div className="text-4xl font-medium leading-[39.6px] text-right flex flex-wrap items-center justify-center gap-1">

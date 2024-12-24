@@ -113,17 +113,6 @@ const Receive = () => {
         >
           Copy
         </div>
-
-        <div
-          className="py-1 w-[80px] flex justify-center rounded-full bg-[#F5F5F5] text-[14px] leading-[24px] text-[#787575] cursor-pointer"
-          onClick={async () => {
-            await browserTabsCreate({
-              url: "/index.html#/alchemypay",
-            });
-          }}
-        >
-          Purchase
-        </div>
       </div>
     </div>
   );
