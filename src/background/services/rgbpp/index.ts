@@ -270,7 +270,7 @@ async function createSendRgbppUtxosBuilder(
   });
 }
 
-async function sendRgbppUtxos(
+export async function sendRgbppUtxos(
   props: SendRgbppUtxosProps
 ): Promise<bitcoin.Psbt> {
   const { builder } = await createSendRgbppUtxosBuilder(props);

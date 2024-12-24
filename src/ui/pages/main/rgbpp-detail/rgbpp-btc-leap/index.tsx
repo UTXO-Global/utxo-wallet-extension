@@ -1,7 +1,10 @@
 import { shortAddress } from "@/shared/utils/transactions";
 import Switch from "@/ui/components/switch";
-import { useCreateRgbppTxCallback } from "@/ui/hooks/transactions";
-import { useGetCurrentAccount } from "@/ui/states/walletState";
+import { useCreateBtcLeapRgbppTxCallback } from "@/ui/hooks/transactions";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import { normalizeAmount } from "@/ui/utils";
 import Analytics from "@/ui/utils/gtm";
 import cn from "classnames";
@@ -28,6 +31,8 @@ import AddressInput from "../../send/create-send/address-input";
 import FeeInput from "../../send/create-send/fee-input";
 import AddressBookModal from "../../send/create-send/address-book-modal";
 import { calculateScriptPack, toHexString } from "@/background/utils";
+import { AGGRON4, LINA } from "@/shared/networks";
+import { helpers } from "@ckb-lumos/lumos";
 
 export interface FormType {
   address: string;
@@ -36,7 +41,7 @@ export interface FormType {
   includeFeeInAmount: boolean;
 }
 
-const CreateSendRgbpp = () => {
+const BtcLeapRgbpp = () => {
   const formId = useId();
 
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
@@ -47,9 +52,11 @@ const CreateSendRgbpp = () => {
     includeFeeInAmount: false,
     feeAmount: 10,
   });
+
   const includeFeeLocked = true;
   const currentAccount = useGetCurrentAccount();
-  const createRgbppTx = useCreateRgbppTxCallback();
+  const currentNetwork = useGetCurrentNetwork();
+  const createBtcLeapRgbppTx = useCreateBtcLeapRgbppTxCallback();
   const navigate = useNavigate();
   const location = useLocation();
   const token: CKBTokenInfo = location.state.token;
@@ -99,9 +106,32 @@ const CreateSendRgbpp = () => {
     );
   }, [rgbppAssets, typeScriptString]);
 
+  const isValidCkbAddress = useCallback(
+    (address: string) => {
+      // btc -> nervos
+      // other btc -> nervos_testnet
+      const lumosConfig = currentNetwork.slug === "btc" ? LINA : AGGRON4;
+      try {
+        helpers.parseAddress(address, {
+          config: lumosConfig,
+        });
+      } catch (error) {
+        console.log("invalid address", error);
+        return false;
+      }
+      return true;
+    },
+    [currentNetwork]
+  );
+
   const isValidForm = useMemo(() => {
     if (!formData.address) return false;
     if (formData.address?.trim().length <= 0) return false;
+
+    // Check CKB address
+    if (!isValidCkbAddress(formData.address.trim())) {
+      return false;
+    }
 
     if (Number(formData.amount) <= 0) {
       return false;
@@ -124,7 +154,7 @@ const CreateSendRgbpp = () => {
     }
 
     return true;
-  }, [formData, balance, token]);
+  }, [formData, balance, token, currentNetwork]);
 
   const send = async ({
     address,
@@ -147,16 +177,17 @@ const CreateSendRgbpp = () => {
         return toast.error(t("send.create_send.fee_is_text_error"));
       }
 
-      const { fee, rawtx, fromAddresses, isomorphicTx } = await createRgbppTx(
-        address,
-        Number((Number(amount) * 10 ** Number(decimal)).toFixed(0)),
-        token.attributes.type_script.args,
-        rgbppAssets
-      );
+      const { fee, rawtx, fromAddresses, isomorphicTx } =
+        await createBtcLeapRgbppTx(
+          address,
+          Number((Number(amount) * 10 ** Number(decimal)).toFixed(0)),
+          token.attributes.type_script.args,
+          rgbppAssets
+        );
 
       // NOTE: [GA] - Send BTC
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      await Analytics.fireEvent("pf_send_rgbpp", {
+      await Analytics.fireEvent("pf_btc_leap_rgbpp", {
         action: "continue",
         label: fromAddresses.map((z) => shortAddress(z, 3)).join(","),
         amount: Number(amount),
@@ -256,6 +287,7 @@ const CreateSendRgbpp = () => {
             </span>
             <AddressInput
               address={formData.address}
+              placeHolder="CKB Address/.bit"
               onChange={useCallback(
                 (v) => {
                   setFormData((p) => ({
@@ -377,4 +409,4 @@ const CreateSendRgbpp = () => {
   );
 };
 
-export default CreateSendRgbpp;
+export default BtcLeapRgbpp;

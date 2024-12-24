@@ -54,6 +54,7 @@ import UTXOFinalSwap from "./main/swap/success";
 import CreateSendRgbpp from "./main/rgbpp-detail/rgbpp-create-send";
 import ConfirmSendRgbpp from "./main/rgbpp-detail/rgbpp-confirm-send";
 import RgbppTransactionInfo from "./main/rgbpp-detail/rgbpp-transaction-info";
+import BtcLeapRgbpp from "./main/rgbpp-detail/rgbpp-btc-leap";
 
 export const guestRouter = createHashRouter([
   {
@@ -137,6 +138,7 @@ export const authenticatedRouter = createHashRouter([
       { path: "finalle-send/:txId", element: <FinalleSend /> },
       { path: "create-send", element: <CreateSend /> },
       { path: "create-send-rgbpp", element: <CreateSendRgbpp /> },
+      { path: "btc-leap-rgbpp", element: <BtcLeapRgbpp /> },
       { path: "confirm-send", element: <ConfirmSend /> },
       { path: "confirm-send-rgbpp", element: <ConfirmSendRgbpp /> },
       { path: "connected-sites", element: <ConnectedSites /> },

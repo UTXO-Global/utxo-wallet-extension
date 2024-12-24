@@ -23,10 +23,16 @@ import { CKBTokenInfo } from "@/shared/networks/ckb/types";
 import { fetchExplorerAPI } from "../utils/helpers";
 import { formatNumber } from "@/shared/utils";
 import { RGBPP_ASSET_API_URL, RgbppAsset } from "@/shared/interfaces/rgbpp";
-import { BTCTestnetType, Collector } from "@rgbpp-sdk/ckb";
+import {
+  BTCTestnetType,
+  Collector,
+  genBtcJumpCkbVirtualTx,
+  getXudtTypeScript,
+  serializeScript,
+} from "@rgbpp-sdk/ckb";
 import { AddressType } from "@/shared/networks/types";
 import { buildRgbppTransferTx } from "@/background/services/rgbpp";
-import { NetworkType, DataSource } from "@rgbpp-sdk/btc";
+import { NetworkType, DataSource, sendRgbppUtxos } from "@rgbpp-sdk/btc";
 import { BtcAssetsApi } from "../utils/rgbpp";
 
 export function useCreateTxCallback() {
@@ -501,7 +507,6 @@ export function useCreateRgbppTxCallback() {
       });
 
       // TODO: Save ckbVirtualTxResult
-      // saveCkbVirtualTxResult(ckbVirtualTxResult, "2-btc-transfer");
       const isomorphicTx = JSON.stringify(ckbVirtualTxResult);
       // btcService.sendRgbppCkbTransaction({ btc_txid: btcTxId, ckb_virtual_result: ckbVirtualTxResult })
 
@@ -513,6 +518,128 @@ export function useCreateRgbppTxCallback() {
 
       const psbtHex = await keyringController.sendRgbpp(
         btcPsbtHex,
+        toSignInputs
+      );
+      const psbt = Psbt.fromHex(psbtHex);
+      const tx = psbt.extractTransaction();
+      const rawtx = tx.toHex();
+      return {
+        rawtx,
+        fee: psbt.getFee(),
+        isomorphicTx,
+        fromAddresses: [_account.address], // TODO: return address of specific selected input
+      };
+    },
+    [selectedAccount, selectedWallet, keyringController]
+  );
+}
+
+export function useCreateBtcLeapRgbppTxCallback() {
+  const { selectedAccount, selectedWallet } = useWalletState((v) => ({
+    selectedAccount: v.selectedAccount,
+    selectedWallet: v.selectedWallet,
+  }));
+  const { keyringController } = useControllersState((v) => ({
+    keyringController: v.keyringController,
+  }));
+  const account = useGetCurrentAccount();
+  const { slug: networkSlug } = useGetCurrentNetwork();
+
+  return useCallback(
+    async (
+      toCkbAddress: string,
+      transferAmount: number,
+      xudtTypeArgs: string,
+      rgbppAssets: RgbppAsset[]
+    ) => {
+      if (selectedWallet === undefined || selectedAccount === undefined)
+        throw new Error("Failed to get current wallet or account");
+
+      if (!account || !account.accounts[0].address)
+        throw new Error("Error when trying to get the current account");
+
+      const isMainnet = networkSlug === "btc";
+
+      let btcTestnetNetworkType: BTCTestnetType | undefined;
+      let btcNetworkType = NetworkType.TESTNET;
+
+      let ckbIndexerUrl = "https://testnet.ckb.dev/indexer";
+      let ckbNodeUrl = "https://testnet.ckb.dev/rpc";
+      switch (networkSlug) {
+        case "btc_signet":
+          btcTestnetNetworkType = "Signet" as BTCTestnetType;
+          btcNetworkType = NetworkType.TESTNET;
+          break;
+        case "btc_testnet":
+        case "btc_testnet_4":
+          btcTestnetNetworkType = "Testnet3" as BTCTestnetType;
+          btcNetworkType = NetworkType.TESTNET;
+          break;
+        case "btc":
+          btcNetworkType = NetworkType.MAINNET;
+          ckbIndexerUrl = "https://mainnet.ckb.dev/indexer";
+          ckbNodeUrl = "https://mainnet.ckb.dev/rpc";
+          break;
+      }
+      const collector = new Collector({
+        ckbNodeUrl,
+        ckbIndexerUrl,
+      });
+
+      const btcService = new BtcAssetsApi(RGBPP_ASSET_API_URL, networkSlug);
+      const btcDataSource = new DataSource(btcService, btcNetworkType);
+
+      const rgbppLockArgsList = rgbppAssets.map(
+        (asset) => asset.cellOutput.lock.args
+      );
+
+      // TODO: check assets all address type
+      const _account = account.accounts.find(
+        (acc) => acc.addressType.value === AddressType.P2TR
+      );
+      const fromPubkey = await keyringController.exportPublicKey(
+        _account.hdPath
+      );
+
+      const xudtType: CKBComponents.Script = {
+        ...getXudtTypeScript(isMainnet),
+        args: xudtTypeArgs,
+      };
+      const ckbVirtualTxResult = await genBtcJumpCkbVirtualTx({
+        collector,
+        rgbppLockArgsList,
+        xudtTypeBytes: serializeScript(xudtType),
+        transferAmount: BigInt(transferAmount),
+        toCkbAddress,
+        isMainnet,
+        btcTestnetType: btcTestnetNetworkType,
+        // btcConfirmationBlocks: 20,   // default value is 6
+      });
+
+      // TODO: Save ckbVirtualTxResult
+      const isomorphicTx = JSON.stringify(ckbVirtualTxResult);
+      // btcService.sendRgbppCkbTransaction({ btc_txid: btcTxId, ckb_virtual_result: ckbVirtualTxResult })
+
+      const { commitment, ckbRawTx } = ckbVirtualTxResult;
+
+      const unsignedPsbt = await sendRgbppUtxos({
+        ckbVirtualTx: ckbRawTx,
+        commitment,
+        tos: [_account.address],
+        ckbCollector: collector,
+        from: _account.address,
+        fromPubkey,
+        source: btcDataSource,
+      });
+
+      const toSignInputs = unsignedPsbt.data.inputs.map((v, index) => ({
+        index,
+        address: _account.address,
+      }));
+      console.log({ unsignedPsbt });
+
+      const psbtHex = await keyringController.sendRgbpp(
+        unsignedPsbt.toHex(),
         toSignInputs
       );
       const psbt = Psbt.fromHex(psbtHex);

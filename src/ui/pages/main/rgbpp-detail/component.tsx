@@ -75,6 +75,13 @@ const RgbppDetail = () => {
         icon: <IcnSend />,
         title: t("wallet_page.send"),
       },
+      {
+        navPath: "/pages/btc-leap-rgbpp",
+        navName: "pf_btc_leap",
+        navLabel: "btc_leap",
+        icon: <IcnSend />,
+        title: "Leap To CKB",
+      },
     ];
   }, [currentAccount.accounts]);
 
@@ -203,7 +210,7 @@ const RgbppDetail = () => {
           <div
             className={cn(`grid gap-2 mt-4`, {
               "grid-cols-2": panelNavs.length <= 2,
-              "grid-cols-4": panelNavs.length > 2,
+              "grid-cols-3": panelNavs.length > 2,
             })}
           >
             {panelNavs.map((nav, i) => (
@@ -213,18 +220,14 @@ const RgbppDetail = () => {
                   `py-3 px-4 flex gap-1 flex-col cursor-pointer justify-center items-center transition-all bg-grey-300 hover:bg-grey-200 rounded-[10px]`,
                   {
                     "!cursor-not-allowed hover:!bg-grey-300":
-                      tokenBalance <= 0 &&
-                      nav.navPath === "/pages/create-send-rgbpp",
+                      tokenBalance <= 0 && nav.navPath !== "/pages/receive",
                   }
                 )}
                 onClick={() => {
                   if (nav.isPopup) {
                     setIsShowReceive(true);
                   } else {
-                    if (
-                      tokenBalance <= 0 &&
-                      nav.navPath === "/pages/create-send-rgbpp"
-                    )
+                    if (tokenBalance <= 0 && nav.navPath !== "/pages/receive")
                       return;
                     _navigate(nav.navPath, nav.navName, nav.navLabel);
                   }
