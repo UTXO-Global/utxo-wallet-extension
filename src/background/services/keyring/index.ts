@@ -47,6 +47,8 @@ import {
   payFeeByOutput,
 } from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
+import * as ecc from "@bitcoinerlab/secp256k1";
+import * as bitcoinjs from "bitcoinjs-lib";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -782,6 +784,8 @@ class KeyringService {
     const account = storageService.currentAccount;
     if (!account || !account.accounts[0].address)
       throw new Error("Error when trying to get the current account");
+
+    bitcoinjs.initEccLib(ecc);
 
     // build psbt
     const psbt = Psbt.fromHex(btcPsbtHex);
