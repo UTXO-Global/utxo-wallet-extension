@@ -39,23 +39,6 @@ export const getTxDirection = (
     0
   );
 
-  if (transaction.address.startsWith("tb1")) {
-    console.log({
-      transaction: transaction.txid,
-      totalIn,
-      totalOut,
-      vin: transaction.vin.map((x) => ({
-        address: x.prevout.scriptpubkey_address,
-        value: x.prevout.value,
-      })),
-      vout: transaction.vout.map((x) => ({
-        address: x.scriptpubkey_address,
-        value: x.value,
-      })),
-      targetAddress,
-    });
-  }
-
   if (totalIn > totalOut) {
     return TxDirection.out;
   }
