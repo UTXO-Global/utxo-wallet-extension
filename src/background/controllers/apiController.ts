@@ -32,6 +32,7 @@ export interface IApiController {
     | {
         cardinalBalance: number;
         ordinalBalance: number;
+        rgbppBalance: number;
         coinBalances: { [key: string]: any };
       }
     | undefined
@@ -90,6 +91,7 @@ export interface IApiController {
     typeHash?: string;
   }): Promise<ITransaction[] | undefined>;
   getRgbppAssets(typeScript: string, address: string): Promise<RgbppAsset[]>;
+  getRgbppAssetOutpoints(address: string): Promise<string[]>;
 }
 
 // TODO: use interface instead
@@ -108,6 +110,7 @@ class ApiController implements IApiController {
       const balance = data.reduce((acc, utxo) => acc + utxo.value, 0);
 
       let ordinalBalance = 0;
+      let rgbppBalance = 0;
       try {
         // Filter Ord UTXO
         const networkData = getNetworkDataBySlug(storageService.currentNetwork);
@@ -120,13 +123,22 @@ class ApiController implements IApiController {
           });
           ordinalBalance += ordUtxos.reduce((acc, utxo) => acc + utxo.value, 0);
         }
+        // Filter Rgbpp UTXO
+        const outpointRgbpps = await controller.getRgbppAssetOutpoints(address);
+
+        rgbppBalance += data
+          .filter((utxo) =>
+            outpointRgbpps.includes(`${utxo.txid}:${utxo.vout}`)
+          )
+          .reduce((acc, utxo) => acc + utxo.value, 0);
       } catch (error) {
         throw new Error(error);
       }
 
       return {
-        cardinalBalance: balance - ordinalBalance,
+        cardinalBalance: balance - ordinalBalance - rgbppBalance,
         ordinalBalance,
+        rgbppBalance,
         coinBalances: {},
       };
     } else if (isCkbNetwork(networkData.network)) {
@@ -134,6 +146,7 @@ class ApiController implements IApiController {
       return {
         cardinalBalance: balances.balance.toNumber(),
         ordinalBalance: balances.balance_occupied.toNumber(),
+        rgbppBalance: 0,
         coinBalances: balances.udtBalances,
       };
     }
@@ -531,6 +544,30 @@ class ApiController implements IApiController {
       0
     );
   }
+
+  async getRgbppAssetOutpoints(address: string): Promise<string[]> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const rgbAssets = await fetchEsplora<RgbppAsset[]>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/assets?no_cache=false`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+    return rgbAssets.map((asset) => {
+      const txId = Buffer.from(asset.cellOutput.lock.args.slice(-64), "hex")
+        .reverse()
+        .toString("hex");
+      const index = Number(
+        "0x" +
+          Buffer.from(asset.cellOutput.lock.args.slice(2, 10), "hex")
+            .reverse()
+            .toString("hex")
+      );
+
+      return `${txId}:${index}`;
+    });
+  }
 }
 
-export default new ApiController();
+const controller = new ApiController();
+export default controller;

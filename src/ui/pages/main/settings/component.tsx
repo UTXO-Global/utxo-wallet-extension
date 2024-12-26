@@ -46,10 +46,6 @@ const Settings = () => {
       type: "sidePanel",
       action: isPanelView ? "disable" : "open",
     });
-    console.log({
-      type: "sidePanel",
-      action: isPanelView ? "disable" : "open",
-    });
     window.close();
   };
 

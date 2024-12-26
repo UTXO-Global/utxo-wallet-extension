@@ -144,13 +144,22 @@ export function useCreateTxCallback() {
         const totalUtxos: ApiUTXO[] = [];
         for (const account of currentAccount.accounts) {
           const utxos = await apiController.getUtxos(account.address);
-          // Filter utxo contains runes or ordinals
           if (isBitcoinNetwork(network)) {
+            // Filter utxo contains ordinals
             const outpointOrds = (
               await apiController.getOrdUtxos(account.address)
             ).map((oo) => `${oo.outpoint}`);
+            // Filter utxo contains rgbpp
+            const outpointRgbpps = await apiController.getRgbppAssetOutpoints(
+              account.address
+            );
+
             const nonOrdUtxo = utxos.filter(
-              (utxo) => !outpointOrds.includes(`${utxo.txid}:${utxo.vout}`)
+              (utxo) =>
+                !(
+                  outpointOrds.includes(`${utxo.txid}:${utxo.vout}`) ||
+                  outpointRgbpps.includes(`${utxo.txid}:${utxo.vout}`)
+                )
             );
 
             totalUtxos.push(...nonOrdUtxo);
@@ -636,7 +645,6 @@ export function useCreateBtcLeapRgbppTxCallback() {
         index,
         address: _account.address,
       }));
-      console.log({ unsignedPsbt });
 
       const psbtHex = await keyringController.sendRgbpp(
         unsignedPsbt.toHex(),
