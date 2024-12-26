@@ -26,6 +26,8 @@ import {
 } from "@/shared/interfaces/rgbpp";
 import { NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { udtDataToDecimal } from "../utils";
+import { CacheResponse } from "./cache/decorate";
+import { basicCache as cache } from "./cache";
 
 export interface IApiController {
   getAccountBalance(address: string): Promise<
@@ -96,6 +98,7 @@ export interface IApiController {
 
 // TODO: use interface instead
 class ApiController implements IApiController {
+  @CacheResponse(30000)
   async getAccountBalance(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -152,6 +155,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getUtxos(address: string): Promise<ApiUTXO[]> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     // Bitcoin + using esplora API
@@ -165,6 +169,7 @@ class ApiController implements IApiController {
     }));
   }
 
+  @CacheResponse(30000)
   async getOrdUtxos(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const data = await fetchEsplora<ApiOrdUTXO[]>({
@@ -176,12 +181,14 @@ class ApiController implements IApiController {
     return data;
   }
 
+  @CacheResponse(30000)
   async getCells(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const data = await getCells(networkData.network as NetworkConfig, address);
     return data;
   }
 
+  @CacheResponse(30000)
   async getFees() {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -214,6 +221,10 @@ class ApiController implements IApiController {
       json: false,
       body: rawTx,
     });
+
+    // Clear all cache
+    cache.clearAll();
+
     return {
       txid: data,
     };
@@ -225,11 +236,16 @@ class ApiController implements IApiController {
     const hash = await (
       networkData.network as NetworkConfig
     ).rpc.sendTransaction(tx, "passthrough");
+
+    // Clear all cache
+    cache.clearAll();
+
     return {
       txid: hash,
     };
   }
 
+  @CacheResponse(30000)
   async getTransactions(): Promise<ITransaction[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const accounts = storageService.currentAccount.accounts;
@@ -249,6 +265,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getCKBTransactions({
     type,
     typeHash,
@@ -277,6 +294,7 @@ class ApiController implements IApiController {
     }));
   }
 
+  @CacheResponse(30000)
   async getInscriptions(address: string): Promise<Inscription[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<Inscription[]>({
@@ -284,6 +302,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getPaginatedTransactions(
     address: string,
     txid: string
@@ -298,6 +317,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getPaginatedInscriptions(
     address: string,
     location: string
@@ -312,6 +332,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getLastBlock(): Promise<number> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -336,6 +357,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getNativeCoinPrice(coinSymbol: string): Promise<{
     usd: number;
     changePercent24Hr: number;
@@ -366,6 +388,7 @@ class ApiController implements IApiController {
     };
   }
 
+  @CacheResponse(30000)
   async getDiscovery(): Promise<Inscription[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<Inscription[]>({
@@ -373,6 +396,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getInscriptionCounter(
     address: string
   ): Promise<{ amount: number; count: number }> {
@@ -389,6 +413,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getInscription({
     inscriptionNumber,
     inscriptionId,
@@ -406,6 +431,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getTokens(address: string): Promise<IToken[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<IToken[]>({
@@ -413,6 +439,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getTransactionHex(txid: string): Promise<string> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<string>({
@@ -421,6 +448,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getUtxoValues(outpoints: string[]): Promise<number[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     let values: number[] = [];
@@ -452,6 +480,7 @@ class ApiController implements IApiController {
     return values;
   }
 
+  @CacheResponse(30000)
   async getRgbppXudtBalances(
     address: string,
     network?: NetworkData
@@ -471,6 +500,7 @@ class ApiController implements IApiController {
     return response.xudt;
   }
 
+  @CacheResponse(30000)
   async getRgbppTxs(typeScript: string): Promise<RgbppTx[]> {
     const txs: RgbppTx[] = [];
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
@@ -491,6 +521,7 @@ class ApiController implements IApiController {
     return txs;
   }
 
+  @CacheResponse(30000)
   async getRgbppTxsFromExplorer({
     typeHash,
   }: {
@@ -525,6 +556,7 @@ class ApiController implements IApiController {
     return txs;
   }
 
+  @CacheResponse(30000)
   async getRgbppAssets(
     typeScript: string,
     address: string
@@ -545,6 +577,7 @@ class ApiController implements IApiController {
     );
   }
 
+  @CacheResponse(30000)
   async getRgbppAssetOutpoints(address: string): Promise<string[]> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const rgbAssets = await fetchEsplora<RgbppAsset[]>({
