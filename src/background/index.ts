@@ -105,7 +105,7 @@ const addAppInstalledEvent = () => {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "toggle-utxo-wallet-panel",
-    title: `Enable UTXO Wallet Sidebar Mode`,
+    title: `Enable UTXO Global Wallet Sidebar`,
     contexts: ["all"],
   });
 });
@@ -114,7 +114,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "toggle-utxo-wallet-panel") {
     panelToggle = !panelToggle;
     chrome.contextMenus.update("toggle-utxo-wallet-panel", {
-      title: `${panelToggle ? "Disable" : "Enable"} UTXO Wallet Sidebar Mode`,
+      title: `${panelToggle ? "Disable" : "Enable"} UTXO Global Wallet Sidebar`,
     });
 
     if (panelToggle) {
@@ -122,6 +122,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         enabled: true,
         path: "index.html",
         tabId: tab.id,
+      });
+      await chrome.sidePanel.setPanelBehavior({
+        openPanelOnActionClick: true,
       });
     } else {
       await chrome.sidePanel.setOptions({

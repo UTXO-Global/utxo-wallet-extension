@@ -47,9 +47,11 @@ const SwitchWallet = () => {
           >
             <div className="cursor-pointer">
               <p className="text-lg text-primary font-medium">{wallet.name} </p>
-              <p className=" text-[10px]">{`UTXO Global Ver ${
-                wallet.version === CKB_HD_PATH_VERSION ? "0.1.3.5" : "< 0.1.3.5"
-              }`}</p>
+              <p className=" text-[10px]">
+                {wallet.type === "root"
+                  ? wallet?.accounts[0]?.accounts[0]?.hdPath
+                  : "From Private Key"}
+              </p>
             </div>
             <div className="flex items-center">
               {currentWallet.id === wallet.id ? (
