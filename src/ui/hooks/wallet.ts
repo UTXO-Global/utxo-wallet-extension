@@ -268,6 +268,7 @@ export const useUpdateCurrentAccountBalance = () => {
     async (address?: string) => {
       let groupCardinalAccountBalance = 0;
       let groupOrdinalAccountBalance = 0;
+      let groupRgbppAccountBalance = 0;
       const tokenBalances = {};
       for (const account of currentAccount.accounts) {
         const balance = await apiController.getAccountBalance(
@@ -276,6 +277,7 @@ export const useUpdateCurrentAccountBalance = () => {
         if (balance !== undefined) {
           groupCardinalAccountBalance += balance.cardinalBalance;
           groupOrdinalAccountBalance += balance.ordinalBalance;
+          groupRgbppAccountBalance += balance.rgbppBalance;
           Object.keys(balance.coinBalances).forEach((key) => {
             tokenBalances[key] =
               (tokenBalances[key] || 0) + balance.coinBalances[key].balance;
@@ -287,6 +289,7 @@ export const useUpdateCurrentAccountBalance = () => {
         balance: groupCardinalAccountBalance / 10 ** currentNetwork.decimal,
         ordinalBalance:
           groupOrdinalAccountBalance / 10 ** currentNetwork.decimal,
+        rgbppBalance: groupRgbppAccountBalance / 10 ** currentNetwork.decimal,
         coinBalances: tokenBalances,
       });
     },

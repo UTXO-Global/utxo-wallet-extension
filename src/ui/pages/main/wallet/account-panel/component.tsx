@@ -40,10 +40,6 @@ const AccountPanel = () => {
     return currentPrice ? Number(currentPrice) : 0;
   }, [currentPrice]);
 
-  const ckbChange24h = useMemo(() => {
-    return changePercent24Hr ? Number(changePercent24Hr) : 0;
-  }, [changePercent24Hr]);
-
   const ckbBalance = useMemo(() => {
     return currentAccount.balance ? Number(currentAccount.balance) : 0;
   }, [currentAccount.balance]);

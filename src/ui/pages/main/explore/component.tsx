@@ -86,12 +86,15 @@ const Explorer = () => {
               <Swiper
                 ref={swiperRef}
                 spaceBetween={16}
-                onSlideChange={() => console.log("slide change")}
                 onSwiper={(swiper) => console.log(swiper)}
               >
                 {feature.map((z, i) => (
                   <SwiperSlide key={i}>
-                    <a href={DOMPurify.sanitize(z.link)} target="_blank" rel="noreferrer">
+                    <a
+                      href={DOMPurify.sanitize(z.link)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       <div className="rounded-[8px] overflow-hidden">
                         <img
                           src={DOMPurify.sanitize(z.image)}
