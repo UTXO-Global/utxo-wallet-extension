@@ -30,10 +30,11 @@ export type NetworkSlug =
 export type ChainSlug = "btc" | "nervos" | "dogecoin";
 
 export type WalletToImport = {
+  version: number;
   name: string;
   passphrase: string;
   hdPath?: string;
-  value?: "utxoGlobal" | "utxoGlobalOld" | "neuron" | "unisat" | "others";
+  value?: "utxoGlobal" | "neuron" | "unisat" | "others";
 };
 
 export type NetworkData = {

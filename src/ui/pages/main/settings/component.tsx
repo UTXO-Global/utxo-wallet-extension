@@ -91,7 +91,6 @@ const Settings = () => {
         });
 
         const { id: tabId } = tabs[0];
-        console.log(tabs);
         if (!!tabId) {
           await chrome.sidePanel.setOptions({
             enabled: true,

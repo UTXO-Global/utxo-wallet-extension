@@ -1,6 +1,12 @@
 import { Network as BitcoinNetwork } from "bitcoinjs-lib";
 import { BTC_LIVENET, BTC_SIGNET, BTC_TESTNET, BTC_TESTNET4 } from "./btc";
-import { CKB_HD_PATH, CKB_MAINNET, CKB_OLD_HD_PATH, CKB_TESTNET } from "./ckb";
+import {
+  CKB_HD_PATH,
+  CKB_HD_PATH_VERSION,
+  CKB_MAINNET,
+  CKB_OLD_HD_PATH,
+  CKB_TESTNET,
+} from "./ckb";
 import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
 import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
@@ -27,18 +33,21 @@ export const supportedNetworks: ChainData[] = [
           value: "utxoGlobal",
           hdPath: CKB_HD_PATH,
           passphrase: "",
+          version: CKB_HD_PATH_VERSION,
         },
         {
           name: "UTXO Global (<0.1.3.5)",
-          value: "utxoGlobalOld",
+          value: "utxoGlobal",
           hdPath: CKB_OLD_HD_PATH,
           passphrase: "",
+          version: 0,
         },
         {
           name: "Others",
           value: "others",
-          hdPath: CKB_OLD_HD_PATH,
+          hdPath: CKB_HD_PATH,
           passphrase: "",
+          version: CKB_HD_PATH_VERSION,
         },
       ],
     })),
@@ -55,11 +64,13 @@ export const supportedNetworks: ChainData[] = [
             name: "Unisat",
             value: "unisat",
             passphrase: "",
+            version: 0,
           },
           {
             name: "Others",
             value: "others",
             passphrase: "",
+            version: 0,
           },
         ],
       })

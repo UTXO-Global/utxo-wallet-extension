@@ -21,7 +21,11 @@ import { Keyring } from "../services/keyring/ckbhdw";
 import { getAddress } from "../services/keyring/ckbhdw/hd/utils";
 import { Json } from "../services/keyring/types";
 import type { DecryptedSecrets } from "../services/storage/types";
-import { CKB_HD_PATH, CKB_OLD_HD_PATH } from "@/shared/networks/ckb";
+import {
+  CKB_HD_PATH,
+  CKB_HD_PATH_VERSION,
+  CKB_OLD_HD_PATH,
+} from "@/shared/networks/ckb";
 import Analytics from "@/ui/utils/gtm";
 
 function getAddressesByWalletIndex({
@@ -214,7 +218,7 @@ class WalletController implements IWalletController {
   }
 
   async createNewWallet(props: INewWalletProps): Promise<IWallet> {
-    if (!props.isNewVersion) {
+    if (props.version < CKB_HD_PATH_VERSION) {
       return await _createNewWalletWithOldVersion(props);
     }
     const exportedWallets = storageService.walletState.wallets;
@@ -230,12 +234,15 @@ class WalletController implements IWalletController {
       key: keyring,
     });
 
+    console.log(props);
+
     return {
       name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
       id: walletId,
       type: props.walletType,
       accounts: [groupAccount],
       restoreFromWallet: props.restoreFromWallet,
+      version: props.version,
     };
   }
 

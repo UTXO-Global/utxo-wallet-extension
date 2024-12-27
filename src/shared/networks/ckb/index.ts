@@ -40,3 +40,5 @@ export const CKB_TESTNET: NetworkData = {
   network: offCKBConfig.network.testnet,
   decimal: 8,
 };
+
+export const CKB_HD_PATH_VERSION = 135; // version 0.1.3.5

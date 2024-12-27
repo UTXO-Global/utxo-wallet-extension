@@ -57,13 +57,9 @@ const Select: FC<Props> = ({
                   }
                   value={value}
                 >
-                  {({ selected }) => (
-                    <>
-                      <span className={`block truncate `}>{value.name}</span>
-                      {selected && displayCheckIcon ? (
-                        <CheckIcon className="h-6 w-6" aria-hidden="true" />
-                      ) : null}
-                    </>
+                  <span className={`block truncate `}>{value.name}</span>
+                  {selected?.name === value.name && displayCheckIcon && (
+                    <CheckIcon className="h-6 w-6" aria-hidden="true" />
                   )}
                 </Listbox.Option>
               ))}

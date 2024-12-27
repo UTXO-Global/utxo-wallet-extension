@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
+import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
 
 interface FormType {
   privKey: string;
@@ -62,7 +63,7 @@ const RestorePrivKey = () => {
         privKey.indexOf("0x") === 0 ? privKey.replace("0x", "") : privKey;
 
       await createNewWallet({
-        isNewVersion: true,
+        version: CKB_HD_PATH_VERSION,
         payload: privKey,
         walletType: "simple",
         restoreFrom: "hex", // use hex to save because we have already convert

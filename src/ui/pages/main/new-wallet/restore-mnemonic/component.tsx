@@ -1,4 +1,4 @@
-import { CKB_OLD_HD_PATH } from "@/shared/networks/ckb";
+import { CKB_HD_PATH_VERSION, CKB_OLD_HD_PATH } from "@/shared/networks/ckb";
 import { WalletToImport } from "@/shared/networks/types";
 import Select from "@/ui/components/select";
 import SelectWithHint from "@/ui/components/select-hint/component";
@@ -49,7 +49,7 @@ const RestoreMnemonic = () => {
     setLoading(true);
     try {
       await createNewWallet({
-        isNewVersion: selectedWallet.hdPath !== CKB_OLD_HD_PATH,
+        version: selectedWallet.version,
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         passphrase:

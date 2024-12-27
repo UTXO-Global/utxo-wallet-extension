@@ -7,6 +7,7 @@ export interface IWallet {
   name: string;
   type: "simple" | "root";
   restoreFromWallet?: "utxoGlobal" | "neuron" | "unisat" | "others";
+  version?: number;
 }
 
 export interface IPrivateWallet extends IWallet {
@@ -30,7 +31,7 @@ export interface IWalletState extends IWalletStateBase {
 }
 
 export interface INewWalletProps {
-  isNewVersion: boolean;
+  version: number;
   payload: string;
   walletType: "simple" | "root";
   name?: string;
@@ -38,10 +39,5 @@ export interface INewWalletProps {
   restoreFrom?: "wif" | "hex";
   hdPath?: string;
   passphrase?: string;
-  restoreFromWallet?:
-    | "utxoGlobal"
-    | "utxoGlobalOld"
-    | "neuron"
-    | "unisat"
-    | "others";
+  restoreFromWallet?: "utxoGlobal" | "neuron" | "unisat" | "others";
 }
