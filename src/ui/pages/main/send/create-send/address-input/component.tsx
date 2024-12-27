@@ -22,6 +22,7 @@ interface Props {
   onChange: ({ value, isUseDID }: { value: string; isUseDID: boolean }) => void;
   onOpenModal: () => void;
   className?: string;
+  placeHolder?: string;
 }
 
 const AddressInput: FC<Props> = ({
@@ -29,9 +30,10 @@ const AddressInput: FC<Props> = ({
   onChange,
   onOpenModal,
   className,
+  placeHolder,
 }) => {
   const [filtered, setFiltered] = useState<string[]>([]);
-  const [didAddresses, setDidAddresses] = useState<string[]>([])
+  const [didAddresses, setDidAddresses] = useState<string[]>([]);
   const currentNetwork = useGetCurrentNetwork();
   const [inputValue, setInputValue] = useState("");
   const [requesting, setRequesting] = useState(false);
@@ -66,7 +68,10 @@ const AddressInput: FC<Props> = ({
       }
       setRequesting(true);
     } else {
-      onChange({ value: inputValue, isUseDID: didAddresses.includes(inputValue) });
+      onChange({
+        value: inputValue,
+        isUseDID: didAddresses.includes(inputValue),
+      });
       setFiltered(getFiltered(inputValue));
     }
   }, [inputValue, requesting]);
@@ -86,9 +91,10 @@ const AddressInput: FC<Props> = ({
             autoComplete="off"
             className="w-full bg-transparent p-4 text-base font-normal"
             value={inputValue}
-            placeholder={t(
-              "send.create_send.address_input.address_placeholder"
-            )}
+            placeholder={
+              placeHolder ??
+              t("send.create_send.address_input.address_placeholder")
+            }
             onChange={(v) => {
               setInputValue(v.target.value.trim());
             }}

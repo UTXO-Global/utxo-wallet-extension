@@ -40,6 +40,7 @@ import SignTransaction from "./provider/sign-transaction";
 import ConfirmMnemonic from "./main/new-wallet/new-mnemonic/confirm-mnemonic";
 import Home from "./main/home";
 import TokenDetail from "./main/token-detail";
+import RgbppDetail from "./main/rgbpp-detail";
 import ListNFTs from "./main/nfts/component";
 import DetailNFT from "./main/detail-nft";
 import Activities from "./main/activities";
@@ -50,6 +51,10 @@ import UTXOSwapSetting from "./main/swap/setting";
 import UTXOSwapSearchToken from "./main/swap/search-token/component";
 import UTXOReviewOrder from "./main/swap/review-order/component";
 import UTXOFinalSwap from "./main/swap/success";
+import CreateSendRgbpp from "./main/rgbpp-detail/rgbpp-create-send";
+import ConfirmSendRgbpp from "./main/rgbpp-detail/rgbpp-confirm-send";
+import RgbppTransactionInfo from "./main/rgbpp-detail/rgbpp-transaction-info";
+import BtcLeapRgbpp from "./main/rgbpp-detail/rgbpp-btc-leap";
 
 export const guestRouter = createHashRouter([
   {
@@ -104,6 +109,14 @@ export const authenticatedRouter = createHashRouter([
         path: "tokens/:type/:typeHash",
         element: <TokenDetail />,
       },
+      {
+        path: "rgbpp/:typeHash",
+        element: <RgbppDetail />,
+      },
+      {
+        path: "rgbpp/transaction-info/:txId",
+        element: <RgbppTransactionInfo />,
+      },
       { path: "settings", element: <Settings /> },
       { path: "switch-account", element: <SwitchAccount /> },
       { path: "address-type/:accId", element: <AddressType /> },
@@ -124,7 +137,10 @@ export const authenticatedRouter = createHashRouter([
       { path: "transaction-info/:txId", element: <TransactionInfo /> },
       { path: "finalle-send/:txId", element: <FinalleSend /> },
       { path: "create-send", element: <CreateSend /> },
+      { path: "create-send-rgbpp", element: <CreateSendRgbpp /> },
+      { path: "btc-leap-rgbpp", element: <BtcLeapRgbpp /> },
       { path: "confirm-send", element: <ConfirmSend /> },
+      { path: "confirm-send-rgbpp", element: <ConfirmSendRgbpp /> },
       { path: "connected-sites", element: <ConnectedSites /> },
       { path: "language", element: <Language /> },
       { path: "network", element: <Network /> },

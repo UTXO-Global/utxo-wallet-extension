@@ -74,7 +74,8 @@ const CreateSend = () => {
   const availableCKBBalance = useMemo(() => {
     const bal =
       Number(currentAccount.balance || 0) -
-      Number(currentAccount.ordinalBalance || 0);
+      Number(currentAccount.ordinalBalance || 0) -
+      Number(currentAccount.rgbppBalance || 0);
 
     return bal > 0 ? bal : 0;
   }, [currentAccount]);
@@ -370,7 +371,10 @@ const CreateSend = () => {
                     <div className="flex items-center">
                       <div className="w-36 text-right">
                         <ShortBalance
-                          balance={currentAccount.ordinalBalance}
+                          balance={
+                            currentAccount.ordinalBalance +
+                            currentAccount.rgbppBalance
+                          }
                           zeroDisplay={6}
                           className="!text-base !font-medium !text-[#787575]"
                           isDot={true}

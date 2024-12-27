@@ -24,6 +24,11 @@ type CkbOutput = {
     symbol: string;
     type_hash: string;
   };
+  rgb_info?: {
+    txid: string;
+    index: string;
+    address: string;
+  };
 };
 
 type CkbInput = {
@@ -37,6 +42,11 @@ type CkbInput = {
     published: boolean;
     symbol: string;
     type_hash: string;
+  };
+  rgb_info?: {
+    txid: string;
+    index: string;
+    address: string;
   };
 };
 
@@ -86,6 +96,65 @@ export function toITransactions(res: CkbTransactionResponse): ITransaction[] {
       vout: d.attributes.display_outputs.map((x) => ({
         value: parseFloat(x.capacity),
         scriptpubkey_address: x.address_hash,
+        scriptpubkey: "",
+        scriptpubkey_asm: "",
+        scriptpubkey_type: "",
+        extra_info: x.extra_info,
+      })),
+      size: 0,
+      weight: 0,
+      sigops: 0,
+      fee: totalInputs - totalOutputs,
+      status: {
+        confirmed: true,
+        block_height: parseInt(d.attributes.block_number),
+        block_hash: d.attributes.block_number,
+        block_time: parseInt(d.attributes.block_timestamp),
+      },
+    };
+  });
+}
+
+export function rgpTxToITransactions(
+  res: CkbTransactionResponse
+): ITransaction[] {
+  return res.data.map((d) => {
+    const totalInputs = d.attributes.display_inputs.reduce(
+      (acc, x) => (acc += parseFloat(x.capacity)),
+      0.0
+    );
+    const totalOutputs = d.attributes.display_outputs.reduce(
+      (acc, x) => (acc += parseFloat(x.capacity)),
+      0.0
+    );
+
+    return {
+      txid: d.attributes.transaction_hash,
+      version: parseInt(d.attributes.block_number),
+      locktime: 0,
+      vin: d.attributes.display_inputs.map((x) => ({
+        txid: x.generated_tx_hash,
+        vout: parseFloat(x.capacity),
+        sequence: parseInt(x.cell_index),
+        prevout: {
+          scriptpubkey: "",
+          scriptpubkey_asm: "",
+          scriptpubkey_type: "",
+          // cheat UI
+          scriptpubkey_address: x.rgb_info?.address ?? x.address_hash,
+          value: parseFloat(x.extra_info?.amount || "0"),
+        },
+        scriptsig: "",
+        scriptsig_asm: "",
+        is_coinbase: false,
+        extra_info: x.extra_info,
+        // cheat UI
+        address_hash: x.rgb_info?.address ?? x.address_hash,
+      })),
+      vout: d.attributes.display_outputs.map((x) => ({
+        value: parseFloat(x.extra_info?.amount || "0"),
+        // cheat UI
+        scriptpubkey_address: x.rgb_info?.address ?? x.address_hash,
         scriptpubkey: "",
         scriptpubkey_asm: "",
         scriptpubkey_type: "",

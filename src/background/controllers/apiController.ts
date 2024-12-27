@@ -12,17 +12,29 @@ import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import {
   CkbTipBlockResponse,
   CkbTransactionResponse,
+  rgpTxToITransactions,
   toITransactions,
 } from "@/shared/networks/ckb/types";
 import { fetchEsplora } from "@/shared/utils";
 import { Cell } from "@ckb-lumos/lumos";
 import { storageService } from "../services";
+import {
+  RGBPP_ASSET_API_URL,
+  RgbppAsset,
+  RgbppTx,
+  RgbppXudtBalance,
+} from "@/shared/interfaces/rgbpp";
+import { NetworkData, NetworkSlug } from "@/shared/networks/types";
+import { udtDataToDecimal } from "../utils";
+import { CacheResponse } from "./cache/decorate";
+import { basicCache as cache } from "./cache";
 
 export interface IApiController {
   getAccountBalance(address: string): Promise<
     | {
         cardinalBalance: number;
         ordinalBalance: number;
+        rgbppBalance: number;
         coinBalances: { [key: string]: any };
       }
     | undefined
@@ -70,10 +82,23 @@ export interface IApiController {
   getTokens(address: string): Promise<IToken[] | undefined>;
   getTransactionHex(txid: string): Promise<string | undefined>;
   getUtxoValues(outpoints: string[]): Promise<number[] | undefined>;
+  getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]>;
+  getRgbppTxs(typeScript: string): Promise<RgbppTx[]>;
+  getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined>;
+  getRgbppAssets(typeScript: string, address: string): Promise<RgbppAsset[]>;
+  getRgbppAssetOutpoints(address: string): Promise<string[]>;
 }
 
 // TODO: use interface instead
 class ApiController implements IApiController {
+  @CacheResponse(30000)
   async getAccountBalance(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -88,6 +113,7 @@ class ApiController implements IApiController {
       const balance = data.reduce((acc, utxo) => acc + utxo.value, 0);
 
       let ordinalBalance = 0;
+      let rgbppBalance = 0;
       try {
         // Filter Ord UTXO
         const networkData = getNetworkDataBySlug(storageService.currentNetwork);
@@ -100,13 +126,22 @@ class ApiController implements IApiController {
           });
           ordinalBalance += ordUtxos.reduce((acc, utxo) => acc + utxo.value, 0);
         }
+        // Filter Rgbpp UTXO
+        const outpointRgbpps = await controller.getRgbppAssetOutpoints(address);
+
+        rgbppBalance += data
+          .filter((utxo) =>
+            outpointRgbpps.includes(`${utxo.txid}:${utxo.vout}`)
+          )
+          .reduce((acc, utxo) => acc + utxo.value, 0);
       } catch (error) {
         throw new Error(error);
       }
 
       return {
-        cardinalBalance: balance - ordinalBalance,
+        cardinalBalance: balance - ordinalBalance - rgbppBalance,
         ordinalBalance,
+        rgbppBalance,
         coinBalances: {},
       };
     } else if (isCkbNetwork(networkData.network)) {
@@ -114,11 +149,13 @@ class ApiController implements IApiController {
       return {
         cardinalBalance: balances.balance.toNumber(),
         ordinalBalance: balances.balance_occupied.toNumber(),
+        rgbppBalance: 0,
         coinBalances: balances.udtBalances,
       };
     }
   }
 
+  @CacheResponse(30000)
   async getUtxos(address: string): Promise<ApiUTXO[]> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     // Bitcoin + using esplora API
@@ -132,6 +169,7 @@ class ApiController implements IApiController {
     }));
   }
 
+  @CacheResponse(30000)
   async getOrdUtxos(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const data = await fetchEsplora<ApiOrdUTXO[]>({
@@ -143,12 +181,14 @@ class ApiController implements IApiController {
     return data;
   }
 
+  @CacheResponse(30000)
   async getCells(address: string) {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const data = await getCells(networkData.network as NetworkConfig, address);
     return data;
   }
 
+  @CacheResponse(30000)
   async getFees() {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -181,6 +221,10 @@ class ApiController implements IApiController {
       json: false,
       body: rawTx,
     });
+
+    // Clear all cache
+    cache.clearAll();
+
     return {
       txid: data,
     };
@@ -192,11 +236,16 @@ class ApiController implements IApiController {
     const hash = await (
       networkData.network as NetworkConfig
     ).rpc.sendTransaction(tx, "passthrough");
+
+    // Clear all cache
+    cache.clearAll();
+
     return {
       txid: hash,
     };
   }
 
+  @CacheResponse(30000)
   async getTransactions(): Promise<ITransaction[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const accounts = storageService.currentAccount.accounts;
@@ -216,6 +265,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getCKBTransactions({
     type,
     typeHash,
@@ -244,6 +294,7 @@ class ApiController implements IApiController {
     }));
   }
 
+  @CacheResponse(30000)
   async getInscriptions(address: string): Promise<Inscription[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<Inscription[]>({
@@ -251,6 +302,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getPaginatedTransactions(
     address: string,
     txid: string
@@ -265,6 +317,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getPaginatedInscriptions(
     address: string,
     location: string
@@ -279,6 +332,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getLastBlock(): Promise<number> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     if (
@@ -303,6 +357,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getNativeCoinPrice(coinSymbol: string): Promise<{
     usd: number;
     changePercent24Hr: number;
@@ -333,6 +388,7 @@ class ApiController implements IApiController {
     };
   }
 
+  @CacheResponse(30000)
   async getDiscovery(): Promise<Inscription[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<Inscription[]>({
@@ -340,6 +396,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getInscriptionCounter(
     address: string
   ): Promise<{ amount: number; count: number }> {
@@ -356,6 +413,7 @@ class ApiController implements IApiController {
     }
   }
 
+  @CacheResponse(30000)
   async getInscription({
     inscriptionNumber,
     inscriptionId,
@@ -373,6 +431,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getTokens(address: string): Promise<IToken[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<IToken[]>({
@@ -380,6 +439,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getTransactionHex(txid: string): Promise<string> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     return await fetchEsplora<string>({
@@ -388,6 +448,7 @@ class ApiController implements IApiController {
     });
   }
 
+  @CacheResponse(30000)
   async getUtxoValues(outpoints: string[]): Promise<number[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     let values: number[] = [];
@@ -418,6 +479,128 @@ class ApiController implements IApiController {
 
     return values;
   }
+
+  @CacheResponse(30000)
+  async getRgbppXudtBalances(
+    address: string,
+    network?: NetworkData
+  ): Promise<RgbppXudtBalance[]> {
+    const networkData =
+      network ?? getNetworkDataBySlug(storageService.currentNetwork);
+    const response = await fetchEsplora<{
+      address: string;
+      xudt: RgbppXudtBalance[];
+    }>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/balance?no_cache=false`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+
+    return response.xudt;
+  }
+
+  @CacheResponse(30000)
+  async getRgbppTxs(typeScript: string): Promise<RgbppTx[]> {
+    const txs: RgbppTx[] = [];
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      const response = await fetchEsplora<{
+        address: string;
+        txs: RgbppTx[];
+      }>({
+        path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${account.address}/activity?rgbpp_only=true&type_script=${typeScript}`,
+        headers: {
+          "x-network": networkData.slug,
+        },
+      });
+      txs.push(...response.txs);
+    }
+    return txs;
+  }
+
+  @CacheResponse(30000)
+  async getRgbppTxsFromExplorer({
+    typeHash,
+  }: {
+    typeHash?: string;
+  }): Promise<ITransaction[] | undefined> {
+    const txs: ITransaction[] = [];
+    const ckbNetworkSlug: NetworkSlug =
+      storageService.currentNetwork === "btc" ? "nervos" : "nervos_testnet";
+    const networkData = getNetworkDataBySlug(ckbNetworkSlug);
+
+    const accounts = storageService.currentAccount.accounts;
+    for (const account of accounts) {
+      let apiURL = `${networkData.esploraUrl}/address_transactions/${account.address}?page=1&page_size=25`;
+      if (!!typeHash) {
+        apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${account.address}`;
+      }
+
+      const res = await fetchEsplora<CkbTransactionResponse>({
+        path: apiURL,
+        headers: {
+          "content-type": "application/vnd.api+json",
+          accept: "application/vnd.api+json",
+        },
+      });
+      txs.push(
+        ...rgpTxToITransactions(res).map((z) => ({
+          ...z,
+          address: account.address,
+        }))
+      );
+    }
+    return txs;
+  }
+
+  @CacheResponse(30000)
+  async getRgbppAssets(
+    typeScript: string,
+    address: string
+  ): Promise<RgbppAsset[]> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const rgbAssets = await fetchEsplora<RgbppAsset[]>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/assets?no_cache=false&type_script=${typeScript}`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+    return rgbAssets.map(
+      (asset) => ({
+        ...asset,
+        balance: udtDataToDecimal(asset.data),
+      }),
+      0
+    );
+  }
+
+  @CacheResponse(30000)
+  async getRgbppAssetOutpoints(address: string): Promise<string[]> {
+    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
+    const rgbAssets = await fetchEsplora<RgbppAsset[]>({
+      path: `${RGBPP_ASSET_API_URL}/rgbpp/v1/address/${address}/assets?no_cache=false`,
+      headers: {
+        "x-network": networkData.slug,
+      },
+    });
+    return rgbAssets.map((asset) => {
+      const txId = Buffer.from(asset.cellOutput.lock.args.slice(-64), "hex")
+        .reverse()
+        .toString("hex");
+      const index = Number(
+        "0x" +
+          Buffer.from(asset.cellOutput.lock.args.slice(2, 10), "hex")
+            .reverse()
+            .toString("hex")
+      );
+
+      return `${txId}:${index}`;
+    });
+  }
 }
 
-export default new ApiController();
+const controller = new ApiController();
+export default controller;

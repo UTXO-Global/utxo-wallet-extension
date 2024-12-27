@@ -45,6 +45,7 @@ export default function UTXOReviewOrder() {
     const bal =
       Number(currentAccount.balance || 0) -
       Number(currentAccount.ordinalBalance || 0) -
+      Number(currentAccount.rgbppBalance || 0) -
       0.00001;
 
     return bal > 0 ? bal : 0;
