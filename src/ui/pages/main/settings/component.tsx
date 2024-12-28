@@ -16,6 +16,7 @@ import versionInfo from "../../../../../version.json";
 import {
   IcnArrowLeftOnRectangle,
   IcnConnectSite,
+  IcnRightPanel,
   IcnSecurity,
   IcnWallet,
 } from "@/ui/components/icons";
@@ -35,18 +36,6 @@ const Settings = () => {
     await browserTabsCreate({
       url: "index.html",
     });
-  };
-
-  const isPanelView = useMemo(() => {
-    return window.innerWidth > 350;
-  }, [window.innerWidth]);
-
-  const triggerPanelView = async () => {
-    chrome.runtime.sendMessage({
-      type: "sidePanel",
-      action: isPanelView ? "disable" : "open",
-    });
-    window.close();
   };
 
   const items: TileProps[] = [
@@ -92,10 +81,30 @@ const Settings = () => {
       gaLabel: "helpAndSupport",
     },
     {
-      icon: <DeviceTabletIcon className={ICON_CN} />,
-      label: isPanelView ? "Popup" : "Side Panel",
-      onClick: triggerPanelView,
-      gaLabel: "side_panel",
+      icon: <IcnRightPanel className={ICON_CN} />,
+      label: "Side Panel",
+      onClick: async () => {
+        const tabs = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+
+        const { id: tabId } = tabs[0];
+        if (!!tabId) {
+          await chrome.sidePanel.setOptions({
+            enabled: true,
+            path: "index.html",
+            tabId,
+          });
+          await chrome.sidePanel.setPanelBehavior({
+            openPanelOnActionClick: false,
+          });
+          await chrome.sidePanel.open({
+            tabId,
+          });
+          window.close();
+        }
+      },
     },
   ];
 

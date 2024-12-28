@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
 import ReactLoading from "react-loading";
+import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
 
 const convertToAsterisks = (word: string) => {
   return "*".repeat(word.length);
@@ -74,6 +75,7 @@ const ConfirmMnemonic = () => {
     }
     setLoading(true);
     await createNewWallet({
+      version: CKB_HD_PATH_VERSION,
       payload: _mnemonicPhaseConfirm.join(" "),
       walletType: "root",
     });

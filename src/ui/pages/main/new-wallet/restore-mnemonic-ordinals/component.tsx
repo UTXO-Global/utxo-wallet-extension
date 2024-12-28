@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Loading from "react-loading";
 import { useNavigate } from "react-router-dom";
 import s from "./styles.module.scss";
+import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
 
 const RestoreMnemonicOrdinals = () => {
   const { updateWalletState } = useWalletState((v) => ({
@@ -40,6 +41,7 @@ const RestoreMnemonicOrdinals = () => {
     setLoading(true);
     try {
       await createNewWallet({
+        version: CKB_HD_PATH_VERSION,
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         hdPath: "m/44'/3'/0'/0/0",

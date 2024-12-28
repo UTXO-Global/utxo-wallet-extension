@@ -115,6 +115,8 @@ class StorageService {
         cache.wallets = state.wallets.map((f) => ({
           name: f.name,
           type: f.type,
+          version: f.version,
+          restoreFromWallet: f.restoreFromWallet,
           accounts: f.accounts.map((j, idx) => ({
             id: idx,
             name: j.name,
@@ -191,6 +193,8 @@ class StorageService {
       return {
         name: wallet.name,
         type: wallet.type,
+        version: wallet.version,
+        restoreFromWallet: wallet.restoreFromWallet,
         accounts: wallet.accounts.map((account, idx) => ({
           id: idx,
           name: account.name ?? "",

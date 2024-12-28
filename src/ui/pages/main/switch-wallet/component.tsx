@@ -7,6 +7,7 @@ import { useSwitchWallet } from "@/ui/hooks/wallet";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { IcnCheck } from "@/ui/components/icons";
+import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
 
 const SwitchWallet = () => {
   const currentWallet = useGetCurrentWallet();
@@ -21,6 +22,8 @@ const SwitchWallet = () => {
     if (wallets.findIndex((f) => f.id === currentWallet.id) > 5)
       document.getElementById(String(currentWallet.id))?.scrollIntoView();
   }, [currentWallet.id, wallets]);
+
+  console.log("wallets", wallets);
 
   return (
     <div className={s.switchWalletDiv}>
@@ -43,7 +46,12 @@ const SwitchWallet = () => {
             }}
           >
             <div className="cursor-pointer">
-              <p className="text-lg text-primary font-medium">{wallet.name}</p>
+              <p className="text-lg text-primary font-medium">{wallet.name} </p>
+              <p className=" text-[10px]">
+                {wallet.type === "root"
+                  ? wallet?.accounts[0]?.accounts[0]?.hdPath
+                  : "From Private Key"}
+              </p>
             </div>
             <div className="flex items-center">
               {currentWallet.id === wallet.id ? (

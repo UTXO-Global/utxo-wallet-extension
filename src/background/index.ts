@@ -14,6 +14,7 @@ import { providerController } from "./controllers";
 import notificationController from "./controllers/notificationController";
 
 const { PortMessage } = Message;
+let panelToggle = false;
 
 // for page provider
 browserRuntimeOnConnect((port: any) => {
@@ -101,7 +102,40 @@ const addAppInstalledEvent = () => {
   return;
 };
 
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "toggle-utxo-wallet-panel",
+    title: `Enable UTXO Global Wallet Sidebar`,
+    contexts: ["all"],
+  });
+});
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId === "toggle-utxo-wallet-panel") {
+    panelToggle = !panelToggle;
+    chrome.contextMenus.update("toggle-utxo-wallet-panel", {
+      title: `${panelToggle ? "Disable" : "Enable"} UTXO Global Wallet Sidebar`,
+    });
+
+    if (panelToggle) {
+      await chrome.sidePanel.setOptions({
+        enabled: true,
+        path: "index.html",
+        tabId: tab.id,
+      });
+      await chrome.sidePanel.setPanelBehavior({
+        openPanelOnActionClick: true,
+      });
+    } else {
+      await chrome.sidePanel.setOptions({
+        enabled: false,
+      });
+    }
+  }
+});
+
 browserRuntimeOnInstalled((details) => {
+  console.log("browserRuntimeOnInstalled", details);
   if (details.reason === "install") {
     addAppInstalledEvent();
   }
