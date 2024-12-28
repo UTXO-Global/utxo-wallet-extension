@@ -4,7 +4,11 @@ import s from "./styles.module.scss";
 
 import Tile from "@/ui/components/tile";
 import { TileProps } from "@/ui/components/tile/component";
-import { ArrowsPointingOutIcon, LanguageIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowsPointingOutIcon,
+  LanguageIcon,
+  DeviceTabletIcon,
+} from "@heroicons/react/24/solid";
 
 import { t } from "i18next";
 import config from "../../../../../package.json";
@@ -17,6 +21,7 @@ import {
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
+import { useMemo } from "react";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -32,13 +37,19 @@ const Settings = () => {
     });
   };
 
+  const isPanelView = useMemo(() => {
+    return window.innerWidth > 350;
+  }, [window.innerWidth]);
+
+  const triggerPanelView = async () => {
+    chrome.runtime.sendMessage({
+      type: "sidePanel",
+      action: isPanelView ? "disable" : "open",
+    });
+    window.close();
+  };
+
   const items: TileProps[] = [
-    // {
-    //   icon: <GlobeAltIcon className={ICON_CN} />,
-    //   label: t("settings.network"),
-    //   link: "/pages/network",
-    //   gaLabel: "network",
-    // },
     {
       icon: <IcnSecurity className={ICON_CN} />,
       label: t("settings.security_settings"),
@@ -80,11 +91,15 @@ const Settings = () => {
       target: "_blank",
       gaLabel: "helpAndSupport",
     },
+    {
+      icon: <DeviceTabletIcon className={ICON_CN} />,
+      label: isPanelView ? "Popup" : "Side Panel",
+      onClick: triggerPanelView,
+      gaLabel: "side_panel",
+    },
   ];
 
-  const analytics = (label: string) => {
-
-  };
+  const analytics = (label: string) => {};
 
   return (
     <div className={s.wrapper}>
