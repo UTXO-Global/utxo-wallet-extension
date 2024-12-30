@@ -52,7 +52,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@spore-sdk/core": "^0.2.2-alpha.1",
     "@utxoswap/swap-sdk-js": "^0.1.10",
-    "big.js": "6.2.1",
+    "big.js": "6.2.2",
     "bip39": "3.1.0",
     "bitcoinjs-lib": "^6.1.6",
     "bitcoinselect": "^1.0.0",
