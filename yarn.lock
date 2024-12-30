@@ -2292,10 +2292,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@utxoswap/swap-sdk-js@^0.1.10":
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/@utxoswap/swap-sdk-js/-/swap-sdk-js-0.1.10.tgz#743349551d9d26d4d86030e491b8d4e6c2807cc0"
-  integrity sha512-kocg5s1uZmIFsh6J20hbYI05kQGcofgYFYrWZl/tGybOEqm/CvcsjGGIURosehTS219+9B116Xd7c1sjCel1sw==
+"@utxoswap/swap-sdk-js@^0.1.11":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@utxoswap/swap-sdk-js/-/swap-sdk-js-0.1.13.tgz#821be76ee93beaafeefb9093cbe4330ed7ecb3dd"
+  integrity sha512-DuDLNOxKDvbwmfd3Z7MBCT4nJmRxwOowJs4z0cgtfSNdKISudUgx57E0m0EeJsrfavzFQUjHj7VArHBZmeksjw==
   dependencies:
     "@ckb-lumos/lumos" "^0.23.0"
     "@nervosnetwork/ckb-sdk-core" "0.109.1"
