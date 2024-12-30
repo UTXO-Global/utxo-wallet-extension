@@ -117,20 +117,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       title: `${panelToggle ? "Disable" : "Enable"} UTXO Global Wallet Sidebar`,
     });
 
-    if (panelToggle) {
-      await chrome.sidePanel.setOptions({
-        enabled: true,
-        path: "index.html",
-        tabId: tab.id,
-      });
-      await chrome.sidePanel.setPanelBehavior({
-        openPanelOnActionClick: true,
-      });
-    } else {
-      await chrome.sidePanel.setOptions({
-        enabled: false,
-      });
-    }
+    await chrome.sidePanel.setOptions({
+      enabled: panelToggle,
+      path: "index.html",
+      tabId: tab.id,
+    });
+    await chrome.sidePanel.setPanelBehavior({
+      openPanelOnActionClick: panelToggle,
+    });
   }
 });
 

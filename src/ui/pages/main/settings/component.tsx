@@ -120,7 +120,7 @@ const Settings = () => {
         ))}
       </div>
       <div className={s.version}>
-        Version{" "}
+        Current Version{" "}
         <span>
           {config.version}#{(versionInfo as any).timestamp.toString()}
         </span>{" "}
