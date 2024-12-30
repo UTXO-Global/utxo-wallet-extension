@@ -23,8 +23,6 @@ const SwitchWallet = () => {
       document.getElementById(String(currentWallet.id))?.scrollIntoView();
   }, [currentWallet.id, wallets]);
 
-  console.log("wallets", wallets);
-
   return (
     <div className={s.switchWalletDiv}>
       <div className={s.wallets}>
@@ -49,8 +47,8 @@ const SwitchWallet = () => {
               <p className="text-lg text-primary font-medium">{wallet.name} </p>
               <p className=" text-[10px]">
                 {wallet.type === "root"
-                  ? wallet?.accounts[0]?.accounts[0]?.hdPath
-                  : "From Private Key"}
+                  ? `HD Path: ${wallet?.accounts[0]?.accounts[0]?.hdPath}`
+                  : "Hex Private Key"}
               </p>
             </div>
             <div className="flex items-center">

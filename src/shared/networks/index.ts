@@ -29,7 +29,7 @@ export const supportedNetworks: ChainData[] = [
       parentSlug: "nervos",
       walletToImport: [
         {
-          name: "UTXO Global",
+          name: "UTXO Global / Neuron",
           value: "utxoGlobal",
           hdPath: CKB_HD_PATH,
           passphrase: "",
