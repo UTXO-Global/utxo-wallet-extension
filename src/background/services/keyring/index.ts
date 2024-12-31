@@ -439,7 +439,8 @@ class KeyringService {
 
     const collectedCells: Cell[] = [];
     let neededCapacity = BI.from(0);
-    let capacityChangeOutput = totalXUDTCapacity.sub(xUDTCapacity);
+    let capacityChangeOutput = BI.from(0);
+    const xUDTCapacityChangeOutput = totalXUDTCapacity.sub(xUDTCapacity);
     let totalCapacity = BI.from(0);
     if (isAddressTypeJoy) {
       neededCapacity = neededCapacity.add(joyCapacityAddMore);
@@ -531,7 +532,7 @@ class KeyringService {
         totalCapacity = totalCapacity.add(joyCapacityAddMore);
       }
 
-      capacityChangeOutput = capacityChangeOutput.add(
+      capacityChangeOutput = xUDTCapacityChangeOutput.add(
         totalCapacity.sub(neededCapacity)
       );
 
