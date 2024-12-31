@@ -61,6 +61,11 @@ const RestoreMnemonic = () => {
         walletName:
           setSelectedWallet.name !== "" ? selectedWallet.name : undefined,
         restoreFromWallet: selectedWallet.value,
+        hdPath: !!selectedWallet?.name
+          ? currentNetwork.walletToImport?.find(
+              (w) => w.name === selectedWallet.name
+            )?.hdPath
+          : "",
       });
       await updateWalletState({ vaultIsEmpty: false });
       navigate("/home");

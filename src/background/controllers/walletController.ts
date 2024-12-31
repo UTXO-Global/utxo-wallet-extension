@@ -182,35 +182,6 @@ async function _createDefaultGroupAccount({
   }
 }
 
-async function _createNewWalletWithOldVersion(
-  props: INewWalletProps
-): Promise<IWallet> {
-  const exportedWallets = storageService.walletState.wallets;
-  const walletId =
-    exportedWallets.length > 0
-      ? exportedWallets[exportedWallets.length - 1].id + 1
-      : 0;
-
-  const keyring = await keyringService.newKeyring(props);
-
-  const hdPath =
-    props.restoreFromWallet === "neuron" ? CKB_HD_PATH : CKB_OLD_HD_PATH;
-
-  const groupAccount = await _createDefaultGroupAccount({
-    networkSlug: storageService.currentNetwork,
-    key: keyring,
-    hdPath,
-  });
-
-  return {
-    name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
-    id: walletId,
-    type: props.walletType,
-    accounts: [groupAccount],
-    restoreFromWallet: props.restoreFromWallet,
-  };
-}
-
 class WalletController implements IWalletController {
   async isVaultEmpty() {
     const values = await storageService.getLocalValues();
@@ -218,9 +189,6 @@ class WalletController implements IWalletController {
   }
 
   async createNewWallet(props: INewWalletProps): Promise<IWallet> {
-    if (props.version < CKB_HD_PATH_VERSION) {
-      return await _createNewWalletWithOldVersion(props);
-    }
     const exportedWallets = storageService.walletState.wallets;
 
     const walletId =
@@ -232,6 +200,7 @@ class WalletController implements IWalletController {
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
+      hdPath: props.hdPath,
     });
 
     return {
