@@ -61,7 +61,7 @@ export default function RgbppXudtTabs() {
               "font-medium text-sm leading-5 tracking-[0.2px] rounded-full px-4 py-[6px] text-[#787575] cursor-pointer bg-grey-300"
             )}
           >
-            Rgb++ Assets
+            RGB++ Assets
           </div>
         </div>
       </div>
