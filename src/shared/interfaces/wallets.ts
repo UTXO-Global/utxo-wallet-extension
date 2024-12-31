@@ -31,7 +31,7 @@ export interface IWalletState extends IWalletStateBase {
 }
 
 export interface INewWalletProps {
-  version: number;
+  version?: number;
   payload: string;
   walletType: "simple" | "root";
   name?: string;

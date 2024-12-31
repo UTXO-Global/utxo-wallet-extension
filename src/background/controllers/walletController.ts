@@ -234,8 +234,6 @@ class WalletController implements IWalletController {
       key: keyring,
     });
 
-    console.log(props);
-
     return {
       name: !props.name ? storageService.getUniqueName("Wallet") : props.name,
       id: walletId,

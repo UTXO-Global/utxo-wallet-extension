@@ -120,7 +120,7 @@ const RestoreMnemonic = () => {
 
         <div className="w-full flex justify-between pt-4 pb-2 flex-col">
           <div className="text-center py-2 text-[#787575] text-sm">
-            Version: {config.version}
+            Current Version: {config.version}
           </div>
           <button className="btn primary" onClick={onRestore}>
             {t("new_wallet.continue")}

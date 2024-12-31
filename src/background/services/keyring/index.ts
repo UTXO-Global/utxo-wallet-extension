@@ -411,8 +411,12 @@ class KeyringService {
     const tokensCell: Cell[] = [];
     const totalTokenBalanceNeeed = BI.from(data.amount);
     let totalTokenBalance = BI.from(0);
-
+    let totalXUDTCapacity = BI.from(0);
     for await (const cell of xudtCollector.collect()) {
+      totalXUDTCapacity = totalXUDTCapacity.add(
+        BI.from(cell.cellOutput.capacity)
+      );
+
       const balNum = ccc.numFromBytes(cell.data);
       totalTokenBalance = totalTokenBalance.add(BI.from(balNum));
       tokensCell.push(cell);
@@ -431,11 +435,13 @@ class KeyringService {
     const isAddressTypeJoy = ccc.bytesFrom(toScript.args).length > 20;
     const joyCapacityAddMore = 2_0000_0000; // 2 ckb
 
+    const xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
+
     const collectedCells: Cell[] = [];
     let neededCapacity = BI.from(0);
-    let totalCapacity = BI.from(0);
     let capacityChangeOutput = BI.from(0);
-    const xUDTCapacity = BI.from(tokensCell[0].cellOutput.capacity);
+    const xUDTCapacityChangeOutput = totalXUDTCapacity.sub(xUDTCapacity);
+    let totalCapacity = BI.from(0);
     if (isAddressTypeJoy) {
       neededCapacity = neededCapacity.add(joyCapacityAddMore);
     }
@@ -490,9 +496,6 @@ class KeyringService {
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
       neededCapacity = neededCapacity.add(tokensCell[0].cellOutput.capacity);
-      if (isAddressTypeJoy) {
-        neededCapacity = neededCapacity.add(joyCapacityAddMore);
-      }
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -528,7 +531,11 @@ class KeyringService {
       if (isAddressTypeJoy) {
         totalCapacity = totalCapacity.add(joyCapacityAddMore);
       }
-      capacityChangeOutput = totalCapacity.sub(neededCapacity);
+
+      capacityChangeOutput = xUDTCapacityChangeOutput.add(
+        totalCapacity.sub(neededCapacity)
+      );
+
       if (
         totalCapacity.gte(neededCapacity) &&
         (capacityChangeOutput.eq(0) || capacityChangeOutput.gt(minCapacity))
