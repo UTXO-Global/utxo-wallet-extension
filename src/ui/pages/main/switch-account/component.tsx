@@ -70,6 +70,13 @@ const SwitchAccount = () => {
           >
             <div className="cursor-pointer">
               <p className="text-lg text-primary font-medium">{acc.name}</p>
+              {["nervos", "nervos_testnet"].includes(acc.network) && (
+                <p className=" text-[10px]">
+                  {currentWallet.type === "root"
+                    ? `HD Path: ${acc.accounts[0].hdPath}`
+                    : "Hex Private Key"}
+                </p>
+              )}
             </div>
             <div className="flex items-center">
               {currentAccount.id === acc.id ? <IcnCheck /> : null}
