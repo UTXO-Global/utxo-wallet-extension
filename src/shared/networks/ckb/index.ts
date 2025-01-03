@@ -2,7 +2,10 @@ import { AddressType, NetworkData } from "../types";
 import offCKBConfig from "./offckb.config";
 
 export const CKB_HD_PATH = "m/44'/309'/0'/0/0";
-export const CKB_OLD_HD_PATH = "m/13'/1'/0'/0";
+
+export const CKB_MAINNET_OLD_HD_PATH = `m/13'/0'/0'/0`;
+export const CKB_TESTNET_OLD_HD_PATH = "m/13'/1'/0'/0";
+
 export const CKB_MAINNET: NetworkData = {
   slug: "nervos",
   name: "Mirana Mainnet",

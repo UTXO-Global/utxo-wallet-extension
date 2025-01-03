@@ -7,7 +7,6 @@ import { useSwitchWallet } from "@/ui/hooks/wallet";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { IcnCheck } from "@/ui/components/icons";
-import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
 
 const SwitchWallet = () => {
   const currentWallet = useGetCurrentWallet();

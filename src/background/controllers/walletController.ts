@@ -11,6 +11,7 @@ import {
   getNetworkChainSlug,
   getNetworkDataBySlug,
   isBitcoinNetwork,
+  isCkbNetwork,
   supportedNetworks,
 } from "@/shared/networks";
 import { BTC_LIVENET_ADDRESS_TYPES } from "@/shared/networks/btc";
@@ -21,12 +22,12 @@ import { Keyring } from "../services/keyring/ckbhdw";
 import { getAddress } from "../services/keyring/ckbhdw/hd/utils";
 import { Json } from "../services/keyring/types";
 import type { DecryptedSecrets } from "../services/storage/types";
-import {
-  CKB_HD_PATH,
-  CKB_HD_PATH_VERSION,
-  CKB_OLD_HD_PATH,
-} from "@/shared/networks/ckb";
 import Analytics from "@/ui/utils/gtm";
+import {
+  CKB_HD_PATH_VERSION,
+  CKB_MAINNET_OLD_HD_PATH,
+  CKB_TESTNET_OLD_HD_PATH,
+} from "@/shared/networks/ckb";
 
 function getAddressesByWalletIndex({
   walletIndex,
@@ -79,12 +80,11 @@ function getIndexFromHdPath(hdPath: string): number {
 
 function getNewGAccountIndex(
   accounts: IGroupAccount[],
-  network: NetworkSlug
+  networkSlug: NetworkSlug
 ): number {
-  const _accounts = accounts.filter((z) => z.network === network);
-  const _lastIndex = getIndexFromHdPath(
-    _accounts[_accounts.length - 1].accounts[0].hdPath
-  );
+  const _accounts = accounts.filter((z) => z.network === networkSlug);
+  let hdPath = _accounts[_accounts.length - 1].accounts[0].hdPath;
+  const _lastIndex = getIndexFromHdPath(hdPath);
   return _lastIndex + 1;
 }
 
@@ -197,10 +197,22 @@ class WalletController implements IWalletController {
         : 0;
 
     const keyring = await keyringService.newKeyring(props);
+
+    let hdPath = props.hdPath;
+    const network = getNetworkDataBySlug(storageService.currentNetwork);
+    if (
+      isCkbNetwork(network.network) &&
+      [CKB_MAINNET_OLD_HD_PATH, CKB_TESTNET_OLD_HD_PATH].includes(hdPath)
+    ) {
+      hdPath =
+        network.slug === "nervos"
+          ? CKB_MAINNET_OLD_HD_PATH
+          : CKB_TESTNET_OLD_HD_PATH;
+    }
     const groupAccount = await _createDefaultGroupAccount({
       networkSlug: storageService.currentNetwork,
       key: keyring,
-      hdPath: props.hdPath,
+      hdPath,
     });
 
     return {
@@ -280,12 +292,18 @@ class WalletController implements IWalletController {
       addressTypes = BTC_LIVENET_ADDRESS_TYPES;
     }
 
+    const isCKBNetwork = isCkbNetwork(network.network);
+    const isCKBTestnet = networkSlug === "nervos_testnet";
+
     const accounts: IAccount[] = addressTypes.map((addressType, id) => {
-      const hdPath = getNewHdPathFromAddressType(
-        addressType.hdPath,
-        newGAccountIndex
-      );
-      const publicKey = keyring.exportPublicKey(hdPath);
+      let hdPath = addressType.hdPath;
+      if (isCKBNetwork && wallet.version < CKB_HD_PATH_VERSION) {
+        hdPath = isCKBTestnet
+          ? CKB_TESTNET_OLD_HD_PATH
+          : CKB_MAINNET_OLD_HD_PATH;
+      }
+      const newHdPath = getNewHdPathFromAddressType(hdPath, newGAccountIndex);
+      const publicKey = keyring.exportPublicKey(newHdPath);
       const address = getAddress(
         addressType.value,
         Buffer.from(publicKey, "hex"),
@@ -308,7 +326,7 @@ class WalletController implements IWalletController {
         addressType,
         network: networkSlug,
         address,
-        hdPath: hdPath,
+        hdPath: newHdPath,
       };
     });
 
@@ -325,7 +343,22 @@ class WalletController implements IWalletController {
     walletId?: number,
     hdPath?: string
   ): Promise<IGroupAccount> {
-    return _createDefaultGroupAccount({ networkSlug, walletId, hdPath });
+    let newHdPath = hdPath;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (
+      isCkbNetwork(network.network) &&
+      [CKB_MAINNET_OLD_HD_PATH, CKB_TESTNET_OLD_HD_PATH].includes(hdPath)
+    ) {
+      newHdPath =
+        network.slug === "nervos"
+          ? CKB_MAINNET_OLD_HD_PATH
+          : CKB_TESTNET_OLD_HD_PATH;
+    }
+    return _createDefaultGroupAccount({
+      networkSlug,
+      walletId,
+      hdPath: newHdPath,
+    });
   }
 
   async generateMnemonicPhrase(): Promise<string> {

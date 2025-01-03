@@ -16,7 +16,11 @@ import {
   useWalletState,
 } from "../states/walletState";
 import { useTransactionManagerContext } from "../utils/tx-ctx";
-import { CKB_HD_PATH_VERSION } from "@/shared/networks/ckb";
+import {
+  CKB_HD_PATH_VERSION,
+  CKB_MAINNET_OLD_HD_PATH,
+  CKB_TESTNET_OLD_HD_PATH,
+} from "@/shared/networks/ckb";
 
 export const useCreateNewWallet = () => {
   const { wallets, updateWalletState } = useWalletState((v) => ({
@@ -156,6 +160,8 @@ export const useSwitchWallet = () => {
             wallet.accounts
           );
         }
+
+        console.log("accounts", wallet.accounts);
 
         const networkGroupAccounts = wallet.accounts.filter(
           (account) => account.network === network.slug
@@ -385,10 +391,19 @@ export const useSwitchNetwork = () => {
             );
           }
 
-          const hdPath =
+          let hdPath =
             _otherNetworkGroupAccounts.length === 0
               ? ""
               : _otherNetworkGroupAccounts[0].accounts[0].hdPath;
+
+          if (
+            [CKB_MAINNET_OLD_HD_PATH, CKB_TESTNET_OLD_HD_PATH].includes(hdPath)
+          ) {
+            hdPath =
+              slug === "nervos_testnet"
+                ? CKB_TESTNET_OLD_HD_PATH
+                : CKB_MAINNET_OLD_HD_PATH;
+          }
 
           const networkGroupAccount =
             await walletController.createDefaultGroupAccount(

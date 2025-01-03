@@ -4,7 +4,8 @@ import {
   CKB_HD_PATH,
   CKB_HD_PATH_VERSION,
   CKB_MAINNET,
-  CKB_OLD_HD_PATH,
+  CKB_TESTNET_OLD_HD_PATH,
+  CKB_MAINNET_OLD_HD_PATH,
   CKB_TESTNET,
 } from "./ckb";
 import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
@@ -38,7 +39,10 @@ export const supportedNetworks: ChainData[] = [
         {
           name: "UTXO Global (<0.1.3.5)",
           value: "utxoGlobal",
-          hdPath: CKB_OLD_HD_PATH,
+          hdPath:
+            chain.slug === "nervos"
+              ? CKB_MAINNET_OLD_HD_PATH
+              : CKB_TESTNET_OLD_HD_PATH,
           passphrase: "",
           version: 0,
         },

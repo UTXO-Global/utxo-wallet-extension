@@ -495,7 +495,7 @@ class KeyringService {
 
     const diff = totalTokenBalance.sub(totalTokenBalanceNeeed);
     if (diff.gt(BI.from(0))) {
-      neededCapacity = neededCapacity.add(tokensCell[0].cellOutput.capacity);
+      neededCapacity = neededCapacity.add(xUDTCapacity);
       txSkeleton = txSkeleton.update("outputs", (outputs) =>
         outputs.push({
           cellOutput: {
@@ -528,10 +528,6 @@ class KeyringService {
       }
       collectedCells.push(cell);
       totalCapacity = totalCapacity.add(BI.from(cell.cellOutput.capacity));
-      if (isAddressTypeJoy) {
-        totalCapacity = totalCapacity.add(joyCapacityAddMore);
-      }
-
       capacityChangeOutput = xUDTCapacityChangeOutput.add(
         totalCapacity.sub(neededCapacity)
       );
