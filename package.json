@@ -54,7 +54,7 @@
     "@utxoswap/swap-sdk-js": "^0.1.10",
     "big.js": "6.2.1",
     "bip39": "3.1.0",
-    "bitcoinjs-lib": "^6.1.6",
+    "bitcoinjs-lib": "^6.1.7",
     "bitcoinselect": "^1.0.0",
     "bn.js": "^5.2.1",
     "classnames": "2.5.1",
