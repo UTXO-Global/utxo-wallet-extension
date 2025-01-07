@@ -113,6 +113,7 @@ const buildOptions: BuildOptions = {
   entryPoints: {
     background: "src/background/index.ts",
     "content-script": "src/content-script/index.ts",
+    "x-script": "src/x-script/index.ts",
     pageProvider: "src/content-script/pageProvider/index.ts",
     ui: "src/ui/index.tsx",
   },

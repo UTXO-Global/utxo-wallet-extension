@@ -22,6 +22,10 @@
       "js": ["content-script.js"],
       "run_at": "document_start",
       "all_frames": true
+    },
+    {
+      "matches": ["https://x.com/*"],
+      "js": ["x-script.js"]
     }
   ],
   "web_accessible_resources": [
