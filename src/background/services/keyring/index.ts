@@ -383,11 +383,22 @@ class KeyringService {
     const isRUSD =
       networkConfig.RUSD.script.args === data.token.attributes.type_script.args;
 
+    const isUSDI =
+      networkConfig.USDI.script.args === data.token.attributes.type_script.args;
+
     let xUdtType = {
       codeHash: lumosConfig.SCRIPTS.XUDT.CODE_HASH,
       hashType: lumosConfig.SCRIPTS.XUDT.HASH_TYPE,
       args: data.token.attributes.type_script.args,
     } as Script;
+
+    let xUDTCellDeps = {
+      outPoint: {
+        txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
+        index: lumosConfig.SCRIPTS.XUDT.INDEX,
+      },
+      depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
+    };
 
     if (isRUSD) {
       xUdtType = {
@@ -395,6 +406,16 @@ class KeyringService {
         hashType: networkConfig.RUSD.script.hashType,
         args: data.token.attributes.type_script.args,
       } as Script;
+
+      xUDTCellDeps = networkConfig.RUSD.cellDep;
+    } else if (isUSDI) {
+      xUdtType = {
+        codeHash: networkConfig.USDI.script.codeHash,
+        hashType: networkConfig.USDI.script.hashType,
+        args: data.token.attributes.type_script.args,
+      } as Script;
+
+      xUDTCellDeps = networkConfig.USDI.cellDep;
     }
 
     const xudtCollector = indexer.collector({
@@ -452,18 +473,7 @@ class KeyringService {
 
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
 
-    if (isRUSD) {
-      txSkeleton = addCellDep(txSkeleton, networkConfig.RUSD.cellDep);
-    } else {
-      txSkeleton = addCellDep(txSkeleton, {
-        outPoint: {
-          txHash: lumosConfig.SCRIPTS.XUDT.TX_HASH,
-          index: lumosConfig.SCRIPTS.XUDT.INDEX,
-        },
-        depType: lumosConfig.SCRIPTS.XUDT.DEP_TYPE,
-      });
-    }
-
+    txSkeleton = addCellDep(txSkeleton, xUDTCellDeps);
     txSkeleton = addCellDep(txSkeleton, {
       outPoint: {
         txHash: lumosConfig.SCRIPTS.SECP256K1_BLAKE160.TX_HASH,

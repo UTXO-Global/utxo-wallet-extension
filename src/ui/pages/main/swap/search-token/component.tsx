@@ -1,19 +1,13 @@
 import { isCkbNetwork } from "@/shared/networks";
 import WalletPanel from "../wallet-panel";
-import {
-  useGetCurrentNetwork,
-} from "@/ui/states/walletState";
+import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import { t } from "i18next";
 import cn from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { shortAddress } from "@/shared/utils/transactions";
 import Loading from "react-loading";
-import {
-  CKB_TYPE_HASH,
-  Client,
-  PoolInfo,
-} from "@utxoswap/swap-sdk-js";
+import { CKB_TYPE_HASH, Client, PoolInfo } from "@utxoswap/swap-sdk-js";
 import TextAvatar from "@/ui/components/text-avatar";
 import DOMPurify from "dompurify";
 
@@ -96,7 +90,7 @@ export default function UTXOSwapSearchToken() {
     try {
       const { list: pools } = await client.getPoolsByToken({
         pageNo: 0,
-        pageSize: 200,
+        pageSize: 500,
         searchKey: typeHashSearch,
       });
 

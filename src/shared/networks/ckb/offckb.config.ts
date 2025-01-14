@@ -12,6 +12,10 @@ export interface NetworkConfig {
     script: Script;
     cellDep: CellDep;
   };
+  USDI: {
+    script: Script;
+    cellDep: CellDep;
+  };
 }
 
 export interface OffCKBConfig {
@@ -132,6 +136,22 @@ const offCKBConfig: OffCKBConfig = {
           depType: "code",
         },
       },
+      USDI: {
+        script: {
+          codeHash:
+            "0xcc9dc33ef234e14bc788c43a4848556a5fb16401a04662fc55db9bb201987037",
+          hashType: "type",
+          args: "0x71fd1985b2971a9903e4d8ed0d59e6710166985217ca0681437883837b86162f",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0xaec423c2af7fe844b476333190096b10fc5726e6d9ac58a9b71f71ffac204fee",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
     },
     testnet: {
       lumosConfig: testnetLumosConfig,
@@ -155,6 +175,22 @@ const offCKBConfig: OffCKBConfig = {
           depType: "code",
         },
       },
+      USDI: {
+        script: {
+          codeHash:
+            "0xcc9dc33ef234e14bc788c43a4848556a5fb16401a04662fc55db9bb201987037",
+          hashType: "type",
+          args: "0x71fd1985b2971a9903e4d8ed0d59e6710166985217ca0681437883837b86162f",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0xaec423c2af7fe844b476333190096b10fc5726e6d9ac58a9b71f71ffac204fee",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
     },
     mainnet: {
       lumosConfig: mainnetLumosConfig,
@@ -173,6 +209,22 @@ const offCKBConfig: OffCKBConfig = {
           outPoint: {
             txHash:
               "0x8ec1081bd03e5417bb4467e96f4cec841acdd35924538a35e7547fe320118977",
+            index: "0x0",
+          },
+          depType: "code",
+        },
+      },
+      USDI: {
+        script: {
+          codeHash:
+            "0xbfa35a9c38a676682b65ade8f02be164d48632281477e36f8dc2f41f79e56bfc",
+          hashType: "type",
+          args: "0xd591ebdc69626647e056e13345fd830c8b876bb06aa07ba610479eb77153ea9f",
+        },
+        cellDep: {
+          outPoint: {
+            txHash:
+              "0xf6a5eef65101899db9709c8de1cc28f23c1bee90d857ebe176f6647ef109e20d",
             index: "0x0",
           },
           depType: "code",
