@@ -37,8 +37,9 @@ class NotificationService extends Events {
       this.approval?.reject(new EthereumProviderError(4001, "User Cancel"));
     } else {
       this.approval?.resolve(data);
-      if (this.approval?.data?.params?.method === "connect")
+      if (this.approval?.data?.params?.method === "connect") {
         connectedSite = true;
+      }
     }
     await this.clear();
     this.emit("resolve", data);
@@ -71,8 +72,7 @@ class NotificationService extends Events {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      if (!this.isLocked) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      if (!this.isLocked && Object.keys(data).length > 0) {
         this.openNotification(winProps);
       }
     });
@@ -96,10 +96,7 @@ class NotificationService extends Events {
   };
 
   openNotification = async (winProps: OpenNotificationProps) => {
-    if (this.isLocked) {
-      await remove(this.notifiWindowId);
-      this.notifiWindowId = 0;
-    }
+    if (this.isLocked) return;
 
     this.lock();
 
