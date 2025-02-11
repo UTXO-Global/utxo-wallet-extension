@@ -197,7 +197,6 @@ class ProviderController {
 
   @Reflect.metadata("SAFE", true)
   getBalance = async () => {
-    if (!(await permission.siteIsConnected())) return undefined;
     const currentAccount = storageService.currentAccount;
     if (!currentAccount) return null;
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
@@ -226,20 +225,18 @@ class ProviderController {
 
   @Reflect.metadata("SAFE", true)
   getAccountName = async () => {
-    if (!(await permission.siteIsConnected())) return undefined;
     const account = storageService.currentAccount;
     if (!account) return null;
     return account.name;
   };
 
   @Reflect.metadata("SAFE", true)
-  isConnected = async () => {
-    return permission.siteIsConnected();
+  isConnected = async ({ session: { origin } }) => {
+    return permission.siteIsConnected(origin);
   };
 
   @Reflect.metadata("SAFE", true)
   getAccount = async () => {
-    if (!(await permission.siteIsConnected())) return undefined;
     const _account = storageService.currentAccount;
     if (!_account) return undefined;
     return _account.accounts.map((account) => account.address);
@@ -252,7 +249,6 @@ class ProviderController {
       params: { hex, feeRate },
     },
   }) => {
-    if (!(await permission.siteIsConnected())) return undefined;
     const psbt = Psbt.fromHex(hex);
     (psbt as any).__CACHE.__UNSAFE_SIGN_NONSEGWIT = true;
 
@@ -269,7 +265,6 @@ class ProviderController {
 
   @Reflect.metadata("SAFE", true)
   getPublicKey = async () => {
-    if (!(await permission.siteIsConnected())) return undefined;
     const _account = storageService.currentAccount;
     if (!_account) return undefined;
     return _account.accounts.map((account) => ({

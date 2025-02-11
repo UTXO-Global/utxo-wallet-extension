@@ -76,7 +76,10 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
-    if (!Reflect.getMetadata("SAFE", ctx.providerController, mapMethod)) {
+    if (
+      !Reflect.getMetadata("SAFE", ctx.providerController, mapMethod) &&
+      !Reflect.getMetadata("CONNECTED", providerController, mapMethod)
+    ) {
       if (!storageService.appState.isUnlocked) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval({ lock: true });
@@ -88,7 +91,9 @@ const flowContext = flow
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
     if (Reflect.getMetadata("SAFE", providerController, mapMethod)) {
-      if (!(await permissionService.siteIsConnected())) {
+      if (
+        !(await permissionService.siteIsConnected(ctx.request.session.origin))
+      ) {
         return;
       }
     }
@@ -103,8 +108,13 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    if (!Reflect.getMetadata("SAFE", ctx.providerController, mapMethod)) {
-      if (!(await permissionService.siteIsConnected())) {
+    if (
+      !Reflect.getMetadata("SAFE", ctx.providerController, mapMethod) &&
+      !Reflect.getMetadata("CONNECTED", providerController, mapMethod)
+    ) {
+      if (
+        !(await permissionService.siteIsConnected(ctx.request.session.origin))
+      ) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval(
           {

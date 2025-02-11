@@ -22,20 +22,9 @@ class PermissionService {
     return this._sites;
   }
 
-  async siteIsConnected(): Promise<boolean> {
-    const tabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-      status: "complete",
-    });
-    console.log("siteIsConnected", tabs);
-    if (tabs.length === 0) return false;
-    if (!!tabs[0].url) {
-      const url = new URL(tabs[0].url);
-      const site = this._sites.find((f) => f.origin === url.origin);
-      return site ? site.isConnected : false;
-    }
-    return false;
+  async siteIsConnected(origin: string): Promise<boolean> {
+    const site = this._sites.find((f) => f.origin === origin);
+    return site ? site.isConnected : false;
   }
 
   addConnectedSite(origin: string, name: string, icon: string) {
