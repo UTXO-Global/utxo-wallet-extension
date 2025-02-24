@@ -1265,6 +1265,16 @@
     "@nervosnetwork/ckb-types" "0.109.3"
     tslib "2.3.1"
 
+"@nervosnetwork/ckb-sdk-core@0.109.5":
+  version "0.109.5"
+  resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-sdk-core/-/ckb-sdk-core-0.109.5.tgz#b8b8f3f2f31af57d9fdf778940330f7fbc0545ba"
+  integrity sha512-eh3RjJlf8LqIAf03m81YLnuDaTOzs8C2cqXGJT9pdJIwEAaRcmgG6xZr5m9fdOMaeFMvaF4BQyjCeGjTQCFRGA==
+  dependencies:
+    "@nervosnetwork/ckb-sdk-rpc" "0.109.5"
+    "@nervosnetwork/ckb-sdk-utils" "0.109.5"
+    "@nervosnetwork/ckb-types" "0.109.5"
+    tslib "2.3.1"
+
 "@nervosnetwork/ckb-sdk-rpc@0.109.1":
   version "0.109.1"
   resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-sdk-rpc/-/ckb-sdk-rpc-0.109.1.tgz#7057385a1c99dd06ca04e6b64720da3da3a622ea"
@@ -1281,6 +1291,15 @@
   dependencies:
     "@nervosnetwork/ckb-sdk-utils" "0.109.3"
     axios "1.6.7"
+    tslib "2.3.1"
+
+"@nervosnetwork/ckb-sdk-rpc@0.109.5":
+  version "0.109.5"
+  resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-sdk-rpc/-/ckb-sdk-rpc-0.109.5.tgz#c7c28fb6bbc06cb1dedb3e660eabff1ebeacd11a"
+  integrity sha512-rT7iVRtagP3TxWel4zwXo6BAKfne4TBrGTnjmVTfqa/mrMNonVwOyJcFhWNSvq/r8HufL3QlYhngLHVDNomURQ==
+  dependencies:
+    "@nervosnetwork/ckb-sdk-utils" "0.109.5"
+    axios "1.7.4"
     tslib "2.3.1"
 
 "@nervosnetwork/ckb-sdk-utils@0.109.1":
@@ -1302,6 +1321,17 @@
     "@nervosnetwork/ckb-types" "0.109.3"
     bech32 "2.0.0"
     elliptic "6.5.4"
+    jsbi "3.1.3"
+    tslib "2.3.1"
+
+"@nervosnetwork/ckb-sdk-utils@0.109.5":
+  version "0.109.5"
+  resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-sdk-utils/-/ckb-sdk-utils-0.109.5.tgz#5f760cf2a4ec8f76d5ee42ce7408c8859646073b"
+  integrity sha512-Tx642hcJWbN8W3KzCIhIo49yzJ8LMqWopQCSBDKuRmwHesO/bvJqYojCVwfrOyROtFOPhgjyiGm5RXBuxm0KpQ==
+  dependencies:
+    "@nervosnetwork/ckb-types" "0.109.5"
+    bech32 "2.0.0"
+    elliptic "6.6.1"
     jsbi "3.1.3"
     tslib "2.3.1"
 
@@ -1330,6 +1360,11 @@
   version "0.109.4"
   resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-types/-/ckb-types-0.109.4.tgz#95c1fc492f41dee9ec4cd5774abfd275f1ba7159"
   integrity sha512-paA5URfnR58enL3OvT/Bv0ZuQpAZGlk5pjvzly4Q/pkRAeJVA0ks94zf4y8hTcvBCjSlEG8KCt0fI4r/sAylTg==
+
+"@nervosnetwork/ckb-types@0.109.5":
+  version "0.109.5"
+  resolved "https://registry.yarnpkg.com/@nervosnetwork/ckb-types/-/ckb-types-0.109.5.tgz#c302eb3149513dc22fe3905265a397d37088c7cd"
+  integrity sha512-5jQNjFw76YCd+Ppl+0RvBWzxwvWaKfWC5wjVFFdNAieX7xksCHfZFIeow8je7AF8uVypwe56WlLBlblxw9NBBQ==
 
 "@noble/ciphers@^0.5.3":
   version "0.5.3"
@@ -1517,7 +1552,23 @@
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.17.1.tgz#bf93997beb81863fde042ebd05013a2618471362"
   integrity sha512-mCOMec4BKd6BRGBZeSnGiIgwsbLGp3yhVqAD8H+PxiRNEHgDpZb8J1TnrSDlg97t0ySKMQJTHCWBCmBpSmkF6Q==
 
-"@rgbpp-sdk/btc@0.6.0", "@rgbpp-sdk/btc@^0.6.0":
+"@rgbpp-sdk/btc@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@rgbpp-sdk/btc/-/btc-0.7.0.tgz#cf30882e508770e70610a2a842ddee2a7f4a6c40"
+  integrity sha512-QYtl8Ez3z4FwhGzaBngVqG5WaIdmesD5J+m3RFoBUHvx5MfOgHD+ofgkZreEyRIkp7fwwsicCZ57GCiB/Yq2Dg==
+  dependencies:
+    "@bitcoinerlab/secp256k1" "^1.1.1"
+    "@ckb-lumos/codec" "0.22.2"
+    "@nervosnetwork/ckb-types" "0.109.5"
+    "@rgbpp-sdk/ckb" "^0.7.0"
+    "@rgbpp-sdk/service" "^0.7.0"
+    bip32 "^4.0.0"
+    bitcoinjs-lib "^6.1.5"
+    ecpair "^2.1.0"
+    lodash "^4.17.21"
+    p-limit "^3.1.0"
+
+"@rgbpp-sdk/btc@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@rgbpp-sdk/btc/-/btc-0.6.0.tgz#a72b1220786243e93a224a973238527a21162903"
   integrity sha512-hnbEo9Hbba8vcVrqINnfnf8+XulRvvwn3Iq9xMEwA3b1WMsuZDSfRujp6rtbCiIKOMbBTOX1DgsC07RyvCZ7VQ==
@@ -1550,7 +1601,34 @@
     camelcase-keys "^7.0.2"
     js-sha256 "^0.11.0"
 
-"@rgbpp-sdk/service@0.6.0", "@rgbpp-sdk/service@^0.6.0":
+"@rgbpp-sdk/ckb@0.7.0", "@rgbpp-sdk/ckb@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@rgbpp-sdk/ckb/-/ckb-0.7.0.tgz#81cb4f48c88e662d14d6a80bc79fc9aa2aa61316"
+  integrity sha512-OBUuapLVtKR+72XwY40+UlBhalWZx99Oo1fWM3KihGwObruvvrA092daaaEi9oSbfVvzzl4B9XhSnLM6W5GPHA==
+  dependencies:
+    "@ckb-lumos/base" "^0.22.2"
+    "@ckb-lumos/codec" "^0.22.2"
+    "@exact-realty/multipart-parser" "^1.0.13"
+    "@nervosnetwork/ckb-sdk-core" "0.109.5"
+    "@nervosnetwork/ckb-sdk-utils" "0.109.5"
+    "@nervosnetwork/ckb-types" "0.109.5"
+    "@rgbpp-sdk/service" "^0.7.0"
+    "@spore-sdk/core" "^0.2.0-beta.6"
+    axios "^1.7.4"
+    camelcase-keys "^7.0.2"
+    js-sha256 "^0.11.0"
+
+"@rgbpp-sdk/service@0.7.0", "@rgbpp-sdk/service@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@rgbpp-sdk/service/-/service-0.7.0.tgz#23ba68c7c8c4219d5ab837d22b4c8be6cb22f90a"
+  integrity sha512-iz21HjUhA0jbfIefFa1Jfoigrofuu/ulVbfpBw63TJT7pQUVxtw9HgnW9mGb4nIQHgx+1wJeqnjFYojFuJ17fw==
+  dependencies:
+    "@ckb-lumos/base" "0.22.2"
+    "@ckb-lumos/codec" "0.22.2"
+    "@nervosnetwork/ckb-types" "0.109.5"
+    lodash "^4.17.21"
+
+"@rgbpp-sdk/service@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@rgbpp-sdk/service/-/service-0.6.0.tgz#0f46a798075e1d7ec5a5fd174c6d92f5209acb5f"
   integrity sha512-R+5VyzxvfwtCYEibhV+UjBXSJDL7IfxuBSgjd6M4tN9sg5ScpCTlrrJJAjjWb/euiV1Qnd/tFsX4fTZBeWnXRQ==
@@ -2556,10 +2634,28 @@ axios@1.6.7:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.4.tgz#4c8ded1b43683c8dd362973c393f3ede24052aa2"
+  integrity sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
 axios@^1.6.8, axios@^1.7.2:
   version "1.7.7"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.7.tgz#2f554296f9892a72ac8d8e4c5b79c14a91d0a47f"
   integrity sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.7.4:
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
+  integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -3477,6 +3573,19 @@ elliptic@6.6.0:
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.6.0.tgz#5919ec723286c1edf28685aa89261d4761afa210"
   integrity sha512-dpwoQcLc/2WLQvJvLRHKZ+f9FgOdjnq11rurqwekGQygGPsYSK29OMMD2WalatiqQ+XGFDglTNixpPfI+lpaAA==
+  dependencies:
+    bn.js "^4.11.9"
+    brorand "^1.1.0"
+    hash.js "^1.0.0"
+    hmac-drbg "^1.0.1"
+    inherits "^2.0.4"
+    minimalistic-assert "^1.0.1"
+    minimalistic-crypto-utils "^1.0.1"
+
+elliptic@6.6.1:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.6.1.tgz#3b8ffb02670bf69e382c7f65bf524c97c5405c06"
+  integrity sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
@@ -5872,17 +5981,17 @@ reusify@^1.0.4:
   resolved "https://registry.yarnpkg.com/reusify/-/reusify-1.0.4.tgz#90da382b1e126efc02146e90845a88db12925d76"
   integrity sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==
 
-rgbpp@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/rgbpp/-/rgbpp-0.6.0.tgz#88e1b6540aad6fa8085b6d51f853eea7607dc0aa"
-  integrity sha512-85HeHe5qImMYuFPB2gJej6vkn0ItQAHdJPdqCOpVEaPcl7ExIeUzevewbk853wOsggMBQEONRUQl9LgLTKD0PA==
+rgbpp@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/rgbpp/-/rgbpp-0.7.0.tgz#c64f7777700a4abf0f7a71af88e6d921701a9bc3"
+  integrity sha512-ya51ukCY6YpHpWOuAh8n6faWVhMWzSfXvqHFHrneumerxng+9JR0/N+nYeFDj2QDpdMlYc+V7OO2T2zUuB7u2A==
   dependencies:
     "@ckb-lumos/base" "^0.22.2"
     "@ckb-lumos/codec" "^0.22.2"
-    "@nervosnetwork/ckb-sdk-utils" "0.109.3"
-    "@rgbpp-sdk/btc" "0.6.0"
-    "@rgbpp-sdk/ckb" "0.6.0"
-    "@rgbpp-sdk/service" "0.6.0"
+    "@nervosnetwork/ckb-sdk-utils" "0.109.5"
+    "@rgbpp-sdk/btc" "0.7.0"
+    "@rgbpp-sdk/ckb" "0.7.0"
+    "@rgbpp-sdk/service" "0.7.0"
 
 rimraf@^3.0.2:
   version "3.0.2"
