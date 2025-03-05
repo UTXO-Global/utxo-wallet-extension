@@ -72,7 +72,7 @@ const FinalleSend = () => {
           {t("send.finalle_send.back")}
         </Link>
         <button className="btn primary flex-3" onClick={onClick}>
-          {t("components.layout.explorer")}
+          {t("send.finalle_send.explorer")}
         </button>
       </div>
     </div>
