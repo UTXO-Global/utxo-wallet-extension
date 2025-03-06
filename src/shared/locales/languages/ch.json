@@ -1,11 +1,11 @@
 {
   "wallet_page": {
-    "transactions": "交易",
-    "no_transactions": "没有交易",
-    "no_tokens": "您目前还没有任何代币",
+    "transactions": "交易记录",
+    "no_transactions": "暂无交易",
+    "no_tokens": "暂无代币",
     "receive": "接收",
     "send": "发送",
-    "swap": "交换",
+    "swap": "兑换",
     "buy": "购买",
     "your_balance": "您的余额",
     "available_balance": "可用余额",
@@ -14,62 +14,66 @@
   },
   "settings": {
     "language": "语言",
-    "logout": "登出",
-    "connected_sites": "已连接的网站",
-    "expand_view": "扩大视图",
+    "logout": "退出登录",
+    "connected_sites": "已连接网站",
+    "expand_view": "扩展视图",
     "security_settings": "安全设置",
-    "change_password": "更改密码",
+    "change_password": "修改密码",
     "address_type": "地址类型",
     "wallet": "钱包",
-    "help_n_support": "帮助和支持",
+    "help_n_support": "帮助与支持",
     "become_a_partner": "成为合作伙伴"
   },
   "components": {
     "layout": {
-      "create_new_wallet": "创建新的钱包",
+      "create_new_wallet": "创建新钱包",
       "send": "发送",
-      "connected_sites": "已连接的网站",
-      "change_language": "更改语言",
+      "connected_sites": "已连接网站",
+      "change_language": "切换语言",
       "switch_account": "切换账户",
       "change_address_type": "更改地址类型",
-      "create_new_account": "创建新的账户",
-      "change_password": "更改密码",
+      "create_new_account": "创建新账户",
+      "change_password": "修改密码",
       "switch_wallet": "切换钱包",
       "transaction_info": "交易信息",
       "settings": "设置",
-      "show_mnemonic": "显示助记词",
-      "show_private_key": "显示私钥",
-      "restore_from_mnemonic": "从助记词恢复",
-      "restore_from_private_key": "从私钥恢复",
+      "show_mnemonic": "查看助记词",
+      "show_private_key": "查看私钥",
+      "restore_from_mnemonic": "通过助记词恢复",
+      "restore_from_private_key": "通过私钥恢复",
+      "security": "安全设置",
+      "discover": "发现",
+      "inscriptions": "铭文",
+      "network": "切换网络",
       "address_type": "地址类型",
-      "about_account": "关于账户",
-      "about_wallet": "关于钱包",
+      "about_account": "账户信息",
+      "about_wallet": "钱包信息",
       "explorer": "探索",
       "restore_wallet": "恢复钱包",
-      "receive": "收到",
-      "mnemonic_confirmation": "確認恢復短語",
-      "mnemonic_confirm_desc": "请输入正确的钱包种子或单击“返回”重新创建钱包",
-      "next": "下一個",
-      "confirm": "確認",
-      "details": "详细",
-      "detail_NFT": "详情 NFT",
+      "receive": "接收",
+      "mnemonic_confirmation": "确认助记词",
+      "mnemonic_confirm_desc": "请输入正确的钱包助记词或点击“返回”重新创建钱包",
+      "next": "下一步",
+      "confirm": "确认",
+      "details": "详情",
+      "detail_NFT": "NFT详情",
       "search": "搜索",
-      "swap": "交换"
+      "swap": "兑换"
     },
     "check_password": {
       "incorrect_password_error": "密码错误",
       "password": "密码",
       "continue": "继续",
-      "enter_password": "Enter Password"
+      "enter_password": "输入密码"
     },
     "password_input": {
-      "should_be_more_than_1_symbol": "应该超过1个符号"
+      "should_be_more_than_1_symbol": "密码长度必须大于1个字符"
     },
     "rename": {
-      "enter_new_name": "输入新的名称",
-      "minimum_length": "最小长度 - 1",
-      "maximum_length": "最大长度 - 16",
-      "name_is_required": "需要名称",
+      "enter_new_name": "输入新名称",
+      "minimum_length": "最小长度为1",
+      "maximum_length": "最大长度为16",
+      "name_is_required": "名称不能为空",
       "save": "保存",
       "rename": "重命名"
     },
@@ -80,18 +84,18 @@
       "slippage_settings": "滑点设置",
       "search_token": "搜索代币",
       "max_slippage": "最大滑点",
-      "swap_success": "交换成功",
-      "review_order": "查看订单",
+      "swap_success": "兑换成功",
+      "review_order": "确认订单",
       "no_assets_available": "无可用资产",
-      "fees": "費用",
-      "fee": "費用",
+      "fees": "费用",
+      "fee": "费用",
       "tooltip": {
-        "fees": "交易期间支付的费用，主要用于流动性",
-        "max_slippage": "您愿意在交易中容忍的价格变化的最大百分比",
+        "fees": "交易过程中支付的费用，主要用于流动性",
+        "max_slippage": "在交易中您可接受的最大价格变动百分比",
         "price_impact": "由于交易量导致的市场价格与预估价格之间的差异",
-        "balance_reservation": "SWAP 需要预留 276 CKB，因此您的可用 CKB 余额将小于总余额"
+        "balance_reservation": "兑换需要预留 276 CKB，因此您的可用 CKB 余额将小于总余额"
       },
-      "max": "最高",
+      "max": "全部",
       "balance": "余额",
       "price": "价格",
       "insufficient_balance": "余额不足",
@@ -99,63 +103,63 @@
       "price_impact": "价格影响",
       "select_token": "选择代币",
       "you_pay": "您支付",
-      "you_receive": "您收到",
-      "slippage_setting_desc": "如果价格变化超过滑点，您的交易将失败。 价值过高将导致交易不利",
+      "you_receive": "将获得",
+      "slippage_setting_desc": "如果价格变动超过滑点设置，您的交易将失败。同时，过高的滑点值可能无法获得更优惠的价格。请谨慎使用。",
       "auto": "自动",
       "custom": "自定义",
       "price_impact_too_high": "价格影响过高",
-      "powered_by": "供电"
+      "powered_by": "Powered by"
     }
   },
   "change_password": {
     "old_password": "旧密码",
     "new_password": "新密码",
     "confirm_password": "确认密码",
-    "change_password": "更改密码"
+    "change_password": "修改密码"
   },
   "connected_sites": {
-    "no_sites_message": "你还没有连接任何网站"
+    "no_sites_message": "您还没有连接任何网站"
   },
   "create_password": {
     "password": "密码",
     "confirm_password": "确认密码",
     "create_password": "创建密码",
-    "sub_title": "输入密码来保护您的钱包"
+    "sub_title": "请输入密码以保护您的钱包"
   },
   "login": {
     "password": "密码",
     "login": "登录"
   },
   "new_account": {
-    "max_length_error": "名称的最大长度 - 16",
+    "max_length_error": "名称最大长度为16",
     "empty_name": "钱包名称不能为空",
-    "name_taken_error": "此账户的名称已被占用",
-    "account_created_message": "新的账户已创建",
-    "enter_name_label": "输入名称：",
-    "create_new_account": "创建新的账户"
+    "name_taken_error": "该账户名称已被使用",
+    "account_created_message": "新账户已创建",
+    "enter_name_label": "输入名称",
+    "create_new_account": "创建新账户"
   },
   "new_wallet": {
-    "new_mnemonic_label": "新的助记词",
+    "new_mnemonic_label": "新助记词",
     "restore_mnemonic_label": "恢复助记词",
     "restore_from_private_key_label": "通过私钥恢复",
     "continue": "继续",
     "new_mnemonic": {
-      "error_phrase_blank": "助记词为空",
-      "warning": "如果你丢失了这些单词，你将无法恢复你的账户",
-      "i_saved_this_phrase": "我已寫下並安全地儲存此恢復短語",
+      "error_phrase_blank": "助记词不能为空",
+      "warning": "如果您丢失了这些单词，您将无法恢复您的账户",
+      "i_saved_this_phrase": "我已记下并安全保存了这些助记词",
       "copy": "复制"
     },
     "restore_mnemonic": {
-      "incomplete_phrase_error": "请插入所有的单词",
-      "invalid_words_error": "单词无效"
+      "incomplete_phrase_error": "请输入所有单词",
+      "invalid_words_error": "助记词无效"
     },
     "restore_private": {
-      "private_key": "私密钥",
+      "private_key": "私钥",
       "recover": "恢复",
-      "invalid_private_key_error": "私钥错误"
+      "invalid_private_key_error": "私钥无效"
     },
-    "create_wallet": "Create Wallet",
-    "restore_an_existing_wallet": "Restore An Existing Wallet"
+    "create_wallet": "创建钱包",
+    "restore_an_existing_wallet": "恢复已有钱包"
   },
   "receive": {
     "click_to_copy": "点击复制",
@@ -163,40 +167,40 @@
   },
   "send": {
     "confirm_send": {
-      "to_addresses": "送达地址",
-      "from_address": "来自地址",
+      "to_addresses": "接收地址",
+      "from_address": "发送地址",
       "amount": "金额",
       "fee": "费用",
-      "transaction_fee": "交易费",
-      "included": "已包括",
-      "not_included": "未包括",
+      "transaction_fee": "网络费",
+      "included": "已包含",
+      "not_included": "未包含",
       "confirm": "确认",
-      "confirming": "确认...",
+      "confirming": "确认中...",
       "confirmation": "确认"
     },
     "create_send": {
-      "minimum_amount_error": "最小金额 - 0.0001 BTC",
-      "address_error": "请输入收件人地址",
+      "minimum_amount_error": "最小金额为 0.0001 BTC",
+      "address_error": "请输入接收方地址",
       "address_invalid": "地址无效",
-      "not_enough_money_error": "你的账户资金不足",
-      "not_enough_fee_error": "请提升费用",
-      "fee_is_text_error": "费用必须是数字",
-      "default_error": "出现错误",
+      "not_enough_money_error": "账户余额不足",
+      "not_enough_fee_error": "请提高费率",
+      "fee_is_text_error": "费率必须为正整数",
+      "default_error": "发生错误",
       "address": "地址",
-      "address_to": "地址至",
-      "send_to": "发给",
+      "address_to": "发送至",
+      "send_to": "发送给",
       "amount": "金额",
       "amount_to_send": "发送金额",
       "enter_amount": "输入金额",
-      "max_amount": "最大值",
+      "max_amount": "全部",
       "fee_label": "费用:",
-      "include_fee_in_the_amount_label": "金额中包括费用",
+      "include_fee_in_the_amount_label": "发送金额中包含网络费",
       "save_address": "保存地址",
       "continue": "继续",
       "fee_input": {
-        "fast": "快",
+        "fast": "快速",
         "standard": "标准",
-        "slow": "慢",
+        "slow": "慢速",
         "custom": "自定义"
       },
       "address_input": {
@@ -205,33 +209,33 @@
       },
       "address_book": {
         "address_book": "地址簿",
-        "no_addresses": "还没有地址"
+        "no_addresses": "暂无地址"
       },
-      "error_not_enough_balance_remaining": "您钱包中的剩余余额必须大于 {value} CKB。请调整您的交易金额或添加更多 CKB 以继续"
+      "error_not_enough_balance_remaining": "交易后您钱包中的剩余余额必须大于 {value} CKB。请调整交易金额或添加更多 CKB 继续操作"
     },
-    "final_send": {
+    "finalle_send": {
       "success": "成功",
       "transaction_completed": "交易已完成!",
-      "explorer": "查找器",
+      "explorer": "在浏览器中查看",
       "back": "返回"
     }
   },
   "switch_account": {
-    "name_already_taken_error": "名称已占用",
+    "name_already_taken_error": "此名称已被使用",
     "copy_address": "复制地址",
     "rename_account": "重命名账户",
     "export_private_key": "导出私钥",
-    "detail_account": "详细账户",
+    "detail_account": "账户详情",
     "show_pk": {
       "copy": "复制"
     }
   },
   "switch_wallet": {
     "rename_wallet": "重命名钱包",
-    "show_mnemonic_private_key": "显示助记词私钥",
-    "last_wallet_error": "你不能删除你的最后一个钱包",
-    "remove_wallet": "移除钱包",
-    "are_you_sure": "你确定吗?",
+    "show_mnemonic_private_key": "查看助记词和私钥",
+    "last_wallet_error": "您不能删除最后一个钱包",
+    "remove_wallet": "删除钱包",
+    "are_you_sure": "钱包一旦删除，只能通过助记词或私钥恢复，请确保您已经备份好助记词或私钥。您确定要删除吗?",
     "yes": "是",
     "no": "否",
     "copy": "复制"
@@ -241,69 +245,69 @@
     "export_private_key": "导出私钥"
   },
   "about_wallet": {
-    "recovery_phrase": "查看恢复短语",
+    "recovery_phrase": "查看助记词",
     "delete": "删除",
-    "your_recovery_phrase": "你的恢复短语",
-    "sub_title_recovery_phrase": "按正确的顺序复制这些词语并妥善保管",
-    "view_recovery_phrase": "查看恢复短语，确保没有人看到你的屏幕"
+    "your_recovery_phrase": "您的助记词",
+    "sub_title_recovery_phrase": "请按正确的顺序复制这些单词并妥善保存",
+    "view_recovery_phrase": "查看助记词，请确保没有人看到您的屏幕"
   },
   "transaction_info": {
-    "txid": "TxId",
-    "confirmations_label": "确认：",
+    "txid": "交易ID",
+    "confirmations_label": "确认数：",
     "fee_label": "费用：",
     "value_label": "价值：",
-    "open_in_explorer": "在查找器中打开",
+    "open_in_explorer": "在区块浏览器中查看",
     "copied": "已复制",
     "inputs": "输入",
     "outputs": "输出",
-    "details": "详细"
+    "details": "详情"
   },
   "hooks": {
     "transaction": {
-      "insufficient_balance_0": "余额不足. 非注册余额",
-      "insufficient_balance_1": "Token) 小于",
+      "insufficient_balance_0": "Insufficient balance. Non-Inscription balance",
+      "insufficient_balance_1": "Token is lower than",
       "insufficient_balance_2": "Token"
     },
     "wallet": {
-      "last_wallet_error": "你不能删除你的最后一个钱包"
+      "last_wallet_error": "您不能删除最后一个钱包"
     }
   },
   "export_private_key": {
-    "wif_private_key": "WIF Private Key:",
-    "hex_private_key": "HEX Private Key:"
+    "wif_private_key": "WIF格式私钥:",
+    "hex_private_key": "HEX格式私钥:"
   },
   "explore": {
     "feature": "功能",
     "recommended": "推荐",
-    "partners": "合作伙伴的优惠"
+    "partners": "合作伙伴"
   },
   "provider": {
     "sign_tx": "签署交易",
     "sign_message": "签署消息",
-    "you_are_signing": "你正在签署",
-    "resolve": "解析",
+    "you_are_signing": "您正在签署",
+    "resolve": "确认",
     "reject": "拒绝",
-    "sign_request": "签署请求",
+    "sign_request": "签名请求",
     "send": "发送",
-    "sign": "签署",
+    "sign": "签名",
     "create_transaction": "创建交易",
     "connecting": "连接中",
     "connect": "连接",
-    "access_required": "需要访问",
-    "to_address": "到地址",
-    "connecting_account": "连接账户",
+    "access_required": "需要访问权限",
+    "to_address": "接收地址",
+    "connecting_account": "正在连接账户",
     "warning": "警告",
     "anyone_can_pay_warning": "此输入具有 SIGHASH_SINGLE | ANYONECANPAY 标志",
     "connect_with_utxo": "连接 UTXO 账户",
     "allow_switch_network": "允许该站点切换网络",
-    "switch_network": "网络交换机",
-    "allow_switch_chain": "允许本站切换外链",
-    "switch_chain": "开关链"
+    "switch_network": "切换网络",
+    "allow_switch_chain": "允许此网站切换链",
+    "switch_chain": "切换链"
   },
   "detail_NFT": {
     "type": "类型",
     "content_type": "内容类型",
-    "occupied": "占领",
+    "occupied": "占用空间",
     "creator": "创建者",
     "transfer": "转移"
   }
