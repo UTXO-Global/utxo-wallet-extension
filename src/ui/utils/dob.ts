@@ -6,15 +6,7 @@ import LS from "./ls";
 import {
   svgToBase64,
   config as dobRenderConfig,
-  DobDecodeResponse,
-  RenderProps,
-  DobDecodeResult,
-  RenderOutput,
-  traitsParser,
-  renderImageSvg as rootRenderImageSvg,
-  renderTextParamsParser,
-  renderTextSvg,
-  ParsedTrait,
+  renderByTokenKey,
 } from "@nervina-labs/dob-render";
 
 const IMAGE_CONTENT_TYPE = [
@@ -26,6 +18,37 @@ const IMAGE_CONTENT_TYPE = [
   "image/svg+xml",
   "image/webp",
 ];
+
+// Track the current network to avoid unnecessary URL updates
+let currentNetworkSlug: string | null = null;
+
+/**
+ * Configure the DOB decoder server URL based on network
+ * @param network The current network data
+ * @returns boolean indicating if the configuration was updated
+ */
+const configureDobDecodeServer = (network: NetworkData): boolean => {
+  const isTestnet = network.slug === "nervos_testnet";
+  
+  // Only update if the network has changed
+  if (currentNetworkSlug !== network.slug) {
+    if (isTestnet) {
+      dobRenderConfig.setDobDecodeServerURL(
+        "https://dob-decoder-testnet.onrender.com"
+      );
+    } else {
+      dobRenderConfig.setDobDecodeServerURL(
+        "https://dob-decoder.rgbpp.io"
+      );
+    }
+    
+    // Update the current network slug
+    currentNetworkSlug = network.slug;
+    return true;
+  }
+  
+  return false;
+};
 
 const IMAGE_EXT = [
   "avif",
@@ -39,6 +62,7 @@ const IMAGE_EXT = [
   "webp",
   "tiff",
 ];
+
 export async function getSporeContent(
   txHash: string,
   index = 0,
@@ -96,15 +120,8 @@ export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
   const nftIds = ids.filter((id) => !Object.keys(nftsCache).includes(id));
   if (nftIds.length === 0) return nftsCache;
 
-  const isTestnet = network.slug === "nervos_testnet";
-
-  if (isTestnet) {
-    dobRenderConfig.setDobDecodeServerURL(
-      "https://dob-decoder-testnet.onrender.com"
-    );
-  } else {
-    dobRenderConfig.setDobDecodeServerURL("https://dob-decoder.rgbpp.io");
-  }
+  // Configure the DOB decoder server URL if needed
+  configureDobDecodeServer(network);
 
   const res: { [key: string]: { url: string; contentType: string } } = {
     ...nftsCache,
@@ -139,64 +156,6 @@ export const getDob0Imgs = async (ids: string[], network: NetworkData) => {
   await LS.setItem(keyCache, JSON.stringify(res));
   return res;
 };
-
-export async function renderByTokenKey(tokenKey: string) {
-  const dobDecodeResponse = await dobDecode(tokenKey);
-  return renderByDobDecodeResponse(dobDecodeResponse.result);
-}
-
-function renderByDobDecodeResponse(
-  dob0Data: DobDecodeResult | string,
-  props?: Pick<RenderProps, "font"> & {
-    outputType?: "svg";
-  }
-) {
-  if (typeof dob0Data === "string") {
-    dob0Data = JSON.parse(dob0Data) as DobDecodeResult;
-  }
-  if (typeof dob0Data.render_output === "string") {
-    dob0Data.render_output = JSON.parse(
-      dob0Data.render_output
-    ) as RenderOutput[];
-  }
-  const { traits, indexVarRegister } = traitsParser(dob0Data.render_output);
-  for (const trait of traits) {
-    if (trait.name === "prev.type" && trait.value === "image") {
-      return renderImageSvg(traits);
-    }
-  }
-  const renderOptions = renderTextParamsParser(traits, indexVarRegister);
-  return renderTextSvg({ ...renderOptions, font: props?.font });
-}
-
-async function dobDecode(tokenKey: string): Promise<DobDecodeResponse> {
-  const response = await fetch(dobRenderConfig.dobDecodeServerURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: 2,
-      jsonrpc: "2.0",
-      method: "dob_decode",
-      params: [tokenKey],
-    }),
-  });
-  return response.json();
-}
-
-async function renderImageSvg(traits: ParsedTrait[]): Promise<string> {
-  const prevBg = traits.find((trait) => trait.name === "prev.bg");
-  if (
-    prevBg?.value &&
-    typeof prevBg.value === "string" &&
-    isImageURL(prevBg?.value)
-  ) {
-    return prevBg.value;
-  }
-
-  return rootRenderImageSvg(traits);
-}
 
 function isImageURL(url: string) {
   if (!url.startsWith("https://") && !url.startsWith("http://")) {
