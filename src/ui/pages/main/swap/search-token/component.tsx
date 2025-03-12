@@ -117,12 +117,14 @@ export default function UTXOSwapSearchToken() {
 
   return (
     <div className="w-full h-full relative">
-      <div className="fixed top-0 left-0 w-full">
-        <WalletPanel />
+      <div className="fixed top-0 left-0 w-full standard:top-[55px] flex justify-center items-center">
+        <div className="w-full standard:w-[672px]">
+          <WalletPanel />
+        </div>
       </div>
       {isCkbNetwork(currentNetwork.network) ? (
-        <>
-          <div className="px-4 pt-4 pb-2 bg-white fixed top-[65px] w-full">
+        <div className="px-4 pt-4 pb-2 bg-white fixed top-[65px] standard:top-[120px] w-full h-[calc(100%_-_65px)] standard:h-[calc(100%_-_120px)] flex left-0 items-center justify-center">
+          <div className="w-full standard:w-[672px] h-full flex flex-col">
             <div className="border border-grey-200 rounded-lg py-[10px] px-4 bg-grey-300 flex gap-1">
               <IcnSearch className="w-6 h-6" />
               <input
@@ -133,107 +135,111 @@ export default function UTXOSwapSearchToken() {
                 value={textSearch}
               />
             </div>
-          </div>
-          <div className="px-4 pb-[80px] overflow-auto mt-[135px]">
-            <div className="flex flex-col gap-2">
-              {isLoading && (
-                <div className="flex justify-center mt-4">
-                  <Loading
-                    type="spin"
-                    color="#ODODOD"
-                    width={"3rem"}
-                    height={"3rem"}
-                    className="react-loading pr-2"
-                  />
-                </div>
-              )}
-              {tokens.length > 0
-                ? tokens.map((t, i) => {
-                    let aX = undefined;
-                    let aY = undefined;
-                    if (isChangeAssetX) {
-                      aY =
-                        t.assetX.typeHash === assetY?.typeHash
-                          ? t.assetX
-                          : t.assetY;
-                      aX =
-                        t.assetY.typeHash === aY.typeHash ? t.assetX : t.assetY;
-                    } else {
-                      aX =
-                        t.assetX.typeHash === assetX?.typeHash
-                          ? t.assetX
-                          : t.assetY;
-                      aY =
-                        t.assetX.typeHash === aX.typeHash ? t.assetY : t.assetX;
-                    }
+            <div className="mt-4 overflow-auto flex-1">
+              <div className="flex flex-col gap-2">
+                {isLoading && (
+                  <div className="flex justify-center mt-4">
+                    <Loading
+                      type="spin"
+                      color="#ODODOD"
+                      width={"3rem"}
+                      height={"3rem"}
+                      className="react-loading pr-2"
+                    />
+                  </div>
+                )}
+                {tokens.length > 0
+                  ? tokens.map((t, i) => {
+                      let aX = undefined;
+                      let aY = undefined;
+                      if (isChangeAssetX) {
+                        aY =
+                          t.assetX.typeHash === assetY?.typeHash
+                            ? t.assetX
+                            : t.assetY;
+                        aX =
+                          t.assetY.typeHash === aY.typeHash
+                            ? t.assetX
+                            : t.assetY;
+                      } else {
+                        aX =
+                          t.assetX.typeHash === assetX?.typeHash
+                            ? t.assetX
+                            : t.assetY;
+                        aY =
+                          t.assetX.typeHash === aX.typeHash
+                            ? t.assetY
+                            : t.assetX;
+                      }
 
-                    const assetDisplay =
-                      aX.typeHash === typeHashSearch ? aY : aX;
+                      const assetDisplay =
+                        aX.typeHash === typeHashSearch ? aY : aX;
 
-                    return (
-                      <div
-                        key={`token-${t.batchId}-${i}`}
-                        className={cn(
-                          "flex gap-2 items-center py-4 px-3 bg-grey-300 rounded-lg cursor-pointer hover:bg-grey-200"
-                        )}
-                        onClick={() =>
-                          navigate("/swap", {
-                            state: {
-                              ...location.state,
-                              poolInfo: {
-                                ...t,
-                              },
-                              tokens: [aX, aY],
-                            },
-                          })
-                        }
-                      >
-                        <div className="w-10 h-10">
-                          {!!assetDisplay.logo ? (
-                            <img
-                              src={DOMPurify.sanitize(assetDisplay.logo)}
-                              className="w-full rounded-full object-cover object-center"
-                            />
-                          ) : (
-                            <TextAvatar text={`${assetDisplay.symbol}`} />
+                      return (
+                        <div
+                          key={`token-${t.batchId}-${i}`}
+                          className={cn(
+                            "flex gap-2 items-center py-4 px-3 bg-grey-300 rounded-lg cursor-pointer hover:bg-grey-200"
                           )}
+                          onClick={() =>
+                            navigate("/swap", {
+                              state: {
+                                ...location.state,
+                                poolInfo: {
+                                  ...t,
+                                },
+                                tokens: [aX, aY],
+                              },
+                            })
+                          }
+                        >
+                          <div className="w-10 h-10">
+                            {!!assetDisplay.logo ? (
+                              <img
+                                src={DOMPurify.sanitize(assetDisplay.logo)}
+                                className="w-full rounded-full object-cover object-center"
+                              />
+                            ) : (
+                              <TextAvatar text={`${assetDisplay.symbol}`} />
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-0 flex-grow">
+                            <div className="text-primary text-base font-medium leading-6">
+                              {assetDisplay.symbol}{" "}
+                              {!!assetDisplay.name && `(${assetDisplay.name})`}
+                            </div>
+                            <div className="text-sm leading-[18px] text-[#787575] font-normal">
+                              {shortAddress(assetDisplay.typeScript?.args, 7)}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-0 flex-grow">
-                          <div className="text-primary text-base font-medium leading-6">
-                            {assetDisplay.symbol}{" "}
-                            {!!assetDisplay.name && `(${assetDisplay.name})`}
-                          </div>
-                          <div className="text-sm leading-[18px] text-[#787575] font-normal">
-                            {shortAddress(assetDisplay.typeScript?.args, 7)}
-                          </div>
+                      );
+                    })
+                  : !isLoading && (
+                      <div className="px-4 py-3 text-sm text-grey-100">
+                        <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
+                          {t("components.swap.no_assets_available")}
+                          <img src="/no-tokens.png" />
                         </div>
                       </div>
-                    );
+                    )}
+              </div>
+            </div>
+            <div className="w-full pt-4 pb-2 bg-white">
+              <button
+                type="submit"
+                className={cn("btn primary w-full")}
+                onClick={() =>
+                  navigate("/swap", {
+                    state: { ...location.state },
                   })
-                : !isLoading && (
-                    <div className="px-4 py-3 text-sm text-grey-100">
-                      <div className="w-full items-center flex flex-col justify-start gap-6 text-base text-grey-100 capitalize mt-6">
-                        {t("components.swap.no_assets_available")}
-                        <img src="/no-tokens.png" />
-                      </div>
-                    </div>
-                  )}
+                }
+              >
+                {t("components.swap.close")}
+              </button>
             </div>
           </div>
-          <div className="fixed bottom-0 w-full px-4 pb-4 pt-2 bg-white">
-            <button
-              type="submit"
-              className={cn("btn primary standard:m-6 standard:mb-3 w-full")}
-              onClick={() =>
-                navigate("/swap", {
-                  state: { ...location.state },
-                })
-              }
-            >
-              {t("components.swap.close")}
-            </button>
-          </div>
-        </>
+        </div>
       ) : (
         <div className="py-20 flex flex-col items-center justify-center">
           <img src="/feature.png" alt="feature" className="w-[180px]" />
