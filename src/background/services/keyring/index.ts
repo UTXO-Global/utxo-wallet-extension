@@ -696,7 +696,7 @@ class KeyringService {
       scripts: sporeScripts,
     });
 
-    const [fee, feeOk] = await tx.completeFeeBy(signer, 3600);
+    const [fee, feeOk] = await tx.completeFeeBy(signer, data.feeRate);
     tx = await signer.signTransaction(tx);
     return {
       tx: tx.stringify(),
