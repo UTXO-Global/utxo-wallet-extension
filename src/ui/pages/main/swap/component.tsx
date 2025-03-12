@@ -555,13 +555,15 @@ export default function UtxoSwap() {
               {t("components.swap.tooltip.fees")}
             </Tooltip>
           </div>
-          <div
-            className={cn(
-              "text-[#787575] text-sm leading-[18px] font-normal flex items-center gap-[2px]"
-            )}
-          >
-            {fee}%
-          </div>
+          {tokens && tokens.length > 0 && (
+            <div
+              className={cn(
+                "text-[#787575] text-sm leading-[18px] font-normal flex items-center gap-[2px]"
+              )}
+            >
+              {fee} {tokens ? tokens[0].symbol : ""}
+            </div>
+          )}
         </div>
       </div>
     );
