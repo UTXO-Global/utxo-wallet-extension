@@ -68,7 +68,9 @@ const Wallet = () => {
 
   return (
     <div className="relative w-full top-0">
-      <div className={`${s.walletDiv} !h-100vh-72px standard:!h-100vh-100px`}>
+      <div
+        className={`${s.walletDiv} !h-100vh-72px standard:!h-[calc(100vh_-_150px)]`}
+      >
         <WalletPanel />
         <AccountPanel />
         <Campaign />

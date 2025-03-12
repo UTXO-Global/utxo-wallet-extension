@@ -240,6 +240,7 @@ const CreateSend = () => {
       }
       if (balance <= location.state.amount) setIncludeFeeLocked(true);
     }
+
     if (location.state && location.state.inscription_id) {
       setInscription(location.state);
       setInscriptionTransaction(true);
@@ -452,9 +453,10 @@ const CreateSend = () => {
       <AddressBookModal
         isOpen={isOpenModal}
         onClose={() => setOpenModal(false)}
-        setAddress={(address) => {
-          setFormData((p) => ({ ...p, address: address }));
-        }}
+        setAddress={useCallback(
+          (address) => setFormData((prev) => ({ ...prev, address: address })),
+          [setFormData]
+        )}
       />
     </div>
   );

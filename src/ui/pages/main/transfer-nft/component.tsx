@@ -107,13 +107,13 @@ export default function TransferNFT() {
         return toast.error(t("send.create_send.address_error"));
       }
 
-      const { rawtx, fee } = await createTransferNFT({
+      const { tx, fee } = await createTransferNFT({
         toAddress: formData.address,
         feeRate: formData.feeRate,
         nft: detailNFT,
       });
 
-      if (!rawtx) {
+      if (!tx) {
         return toast.error("Failed to create transaction");
       }
 
@@ -122,7 +122,7 @@ export default function TransferNFT() {
           toAddress: formData.address,
           fromAddress: currentAccount.accounts[0].address,
           feeAmount: fee,
-          hex: rawtx,
+          tx,
           save: isSaveAddress,
           nft: detailNFT,
           isUseDID: !!formData.isUseDID,

@@ -83,24 +83,26 @@ const BottomPanel = () => {
   return (
     <div
       className={cn(
-        `py-4 px-4 flex justify-between bg-light-100 fixed w-full bottom-0 left-0`
+        `py-4 px-4 flex justify-center items-center bg-light-100 fixed w-full bottom-0 left-0`
       )}
       style={{ boxShadow: "2px 4px 10px 0px #00000040" }}
     >
-      {BottomNavs.map((nav, i) => (
-        <div
-          key={`bottom-nav-${i}`}
-          className={cn(
-            "cursor-pointer py-2 px-4 rounded-lg hover:bg-grey-300 group",
-            {
-              "bg-grey-300": currentRoute.pathname === nav.path,
-            }
-          )}
-          onClick={() => navigate(nav.path)}
-        >
-          {nav.icon}
-        </div>
-      ))}
+      <div className="w-full standard:w-[672px] flex justify-between">
+        {BottomNavs.map((nav, i) => (
+          <div
+            key={`bottom-nav-${i}`}
+            className={cn(
+              "cursor-pointer py-2 px-4 rounded-lg hover:bg-grey-300 group",
+              {
+                "bg-grey-300": currentRoute.pathname === nav.path,
+              }
+            )}
+            onClick={() => navigate(nav.path)}
+          >
+            {nav.icon}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

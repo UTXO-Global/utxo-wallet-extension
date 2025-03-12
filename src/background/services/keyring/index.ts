@@ -8,9 +8,9 @@ import {
   AGGRON4,
   LINA,
   nervosTestnetSlug,
-  DOBS_TESTNET_CONFIG,
-  DOBS_MAINNET_CONFIG,
   isDogecoinNetwork,
+  SCRIPTS_SPORE_TESTNET,
+  SCRIPTS_SPORE_MAINNET,
 } from "@/shared/networks";
 import { NetworkConfig } from "@/shared/networks/ckb/offckb.config";
 import { NetworkSlug } from "@/shared/networks/types";
@@ -36,19 +36,14 @@ import type {
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
-import { ccc } from "@ckb-ccc/core";
+import { ccc, Transaction } from "@ckb-ccc/core";
 import { addCellDep } from "@ckb-lumos/lumos/helpers";
-import {
-  calculateFeeByTransactionSkeleton,
-  generateTransferSporeAction,
-  getSporeScript,
-  injectCommonCobuildProof,
-  injectLiveSporeCell,
-  payFeeByOutput,
-} from "@spore-sdk/core";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
 import * as ecc from "@bitcoinerlab/secp256k1";
 import * as bitcoinjs from "bitcoinjs-lib";
+import { cccA } from "@ckb-ccc/core/advanced";
+import { spore as cccSpore } from "@ckb-ccc/spore";
+import { sporeA as cccSporeA } from "@ckb-ccc/spore/advanced";
 
 export const KEYRING_SDK_TYPES = {
   HDPrivateKey,
@@ -598,120 +593,113 @@ class KeyringService {
     return { tx: JSON.stringify(tx), fee: fee.toString() };
   }
 
-  transferNFT = async (
-    data: TransferNFT
-  ): Promise<{ tx: string; fee: string }> => {
+  transferSpore = async (params: {
+    signer: ccc.Signer;
+    id: ccc.HexLike;
+    to: ccc.ScriptLike;
+    tx?: ccc.TransactionLike;
+    scriptInfoHash?: ccc.HexLike;
+    scripts?: cccSpore.SporeScriptInfoLike[];
+  }): Promise<{
+    tx: ccc.Transaction;
+  }> => {
+    const { signer, id, to, scriptInfoHash, scripts } = params;
+
+    // prepare transaction
+    const tx = ccc.Transaction.from(params.tx ?? {});
+    const { cell: sporeCell, scriptInfo } = await cccSpore.assertSpore(
+      signer.client,
+      id,
+      scripts
+    );
+
+    await tx.addCellDepInfos(signer.client, scriptInfo.cellDeps);
+    tx.inputs.push(
+      ccc.CellInput.from({
+        previousOutput: sporeCell.outPoint,
+        ...sporeCell,
+      })
+    );
+    tx.addOutput(
+      {
+        lock: to,
+        type: sporeCell.cellOutput.type,
+      },
+      sporeCell.outputData
+    );
+
+    const actions = scriptInfo.cobuild
+      ? [
+          cccSporeA.assembleTransferSporeAction(
+            sporeCell.cellOutput,
+            tx.outputs[tx.outputs.length - 1],
+            scriptInfoHash
+          ),
+        ]
+      : [];
+
+    return {
+      tx: await cccSporeA.prepareSporeTransaction(signer, tx, actions),
+    };
+  };
+
+  getSigner = () => {
     const account = storageService.currentAccount;
     if (!account || !account.accounts[0].address) {
       throw new Error("Error when trying to get the current account");
     }
 
     const ckbAccount = account.accounts[0];
-
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
     if (!isCkbNetwork(network.network)) {
-      return { tx: "", fee: "0" };
+      return undefined;
     }
 
     const isTestnet = nervosTestnetSlug.includes(network.slug);
-    const lumosConfig = isTestnet ? AGGRON4 : LINA;
-    const sporeConfig = isTestnet ? DOBS_TESTNET_CONFIG : DOBS_MAINNET_CONFIG;
+    const client = isTestnet
+      ? new ccc.ClientPublicTestnet()
+      : new ccc.ClientPublicMainnet();
 
-    const fromScript = helpers.parseAddress(ckbAccount.address, {
-      config: lumosConfig,
-    });
+    const sporeScripts = isTestnet
+      ? SCRIPTS_SPORE_TESTNET
+      : SCRIPTS_SPORE_MAINNET;
 
-    const toScript = helpers.parseAddress(data.toAddress, {
-      config: lumosConfig,
-    });
+    const pk = this.exportAccount(ckbAccount.hdPath, network.slug);
+    return new ccc.SignerCkbPrivateKey(client, pk);
+  };
 
-    const indexer = network.network.indexer;
-
-    // TransactionSkeleton
-    let txSkeleton = helpers.TransactionSkeleton({
-      cellProvider: indexer,
-    });
-
-    const nftType = {
-      codeHash: data.nft.type_script.code_hash,
-      hashType: data.nft.type_script.hash_type,
-      args: data.nft.type_script.args,
-    } as Script;
-
-    const nftCollector = indexer.collector({
-      type: nftType,
-      lock: fromScript,
-    });
-
-    let nftCell: Cell | undefined;
-    for await (const cell of nftCollector.collect()) {
-      nftCell = cell;
-      break;
+  createTransferNFT = async (
+    data: TransferNFT
+  ): Promise<{ tx: string; fee: string }> => {
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    if (!isCkbNetwork(network.network)) {
+      return { tx: null, fee: "0" };
     }
 
-    if (!nftCell) {
-      throw new Error(
-        "Owner do not have an NFT cell yet, please call mint first"
-      );
-    }
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const sporeScripts = isTestnet
+      ? SCRIPTS_SPORE_TESTNET
+      : SCRIPTS_SPORE_MAINNET;
 
-    const sporeScript = getSporeScript(
-      sporeConfig,
-      "Spore",
-      nftCell.cellOutput.type!
+    const signer = this.getSigner();
+    const toAddress = await ccc.Address.fromString(
+      data.toAddress,
+      signer.client
     );
 
-    const injectLiveSporeCellResult = await injectLiveSporeCell({
-      txSkeleton,
-      cell: nftCell,
-      addOutput: true,
-      updateOutput(cell) {
-        cell.cellOutput.lock = toScript;
-        return cell;
-      },
-      config: sporeConfig,
+    let { tx } = await this.transferSpore({
+      signer,
+      id: data.nft.type_script.args,
+      to: toAddress.script,
+      scripts: sporeScripts,
     });
 
-    txSkeleton = injectLiveSporeCellResult.txSkeleton;
-
-    // Generate TransferSpore actions
-    const actionResult = generateTransferSporeAction({
-      txSkeleton,
-      inputIndex: injectLiveSporeCellResult.inputIndex,
-      outputIndex: injectLiveSporeCellResult.outputIndex,
-    });
-
-    // Inject CobuildProof
-    if (sporeScript.behaviors?.cobuild) {
-      const injectCobuildProofResult = injectCommonCobuildProof({
-        txSkeleton: txSkeleton,
-        actions: actionResult.actions,
-      });
-      txSkeleton = injectCobuildProofResult.txSkeleton;
-    }
-
-    // Pay fee by the spore cell's capacity margin
-    txSkeleton = await payFeeByOutput({
-      outputIndex: injectLiveSporeCellResult.outputIndex,
-      feeRate: data.feeRate,
-      txSkeleton,
-      config: sporeConfig,
-    });
-
-    const fee = calculateFeeByTransactionSkeleton(txSkeleton, data.feeRate);
-
-    txSkeleton = commons.common.prepareSigningEntries(txSkeleton, {
-      config: lumosConfig,
-    });
-
-    const message = txSkeleton.get("signingEntries").get(0)!.message;
-    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
-    const Sig = keyring.signRecoverable(ckbAccount.hdPath, message);
-    const tx = helpers.sealTransaction(txSkeleton, [Sig]);
-
+    const [fee, feeOk] = await tx.completeFeeBy(signer, data.feeRate);
+    tx = await signer.signTransaction(tx);
     return {
-      tx: JSON.stringify(tx),
+      tx: tx.stringify(),
       fee: fee.toString(),
     };
   };

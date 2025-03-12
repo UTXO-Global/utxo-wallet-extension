@@ -35,7 +35,7 @@ const AddressInput: FC<Props> = ({
   const [filtered, setFiltered] = useState<string[]>([]);
   const [didAddresses, setDidAddresses] = useState<string[]>([]);
   const currentNetwork = useGetCurrentNetwork();
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(address);
   const [requesting, setRequesting] = useState(false);
 
   const { addressBook } = useAppState();
@@ -75,6 +75,10 @@ const AddressInput: FC<Props> = ({
       setFiltered(getFiltered(inputValue));
     }
   }, [inputValue, requesting]);
+
+  useEffect(() => {
+    setInputValue(address);
+  }, [address]);
 
   return (
     <div

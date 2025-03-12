@@ -34,6 +34,7 @@ import { AddressType } from "@/shared/networks/types";
 import { buildRgbppTransferTx } from "@/background/services/rgbpp";
 import { NetworkType, DataSource, sendRgbppUtxos } from "@rgbpp-sdk/btc";
 import { BtcAssetsApi } from "../utils/rgbpp";
+import { ccc } from "@ckb-ccc/core";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();
@@ -344,16 +345,30 @@ export function usePushCkbTxCallback() {
   const [isSent, setIsSent] = useState(false);
   const [txId, setTxId] = useState<string | undefined>(undefined);
   const currentNetwork = useGetCurrentNetwork();
-  const { apiController } = useControllersState((v) => ({
+  const { apiController, keyringController } = useControllersState((v) => ({
     apiController: v.apiController,
+    keyringController: v.keyringController,
   }));
 
   const pushCkbTx = useCallback(
     async (rawtx: string) => {
       try {
-        const txid = await apiController.pushCkbTx(rawtx);
-        setTxId(txid.txid);
-        return txid;
+        const tx = await apiController.pushCkbTx(rawtx);
+        setTxId(tx.txid);
+        return tx;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [apiController]
+  );
+
+  const pushCkbTxWithSigner = useCallback(
+    async (rawTx: string) => {
+      try {
+        const tx = await apiController.pushCkbTxWithSigner(rawTx);
+        setTxId(tx.txid);
+        return tx;
       } catch (e) {
         console.error(e);
       }
@@ -382,7 +397,7 @@ export function usePushCkbTxCallback() {
     return () => clearInterval(interval);
   }, [txId]);
 
-  return { pushCkbTx, isSent };
+  return { pushCkbTx, pushCkbTxWithSigner, isSent };
 }
 
 export function useCreateNFTTxCallback() {
@@ -399,25 +414,27 @@ export function useCreateNFTTxCallback() {
 
   return useCallback(
     async (data: TransferNFT) => {
-      if (selectedWallet === undefined || selectedAccount === undefined)
+      if (selectedWallet === undefined || selectedAccount === undefined) {
         throw new Error("Failed to get current wallet or account");
+      }
 
       if (!isCkbNetwork(network)) {
         toast.error("Invalid network");
         return {
-          rawtx: "",
+          tx: "",
           fee: "",
           fromAddresses: [],
         };
       }
 
       const fromAddress = currentAccount.accounts[0].address;
-      const { tx, fee } = await keyringController.transferNFT({
+      const nftRes = await keyringController.createTransferNFT({
         ...data,
       });
+
       return {
-        rawtx: tx,
-        fee: fee,
+        tx: nftRes.tx,
+        fee: nftRes.fee,
         fromAddresses: [fromAddress],
       };
     },

@@ -15,7 +15,7 @@ const Receive = () => {
     return new QRCode({
       width: 183,
       height: 183,
-      type: "svg",
+      type: "canvas",
       margin: 3,
       image: NETWORK_ICON[currentNetwork.slug],
       dotsOptions: {
@@ -59,19 +59,29 @@ const Receive = () => {
   }, [selectedAddress]);
 
   const onCopy = async () => {
-    const newQr = new QRCode({
-      ...qrCode._options,
-      backgroundOptions: {
-        color: "#0D0D0D",
-      },
-    });
-    const blob = await newQr.getRawData();
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        [blob.type]: blob,
-      }),
-    ]);
-    toast.success("Copied");
+    if (!qrCode) return;
+
+    try {
+      const blob = await qrCode.getRawData("png");
+      if (!blob) {
+        toast.error("Failed to copy QR code");
+        return;
+      }
+
+      console.log("QR Blob:", blob); // Kiểm tra dữ liệu
+      console.log("Blob size:", blob.size);
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ]);
+
+      toast.success("Copied");
+    } catch (error) {
+      console.error("Copy QR failed:", error);
+      toast.error("Copy failed");
+    }
   };
 
   return (
