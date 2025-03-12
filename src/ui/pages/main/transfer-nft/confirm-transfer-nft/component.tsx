@@ -13,7 +13,7 @@ import { useTransactionManagerContext } from "@/ui/utils/tx-ctx";
 import Analytics from "@/ui/utils/gtm";
 
 export default function ConfirmTransferNFT() {
-  const { pushCkbTx, isSent: isCkbSent } = usePushCkbTxCallback();
+  const { pushCkbTxWithSigner, isSent: isCkbSent } = usePushCkbTxCallback();
   const [loading, setLoading] = useState(false);
   const [txId, setTxId] = useState<string | undefined>(undefined);
   const updateAddressBook = useUpdateAddressBook();
@@ -57,7 +57,8 @@ export default function ConfirmTransferNFT() {
     try {
       let txId = "";
       if (isCkbNetwork(currentNetwork.network)) {
-        txId = (await pushCkbTx(location.state.hex)).txid;
+        const { tx } = location.state;
+        txId = (await pushCkbTxWithSigner(tx)).txid;
       }
 
       if (location.state.save) {
@@ -78,7 +79,7 @@ export default function ConfirmTransferNFT() {
           nft_collection_name: location.state.nft.collection.name,
           nft_name: location.state.nft.name,
           nft_token_id: location.state.nft.token_id,
-          did: location.state.isUseDID
+          did: location.state.isUseDID,
         });
       } catch (e) {
         console.error(e);
@@ -92,7 +93,7 @@ export default function ConfirmTransferNFT() {
     } catch (e) {
       toast.error(e.message);
       console.error(e);
-      navigate(-1);
+      //navigate(-1);
     }
   };
 

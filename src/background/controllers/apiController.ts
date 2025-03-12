@@ -17,7 +17,7 @@ import {
 } from "@/shared/networks/ckb/types";
 import { fetchEsplora } from "@/shared/utils";
 import { Cell } from "@ckb-lumos/lumos";
-import { storageService } from "../services";
+import { keyringService, storageService } from "../services";
 import {
   RGBPP_ASSET_API_URL,
   RgbppAsset,
@@ -28,6 +28,7 @@ import { NetworkData, NetworkSlug } from "@/shared/networks/types";
 import { udtDataToDecimal } from "../utils";
 import { CacheResponse } from "./cache/decorate";
 import { basicCache as cache } from "./cache";
+import { ccc } from "@ckb-ccc/core";
 
 export interface IApiController {
   getAccountBalance(address: string): Promise<
@@ -44,6 +45,7 @@ export interface IApiController {
   getCells(address: string): Promise<Cell[] | undefined>;
   pushTx(rawTx: string): Promise<{ txid: string } | undefined>;
   pushCkbTx(rawTx: string): Promise<{ txid: string } | undefined>;
+  pushCkbTxWithSigner(tx: string): Promise<{ txid: string } | undefined>;
   getTransactions(): Promise<ITransaction[] | undefined>;
   getCKBTransactions({
     type,
@@ -240,9 +242,17 @@ class ApiController implements IApiController {
     // Clear all cache
     cache.clearAll();
 
-    return {
-      txid: hash,
-    };
+    return { txid: hash };
+  }
+
+  async pushCkbTxWithSigner(rawTx: string) {
+    const tx = JSON.parse(rawTx) as ccc.Transaction;
+    const signer = keyringService.getSigner();
+    if (signer) {
+      const txHash = await signer.client.sendTransaction(tx);
+      return { txid: txHash };
+    }
+    return { txid: "" };
   }
 
   @CacheResponse(30000)

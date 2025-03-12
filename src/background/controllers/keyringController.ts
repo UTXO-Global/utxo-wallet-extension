@@ -14,6 +14,7 @@ import type {
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { Transaction } from "@ckb-lumos/lumos";
 import { convertCKBTransactionToSkeleton } from "@/shared/networks/ckb/helpers";
+import { ccc } from "@ckb-ccc/core";
 
 export interface IKeyringController {
   init(password: string): Promise<IPrivateWallet[]>;
@@ -36,7 +37,7 @@ export interface IKeyringController {
   ): Promise<Transaction>;
   sendCoin(data: SendCoin): Promise<string>;
   sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }>;
-  transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }>;
+  createTransferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }>;
   sendOrd(data: Omit<SendOrd, "amount">): Promise<string>;
   exportPublicKey(address: string): Promise<string>;
   serializeKeyringById(index: number): Promise<any>;
@@ -50,6 +51,7 @@ export interface IKeyringController {
     utxos: ApiUTXO[]
   ): Promise<string>;
   sendRgbpp(btcPsbtHex: string, inputs?: UserToSignInput[]): Promise<string>;
+  getSigner(): ccc.Signer;
 }
 
 class KeyringController implements IKeyringController {
@@ -60,6 +62,10 @@ class KeyringController implements IKeyringController {
    */
   async init(password: string): Promise<IPrivateWallet[]> {
     return await keyringService.init(password);
+  }
+
+  getSigner(): ccc.Signer {
+    return keyringService.getSigner();
   }
 
   /**
@@ -127,8 +133,10 @@ class KeyringController implements IKeyringController {
     return await keyringService.sendToken(data);
   }
 
-  async transferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }> {
-    return await keyringService.transferNFT(data);
+  async createTransferNFT(
+    data: TransferNFT
+  ): Promise<{ tx: string; fee: string }> {
+    return await keyringService.createTransferNFT(data);
   }
 
   async sendOrd(data: Omit<SendOrd, "amount">): Promise<string> {
