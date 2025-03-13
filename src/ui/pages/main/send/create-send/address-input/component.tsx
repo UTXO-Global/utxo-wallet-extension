@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { shortAddress } from "@/shared/utils/transactions";
-import { Combobox, Transition } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+  Transition,
+} from "@headlessui/react";
 import s from "./styles.module.scss";
 import { FC, Fragment, useEffect, useState } from "react";
 import { useAppState } from "@/ui/states/appState";
@@ -88,9 +94,16 @@ const AddressInput: FC<Props> = ({
         }`
       )}
     >
-      <Combobox value={inputValue}>
+      <Combobox
+        value={inputValue}
+        onChange={(add) => {
+          if (add) {
+            setInputValue(add);
+          }
+        }}
+      >
         <div className="w-full">
-          <Combobox.Input
+          <ComboboxInput
             displayValue={(value: string) => value}
             autoComplete="off"
             className="w-full bg-transparent p-4 text-base font-normal"
@@ -119,20 +132,17 @@ const AddressInput: FC<Props> = ({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Combobox.Options className={s.addressbookoptions}>
-                  {[...filtered, ...didAddresses].map((address) => (
-                    <Combobox.Option
+                <ComboboxOptions className={s.addressbookoptions}>
+                  {[...filtered, ...didAddresses].map((add) => (
+                    <ComboboxOption
                       className={s.addressbookoption}
-                      key={address}
-                      value={address}
-                      onClick={() => {
-                        setInputValue(address);
-                      }}
+                      key={add}
+                      value={add}
                     >
-                      {shortAddress(address, 14)}
-                    </Combobox.Option>
+                      {shortAddress(add, 14)}
+                    </ComboboxOption>
                   ))}
-                </Combobox.Options>
+                </ComboboxOptions>
               </Transition>
             </div>
           ) : (

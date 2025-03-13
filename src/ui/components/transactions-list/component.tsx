@@ -8,7 +8,10 @@ import {
 } from "@/shared/utils/transactions";
 import { t } from "i18next";
 import { Link } from "react-router-dom";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
+import {
+  useGetCurrentAccount,
+  useGetCurrentNetwork,
+} from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
@@ -36,6 +39,7 @@ const TransactionList = ({
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const { ref, inView } = useInView();
   const currentNetwork = useGetCurrentNetwork();
+  const currentAccount = useGetCurrentAccount();
   const { apiController } = useControllersState((v) => ({
     apiController: v.apiController,
   }));
@@ -57,24 +61,34 @@ const TransactionList = ({
 
   useEffect(() => {
     const f = async () => {
-      setLoading(true);
-      if (
-        isBitcoinNetwork(currentNetwork.network) ||
-        isDogecoinNetwork(currentNetwork.network)
-      ) {
-        setTransactions(await apiController.getTransactions());
-      } else if (isCkbNetwork(currentNetwork.network)) {
-        setTransactions(
-          await apiController.getCKBTransactions({ type, typeHash })
-        );
+      try {
+        setLoading(true);
+        if (
+          isBitcoinNetwork(currentNetwork.network) ||
+          isDogecoinNetwork(currentNetwork.network)
+        ) {
+          setTransactions(await apiController.getTransactions());
+        } else if (isCkbNetwork(currentNetwork.network)) {
+          const txes = await apiController.getCKBTransactions({
+            address: currentAccount.accounts[0].address,
+            network: currentNetwork.slug,
+            type,
+            typeHash,
+          });
+
+          setTransactions(txes);
+        }
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+        setTransactions([]);
       }
-      setLoading(false);
     };
 
     f().catch((e) => {
       console.log(e);
     });
-  }, [currentNetwork, type, typeHash]);
+  }, [currentNetwork, type, typeHash, currentAccount]);
 
   if (!Array.isArray(transactions)) {
     return (

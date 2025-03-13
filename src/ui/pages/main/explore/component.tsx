@@ -86,7 +86,7 @@ const Explorer = () => {
               <Swiper
                 ref={swiperRef}
                 spaceBetween={16}
-                onSwiper={(swiper) => console.log(swiper)}
+                onSwiper={(swiper) => {}}
               >
                 {feature.map((z, i) => (
                   <SwiperSlide key={i}>

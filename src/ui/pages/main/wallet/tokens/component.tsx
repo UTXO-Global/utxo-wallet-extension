@@ -29,7 +29,6 @@ export default function TokenTabs() {
       const defaultTokens = await getTokenDefaults();
       const udtAccounts = addressInfo?.attributes?.udt_accounts || [];
       if (udtAccounts.length > 0) {
-        const udtAccounts = addressInfo.attributes.udt_accounts;
         const tokens = udtAccounts.filter(
           (token) =>
             ["sudt", "xudt", "xudt_compatible"].includes(token.udt_type) &&
@@ -52,10 +51,12 @@ export default function TokenTabs() {
             [...defaultTokens]
           );
         });
+      } else {
+        setTokens((prev) => [...defaultTokens]);
       }
     };
     f().catch((e) => console.log(e));
-  }, [addressInfo, isLoading]);
+  }, [addressInfo, isLoading, currentNetwork]);
 
   return (
     <div className="px-4">
