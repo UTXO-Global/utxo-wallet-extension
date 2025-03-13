@@ -48,9 +48,13 @@ export interface IApiController {
   pushCkbTxWithSigner(tx: string): Promise<{ txid: string } | undefined>;
   getTransactions(): Promise<ITransaction[] | undefined>;
   getCKBTransactions({
+    address,
+    network,
     type,
     typeHash,
   }: {
+    address: string;
+    network: NetworkSlug;
     type?: string;
     typeHash?: string;
   }): Promise<ITransaction[] | undefined>;
@@ -277,19 +281,24 @@ class ApiController implements IApiController {
 
   @CacheResponse(30000)
   async getCKBTransactions({
+    address,
+    network,
     type,
     typeHash,
   }: {
+    address: string;
+    network: NetworkSlug;
     type?: string;
     typeHash?: string;
   }): Promise<ITransaction[] | undefined> {
-    const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    const accounts = storageService.currentAccount.accounts;
+    const networkData = getNetworkDataBySlug(network);
 
-    let apiURL = `${networkData.esploraUrl}/address_transactions/${accounts[0].address}?page=1&page_size=25`;
+    let apiURL = `${networkData.esploraUrl}/address_transactions/${address}?page=1&page_size=25`;
     if (!!type && !!typeHash) {
-      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${accounts[0].address}`;
+      apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${address}`;
     }
+
+    console.log(apiURL);
 
     const res = await fetchEsplora<CkbTransactionResponse>({
       path: apiURL,
@@ -300,7 +309,7 @@ class ApiController implements IApiController {
     });
     return toITransactions(res).map((z) => ({
       ...z,
-      address: accounts[0].address,
+      address,
     }));
   }
 

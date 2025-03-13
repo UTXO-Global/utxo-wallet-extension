@@ -112,7 +112,7 @@ export async function balanceOf(
           balanceB: a.amount,
         };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     });
 
@@ -122,7 +122,7 @@ export async function balanceOf(
       udtBalances: udtBalances,
     };
   } catch (e) {
-    console.log(e);
+    // console.log(e);
   }
   return {
     balance: BI.from(0),

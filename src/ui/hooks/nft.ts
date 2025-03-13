@@ -12,6 +12,7 @@ import { fetchExplorerAPI } from "../utils/helpers";
 
 export const useGetMyNFTs = (isProgess?: boolean) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isReload, setIsReload] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [nfts, setNFTs] = useState<INFT[]>([]);
@@ -71,14 +72,15 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
         setIsLoading(false);
       }
     },
-    [page]
+    [page, currentNetwork, currentAccount]
   );
 
   useEffect(() => {
-    if (nfts.length === 0 && isProgess) {
+    if ((nfts.length === 0 || isReload) && isProgess) {
       getMyNFTs(true);
+      setIsReload(false);
     }
-  }, [getMyNFTs, isProgess]);
+  }, [getMyNFTs, isProgess, currentNetwork, currentAccount, isReload]);
 
   useEffect(() => {
     const _nfts = nfts;
@@ -100,6 +102,10 @@ export const useGetMyNFTs = (isProgess?: boolean) => {
     }
   }, [nfts, dob0Ids, isLoading]);
 
+  useEffect(() => {
+    setPage(1);
+    setIsReload(true);
+  }, [currentNetwork]);
   return {
     nfts,
     isLoading,
