@@ -20,14 +20,7 @@ export const useGetCKBAddressInfo = () => {
     return IsCKBNetwork(currentNetwork.network);
   }, [currentNetwork.network]);
 
-  const getAddressInfo = useCallback(async () => {
-    if (
-      addressInfo?.attributes?.address_hash ===
-      currentAccount.accounts[0].address
-    ) {
-      return;
-    }
-
+  const getAddressInfo = async () => {
     if (isLoading) return;
 
     if (isLoaded && !addressInfo) return;
@@ -50,7 +43,7 @@ export const useGetCKBAddressInfo = () => {
     }
     setIsLoading(false);
     setIsLoaded(addressInfo !== undefined);
-  }, [isLoading, currentAccount, isLoaded, currentNetwork]);
+  };
 
   useEffect(() => {
     if (currentAccount.accounts.length > 0 && currentNetwork && isCKBNetwork) {
@@ -63,10 +56,6 @@ export const useGetCKBAddressInfo = () => {
         });
     }
   }, [currentNetwork, currentAccount, currentNetwork]);
-
-  useEffect(() => {
-    setIsLoaded(false);
-  }, [currentAccount, currentNetwork]);
 
   return { isLoading, addressInfo };
 };
