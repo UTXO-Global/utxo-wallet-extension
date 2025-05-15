@@ -66,9 +66,12 @@ export interface IApiController {
     address: string,
     location: string
   ): Promise<Inscription[] | undefined>;
-  getNativeCoinPrice(
-    coinSymbol?: string
-  ): Promise<{ usd: number; changePercent24Hr: number }>;
+  getNativeCoinPrice(): Promise<{
+    [key: string]: {
+      usd: number;
+      changePercent24Hr: number;
+    };
+  }>;
   getLastBlock(): Promise<number>;
   getFees(): Promise<{ fast: number; slow: number }>;
   getInscriptions(address: string): Promise<Inscription[] | undefined>;
@@ -116,7 +119,7 @@ class ApiController implements IApiController {
         path: `${networkData.esploraUrl}/address/${address}/utxo`,
       });
 
-      const balance = data.reduce((acc, utxo) => acc + utxo.value, 0);
+      const balance = data?.reduce((acc, utxo) => acc + utxo.value, 0) || 0;
 
       let ordinalBalance = 0;
       let rgbppBalance = 0;
@@ -130,7 +133,8 @@ class ApiController implements IApiController {
               accept: "application/json",
             },
           });
-          ordinalBalance += ordUtxos.reduce((acc, utxo) => acc + utxo.value, 0);
+          ordinalBalance +=
+            ordUtxos?.reduce((acc, utxo) => acc + utxo.value, 0) || 0;
         }
         // Filter Rgbpp UTXO
         const outpointRgbpps = await controller.getRgbppAssetOutpoints(address);
@@ -354,15 +358,21 @@ class ApiController implements IApiController {
   @CacheResponse(30000)
   async getLastBlock(): Promise<number> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (
-      isBitcoinNetwork(networkData.network) ||
-      isDogecoinNetwork(networkData.network)
-    ) {
+    if (isBitcoinNetwork(networkData.network)) {
       return Number(
         await fetchEsplora<string>({
           path: `${networkData.esploraUrl}/blocks/tip/height`,
         })
       );
+    } else if (isDogecoinNetwork(networkData.network)) {
+      const res = await fetchEsplora<any>({
+        path: `${networkData.esploraUrl}/v1/doge/main`,
+        headers: {
+          "content-type": "application/json",
+          accept: "application/json",
+        },
+      });
+      return res.height;
     } else if (isCkbNetwork(networkData.network)) {
       const res = await fetchEsplora<CkbTipBlockResponse>({
         path: `${networkData.esploraUrl}/statistics/tip_block_number`,
@@ -377,17 +387,17 @@ class ApiController implements IApiController {
   }
 
   @CacheResponse(30000)
-  async getNativeCoinPrice(coinSymbol: string): Promise<{
+  async getNativeCoinPriceFromCoincap(coinSymbol: string): Promise<{
     usd: number;
     changePercent24Hr: number;
   }> {
     let apiFetchPrice = "";
     if (coinSymbol.toLowerCase() === "btc") {
-      apiFetchPrice = `https://api.coincap.io/v2/assets/bitcoin`;
+      apiFetchPrice = `https://rest.coincap.io/v3/assets?apiKey=45b9a7b205f0d0e994b771cb6ab10dca7ef718227bb129bf30c41a8d5f815691&ids=bitcoin`;
     } else if (coinSymbol === "ckb") {
-      apiFetchPrice = `https://api.coincap.io/v2/assets/nervos-network`;
+      apiFetchPrice = `https://rest.coincap.io/v3/assets?apiKey=45b9a7b205f0d0e994b771cb6ab10dca7ef718227bb129bf30c41a8d5f815691&ids=nervos-network`;
     } else if (coinSymbol === "doge") {
-      apiFetchPrice = `https://api.coincap.io/v2/assets/dogecoin`;
+      apiFetchPrice = `https://rest.coincap.io/v3/assets?apiKey=45b9a7b205f0d0e994b771cb6ab10dca7ef718227bb129bf30c41a8d5f815691&ids=dogecoin`;
     }
 
     if (!apiFetchPrice) {
@@ -404,6 +414,36 @@ class ApiController implements IApiController {
     return {
       usd: data.priceUsd || 0,
       changePercent24Hr: data.changePercent24Hr || 0,
+    };
+  }
+
+  @CacheResponse(30000)
+  async getNativeCoinPrice(): Promise<{
+    [key: string]: {
+      usd: number;
+      changePercent24Hr: number;
+    };
+  }> {
+    let apiFetchPrice =
+      "https://api.coingecko.com/api/v3/simple/price?ids=nervos-network,bitcoin,doge&vs_currencies=usd&include_24hr_change=true";
+
+    const data = await fetchEsplora<any>({
+      path: apiFetchPrice,
+    });
+
+    return {
+      btc: {
+        usd: Number(data["bitcoin"]?.usd || 0),
+        changePercent24Hr: Number(data["bitcoin"]?.usd_24h_change || 0),
+      },
+      doge: {
+        usd: Number(data["doge"]?.usd || 0),
+        changePercent24Hr: Number(data["doge"]?.usd_24h_change || 0),
+      },
+      ckb: {
+        usd: Number(data["nervos-network"]?.usd || 0),
+        changePercent24Hr: Number(data["nervos-network"]?.usd_24h_change || 0),
+      },
     };
   }
 

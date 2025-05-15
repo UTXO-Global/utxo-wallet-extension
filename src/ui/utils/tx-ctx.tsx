@@ -322,7 +322,13 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
 
   const getCoinPrice = async (symbol: string) => {
     try {
-      const symbolLower = symbol.toLowerCase();
+      let symbolLower = symbol.toLowerCase();
+      if (["tbtc", "sbtc"].includes(symbolLower)) {
+        symbolLower = "btc";
+      } else if (symbolLower === "tdoge") {
+        symbolLower = "doge";
+      }
+
       let pricesFromCache = await getNativeCoinPricesFromLS(symbolLower);
 
       if (
@@ -330,13 +336,16 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
         apiController &&
         apiController.getNativeCoinPrice
       ) {
-        pricesFromCache = await apiController.getNativeCoinPrice(symbolLower);
-        await updateLastBlock();
-        await setNativeCoinPricesToLS(
-          symbolLower,
-          pricesFromCache.usd,
-          pricesFromCache.changePercent24Hr
-        );
+        const prices = await apiController.getNativeCoinPrice();
+        for (const [key, value] of Object.entries(prices)) {
+          await setNativeCoinPricesToLS(
+            key,
+            value.usd,
+            value.changePercent24Hr
+          );
+        }
+
+        pricesFromCache = prices[symbolLower];
       }
 
       if (pricesFromCache) {
@@ -365,7 +374,7 @@ const useTransactionManager = (): TransactionManagerContextType | undefined => {
     } catch (e) {
       console.log("Load native coin price: ", e.message);
     }
-  }, [apiController, updateLastBlock, currentNetwork]);
+  }, [apiController, currentNetwork]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

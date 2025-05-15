@@ -18,11 +18,7 @@ import { RouterProvider } from "react-router-dom";
 import i18n from "../shared/locales/i18n";
 import { useAppState } from "./states/appState";
 import { useControllersState } from "./states/controllerState";
-import {
-  useGetCurrentAccount,
-  useGetCurrentNetwork,
-  useWalletState,
-} from "./states/walletState";
+import { useWalletState } from "./states/walletState";
 import { logErrorToFirestore } from "./utils/helpers";
 
 export default function App() {
