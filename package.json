@@ -46,7 +46,7 @@
     "@nervina-labs/dob-render": "^0.2.3",
     "@nervosnetwork/ckb-sdk-utils": "^0.109.4",
     "@noble/curves": "^1.4.2",
-    "@noble/hashes": "1.6.1",
+    "@noble/hashes": "1.7.1",
     "@rgbpp-sdk/btc": "^0.6.0",
     "@rgbpp-sdk/ckb": "^0.6.0",
     "@rgbpp-sdk/service": "^0.6.0",
