@@ -103,19 +103,28 @@ export class UtxoGlobalProvider extends EventEmitter {
       }
     });
 
+    this.on("broadcastDisconnect", (error) => {
+      this._isConnected = false;
+      this._state.isConnected = false;
+      this.emit("disconnect", error);
+    });
+
     try {
-      const { network, accounts, isUnlocked }: any = await this._request({
+      const { network, accounts, isUnlocked, isConnected }: any = await this._request({
         method: "getProviderState",
       });
       if (isUnlocked) {
         this._isUnlocked = true;
         this._state.isUnlocked = true;
       }
-      this.emit("connect", {});
+      this._isConnected = isConnected;
+      this._state.isConnected = isConnected;
+      if (isConnected) {
+        this.emit("connect", {});
+      }
       this.#_pushEventHandlers.networkChanged({
         network,
       });
-
       this.#_pushEventHandlers.accountsChanged(accounts);
     } catch {
       //
@@ -278,6 +287,24 @@ export class UtxoGlobalProvider extends EventEmitter {
         chain,
       },
     });
+  };
+
+  disconnect = () => {
+    this._isConnected = false;
+    this._state.isConnected = false;
+    this._state.accounts = null;
+    this._selectedAddress = null;
+    const disconnectError = ethErrors.provider.disconnected();
+
+    this.#_bcm.send("message", {
+      event: "disconnect",
+      data: disconnectError
+    });
+
+    this.emit("accountsChanged", []);
+    this.emit("networkChanged", "");
+    this.emit("disconnect", disconnectError);
+    this.emit("close", disconnectError);
   };
 }
 
