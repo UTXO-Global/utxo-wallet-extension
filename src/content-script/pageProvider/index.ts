@@ -153,6 +153,18 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
+    if (event === "disconnect") {
+      this._isConnected = false;
+      this._state.isConnected = false;
+      this._state.accounts = null;
+      this._selectedAddress = null;
+      this.emit("accountsChanged", []);
+      this.emit("networkChanged", "");
+      this.emit("disconnect", data);
+      this.emit("close", data);
+      return;
+    }
+
     if (!this.#_pushEventHandlers[event]) {
       return; // Ignore unexpected events
     }
@@ -197,6 +209,10 @@ export class UtxoGlobalProvider extends EventEmitter {
       });
       return result;
     } catch (error) {
+      this.#_bcm.send("message", {
+        event: "disconnect",
+        data: error
+      });
       this.disconnect();
       throw error;
     }
