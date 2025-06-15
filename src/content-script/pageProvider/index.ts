@@ -191,9 +191,25 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   // public methods
   connect = async () => {
-    return this._request({
-      method: "connect",
-    });
+    try {
+      const result = await this._request({
+        method: "connect",
+      });
+      return result;
+    } catch (error) {
+      // Khi user reject connect, đảm bảo trạng thái là disconnected
+      this._isConnected = false;
+      this._state.isConnected = false;
+      
+      // Broadcast message đến tất cả các tab
+      this.#_bcm.send("message", {
+        event: "disconnect",
+        data: error
+      });
+
+      this.emit("disconnect", error);
+      throw error;
+    }
   };
 
   getBalance = async () => {
