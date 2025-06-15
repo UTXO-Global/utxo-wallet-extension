@@ -33,7 +33,16 @@ class PushEventHandlers {
   };
 
   disconnect = () => {
-    this.provider.disconnect();
+    this.provider._isConnected = false;
+    this.provider._state.isConnected = false;
+    this.provider._state.accounts = null;
+    this.provider._selectedAddress = null;
+    const disconnectError = ethErrors.provider.disconnected();
+
+    this._emit("accountsChanged", []);
+    this._emit("networkChanged", "");
+    this._emit("disconnect", disconnectError);
+    this._emit("close", disconnectError);
   };
 
   broadcastDisconnect = (error) => {
