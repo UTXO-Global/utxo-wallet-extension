@@ -197,17 +197,7 @@ export class UtxoGlobalProvider extends EventEmitter {
       });
       return result;
     } catch (error) {
-      // Khi user reject connect, đảm bảo trạng thái là disconnected
-      this._isConnected = false;
-      this._state.isConnected = false;
-      
-      // Broadcast message đến tất cả các tab
-      this.#_bcm.send("message", {
-        event: "disconnect",
-        data: error
-      });
-
-      this.emit("disconnect", error);
+      this.disconnect();
       throw error;
     }
   };
@@ -297,26 +287,24 @@ export class UtxoGlobalProvider extends EventEmitter {
       });
       return result;
     } catch (error) {
-      this._isConnected = false;
-      this._state.isConnected = false;
-      
-      this.#_bcm.send("message", {
-        event: "disconnect",
-        data: error
-      });
-
-      this.emit("disconnect", error);
+      this.disconnect();
       throw error;
     }
   };
 
   switchChain = async (chain: string) => {
-    return this._request({
-      method: "switchChain",
-      params: {
-        chain,
-      },
-    });
+    try {
+      const result = await this._request({
+        method: "switchChain",
+        params: {
+          chain,
+        },
+      });
+      return result;
+    } catch (error) {
+      this.disconnect();
+      throw error;
+    }
   };
 
   disconnect = () => {
@@ -325,11 +313,6 @@ export class UtxoGlobalProvider extends EventEmitter {
     this._state.accounts = null;
     this._selectedAddress = null;
     const disconnectError = ethErrors.provider.disconnected();
-
-    this.#_bcm.send("message", {
-      event: "disconnect",
-      data: disconnectError
-    });
 
     this.emit("accountsChanged", []);
     this.emit("networkChanged", "");
