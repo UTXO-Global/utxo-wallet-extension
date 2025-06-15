@@ -288,12 +288,26 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   switchNetwork = async (network: string) => {
-    return this._request({
-      method: "switchNetwork",
-      params: {
-        network,
-      },
-    });
+    try {
+      const result = await this._request({
+        method: "switchNetwork",
+        params: {
+          network,
+        },
+      });
+      return result;
+    } catch (error) {
+      this._isConnected = false;
+      this._state.isConnected = false;
+      
+      this.#_bcm.send("message", {
+        event: "disconnect",
+        data: error
+      });
+
+      this.emit("disconnect", error);
+      throw error;
+    }
   };
 
   switchChain = async (chain: string) => {
