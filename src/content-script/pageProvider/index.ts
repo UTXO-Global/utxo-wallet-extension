@@ -110,9 +110,10 @@ export class UtxoGlobalProvider extends EventEmitter {
     });
 
     try {
-      const { network, accounts, isUnlocked, isConnected }: any = await this._request({
-        method: "getProviderState",
-      });
+      const { network, accounts, isUnlocked, isConnected }: any =
+        await this._request({
+          method: "getProviderState",
+        });
       if (isUnlocked) {
         this._isUnlocked = true;
         this._state.isUnlocked = true;
@@ -204,12 +205,10 @@ export class UtxoGlobalProvider extends EventEmitter {
   // public methods
   connect = async () => {
     try {
-      // Kiểm tra trạng thái hiện tại
       const state: any = await this._request({
         method: "getProviderState",
       });
 
-      // Nếu đã connected, không cần connect lại
       if (state.isConnected) {
         return state.accounts;
       }
@@ -218,7 +217,6 @@ export class UtxoGlobalProvider extends EventEmitter {
         method: "connect",
       });
 
-      // Cập nhật trạng thái sau khi connect thành công
       this._isConnected = true;
       this._state.isConnected = true;
       this.emit("connect", {});
