@@ -195,6 +195,16 @@ const flowContext = flow
         return result;
       })
       .catch((e: any) => {
+        // Chỉ broadcast disconnect khi có lỗi liên quan đến connection
+        if (e.code === 4001 || e.code === 4900 || e.code === 4901) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: "disconnect",
+            params: {
+              error: e.message || "Connection error"
+            }
+          });
+        }
+
         if (isSignApproval(approvalType)) {
           eventBus.emit(EVENTS.broadcastToUI, {
             method: EVENTS.SIGN_FINISHED,
