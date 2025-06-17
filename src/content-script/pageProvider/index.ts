@@ -205,17 +205,22 @@ export class UtxoGlobalProvider extends EventEmitter {
   // public methods
   connect = async () => {
     try {
+      console.log('[UTXO Global] Starting connection process...');
       const state: any = await this._request({
         method: "getProviderState",
       });
+      console.log('[UTXO Global] Current state:', state);
 
       if (state.isConnected) {
+        console.log('[UTXO Global] Already connected, returning accounts');
         return state.accounts;
       }
 
+      console.log('[UTXO Global] Attempting to connect...');
       const result = await this._request({
         method: "connect",
       });
+      console.log('[UTXO Global] Connection result:', result);
 
       this._isConnected = true;
       this._state.isConnected = true;
@@ -223,6 +228,7 @@ export class UtxoGlobalProvider extends EventEmitter {
 
       return result;
     } catch (error) {
+      console.error('[UTXO Global] Connection error:', error);
       this.disconnect();
       throw error;
     }
