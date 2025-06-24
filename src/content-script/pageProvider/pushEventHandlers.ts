@@ -53,14 +53,12 @@ class PushEventHandlers {
     if (accounts?.[0] === this.provider._selectedAddress) {
       return;
     }
-    this.connect({});
     this.provider._selectedAddress = accounts?.[0];
     this.provider._state.accounts = accounts;
     this._emit("accountsChanged", accounts);
   };
 
   networkChanged = ({ network }) => {
-    this.connect({});
     if (network !== this.provider._network) {
       this.provider._network = network;
       this._emit("networkChanged", network);

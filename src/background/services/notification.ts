@@ -19,12 +19,9 @@ class NotificationService extends Events {
 
   constructor() {
     super();
-    console.log('[UTXO Global Notification Service] Initializing notification service');
 
     event.on("windowRemoved", (winId: number) => {
-      console.log('[UTXO Global Notification Service] Window removed:', winId);
       if (winId === this.notifiWindowId) {
-        console.log('[UTXO Global Notification Service] Current notification window was removed');
         this.notifiWindowId = 0;
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.rejectApproval();
@@ -33,21 +30,16 @@ class NotificationService extends Events {
   }
 
   getApproval = (): ApprovalData => {
-    console.log('[UTXO Global Notification Service] Getting approval data:', this.approval?.data);
     return { ...this.approval.data };
   };
 
   resolveApproval = async (data?: any, forceReject = false) => {
-    console.log('[UTXO Global Notification Service] Resolving approval:', { data, forceReject });
     let connectedSite = false;
     if (forceReject) {
-      console.log('[UTXO Global Notification Service] Force rejecting approval');
       this.approval?.reject(new EthereumProviderError(4001, "User Cancel"));
     } else {
-      console.log('[UTXO Global Notification Service] Resolving approval with data');
       this.approval?.resolve(data);
       if (this.approval?.data?.params?.method === "connect") {
-        console.log('[UTXO Global Notification Service] Connect method detected');
         connectedSite = true;
       }
     }
@@ -57,27 +49,22 @@ class NotificationService extends Events {
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
-    console.log('[UTXO Global Notification Service] Rejecting approval:', { err, stay, isInternal });
     if (!this.approval) {
-      console.log('[UTXO Global Notification Service] No approval to reject');
       return;
     }
-    
+
     if (isInternal) {
-      console.log('[UTXO Global Notification Service] Internal rejection');
       this.approval?.reject(ethErrors.rpc.internal(err));
     } else {
-      console.log('[UTXO Global Notification] User rejection');
       this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
     }
 
     if (!isInternal && this.approval?.data?.params?.method === "connect") {
-      console.log('[UTXO Global Notification Service] Broadcasting disconnect event');
       eventBus.emit(EVENTS.broadcastToUI, {
         method: "disconnect",
         params: {
-          error: err || "User rejected the request"
-        }
+          error: err || "User rejected the request",
+        },
       });
     }
 
@@ -90,7 +77,6 @@ class NotificationService extends Events {
     data?: any,
     winProps?: OpenNotificationProps
   ): Promise<any> => {
-    console.log('[UTXO Global Notification Service] Requesting approval:', { data, winProps });
     // We will just override the existing open approval with the new one coming in
     return new Promise((resolve, reject) => {
       this.approval = {
@@ -101,59 +87,46 @@ class NotificationService extends Events {
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       if (!this.isLocked && Object.keys(data).length > 0) {
-        console.log('[UTXO Global Notification Service] Opening notification window');
         this.openNotification(winProps);
-      } else {
-        console.log('[UTXO Global Notification Service] Notification window locked or no data');
       }
     });
   };
 
   clear = async (stay = false) => {
-    console.log('[UTXO Global Notification Service] Clearing approval:', { stay });
     this.unLock();
     this.approval = null;
     if (this.notifiWindowId && !stay) {
-      console.log('[UTXO Global Notification Service] Removing notification window:', this.notifiWindowId);
       await remove(this.notifiWindowId);
       this.notifiWindowId = 0;
     }
   };
 
   unLock = () => {
-    console.log('[UTXO Global Notification Service] Unlocking notification service');
     this.isLocked = false;
   };
 
   lock = () => {
-    console.log('[UTXO Global Notification] Locking notification service');
     this.isLocked = true;
   };
 
   openNotification = async (winProps: OpenNotificationProps) => {
-    console.log('[UTXO Global Notification Service] Opening notification:', winProps);
     if (this.isLocked) {
-      console.log('[UTXO Global Notification Service] Service is locked, cannot open notification');
       return;
     }
 
     this.lock();
 
     if (this.notifiWindowId) {
-      console.log('[UTXO Global Notification Service] Removing existing notification window:', this.notifiWindowId);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       remove(this.notifiWindowId);
       this.notifiWindowId = 0;
     }
-    
+
     openNotification(winProps)
       .then((winId) => {
-        console.log('[UTXO Global Notification Service] Notification window opened:', winId);
         this.notifiWindowId = winId;
       })
-      .catch((e) => {
-        console.error('[UTXO Global Notification Service] Failed to open notification:', e);
-      });
+      .catch((e) => {});
   };
 }
 

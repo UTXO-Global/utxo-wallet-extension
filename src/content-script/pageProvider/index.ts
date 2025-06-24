@@ -57,9 +57,18 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.initialize();
   }
 
+  private _getPageOrigin(): string {
+    let origin: string | null = null;
+    origin = window.top?.location.origin ?? null;
+    if (!origin || origin === "null") {
+      origin = window.location.origin;
+    }
+
+    return origin;
+  }
+
   initialize = async () => {
-    console.log('[UTXO Global] Starting initialization...');
-    const origin = window.top?.location.origin;
+    const origin = this._getPageOrigin();
     const icon =
       ($('head > link[rel~="icon"]') as HTMLLinkElement)?.href ||
       ($('head > meta[itemprop="image"]') as HTMLMetaElement)?.content;
@@ -69,29 +78,17 @@ export class UtxoGlobalProvider extends EventEmitter {
       ($('head > meta[name="title"]') as HTMLMetaElement)?.content ||
       origin;
 
-    console.log('[UTXO Global] Origin:', origin);
-    console.log('[UTXO Global] Icon:', icon);
-    console.log('[UTXO Global] Name:', name);
-
     const sanitizedIcon = DOMPurify.sanitize(icon);
     const sanitizedName = DOMPurify.sanitize(name);
     const sanitizedOrigin = DOMPurify.sanitize(origin);
-    
-    console.log('[UTXO Global] Sanitized values:', {
-      icon: sanitizedIcon,
-      name: sanitizedName,
-      origin: sanitizedOrigin
-    });
 
     if (!this._isValidURL(sanitizedOrigin)) {
-      console.error('[UTXO Global] Invalid URL detected:', sanitizedOrigin);
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
       );
     }
 
     if (!this.#_bcm) {
-      console.log('[UTXO Global] Initializing BroadcastChannelMessage');
       this.#_bcm = new BroadcastChannelMessage(channelName);
     }
     this.#_pushEventHandlers = new PushEventHandlers(this);
@@ -101,12 +98,10 @@ export class UtxoGlobalProvider extends EventEmitter {
       this._requestPromiseCheckVisibility
     );
 
-    console.log('[UTXO Global] Setting up message handler');
     this.#_bcm.connect().on("message", this._handleBackgroundMessage);
-    
+
     domReadyCall(async () => {
       try {
-        console.log('[UTXO Global] Performing tab checkin');
         await this.#_bcm.request({
           method: "tabCheckin",
           params: {
@@ -115,27 +110,21 @@ export class UtxoGlobalProvider extends EventEmitter {
             origin: sanitizedOrigin,
           },
         });
-        console.log('[UTXO Global] Tab checkin successful');
-      } catch (e) {
-        console.error('[UTXO Global] Tab checkin failed:', e);
-      }
+      } catch (e) {}
     });
 
     this.on("broadcastDisconnect", (error) => {
-      console.log('[UTXO Global] Broadcast disconnect event received:', error);
       this._isConnected = false;
       this._state.isConnected = false;
       this.emit("disconnect", error);
     });
 
     try {
-      console.log('[UTXO Global] Getting initial provider state');
       const { network, accounts, isUnlocked, isConnected }: any =
         await this._request({
           method: "getProviderState",
         });
-      console.log('[UTXO Global] Initial state:', { network, accounts, isUnlocked, isConnected });
-      
+
       if (isUnlocked) {
         this._isUnlocked = true;
         this._state.isUnlocked = true;
@@ -143,7 +132,6 @@ export class UtxoGlobalProvider extends EventEmitter {
       this._isConnected = isConnected;
       this._state.isConnected = isConnected;
       if (isConnected) {
-        console.log('[UTXO Global] Emitting connect event');
         this.emit("connect", {});
       }
       this.#_pushEventHandlers.networkChanged({
@@ -151,11 +139,10 @@ export class UtxoGlobalProvider extends EventEmitter {
       });
       this.#_pushEventHandlers.accountsChanged(accounts);
     } catch (error) {
-      console.error('[UTXO Global] Error getting initial state:', error);
+      console.error("[UTXO Global] Error getting initial state:", error);
     } finally {
       this._initialized = true;
       this._state.initialized = true;
-      console.log('[UTXO Global] Initialization complete');
       this.emit("_initialized");
     }
   };
@@ -178,10 +165,7 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
-    console.log('[UTXO Global] Received background message:', { event, data });
-    
     if (event === "disconnect") {
-      console.log('[UTXO Global] Processing disconnect event');
       this._isConnected = false;
       this._state.isConnected = false;
       this._state.accounts = null;
@@ -194,46 +178,38 @@ export class UtxoGlobalProvider extends EventEmitter {
     }
 
     if (!this.#_pushEventHandlers[event]) {
-      console.warn('[UTXO Global] Unexpected event received:', event);
       return;
     }
 
-    console.log('[UTXO Global] Processing event:', event);
     this.#_pushEventHandlers[event](data);
     this.emit(event, data);
   };
 
   _request = async (data: any) => {
-    console.log('[UTXO Global] Making request:', data);
-    const origin = window.top?.location.origin;
+    const origin = this._getPageOrigin();
     const sanitizedOrigin = DOMPurify.sanitize(origin);
-    
+
     if (!this._isValidURL(sanitizedOrigin)) {
-      console.error('[UTXO Global] Invalid URL in request:', sanitizedOrigin);
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
       );
     }
 
     if (!data) {
-      console.error('[UTXO Global] Invalid request data');
       throw ethErrors.rpc.invalidRequest();
     }
 
     this._requestPromiseCheckVisibility();
 
     const params = { provider: this._providerReq, ...data };
-    console.log('[UTXO Global] Request params:', params);
-    
+
     return this._requestPromise.call(() => {
       return this.#_bcm
         .request(params)
         .then((res) => {
-          console.log('[UTXO Global] Request successful:', res);
           return res;
         })
         .catch((err) => {
-          console.error('[UTXO Global] Request failed:', err);
           throw serializeError(err);
         });
     });
@@ -242,22 +218,17 @@ export class UtxoGlobalProvider extends EventEmitter {
   // public methods
   connect = async () => {
     try {
-      console.log('[UTXO Global] Starting connection process...');
       const state: any = await this._request({
         method: "getProviderState",
       });
-      console.log('[UTXO Global] Current state:', state);
 
       if (state.isConnected) {
-        console.log('[UTXO Global] Already connected, returning accounts');
         return state.accounts;
       }
 
-      console.log('[UTXO Global] Attempting to connect...');
       const result = await this._request({
         method: "connect",
       });
-      console.log('[UTXO Global] Connection result:', result);
 
       this._isConnected = true;
       this._state.isConnected = true;
@@ -265,7 +236,6 @@ export class UtxoGlobalProvider extends EventEmitter {
 
       return result;
     } catch (error) {
-      console.error('[UTXO Global] Connection error:', error);
       this.disconnect();
       throw error;
     }
@@ -377,7 +347,6 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   disconnect = () => {
-    console.log('[UTXO Global] Disconnecting...');
     this._isConnected = false;
     this._state.isConnected = false;
     this._state.accounts = null;
@@ -388,7 +357,6 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.emit("networkChanged", "");
     this.emit("disconnect", disconnectError);
     this.emit("close", disconnectError);
-    console.log('[UTXO Global] Disconnected');
   };
 }
 

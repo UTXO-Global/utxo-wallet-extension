@@ -302,8 +302,6 @@ class ApiController implements IApiController {
       apiURL = `${networkData.esploraUrl}/udt_transactions/${typeHash}?page=1&page_size=25&address_hash=${address}`;
     }
 
-    console.log(apiURL);
-
     const res = await fetchEsplora<CkbTransactionResponse>({
       path: apiURL,
       headers: {

@@ -28,9 +28,7 @@ const Layout: FC<Props> = ({ children, documentTitle, resolveBtnText }) => {
     })();
   }, [documentTitle, notificationController]);
 
-  console.log("[UTXO Global UI] Loading...", origin)
   if (!origin) {
-    console.log("[UTXO Global UI] origin is empty")
     return (
       <div className="flex h-full w-full items-center justify-center">
         <ReactLoading type="cylon" color="#ODODOD" />

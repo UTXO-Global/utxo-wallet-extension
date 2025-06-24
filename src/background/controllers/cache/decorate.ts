@@ -13,11 +13,9 @@ export function CacheResponse(ttl: number = 60000) {
       const cachedValue = cache.get(cacheKey);
 
       if (cachedValue) {
-        // console.log(`Cache hit for ${cacheKey}`);
         return cachedValue;
       }
 
-      //   console.log(`Cache miss for ${cacheKey}`);
       const result = await originalMethod.apply(this, args);
       cache.set(cacheKey, result);
 

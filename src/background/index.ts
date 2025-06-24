@@ -129,7 +129,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 });
 
 browserRuntimeOnInstalled((details) => {
-  console.log("browserRuntimeOnInstalled", details);
   if (details.reason === "install") {
     addAppInstalledEvent();
   }
