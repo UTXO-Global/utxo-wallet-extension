@@ -31,6 +31,7 @@ const flowContext = flow
     const {
       data: { provider },
     } = ctx.request;
+
     switch (provider) {
       case "btc":
         ctx.providerController = btcProviderController;
@@ -54,6 +55,7 @@ const flowContext = flow
     const {
       data: { method },
     } = ctx.request;
+
     ctx.mapMethod = underline2Camelcase(method);
     if (!ctx.providerController[ctx.mapMethod]) {
       throw ethErrors.rpc.methodNotFound({
@@ -66,6 +68,7 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
+
     if (Reflect.getMetadata("INTERNAL", providerController, mapMethod)) {
       throw ethErrors.rpc.invalidRequest({
         message: `there is a invalid request`,
@@ -76,6 +79,7 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
+
     if (
       !Reflect.getMetadata("SAFE", ctx.providerController, mapMethod) &&
       !Reflect.getMetadata("CONNECTED", providerController, mapMethod)
@@ -90,10 +94,13 @@ const flowContext = flow
   })
   .use(async (ctx, next) => {
     const { mapMethod } = ctx;
+
     if (Reflect.getMetadata("SAFE", providerController, mapMethod)) {
-      if (
-        !(await permissionService.siteIsConnected(ctx.request.session.origin))
-      ) {
+      const isConnected = await permissionService.siteIsConnected(
+        ctx.request.session.origin
+      );
+
+      if (!isConnected) {
         return;
       }
     }
@@ -101,7 +108,6 @@ const flowContext = flow
     return next();
   })
   .use(async (ctx, next) => {
-    // check connect
     const {
       request: {
         session: { origin, name, icon },
@@ -112,9 +118,11 @@ const flowContext = flow
       !Reflect.getMetadata("SAFE", ctx.providerController, mapMethod) &&
       !Reflect.getMetadata("CONNECTED", providerController, mapMethod)
     ) {
-      if (
-        !(await permissionService.siteIsConnected(ctx.request.session.origin))
-      ) {
+      const isConnected = await permissionService.siteIsConnected(
+        ctx.request.session.origin
+      );
+
+      if (!isConnected) {
         ctx.request.requestedApproval = true;
         await notificationService.requestApproval(
           {
@@ -133,7 +141,6 @@ const flowContext = flow
     return next();
   })
   .use(async (ctx, next) => {
-    // check need approval
     const {
       request: {
         data: { params, method },
@@ -166,7 +173,7 @@ const flowContext = flow
   })
   .use(async (ctx) => {
     const { approvalRes, mapMethod, request } = ctx;
-    // process request
+
     const [approvalType] =
       Reflect.getMetadata("APPROVAL", ctx.providerController, mapMethod) || [];
 
@@ -174,6 +181,7 @@ const flowContext = flow
     const {
       session: { origin },
     } = request;
+
     const requestDefer = Promise.resolve(
       ctx.providerController[mapMethod]({
         ...request,
@@ -195,6 +203,15 @@ const flowContext = flow
         return result;
       })
       .catch((e: any) => {
+        if (e.code === 4001 || e.code === 4900 || e.code === 4901) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: "disconnect",
+            params: {
+              error: e.message || "Connection error",
+            },
+          });
+        }
+
         if (isSignApproval(approvalType)) {
           eventBus.emit(EVENTS.broadcastToUI, {
             method: EVENTS.SIGN_FINISHED,
@@ -205,6 +222,7 @@ const flowContext = flow
           });
         }
       });
+
     async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
       ctx.request.requestedApproval = true;
       const res = await notificationService.requestApproval({
@@ -219,6 +237,7 @@ const flowContext = flow
         return res;
       }
     }
+
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       return await requestApprovalLoop({ uiRequestComponent, ...rest });
@@ -233,7 +252,6 @@ export default (request) => {
   return flowContext(ctx).finally(() => {
     if (ctx.request.requestedApproval) {
       flow.requestedApproval = false;
-      // only unlock notification if current flow is an approval flow
       notificationService.unLock();
     }
   });

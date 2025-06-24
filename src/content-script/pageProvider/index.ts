@@ -57,8 +57,18 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.initialize();
   }
 
+  private _getPageOrigin(): string {
+    let origin: string | null = null;
+    origin = window.top?.location.origin ?? null;
+    if (!origin || origin === "null") {
+      origin = window.location.origin;
+    }
+
+    return origin;
+  }
+
   initialize = async () => {
-    const origin = window.top?.location.origin;
+    const origin = this._getPageOrigin();
     const icon =
       ($('head > link[rel~="icon"]') as HTMLLinkElement)?.href ||
       ($('head > meta[itemprop="image"]') as HTMLMetaElement)?.content;
@@ -71,6 +81,7 @@ export class UtxoGlobalProvider extends EventEmitter {
     const sanitizedIcon = DOMPurify.sanitize(icon);
     const sanitizedName = DOMPurify.sanitize(name);
     const sanitizedOrigin = DOMPurify.sanitize(origin);
+
     if (!this._isValidURL(sanitizedOrigin)) {
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
@@ -88,6 +99,7 @@ export class UtxoGlobalProvider extends EventEmitter {
     );
 
     this.#_bcm.connect().on("message", this._handleBackgroundMessage);
+
     domReadyCall(async () => {
       try {
         await this.#_bcm.request({
@@ -98,27 +110,36 @@ export class UtxoGlobalProvider extends EventEmitter {
             origin: sanitizedOrigin,
           },
         });
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
+    });
+
+    this.on("broadcastDisconnect", (error) => {
+      this._isConnected = false;
+      this._state.isConnected = false;
+      this.emit("disconnect", error);
     });
 
     try {
-      const { network, accounts, isUnlocked }: any = await this._request({
-        method: "getProviderState",
-      });
+      const { network, accounts, isUnlocked, isConnected }: any =
+        await this._request({
+          method: "getProviderState",
+        });
+
       if (isUnlocked) {
         this._isUnlocked = true;
         this._state.isUnlocked = true;
       }
-      this.emit("connect", {});
+      this._isConnected = isConnected;
+      this._state.isConnected = isConnected;
+      if (isConnected) {
+        this.emit("connect", {});
+      }
       this.#_pushEventHandlers.networkChanged({
         network,
       });
-
       this.#_pushEventHandlers.accountsChanged(accounts);
-    } catch {
-      //
+    } catch (error) {
+      console.error("[UTXO Global] Error getting initial state:", error);
     } finally {
       this._initialized = true;
       this._state.initialized = true;
@@ -144,8 +165,20 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
+    if (event === "disconnect") {
+      this._isConnected = false;
+      this._state.isConnected = false;
+      this._state.accounts = null;
+      this._selectedAddress = null;
+      this.emit("accountsChanged", []);
+      this.emit("networkChanged", "");
+      this.emit("disconnect", data);
+      this.emit("close", data);
+      return;
+    }
+
     if (!this.#_pushEventHandlers[event]) {
-      return; // Ignore unexpected events
+      return;
     }
 
     this.#_pushEventHandlers[event](data);
@@ -153,8 +186,9 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   _request = async (data: any) => {
-    const origin = window.top?.location.origin;
+    const origin = this._getPageOrigin();
     const sanitizedOrigin = DOMPurify.sanitize(origin);
+
     if (!this._isValidURL(sanitizedOrigin)) {
       throw Error(
         "Invalid URL. Only URL starting with 'https://' or 'http://' are allowed. Please check and try again."
@@ -168,6 +202,7 @@ export class UtxoGlobalProvider extends EventEmitter {
     this._requestPromiseCheckVisibility();
 
     const params = { provider: this._providerReq, ...data };
+
     return this._requestPromise.call(() => {
       return this.#_bcm
         .request(params)
@@ -182,9 +217,28 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   // public methods
   connect = async () => {
-    return this._request({
-      method: "connect",
-    });
+    try {
+      const state: any = await this._request({
+        method: "getProviderState",
+      });
+
+      if (state.isConnected) {
+        return state.accounts;
+      }
+
+      const result = await this._request({
+        method: "connect",
+      });
+
+      this._isConnected = true;
+      this._state.isConnected = true;
+      this.emit("connect", {});
+
+      return result;
+    } catch (error) {
+      this.disconnect();
+      throw error;
+    }
   };
 
   getBalance = async () => {
@@ -263,21 +317,46 @@ export class UtxoGlobalProvider extends EventEmitter {
   };
 
   switchNetwork = async (network: string) => {
-    return this._request({
-      method: "switchNetwork",
-      params: {
-        network,
-      },
-    });
+    try {
+      const result = await this._request({
+        method: "switchNetwork",
+        params: {
+          network,
+        },
+      });
+      return result;
+    } catch (error) {
+      this.disconnect();
+      throw error;
+    }
   };
 
   switchChain = async (chain: string) => {
-    return this._request({
-      method: "switchChain",
-      params: {
-        chain,
-      },
-    });
+    try {
+      const result = await this._request({
+        method: "switchChain",
+        params: {
+          chain,
+        },
+      });
+      return result;
+    } catch (error) {
+      this.disconnect();
+      throw error;
+    }
+  };
+
+  disconnect = () => {
+    this._isConnected = false;
+    this._state.isConnected = false;
+    this._state.accounts = null;
+    this._selectedAddress = null;
+    const disconnectError = ethErrors.provider.disconnected();
+
+    this.emit("accountsChanged", []);
+    this.emit("networkChanged", "");
+    this.emit("disconnect", disconnectError);
+    this.emit("close", disconnectError);
   };
 }
 

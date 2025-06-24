@@ -161,8 +161,6 @@ export const useSwitchWallet = () => {
           );
         }
 
-        console.log("accounts", wallet.accounts);
-
         const networkGroupAccounts = wallet.accounts.filter(
           (account) => account.network === network.slug
         );

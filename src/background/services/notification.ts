@@ -7,6 +7,8 @@ import type {
   ApprovalData,
   OpenNotificationProps,
 } from "@/shared/interfaces/notification";
+import eventBus from "@/shared/eventBus";
+import { EVENTS } from "@/shared/constant";
 
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
@@ -47,11 +49,23 @@ class NotificationService extends Events {
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
-    if (!this.approval) return;
+    if (!this.approval) {
+      return;
+    }
+
     if (isInternal) {
       this.approval?.reject(ethErrors.rpc.internal(err));
     } else {
       this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
+    }
+
+    if (!isInternal && this.approval?.data?.params?.method === "connect") {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: "disconnect",
+        params: {
+          error: err || "User rejected the request",
+        },
+      });
     }
 
     await this.clear(stay);
@@ -96,7 +110,9 @@ class NotificationService extends Events {
   };
 
   openNotification = async (winProps: OpenNotificationProps) => {
-    if (this.isLocked) return;
+    if (this.isLocked) {
+      return;
+    }
 
     this.lock();
 
@@ -105,11 +121,12 @@ class NotificationService extends Events {
       remove(this.notifiWindowId);
       this.notifiWindowId = 0;
     }
+
     openNotification(winProps)
       .then((winId) => {
         this.notifiWindowId = winId;
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {});
   };
 }
 
