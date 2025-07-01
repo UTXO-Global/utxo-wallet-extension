@@ -10,7 +10,7 @@ import type {
 } from "@/background/services/keyring/types";
 import PushEventHandlers from "./pushEventHandlers";
 import ReadyPromise from "./readyPromise";
-import { $, domReadyCall } from "./utils";
+import { $ } from "./utils";
 
 const script = document.currentScript;
 const channelName = script?.getAttribute("channel") || "UTXOGLOBALWALLET";
@@ -47,8 +47,10 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   #_pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(0);
+  private _visibilityListenerAdded = false;
 
   #_bcm: BroadcastChannelMessage;
+
 
   constructor({ maxListeners = 100 } = {}) {
     super();
@@ -93,29 +95,34 @@ export class UtxoGlobalProvider extends EventEmitter {
     }
     this.#_pushEventHandlers = new PushEventHandlers(this);
 
-    document.addEventListener(
-      "visibilitychange",
-      this._requestPromiseCheckVisibility
-    );
+    if (!this._visibilityListenerAdded) {
+      document.addEventListener(
+        "visibilitychange",
+        this._requestPromiseCheckVisibility
+      );
+      this._visibilityListenerAdded = true;
+    }
 
     this.#_bcm.connect().on("message", this._handleBackgroundMessage);
 
-    domReadyCall(async () => {
-      try {
-        await this.#_bcm.request({
-          method: "tabCheckin",
-          params: {
-            icon: sanitizedIcon,
-            name: sanitizedName,
-            origin: sanitizedOrigin,
-          },
-        });
-      } catch (e) {}
-    });
+    try {
+      await this.#_bcm.request({
+        method: "tabCheckin",
+        params: {
+          icon: sanitizedIcon,
+          name: sanitizedName,
+          origin: sanitizedOrigin,
+        },
+      });
+    } catch (e) {
+      console.error("[UTXO Global] tabCheckin failed:", e);
+    }
 
     this.on("broadcastDisconnect", (error) => {
       this._isConnected = false;
       this._state.isConnected = false;
+      this._state.accounts = null;
+      this._selectedAddress = null;
       this.emit("disconnect", error);
     });
 
@@ -358,6 +365,7 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.emit("disconnect", disconnectError);
     this.emit("close", disconnectError);
   };
+
 }
 
 export class CKBProvider extends UtxoGlobalProvider {

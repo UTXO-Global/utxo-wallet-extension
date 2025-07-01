@@ -43,8 +43,9 @@ class NotificationService extends Events {
         connectedSite = true;
       }
     }
-    await this.clear();
+
     this.emit("resolve", data);
+    await this.clear();
     return connectedSite;
   };
 
