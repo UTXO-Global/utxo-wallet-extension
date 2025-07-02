@@ -127,7 +127,10 @@ class NotificationService extends Events {
       .then((winId) => {
         this.notifiWindowId = winId;
       })
-      .catch((e) => {});
+      .catch(async (e) => {
+        console.log(e)
+        await this.clear();
+      });
   };
 }
 
