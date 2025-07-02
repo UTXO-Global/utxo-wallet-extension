@@ -267,6 +267,8 @@ class ApiController implements IApiController {
   async getTransactions(): Promise<ITransaction[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const accounts = storageService.currentAccount.accounts;
+    if (!accounts || !accounts[0].address)
+      throw new Error("Error when trying to get the current account");
     if (
       isBitcoinNetwork(networkData.network) ||
       isDogecoinNetwork(networkData.network)
