@@ -77,7 +77,7 @@ const Settings = () => {
     },
     {
       icon: <IcnRightPanel className={ICON_CN} />,
-      label: "Side Panel",
+      label: t("settings.side_panel"),
       onClick: async () => {
         const tabs = await chrome.tabs.query({
           active: true,

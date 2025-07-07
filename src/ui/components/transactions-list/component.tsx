@@ -422,7 +422,7 @@ const TransactionList = ({
       )}
     >
       <div className="text-base font-medium sticky top-[65px] standard:top-0 z-10 bg-light-100">
-        Activities
+        {t("components.layout.activities")}
       </div>
 
       {loading ? (
@@ -459,29 +459,29 @@ const TransactionList = ({
                     {item.key === currentDate ? "Today" : item.title}
                   </div>
                   <div className="">
-                    {item.data.map((t, index) => {
-                      const isReceived = isIncomeTx(t, t.address);
-                      const isDobTransaction = isDobTx(t);
+                    {item.data.map((tx, index) => {
+                      const isReceived = isIncomeTx(tx, tx.address);
+                      const isDobTransaction = isDobTx(tx);
                       let amount = "",
                         symbol = currentNetwork.coinSymbol;
                       let dobImg = undefined;
-                      if (isTxToken(t)) {
-                        const v = getTransactionTokenValue(t, t.address);
+                      if (isTxToken(tx)) {
+                        const v = getTransactionTokenValue(tx, tx.address);
                         amount = v.amount.toString();
                         symbol = v.symbol;
                       } else if (isDobTransaction) {
-                        const dobValue = getTransactionDobValue(t, t.address);
+                        const dobValue = getTransactionDobValue(tx, tx.address);
                         dobImg = getDobImage(dobValue.tokenId, dobValue.data);
                         dobImg.name = dobValue.name;
                       } else {
-                        amount = getTransactionValue(t, t.address, 5);
+                        amount = getTransactionValue(tx, tx.address, 5);
                       }
 
                       return (
                         <Link
                           className={s.transaction}
                           key={index}
-                          to={`/pages/transaction-info/${t.txid}`}
+                          to={`/pages/transaction-info/${tx.txid}`}
                           state={{
                             transaction: t,
                             lastBlock,
@@ -491,17 +491,21 @@ const TransactionList = ({
                             <ICon isReceived={isReceived} />
                             <div>
                               <div className="text-base">
-                                {isReceived ? "Received" : "Sent"}
+                                {isReceived
+                                  ? t("components.layout.received")
+                                  : t("components.layout.sent")}
                               </div>
                               <div className="text-[#787575] text-sm font-normal">
-                                {isReceived ? "From" : "To"}{" "}
+                                {isReceived
+                                  ? t("components.layout.from")
+                                  : t("components.layout.to")}{" "}
                                 {isReceived
                                   ? shortAddress(
-                                      t.vin[0].prevout.scriptpubkey_address,
+                                      tx.vin[0].prevout.scriptpubkey_address,
                                       3
                                     )
                                   : shortAddress(
-                                      t.vout[0].scriptpubkey_address,
+                                      tx.vout[0].scriptpubkey_address,
                                       3
                                     )}
                               </div>

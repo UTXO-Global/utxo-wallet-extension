@@ -22,7 +22,8 @@
     "address_type": "地址类型",
     "wallet": "钱包",
     "help_n_support": "帮助与支持",
-    "become_a_partner": "成为合作伙伴"
+    "become_a_partner": "成为合作伙伴",
+    "side_panel": "侧面板"
   },
   "components": {
     "layout": {
@@ -58,7 +59,13 @@
       "details": "详情",
       "detail_NFT": "NFT详情",
       "search": "搜索",
-      "swap": "兑换"
+      "swap": "兑换",
+      "copy": "复制",
+      "activities": "活动",
+      "received": "已收到",
+      "sent": "发送",
+      "to": "至",
+      "from": "从"
     },
     "check_password": {
       "incorrect_password_error": "密码错误",
@@ -79,6 +86,13 @@
     },
     "card": {
       "close": "关闭"
+    },
+    "token_card": {
+      "transferable_balance": "可转让余额",
+      "balance": "平衡",
+      "create_transfer": "创建转账",
+      "send": "发送",
+      "no_transfers": "无转移"
     },
     "swap": {
       "slippage_settings": "滑点设置",
