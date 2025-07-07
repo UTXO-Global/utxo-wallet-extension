@@ -267,6 +267,8 @@ class ApiController implements IApiController {
   async getTransactions(): Promise<ITransaction[] | undefined> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
     const accounts = storageService.currentAccount.accounts;
+    if (!accounts || !accounts[0].address)
+      throw new Error("Error when trying to get the current account");
     if (
       isBitcoinNetwork(networkData.network) ||
       isDogecoinNetwork(networkData.network)
@@ -422,7 +424,7 @@ class ApiController implements IApiController {
       changePercent24Hr: number;
     };
   }> {
-    let apiFetchPrice =
+    const apiFetchPrice =
       "https://api.coingecko.com/api/v3/simple/price?ids=nervos-network,bitcoin,doge&vs_currencies=usd&include_24hr_change=true";
 
     const data = await fetchEsplora<any>({

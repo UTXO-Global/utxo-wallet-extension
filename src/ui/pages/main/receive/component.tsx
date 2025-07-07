@@ -120,7 +120,7 @@ const Receive = () => {
             toast.success(t("transaction_info.copied"));
           }}
         >
-          Copy
+          {t("components.layout.copy")}
         </div>
       </div>
     </div>

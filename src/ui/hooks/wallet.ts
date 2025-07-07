@@ -17,7 +17,6 @@ import {
 } from "../states/walletState";
 import { useTransactionManagerContext } from "../utils/tx-ctx";
 import {
-  CKB_HD_PATH_VERSION,
   CKB_MAINNET_OLD_HD_PATH,
   CKB_TESTNET_OLD_HD_PATH,
 } from "@/shared/networks/ckb";

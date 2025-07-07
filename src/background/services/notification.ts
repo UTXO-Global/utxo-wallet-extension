@@ -43,8 +43,9 @@ class NotificationService extends Events {
         connectedSite = true;
       }
     }
-    await this.clear();
+
     this.emit("resolve", data);
+    await this.clear();
     return connectedSite;
   };
 
@@ -126,7 +127,10 @@ class NotificationService extends Events {
       .then((winId) => {
         this.notifiWindowId = winId;
       })
-      .catch((e) => {});
+      .catch(async (e) => {
+        console.log(e)
+        await this.clear();
+      });
   };
 }
 

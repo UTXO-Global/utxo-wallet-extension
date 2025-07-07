@@ -10,7 +10,7 @@ import {
   setupWalletProxy,
 } from "@/ui/utils/setup";
 import { Router } from "@remix-run/router";
-import { reload, signInAnonymously } from "firebase/auth";
+import { signInAnonymously } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import ReactLoading from "react-loading";

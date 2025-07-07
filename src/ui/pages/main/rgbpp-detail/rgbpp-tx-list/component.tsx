@@ -5,10 +5,11 @@ import {
   getTransactionValue,
   getTransactionTokenValue,
   isTxToken,
+  isDobTx,
+  getTransactionDobValue,
 } from "@/shared/utils/transactions";
 import { t } from "i18next";
 import { Link } from "react-router-dom";
-import { useGetCurrentNetwork } from "@/ui/states/walletState";
 import cn from "classnames";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
@@ -181,10 +182,19 @@ const RgbppTxList = ({
                       const isReceived = isIncomeTx(t, t.address);
                       let amount = "",
                         symbol = "";
-                      const v = getTransactionTokenValue(t, t.address);
 
-                      amount = v.amount.toString();
-                      symbol = v.symbol;
+                      if (isTxToken(t)) {
+                        const v = getTransactionTokenValue(t, t.address);
+                        amount = v.amount.toString();
+                        symbol = v.symbol;
+                      } else if (isDobTx(t)) {
+                        const v = getTransactionDobValue(t, t.address);
+                        amount = v.amount.toString();
+                        symbol = v.symbol;
+                      } else {
+                        amount = getTransactionValue(t, t.address, 5);
+                        symbol = "CKB"; // Default symbol for CKB transactions
+                      }
 
                       return (
                         <Link

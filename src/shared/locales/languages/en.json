@@ -22,7 +22,8 @@
     "network": "Network",
     "wallet": "Wallet",
     "help_n_support": "Help & Support",
-    "become_a_partner": "Become a Partner"
+    "become_a_partner": "Become a Partner",
+    "side_panel": "Side Panel"
   },
   "components": {
     "layout": {
@@ -58,7 +59,13 @@
       "details": "Details",
       "detail_NFT": "NFT Details",
       "search": "Search",
-      "swap": "Swap"
+      "swap": "Swap",
+      "copy": "Copy",
+      "activities": "Activities",
+      "received": "Received",
+      "sent": "Sent",
+      "to": "To",
+      "from": "From"
     },
     "check_password": {
       "incorrect_password_error": "Incorrect password",

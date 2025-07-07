@@ -83,7 +83,7 @@ function getNewGAccountIndex(
   networkSlug: NetworkSlug
 ): number {
   const _accounts = accounts.filter((z) => z.network === networkSlug);
-  let hdPath = _accounts[_accounts.length - 1].accounts[0].hdPath;
+  const hdPath = _accounts[_accounts.length - 1].accounts[0].hdPath;
   const _lastIndex = getIndexFromHdPath(hdPath);
   return _lastIndex + 1;
 }

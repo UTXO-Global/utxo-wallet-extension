@@ -29,7 +29,7 @@ let currentNetworkSlug: string | null = null;
  */
 const configureDobDecodeServer = (network: NetworkData): boolean => {
   const isTestnet = network.slug === "nervos_testnet";
-  
+
   // Only update if the network has changed
   if (currentNetworkSlug !== network.slug) {
     if (isTestnet) {
@@ -37,16 +37,14 @@ const configureDobDecodeServer = (network: NetworkData): boolean => {
         "https://dob-decoder-testnet.onrender.com"
       );
     } else {
-      dobRenderConfig.setDobDecodeServerURL(
-        "https://dob-decoder.rgbpp.io"
-      );
+      dobRenderConfig.setDobDecodeServerURL("https://dob-decoder.rgbpp.io");
     }
-    
+
     // Update the current network slug
     currentNetworkSlug = network.slug;
     return true;
   }
-  
+
   return false;
 };
 
@@ -92,6 +90,7 @@ export const getExtraDetailSpore = async (
 };
 
 export const getURLFromHex = (dataHex: string, network: NetworkData) => {
+  if (!dataHex) return {};
   const msg = unpackToRawSporeData(dataHex);
   const contentType = msg.contentType.toLowerCase();
   if (IMAGE_CONTENT_TYPE.includes(contentType)) {

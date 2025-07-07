@@ -12,7 +12,6 @@ import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
 import {
-  isBitcoinNetwork,
   isCkbNetwork,
   rgbppAssetSupported,
 } from "@/shared/networks";

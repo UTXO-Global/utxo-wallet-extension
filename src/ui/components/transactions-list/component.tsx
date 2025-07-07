@@ -5,6 +5,8 @@ import {
   getTransactionValue,
   getTransactionTokenValue,
   isTxToken,
+  isDobTx,
+  getTransactionDobValue,
 } from "@/shared/utils/transactions";
 import { t } from "i18next";
 import { Link } from "react-router-dom";
@@ -18,12 +20,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useControllersState } from "@/ui/states/controllerState";
 import { ITransaction } from "@/shared/interfaces/api";
 import {
+  DOB_PROTOCOL_VERSIONS,
   isBitcoinNetwork,
   isCkbNetwork,
   isDogecoinNetwork,
 } from "@/shared/networks";
 import ShortBalance from "../ShortBalance";
 import Loading from "react-loading";
+import { getDob0Imgs, getURLFromHex } from "@/ui/utils/dob";
 
 const TransactionList = ({
   className,
@@ -387,6 +391,30 @@ const TransactionList = ({
     );
   };
 
+  const getDobImage = (nftId: string, data: string): any => {
+    try {
+      const { url: imageUrl, contentType } = getURLFromHex(
+        data,
+        currentNetwork
+      );
+      if (DOB_PROTOCOL_VERSIONS.includes(contentType)) {
+        getDob0Imgs([nftId], currentNetwork).then((res) => {
+          Object.keys(res).forEach((id) => {
+            return {
+              imageUrl: res[id].url,
+              contentType: res[id].contentType,
+              name: "",
+            };
+          });
+        });
+      }
+
+      return { imageUrl, contentType, name: "" };
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -394,7 +422,7 @@ const TransactionList = ({
       )}
     >
       <div className="text-base font-medium sticky top-[65px] standard:top-0 z-10 bg-light-100">
-        Activities
+        {t("components.layout.activities")}
       </div>
 
       {loading ? (
@@ -431,23 +459,29 @@ const TransactionList = ({
                     {item.key === currentDate ? "Today" : item.title}
                   </div>
                   <div className="">
-                    {item.data.map((t, index) => {
-                      const isReceived = isIncomeTx(t, t.address);
+                    {item.data.map((tx, index) => {
+                      const isReceived = isIncomeTx(tx, tx.address);
+                      const isDobTransaction = isDobTx(tx);
                       let amount = "",
                         symbol = currentNetwork.coinSymbol;
-                      if (isTxToken(t)) {
-                        const v = getTransactionTokenValue(t, t.address);
+                      let dobImg = undefined;
+                      if (isTxToken(tx)) {
+                        const v = getTransactionTokenValue(tx, tx.address);
                         amount = v.amount.toString();
                         symbol = v.symbol;
+                      } else if (isDobTransaction) {
+                        const dobValue = getTransactionDobValue(tx, tx.address);
+                        dobImg = getDobImage(dobValue.tokenId, dobValue.data);
+                        dobImg.name = dobValue.name;
                       } else {
-                        amount = getTransactionValue(t, t.address, 5);
+                        amount = getTransactionValue(tx, tx.address, 5);
                       }
 
                       return (
                         <Link
                           className={s.transaction}
                           key={index}
-                          to={`/pages/transaction-info/${t.txid}`}
+                          to={`/pages/transaction-info/${tx.txid}`}
                           state={{
                             transaction: t,
                             lastBlock,
@@ -457,17 +491,21 @@ const TransactionList = ({
                             <ICon isReceived={isReceived} />
                             <div>
                               <div className="text-base">
-                                {isReceived ? "Received" : "Sent"}
+                                {isReceived
+                                  ? t("components.layout.received")
+                                  : t("components.layout.sent")}
                               </div>
                               <div className="text-[#787575] text-sm font-normal">
-                                {isReceived ? "From" : "To"}{" "}
+                                {isReceived
+                                  ? t("components.layout.from")
+                                  : t("components.layout.to")}{" "}
                                 {isReceived
                                   ? shortAddress(
-                                      t.vin[0].prevout.scriptpubkey_address,
+                                      tx.vin[0].prevout.scriptpubkey_address,
                                       3
                                     )
                                   : shortAddress(
-                                      t.vout[0].scriptpubkey_address,
+                                      tx.vout[0].scriptpubkey_address,
                                       3
                                     )}
                               </div>
@@ -479,20 +517,36 @@ const TransactionList = ({
                               color: isReceived ? "#09C148" : "#FF4545",
                             }}
                           >
-                            <span className="w-[120px] truncate block text-right">
-                              {isReceived ? "+" : "-"}
-                              <ShortBalance
-                                balance={Math.abs(
-                                  Number(amount.toString().replace(/,/g, ""))
+                            {!isDobTransaction && (
+                              <>
+                                <span className="w-[120px] truncate block text-right">
+                                  {isReceived ? "+" : "-"}
+                                  <ShortBalance
+                                    balance={Math.abs(
+                                      Number(
+                                        amount.toString().replace(/,/g, "")
+                                      )
+                                    )}
+                                    zeroDisplay={6}
+                                    isDot={true}
+                                    className="!text-sm !inline-block"
+                                  />
+                                </span>
+                                <span className="text-primary flex-1">
+                                  {`${symbol || currentNetwork.coinSymbol}`}
+                                </span>
+                              </>
+                            )}
+
+                            {isDobTransaction && (
+                              <img
+                                src={dobImg?.imageUrl || "/nft-default.png"}
+                                alt={dobImg?.name}
+                                className={cn(
+                                  "max-w mix-blend-multiply rounded-t-lg w-8"
                                 )}
-                                zeroDisplay={6}
-                                isDot={true}
-                                className="!text-sm !inline-block"
                               />
-                            </span>
-                            <span className="text-primary flex-1">
-                              {`${symbol || currentNetwork.coinSymbol}`}
-                            </span>
+                            )}
                           </div>
                         </Link>
                       );

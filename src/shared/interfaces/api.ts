@@ -62,10 +62,16 @@ export interface Vin {
   inner_redeemscript_asm?: string;
   address_hash?: string;
   extra_info?: {
-    amount: string;
-    decimal: string;
-    symbol: string;
-    type_hash: string;
+    cluster_name?: string;
+    collection?: {
+      type_hash: string;
+    };
+    data?: string;
+    amount?: string;
+    decimal?: string;
+    symbol?: string;
+    type_hash?: string;
+    token_id?: string;
   };
 }
 
@@ -85,10 +91,16 @@ export interface Vout {
   value: number;
   address_hash?: string;
   extra_info?: {
-    amount: string;
-    decimal: string;
-    symbol: string;
-    type_hash: string;
+    cluster_name?: string;
+    collection?: {
+      type_hash: string;
+    };
+    data?: string;
+    amount?: string;
+    decimal?: string;
+    symbol?: string;
+    type_hash?: string;
+    token_id?: string;
   };
 }
 

@@ -4,11 +4,7 @@ import s from "./styles.module.scss";
 
 import Tile from "@/ui/components/tile";
 import { TileProps } from "@/ui/components/tile/component";
-import {
-  ArrowsPointingOutIcon,
-  LanguageIcon,
-  DeviceTabletIcon,
-} from "@heroicons/react/24/solid";
+import { ArrowsPointingOutIcon, LanguageIcon } from "@heroicons/react/24/solid";
 
 import { t } from "i18next";
 import config from "../../../../../package.json";
@@ -22,7 +18,6 @@ import {
 } from "@/ui/components/icons";
 import { IcnHelpSupport } from "@/ui/components/icons/IcnHelpSupport";
 import { TELEGRAM_HELP_AND_SUPPORT } from "@/shared/constant";
-import { useMemo } from "react";
 
 const ICON_SIZE = 8;
 const ICON_CN = `w-${ICON_SIZE} h-${ICON_SIZE}`;
@@ -82,7 +77,7 @@ const Settings = () => {
     },
     {
       icon: <IcnRightPanel className={ICON_CN} />,
-      label: "Side Panel",
+      label: t("settings.side_panel"),
       onClick: async () => {
         const tabs = await chrome.tabs.query({
           active: true,
