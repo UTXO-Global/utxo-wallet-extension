@@ -4,7 +4,6 @@ import { NetworkSlug } from "@/shared/networks/types";
 import { Psbt } from "bitcoinjs-lib";
 import { keyringService } from "../services";
 import type {
-  RgbppTransferParams,
   SendCkbToken,
   SendCoin,
   SendOrd,

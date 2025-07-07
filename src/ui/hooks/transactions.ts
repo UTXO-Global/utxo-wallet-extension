@@ -34,7 +34,6 @@ import { AddressType } from "@/shared/networks/types";
 import { buildRgbppTransferTx } from "@/background/services/rgbpp";
 import { NetworkType, DataSource, sendRgbppUtxos } from "@rgbpp-sdk/btc";
 import { BtcAssetsApi } from "../utils/rgbpp";
-import { ccc } from "@ckb-ccc/core";
 
 export function useCreateTxCallback() {
   const currentAccount = useGetCurrentAccount();

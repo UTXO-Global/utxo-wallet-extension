@@ -424,7 +424,7 @@ class ApiController implements IApiController {
       changePercent24Hr: number;
     };
   }> {
-    let apiFetchPrice =
+    const apiFetchPrice =
       "https://api.coingecko.com/api/v3/simple/price?ids=nervos-network,bitcoin,doge&vs_currencies=usd&include_24hr_change=true";
 
     const data = await fetchEsplora<any>({

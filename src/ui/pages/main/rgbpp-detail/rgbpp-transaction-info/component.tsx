@@ -2,8 +2,10 @@ import { ITransaction } from "@/shared/interfaces/api";
 import { getNetworkDataBySlug, isCkbNetwork } from "@/shared/networks";
 import { browserTabsCreate } from "@/shared/utils/browser";
 import {
+  getTransactionDobValue,
   getTransactionTokenValue,
   getTransactionValue,
+  isDobTx,
   isTxToken,
   shortAddress,
 } from "@/shared/utils/transactions";
@@ -45,17 +47,24 @@ const RgbppTransactionInfo = () => {
     return isTxToken(tx);
   }, [tx]);
 
+  const isDobTransaction = useMemo(() => {
+    return isDobTx(tx);
+  }, [tx]);
+
   const txValue = useMemo(() => {
     if (isTokenTransaction) {
       const v = getTransactionTokenValue(tx, tx.address);
       return { amount: v.amount.toString(), symbol: v.symbol };
+    } else if (isDobTransaction) {
+      const v = getTransactionDobValue(tx, tx.address);
+      return { amount: v.amount, symbol: v.symbol };
     } else {
       return {
         amount: getTransactionValue(tx, tx.address, 5),
         symbol: ckbNetwork.coinSymbol,
       };
     }
-  }, [isTokenTransaction]);
+  }, [isTokenTransaction, tx, ckbNetwork.coinSymbol]);
 
   const onOpenExplorer = async () => {
     await browserTabsCreate({

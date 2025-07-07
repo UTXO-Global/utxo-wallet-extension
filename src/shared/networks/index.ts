@@ -1,5 +1,5 @@
 import { Network as BitcoinNetwork } from "bitcoinjs-lib";
-import { sporeA as cccSporeA, sporeA } from "@ckb-ccc/spore/advanced";
+import { sporeA } from "@ckb-ccc/spore/advanced";
 import { spore as cccSpore } from "@ckb-ccc/spore";
 import { BTC_LIVENET, BTC_SIGNET, BTC_TESTNET, BTC_TESTNET4 } from "./btc";
 import {
@@ -14,7 +14,6 @@ import { NetworkConfig as CkbNetwork } from "./ckb/offckb.config";
 import { ChainData, ChainSlug, NetworkData, NetworkSlug } from "./types";
 import { predefined } from "@ckb-lumos/config-manager";
 import { Config, createConfig } from "@ckb-lumos/lumos/config";
-import { SporeConfig, predefinedSporeConfigs } from "@spore-sdk/core";
 import { DOGECOIN_LIVENET, DOGECOIN_TESTNET } from "./dogecoin";
 export const defaultNetwork = CKB_MAINNET;
 

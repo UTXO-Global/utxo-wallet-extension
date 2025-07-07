@@ -45,11 +45,13 @@ export const getTxDirection = (
   return TxDirection.in;
 };
 
-export const isTxToken = (transaction: ITransaction) => {
+export const isDobTx = (transaction: ITransaction) => {
   if (
     transaction.vin.find(
       (t) =>
-        t.address_hash === transaction.address && t.extra_info !== undefined
+        t.address_hash === transaction.address &&
+        t.extra_info !== undefined &&
+        t.extra_info?.token_id !== undefined
     )
   ) {
     return true;
@@ -59,7 +61,36 @@ export const isTxToken = (transaction: ITransaction) => {
     transaction.vout.find(
       (t) =>
         t.scriptpubkey_address === transaction.address &&
-        t.extra_info !== undefined
+        t.extra_info !== undefined &&
+        t.extra_info?.token_id !== undefined
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+export const isTxToken = (transaction: ITransaction) => {
+  if (
+    transaction.vin.find(
+      (t) =>
+        t.address_hash === transaction.address &&
+        t.extra_info !== undefined &&
+        t.extra_info?.symbol !== undefined &&
+        t.extra_info?.amount !== undefined
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    transaction.vout.find(
+      (t) =>
+        t.scriptpubkey_address === transaction.address &&
+        t.extra_info !== undefined &&
+        t.extra_info?.symbol !== undefined &&
+        t.extra_info?.amount !== undefined
     )
   ) {
     return true;
@@ -163,6 +194,28 @@ export const getTransactionTokenValue = (
   }
 
   return { amount: value, symbol: symbol };
+};
+
+export const getTransactionDobValue = (
+  transaction: ITransaction,
+  _targetAddress: string
+) => {
+  let data: string;
+  let tokenId: string;
+  let name: string;
+
+  const cells = [...transaction.vout, ...transaction.vin];
+  for (let i = 0; i < cells.length; i++) {
+    const cell = cells[i];
+    if (cell.extra_info && cell.extra_info.data && cell.extra_info.token_id) {
+      data = cell.extra_info.data;
+      tokenId = cell.extra_info.token_id;
+      name = cell.extra_info.cluster_name;
+      return { amount: 1, name, data, tokenId };
+    }
+  }
+
+  return { amount: 1, name, data, tokenId };
 };
 
 export const isIncomeTx = (

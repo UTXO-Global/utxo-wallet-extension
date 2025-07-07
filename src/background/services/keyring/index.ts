@@ -26,7 +26,6 @@ import type {
   HdPathUserToSignInput,
   Json,
   PublicKeyUserToSignInput,
-  RgbppTransferParams,
   SendBtcCoin,
   SendCkbCoin,
   SendCkbToken,
@@ -36,12 +35,11 @@ import type {
   UserToSignInput,
 } from "./types";
 import { ApiUTXO } from "@/shared/interfaces/api";
-import { ccc, Transaction } from "@ckb-ccc/core";
+import { ccc } from "@ckb-ccc/core";
 import { addCellDep } from "@ckb-lumos/lumos/helpers";
 import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
 import * as ecc from "@bitcoinerlab/secp256k1";
 import * as bitcoinjs from "bitcoinjs-lib";
-import { cccA } from "@ckb-ccc/core/advanced";
 import { spore as cccSpore } from "@ckb-ccc/spore";
 import { sporeA as cccSporeA } from "@ckb-ccc/spore/advanced";
 

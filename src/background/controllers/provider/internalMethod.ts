@@ -1,5 +1,4 @@
 import { storageService } from "@/background/services";
-import { permissionService } from "@/background/services";
 
 export const getProviderState = async () => {
   const isUnlocked = storageService.appState.isUnlocked;

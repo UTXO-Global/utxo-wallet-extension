@@ -2,6 +2,7 @@ import { ITransaction } from "@/shared/interfaces/api";
 import { isCkbNetwork } from "@/shared/networks";
 import { browserTabsCreate } from "@/shared/utils/browser";
 import {
+  getTransactionDobValue,
   getTransactionTokenValue,
   getTransactionValue,
   isTxToken,
@@ -38,9 +39,16 @@ const TransactionInfo = () => {
     return isTxToken(tx);
   }, [tx]);
 
+  const isDobTransaction = useMemo(() => {
+    return isTxToken(tx);
+  }, [tx]);
+
   const txValue = useMemo(() => {
     if (isTokenTransaction) {
       const v = getTransactionTokenValue(tx, tx.address);
+      return { amount: v.amount.toString(), symbol: v.symbol };
+    } else if (isDobTransaction) {
+      const v = getTransactionDobValue(tx, tx.address);
       return { amount: v.amount.toString(), symbol: v.symbol };
     } else {
       return {
@@ -48,7 +56,7 @@ const TransactionInfo = () => {
         symbol: currentNetwork.coinSymbol,
       };
     }
-  }, [isTokenTransaction]);
+  }, [isTokenTransaction, tx, currentNetwork.coinSymbol]);
 
   const onOpenExplorer = async () => {
     await browserTabsCreate({
