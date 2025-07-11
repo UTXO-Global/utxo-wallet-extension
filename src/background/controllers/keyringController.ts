@@ -34,6 +34,12 @@ export interface IKeyringController {
     tx: any,
     hdPath: string
   ): Promise<Transaction>;
+  ckbSignSwapTransaction(
+    fromAddress: string,
+    networkSlug: NetworkSlug,
+    tx: any,
+    hdPath: string
+  ): Promise<Transaction>;
   sendCoin(data: SendCoin): Promise<string>;
   sendToken(data: SendCkbToken): Promise<{ tx: string; fee: string }>;
   createTransferNFT(data: TransferNFT): Promise<{ tx: string; fee: string }>;
@@ -165,13 +171,25 @@ class KeyringController implements IKeyringController {
     tx: any,
     hdPath: string
   ): Promise<Transaction> {
+    return await keyringService.signCkbTransaction({ tx, hdPath });
+  }
+
+  async ckbSignSwapTransaction(
+    fromAddress: string,
+    networkSlug: NetworkSlug,
+    tx: any,
+    hdPath: string
+  ): Promise<Transaction> {
     const txSkeleton = await convertCKBTransactionToSkeleton(
       fromAddress,
       networkSlug,
       tx
     );
 
-    return await keyringService.signCkbTransaction({ tx: txSkeleton, hdPath });
+    return await keyringService.ckbSignSwapTransaction({
+      tx: txSkeleton,
+      hdPath,
+    });
   }
 
   async sendRgbpp(
