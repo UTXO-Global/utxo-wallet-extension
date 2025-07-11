@@ -118,19 +118,14 @@ export default function UTXOReviewOrder() {
   }, [location.state]);
 
   const signTxFunc = async (rawTx: CKBComponents.RawTransactionToSign) => {
-    try {
-      const signed = await keyringController.signCkbTransaction(
-        currentAccount.accounts[0].address,
-        currentNetwork.slug,
-        rawTx,
-        currentAccount.accounts[0].hdPath
-      );
+    const signed = await keyringController.ckbSignSwapTransaction(
+      currentAccount.accounts[0].address,
+      currentNetwork.slug,
+      rawTx,
+      currentAccount.accounts[0].hdPath
+    );
 
-      return signed as CKBComponents.RawTransaction;
-    } catch (e) {
-      console.error(e);
-    }
-    return undefined;
+    return signed as CKBComponents.RawTransaction;
   };
 
   const pool = useMemo(() => {

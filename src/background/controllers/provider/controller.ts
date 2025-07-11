@@ -424,7 +424,6 @@ class CKBProviderController extends ProviderController {
   signTransaction = async (data: { data: { params: { tx: any } } }) => {
     const networkSlug = storageService.currentNetwork;
     const network = getNetworkDataBySlug(networkSlug);
-    const networkConfig = network.network as NetworkConfig;
 
     if (!isCkbNetwork(network.network)) {
       throw new Error("Error when trying to get the current account");
@@ -435,95 +434,9 @@ class CKBProviderController extends ProviderController {
       throw new Error("Error when trying to get the current account");
     }
 
-    const tx = data.data.params.tx;
-    let txSkeleton = helpers.TransactionSkeleton();
-    if (tx.cellDeps && tx.cellDeps.length > 0) {
-      tx.cellDeps?.forEach((cellDep: any) => {
-        txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
-          cellDeps.push({
-            ...cellDep,
-            outPoint: {
-              txHash: cellDep.outPoint.txHash,
-              index: ccc.numToHex(cellDep.outPoint.index),
-            },
-          })
-        );
-      });
-    }
-
-    if (!tx.inputs) {
-      throw new Error("Error when trying to get inputs");
-    }
-
-    for (const input of tx.inputs) {
-      if (!input.previousOutput) {
-        throw new Error("Error when trying to get the previous output");
-      }
-
-      const txInput = await callCKBRPC(
-        networkConfig.rpc_url,
-        "get_transaction",
-        [input.previousOutput.txHash]
-      );
-
-      const cellOutput =
-        txInput?.transaction?.outputs[Number(input.previousOutput.index)];
-
-      if (!cellOutput) {
-        throw new Error(
-          `Error when trying to get the cell output ${input.previousOutput.txHash}`
-        );
-      }
-
-      txSkeleton = txSkeleton.update("inputs", (inputs) =>
-        inputs.push({
-          outPoint: {
-            txHash: input.previousOutput.txHash,
-            index: ccc.numToHex(input.previousOutput.index),
-          },
-          data: input.outputData ? input.outputData : "0x",
-          cellOutput: {
-            capacity: ccc.numToHex(cellOutput.capacity),
-            lock: {
-              codeHash: cellOutput.lock?.code_hash,
-              hashType: cellOutput.lock?.hash_type,
-              args: cellOutput.lock?.args,
-            },
-            type: cellOutput.type,
-          },
-        })
-      );
-    }
-
-    const outputsData = tx.outputsData || [];
-    tx.outputs?.forEach((output: any, index: number) => {
-      txSkeleton = txSkeleton.update("outputs", (outputs) =>
-        outputs.push({
-          cellOutput: {
-            capacity: ccc.numToHex(output.capacity),
-            lock: output.lock,
-            type: output.type || null,
-          },
-          data: outputsData[index] || "0x",
-        })
-      );
-    });
-
-    tx.headerDeps?.forEach((headerDep: any) => {
-      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
-        headerDeps.push(headerDep)
-      );
-    });
-
-    tx.witnesses?.forEach((witness: any) => {
-      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
-        witnesses.push(witness)
-      );
-    });
-
     return await keyringService.signCkbTransaction({
       hdPath: account.accounts[0].hdPath,
-      tx: txSkeleton,
+      tx: data.data.params.tx,
     });
   };
 }

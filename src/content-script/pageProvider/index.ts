@@ -51,7 +51,6 @@ export class UtxoGlobalProvider extends EventEmitter {
 
   #_bcm: BroadcastChannelMessage;
 
-
   constructor({ maxListeners = 100 } = {}) {
     super();
     this.setMaxListeners(maxListeners);
@@ -365,7 +364,6 @@ export class UtxoGlobalProvider extends EventEmitter {
     this.emit("disconnect", disconnectError);
     this.emit("close", disconnectError);
   };
-
 }
 
 export class CKBProvider extends UtxoGlobalProvider {

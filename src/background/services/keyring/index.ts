@@ -37,7 +37,12 @@ import type {
 import { ApiUTXO } from "@/shared/interfaces/api";
 import { ccc } from "@ckb-ccc/core";
 import { addCellDep } from "@ckb-lumos/lumos/helpers";
-import { MIN_CAPACITY, prepareWitnesses } from "@/shared/networks/ckb/helpers";
+import {
+  callCKBRPC,
+  convertCKBTransactionToSkeleton,
+  MIN_CAPACITY,
+  prepareWitnesses,
+} from "@/shared/networks/ckb/helpers";
 import * as ecc from "@bitcoinerlab/secp256k1";
 import * as bitcoinjs from "bitcoinjs-lib";
 import { spore as cccSpore } from "@ckb-ccc/spore";
@@ -138,7 +143,110 @@ class KeyringService {
     );
   }
 
-  async signCkbTransaction(params: {
+  hasMultiOwner(tx: any): boolean {
+    const transaction = ccc.Transaction.from(tx);
+    const owners = new Set<string>();
+
+    for (const input of transaction.inputs) {
+      const lock = input.cellOutput.lock;
+      const owner = lock.args;
+
+      owners.add(owner);
+    }
+
+    return owners.size > 1;
+  }
+
+  async convertAnyToSkeleton(tx: any, networkConfig: NetworkConfig) {
+    let txSkeleton = helpers.TransactionSkeleton();
+    if (tx.cellDeps && tx.cellDeps.length > 0) {
+      tx.cellDeps?.forEach((cellDep: any) => {
+        txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
+          cellDeps.push({
+            ...cellDep,
+            outPoint: {
+              txHash: cellDep.outPoint.txHash,
+              index: ccc.numToHex(cellDep.outPoint.index),
+            },
+          })
+        );
+      });
+    }
+
+    if (!tx.inputs) {
+      throw new Error("Error when trying to get inputs");
+    }
+
+    for (const input of tx.inputs) {
+      if (!input.previousOutput) {
+        throw new Error("Error when trying to get the previous output");
+      }
+
+      const txInput = await callCKBRPC(
+        networkConfig.rpc_url,
+        "get_transaction",
+        [input.previousOutput.txHash]
+      );
+
+      const cellOutput =
+        txInput?.transaction?.outputs[Number(input.previousOutput.index)];
+
+      if (!cellOutput) {
+        throw new Error(
+          `Error when trying to get the cell output ${input.previousOutput.txHash}`
+        );
+      }
+
+      txSkeleton = txSkeleton.update("inputs", (inputs) =>
+        inputs.push({
+          outPoint: {
+            txHash: input.previousOutput.txHash,
+            index: ccc.numToHex(input.previousOutput.index),
+          },
+          data: input.outputData ? input.outputData : "0x",
+          cellOutput: {
+            capacity: ccc.numToHex(cellOutput.capacity),
+            lock: {
+              codeHash: cellOutput.lock?.code_hash,
+              hashType: cellOutput.lock?.hash_type,
+              args: cellOutput.lock?.args,
+            },
+            type: cellOutput.type,
+          },
+        })
+      );
+    }
+
+    const outputsData = tx.outputsData || [];
+    tx.outputs?.forEach((output: any, index: number) => {
+      txSkeleton = txSkeleton.update("outputs", (outputs) =>
+        outputs.push({
+          cellOutput: {
+            capacity: ccc.numToHex(output.capacity),
+            lock: output.lock,
+            type: output.type || null,
+          },
+          data: outputsData[index] || "0x",
+        })
+      );
+    });
+
+    tx.headerDeps?.forEach((headerDep: any) => {
+      txSkeleton = txSkeleton.update("headerDeps", (headerDeps) =>
+        headerDeps.push(headerDep)
+      );
+    });
+
+    tx.witnesses?.forEach((witness: any) => {
+      txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+        witnesses.push(witness)
+      );
+    });
+
+    return txSkeleton;
+  }
+
+  async ckbSignSwapTransaction(params: {
     tx: helpers.TransactionSkeletonType;
     hdPath: string;
   }) {
@@ -154,6 +262,43 @@ class KeyringService {
     const Sig = keyring.signRecoverable(params.hdPath, message);
     const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
     return txSigned;
+  }
+
+  async signCkbTransactionWithLumos(params: { tx: any; hdPath: string }) {
+    const networkSlug = storageService.currentNetwork;
+    const network = getNetworkDataBySlug(networkSlug);
+    const isTestnet = nervosTestnetSlug.includes(network.slug);
+    const account = storageService.currentAccount;
+    if (!account || !account.accounts[0].address)
+      throw new Error("Error when trying to get the current account");
+
+    const tx = await this.convertAnyToSkeleton(
+      params.tx,
+      network.network as NetworkConfig
+    );
+
+    const txSkeleton = commons.common.prepareSigningEntries(tx, {
+      config: isTestnet ? AGGRON4 : LINA,
+    });
+
+    const keyring = this.getKeyringByIndex(storageService.currentWallet.id);
+    const message = txSkeleton.get("signingEntries").get(0)!.message;
+    const Sig = keyring.signRecoverable(params.hdPath, message);
+    const txSigned = helpers.sealTransaction(txSkeleton, [Sig]);
+    return txSigned;
+  }
+
+  async signCkbTransaction(params: { tx: any; hdPath: string }) {
+    try {
+      if (this.hasMultiOwner(params.tx)) {
+        const signer = this.getSigner();
+        const tx = ccc.Transaction.from(params.tx);
+        const txSigned = await signer.signTransaction(tx);
+        return JSON.parse(txSigned.stringify());
+      }
+    } catch (e) {}
+
+    return this.signCkbTransactionWithLumos(params);
   }
 
   signAllPsbtInputs(psbt: Psbt) {
