@@ -8,7 +8,7 @@ export const CKB_TESTNET_OLD_HD_PATH = "m/13'/1'/0'/0";
 
 export const CKB_MAINNET: NetworkData = {
   slug: "nervos",
-  name: "Mirana Mainnet",
+  name: "Meepo Mainnet",
   esploraUrl: "https://mainnet-api.explorer.nervos.org/api/v1",
   explorerUrl: "https://explorer.nervos.org/en",
   addressTypes: [
