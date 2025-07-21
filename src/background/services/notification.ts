@@ -128,7 +128,8 @@ class NotificationService extends Events {
         this.notifiWindowId = winId;
       })
       .catch(async (e) => {
-        console.log(e)
+        console.error('Failed to open notification window:', e, winProps);
+
         await this.clear();
       });
   };

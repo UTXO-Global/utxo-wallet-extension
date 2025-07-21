@@ -1,4 +1,7 @@
 import { Message } from "@/shared/utils/message";
+function isFullscreen() {
+  return window.innerHeight === screen.height && window.innerWidth === screen.width;
+}
 
 function injectScript() {
   try {
@@ -122,6 +125,9 @@ function shouldInjectProvider() {
 if (shouldInjectProvider()) {
   try {
     injectScript();
+    if (isFullscreen()) {
+      chrome.runtime.sendMessage({ type: "FULLSCREEN_DETECTED" });
+    }
   } catch (e) {
     console.log(e);
   }

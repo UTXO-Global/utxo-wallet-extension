@@ -48,11 +48,7 @@ const create = async ({
     ...WINDOW_SIZE,
     ...rest,
   });
-
-  // shim firefox
-  if (win.left !== left) {
-    await browserWindowsUpdate(win.id, { left, top });
-  }
+  
   return win.id;
 };
 
