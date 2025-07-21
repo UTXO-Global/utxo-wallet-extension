@@ -45,7 +45,7 @@ const Layout: FC<Props> = ({ children, documentTitle, resolveBtnText }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between px-4 w-full min-h-screen pt-10 pb-6">
+    <div className="flex flex-col justify-between px-4 w-full pt-10 pb-6 min-h-screen standard:min-h-[calc(100vh_-_100px)]">
       <div>
         <div className="flex justify-center">
           <div className="rounded-[100px] px-4 py-2 flex gap-2 justify-center text-base border border-primary">
