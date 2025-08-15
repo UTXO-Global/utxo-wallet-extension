@@ -51,6 +51,7 @@ import UTXOSwapSetting from "./main/swap/setting";
 import UTXOSwapSearchToken from "./main/swap/search-token/component";
 import UTXOReviewOrder from "./main/swap/review-order/component";
 import UTXOFinalSwap from "./main/swap/success";
+import AlchemyPay from "./main/alchemypay";
 import CreateSendRgbpp from "./main/rgbpp-detail/rgbpp-create-send";
 import ConfirmSendRgbpp from "./main/rgbpp-detail/rgbpp-confirm-send";
 import RgbppTransactionInfo from "./main/rgbpp-detail/rgbpp-transaction-info";
@@ -165,5 +166,6 @@ export const authenticatedRouter = createHashRouter([
       { path: "signLNInvoice", element: <SignLNInvoice /> },
     ],
   },
+  { path: "alchemypay", element: <AlchemyPay /> },
   { path: "*", element: <Navigate to={"/"} /> },
 ]);
