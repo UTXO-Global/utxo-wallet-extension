@@ -45,7 +45,7 @@
     "@heroicons/react": "2.2.0",
     "@nervina-labs/dob-render": "^0.2.3",
     "@nervosnetwork/ckb-sdk-utils": "^0.109.4",
-    "@noble/curves": "^1.4.2",
+    "@noble/curves": "^1.8.1",
     "@noble/hashes": "1.6.1",
     "@rgbpp-sdk/btc": "^0.6.0",
     "@rgbpp-sdk/ckb": "^0.6.0",
