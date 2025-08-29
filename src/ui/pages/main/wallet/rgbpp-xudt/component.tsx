@@ -17,39 +17,41 @@ export default function RgbppXudtTabs() {
 
   useEffect(() => {
     const f = async () => {
-      setIsLoading(true);
-      const xudtBalances: RgbppXudtBalance[] = [];
-      for (const account of currentAccount.accounts) {
-        xudtBalances.push(
-          ...(await apiController.getRgbppXudtBalances(
-            account.address,
-            network
-          ))
-        );
-      }
+      try {
+        setIsLoading(true);
+        const xudtBalances: RgbppXudtBalance[] = [];
+        for (const account of currentAccount?.accounts || []) {
+          xudtBalances.push(
+            ...(await apiController.getRgbppXudtBalances(
+              account.address,
+              network
+            ))
+          );
+        }
 
-      setTokens((prev) => {
-        return xudtBalances.reduce(
-          (newTokens, t) => {
-            const idx = newTokens.findIndex(
-              (item) => item.type_hash === t.type_hash
-            );
-            if (idx > -1) {
-              newTokens[idx] = { ...t };
-            } else {
-              newTokens.push(t);
-            }
-            return newTokens;
-          },
-          [...prev]
-        );
-      });
-      setIsLoading(false);
+        setTokens((prev) => {
+          return xudtBalances.reduce(
+            (newTokens, t) => {
+              const idx = newTokens.findIndex(
+                (item) => item.type_hash === t.type_hash
+              );
+              if (idx > -1) {
+                newTokens[idx] = { ...t };
+              } else {
+                newTokens.push(t);
+              }
+              return newTokens;
+            },
+            [...prev]
+          );
+        });
+      } catch (e: any) {
+        console.log(e);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    f().catch((e) => {
-      setIsLoading(false);
-      console.log(e);
-    });
+    f();
   }, [JSON.stringify(currentAccount.accounts)]);
 
   return (
