@@ -32,7 +32,7 @@ const SwitchAccount = () => {
     setRenameId(undefined);
 
     await updateCurrentWallet({
-      accounts: currentWallet.accounts.map((i, idx) => {
+      accounts: currentWallet?.accounts.map((i, idx) => {
         if (idx === renameId) {
           return {
             ...i,
@@ -61,7 +61,7 @@ const SwitchAccount = () => {
               `rounded-lg hover:bg-[#F5F5F5] border-[#F5F5F5] border transition-colors px-4 py-3 flex justify-between items-center cursor-pointer`,
               {
                 "bg-[#EBECEC] !border-[#EBECEC] hover:!border-[#EBECEC] hover:!bg-[#EBECEC]":
-                  currentAccount.id === acc.id,
+                  currentAccount?.id === acc.id,
               }
             )}
             onClick={async () => {
@@ -79,7 +79,7 @@ const SwitchAccount = () => {
               )}
             </div>
             <div className="flex items-center">
-              {currentAccount.id === acc.id ? <IcnCheck /> : null}
+              {currentAccount?.id === acc.id ? <IcnCheck /> : null}
 
               <EllipsisVerticalIcon
                 className="text-[#ABA8A1] flex-1 h-6 w-6 cursor-pointer"

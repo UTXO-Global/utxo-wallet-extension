@@ -21,7 +21,7 @@ const CopyAddress: FC<Props> = ({ active, onClose }) => {
       title={t("components.layout.address_type")}
     >
       <div className="grid gap-4">
-        {currentAccount.accounts.map((z, i) => (
+        {currentAccount?.accounts.map((z, i) => (
           <div key={i} className="rounded-lg flex justify-between items-center">
             <div>
               <p className="text-base fomt-medium text-primary">

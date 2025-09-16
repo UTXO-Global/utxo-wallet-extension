@@ -41,8 +41,8 @@ const AccountPanel = () => {
   }, [currentPrice]);
 
   const ckbBalance = useMemo(() => {
-    return currentAccount.balance ? Number(currentAccount.balance) : 0;
-  }, [currentAccount.balance]);
+    return currentAccount?.balance ? Number(currentAccount.balance) : 0;
+  }, [currentAccount?.balance]);
 
   const panelNavs = useMemo(() => {
     const isCKB = isCkbNetwork(currentNetwork.network);
@@ -50,7 +50,7 @@ const AccountPanel = () => {
     const navs = [
       {
         navPath: `/pages/receive/${
-          isCKB || isDogecoin ? currentAccount.accounts[0].address : ""
+          isCKB || isDogecoin ? currentAccount?.accounts[0].address : ""
         }`,
         navName: "pf_receive",
         navLabel: "receive",
@@ -82,7 +82,7 @@ const AccountPanel = () => {
       },
     ];
     return navs;
-  }, [currentAccount.accounts, currentNetwork.network]);
+  }, [currentAccount?.accounts, currentNetwork?.network]);
 
   const isCkbTestnet = useMemo(() => {
     return currentNetwork && currentNetwork.slug === "nervos_testnet";
@@ -96,7 +96,7 @@ const AccountPanel = () => {
       },
       body: JSON.stringify({
         claim_event: {
-          address_hash: currentAccount.accounts[0].address,
+          address_hash: currentAccount?.accounts[0].address,
           amount: "100000",
         },
       }),

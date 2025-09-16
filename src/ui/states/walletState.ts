@@ -32,8 +32,10 @@ export const useGetCurrentAccount = () => {
     wallets: v.wallets,
   }));
   return useMemo(() => {
-    if (selectedWallet === undefined || selectedAccount === undefined)
+    if (selectedWallet === undefined || selectedAccount === undefined) {
       return undefined;
+    }
+
     return wallets[selectedWallet]?.accounts[selectedAccount];
   }, [selectedAccount, selectedWallet, wallets]);
 };

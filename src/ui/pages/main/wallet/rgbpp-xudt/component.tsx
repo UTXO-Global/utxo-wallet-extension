@@ -52,7 +52,7 @@ export default function RgbppXudtTabs() {
       }
     };
     f();
-  }, [JSON.stringify(currentAccount.accounts)]);
+  }, [currentAccount?.accounts, network]);
 
   return (
     <div className="px-4">

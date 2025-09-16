@@ -22,10 +22,12 @@ const ReceiveAddress: FC<Props> = ({ active, onClose }) => {
   const navigate = useNavigate();
 
   const accounts = useMemo(() => {
+    if (!currentAccount) return [];
+
     return isBitcoinNetwork(currentNetwork.network)
       ? currentAccount.accounts.slice(3, 5)
       : currentAccount.accounts;
-  }, [currentAccount.accounts, currentNetwork.network]);
+  }, [currentAccount?.accounts, currentNetwork.network]);
 
   return (
     <Modal
