@@ -11,13 +11,9 @@ import s from "./styles.module.scss";
 import WalletPanel from "./wallet-panel";
 import BottomPanel from "./bottom-panel";
 import TokenTabs from "./tokens";
-import {
-  isCkbNetwork,
-  rgbppAssetSupported,
-} from "@/shared/networks";
+import { isCkbNetwork } from "@/shared/networks";
 import NativeToken from "./native-token";
 import Campaign from "./campaign";
-import RgbppXudtTabs from "./rgbpp-xudt";
 import Analytics from "@/ui/utils/gtm";
 
 const Wallet = () => {
@@ -94,7 +90,6 @@ const Wallet = () => {
           </div>
         </div>
         {isCkbNetwork(currentNetwork.network) && <TokenTabs />}
-        {rgbppAssetSupported(currentNetwork) && <RgbppXudtTabs />}
       </div>
       <div className="absolute w-full bottom-0">
         <BottomPanel />

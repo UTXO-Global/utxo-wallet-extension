@@ -11,8 +11,8 @@ UTXO Global Wallet for Nervos - A New Horizon for Your Crypto Adventures!
 - [x] Account Management
 - [x] Native Coin (CKB, BTC)
 - [x] Token Management (xUDT, sUDT)
-- [x] NFT Management (RGB++, Spore, etc...)
 - [x] DEX
+- [ ] NFT Management (RGB++, Spore, etc...)
 - [ ] Buy Cryptos
 
 #### 🌟 Contact Us:
