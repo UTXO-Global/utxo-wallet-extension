@@ -145,7 +145,7 @@ class ApiController implements IApiController {
           )
           .reduce((acc, utxo) => acc + utxo.value, 0);
       } catch (error) {
-        throw new Error(error);
+        console.error(error);
       }
 
       return {
@@ -358,21 +358,15 @@ class ApiController implements IApiController {
   @CacheResponse(30000)
   async getLastBlock(): Promise<number> {
     const networkData = getNetworkDataBySlug(storageService.currentNetwork);
-    if (isBitcoinNetwork(networkData.network)) {
+    if (
+      isBitcoinNetwork(networkData.network) ||
+      isDogecoinNetwork(networkData.network)
+    ) {
       return Number(
         await fetchEsplora<string>({
           path: `${networkData.esploraUrl}/blocks/tip/height`,
         })
       );
-    } else if (isDogecoinNetwork(networkData.network)) {
-      const res = await fetchEsplora<any>({
-        path: `${networkData.esploraUrl}/v1/doge/main`,
-        headers: {
-          "content-type": "application/json",
-          accept: "application/json",
-        },
-      });
-      return res.height;
     } else if (isCkbNetwork(networkData.network)) {
       const res = await fetchEsplora<CkbTipBlockResponse>({
         path: `${networkData.esploraUrl}/statistics/tip_block_number`,

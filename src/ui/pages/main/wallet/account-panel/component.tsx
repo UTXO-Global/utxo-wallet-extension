@@ -26,7 +26,7 @@ const FAUCET_LINK = {
   btc_testnet: "https://bitcoinfaucet.uo1.net/",
   btc_testnet_4: "https://mempool.space/testnet4/faucet",
   btc_signet: "https://signetfaucet.com/",
-  dogecoin_testnet: "https://shibe.technology/",
+  dogecoin_testnet: "https://faucet.doge.toys/",
 };
 
 const AccountPanel = () => {
