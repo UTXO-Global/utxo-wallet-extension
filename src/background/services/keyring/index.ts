@@ -200,7 +200,7 @@ class KeyringService {
 
       if (!!input.since) {
         txSkeleton = txSkeleton.update("inputSinces", (inputSinces) =>
-          inputSinces.set(i, input.since)
+          inputSinces.set(i, ccc.numToHex(input.since))
         );
       }
 
