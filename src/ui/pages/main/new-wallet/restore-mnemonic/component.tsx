@@ -52,13 +52,13 @@ const RestoreMnemonic = () => {
         payload: mnemonicPhrase.join(" "),
         walletType: "root",
         passphrase:
-          selectedWallet.name !== ""
+          selectedWallet?.name !== ""
             ? currentNetwork.walletToImport.find(
                 (w) => w.name === selectedWallet.name
               ).passphrase
             : "",
         walletName:
-          setSelectedWallet.name !== "" ? selectedWallet.name : undefined,
+          selectedWallet.name !== "" ? selectedWallet.name : undefined,
         restoreFromWallet: selectedWallet.value,
         hdPath: !!selectedWallet?.name
           ? currentNetwork.walletToImport?.find(
@@ -86,21 +86,22 @@ const RestoreMnemonic = () => {
     <div className="w-full h-full flex flex-col items-center gap-6 text-base p-4 pb-0">
       <div className={cn("h-full w-full flex flex-col justify-between mt-2")}>
         <div>
-          {currentNetwork.walletToImport && (
-            <div className="w-full mb-4">
-              <Select
-                label={t("new_wallet.restore_from_label")}
-                values={currentNetwork.walletToImport}
-                selected={{
-                  name: selectedWallet.name,
-                }}
-                setSelected={(e) => {
-                  setSelectedWallet(e as WalletToImport);
-                }}
-                className="capitalize"
-              />
-            </div>
-          )}
+          {currentNetwork.walletToImport &&
+            currentNetwork.walletToImport.length > 0 && (
+              <div className="w-full mb-4">
+                <Select
+                  label={t("new_wallet.restore_from_label")}
+                  values={currentNetwork.walletToImport}
+                  selected={{
+                    name: selectedWallet?.name,
+                  }}
+                  setSelected={(e) => {
+                    setSelectedWallet(e as WalletToImport);
+                  }}
+                  className="capitalize"
+                />
+              </div>
+            )}
           <p className="text-[#787575] text-center">
             Enter your Mnemonic to restore your wallet
           </p>

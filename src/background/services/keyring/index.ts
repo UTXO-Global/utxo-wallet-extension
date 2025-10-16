@@ -177,7 +177,8 @@ class KeyringService {
       throw new Error("Error when trying to get inputs");
     }
 
-    for (const input of tx.inputs) {
+    for (let i = 0; i < tx.inputs.length; i++) {
+      const input = tx.inputs[i];
       if (!input.previousOutput) {
         throw new Error("Error when trying to get the previous output");
       }
@@ -194,6 +195,12 @@ class KeyringService {
       if (!cellOutput) {
         throw new Error(
           `Error when trying to get the cell output ${input.previousOutput.txHash}`
+        );
+      }
+
+      if (!!input.since) {
+        txSkeleton = txSkeleton.update("inputSinces", (inputSinces) =>
+          inputSinces.set(i, ccc.numToHex(input.since))
         );
       }
 
