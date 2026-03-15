@@ -34,7 +34,7 @@
     ]
   },
   "dependencies": {
-    "@bitcoinerlab/secp256k1": "^1.1.1",
+    "@bitcoinerlab/secp256k1": "^1.2.0",
     "@ckb-ccc/core": "^1.5.3",
     "@ckb-ccc/spore": "^1.2.4",
     "@ckb-lumos/base": "^0.23.0",
